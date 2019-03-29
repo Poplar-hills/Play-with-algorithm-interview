@@ -1,6 +1,18 @@
 package Complexity;
 
-import static Utils.Helpers.log;
+import static Utils.Helpers.*;
+
+/*
+* 时间复杂度：
+*
+* 建立数据规模概念：
+* - O(n^2) 的算法大约可以在1s内处理 10^4 级别的数据；
+* - O(nlogn) 的算法大约可以在1s内处理 10^7 级别的数据；
+* - O(n) 的算法大约可以在1s内处理 10^8 级别的数据；
+* - O(logn) 的算法能处理的数据级别更大更大；
+* 这个规模并不准确，因为忽略了系数的影响，只作为粗略参考。
+*
+* */
 
 public class TimeComplexity {
     // O(1)
@@ -33,7 +45,7 @@ public class TimeComplexity {
     }
 
     // 该方法主要有两部分组成：while 循环、reverse()，分别讨论它们的复杂度后得到总体复杂度：O(logn)
-    public String intToStr(int num) {
+    public String intToStr(long num) {
         StringBuilder s = new StringBuilder();
         while (num != 0) {
             s.append("" + num % 10);
@@ -59,5 +71,13 @@ public class TimeComplexity {
     }
 
     public static void main(String[] args) {
+        Long l = 1000000000000L;
+        int[] arr = generateNearlyOrderedArr(l, 456456);
+        String d = "";
+        double a = System.nanoTime();
+        d = binarySearch(arr);
+        double c = System.nanoTime();
+        log((c - a) / 1000000000.0);
+        log(d);
     }
 }
