@@ -70,6 +70,17 @@ public class TimeComplexity {
         return true;
     }
 
+    // 计算 x 的 n 次幂：O(logn)
+    // 如果对 x 进行连乘来计算 n 次幂，则复杂度胃 O(n)；而采用这种递归方法则充分利用了已计算出来的结果化简算法复杂度
+    public double pow(double x, int n) {
+        assert n >= 0;
+        if (n == 0) return 1.0;
+        double t = pow(x, n / 2);
+        if (n % 2 != 0)
+            return t * t * x;  // 例如 x=2, n=5，则 2^5 = 2^2 * 2^2 * 2
+        return t * t;
+    }
+
     public static void main(String[] args) {
         Long l = 1000000000000L;
         int[] arr = generateNearlyOrderedArr(l, 456456);
