@@ -29,7 +29,7 @@ public class BinarySearch {
     }
 
     public static void main(String[] args) {
-        Integer[] arr = new Integer[]{0,2,4,6,8,10};
+        Integer[] arr = new Integer[] {0, 2, 4, 6, 8, 10};
 
         log(binarySearch(arr, 4));
         log(binarySearch(arr, 10));
