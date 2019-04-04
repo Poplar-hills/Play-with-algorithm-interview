@@ -80,15 +80,4 @@ public class TimeComplexity {
             return t * t * x;  // 例如 x=2, n=5，则 2^5 = 2^2 * 2^2 * 2
         return t * t;
     }
-
-    public static void main(String[] args) {
-        Long l = 1000000000000L;
-        int[] arr = generateNearlyOrderedArr(l, 456456);
-        String d = "";
-        double a = System.nanoTime();
-        d = binarySearch(arr);
-        double c = System.nanoTime();
-        log((c - a) / 1000000000.0);
-        log(d);
-    }
 }
