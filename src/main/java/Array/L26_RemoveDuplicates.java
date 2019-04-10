@@ -4,7 +4,7 @@ import static Utils.Helpers.log;
 
 /*
 * - 题目中说明了 remove 的结果可以是将 remove 掉的元素放在数组尾部，不需要硬删除。
-* - 解法的思路与 L283_MoveZeros, L27_RemoveElement 中的解法一致，只是判断条件不同。
+* - 解法的思路与 L283_MoveZeros, L27_RemoveElement 一致，只是判断条件不同。
 * - 解法时间复杂度为 O(n)，空间复杂度为 O(1)。
 * */
 

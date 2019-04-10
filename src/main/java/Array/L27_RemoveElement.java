@@ -5,7 +5,7 @@ import static Utils.Helpers.swap;
 
 /*
 * - 题目中说明了 remove 的结果可以是将 remove 掉的元素放在数组尾部，不需要硬删除。
-* - 两个解法的思路与 L283_MoveZeros 中的解法一致。
+* - 两个解法的思路与 L283_MoveZeros 一致。
 * - 两个解法时间复杂度为 O(n)，空间复杂度为 O(1)。
 * */
 

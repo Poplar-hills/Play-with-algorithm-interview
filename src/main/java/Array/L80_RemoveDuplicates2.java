@@ -2,6 +2,12 @@ package Array;
 
 import static Utils.Helpers.log;
 
+/*
+* - 对数组去重，使得数组中的每个元素最多保留两个
+* - 解法的思路与 L26_RemoveDuplicates 一致，只是判断条件不同。
+* - 解法时间复杂度为 O(n)，空间复杂度为 O(1)。
+* */
+
 public class L80_RemoveDuplicates2 {
     public static int removeDuplicates(int[] arr) {
         int j = 2;
