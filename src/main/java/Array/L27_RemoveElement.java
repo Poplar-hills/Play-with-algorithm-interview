@@ -11,10 +11,13 @@ import static Utils.Helpers.swap;
 public class L27_RemoveElement {
     public static int removeElement(int[] arr, int val) {  // 解法1：two indexes
         int j = 0;
-        for (int i = 0; i < arr.length; i++)
-            if (arr[i] != val)
-                if (j != i)  // 若没有这个判断，则对 [1,2,3,5,4] 这样的数组来说，若 val == 4，则前面1,2,3,5都会原地赋值一遍，造成浪费
-                    arr[j++] = arr[i];
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != val) {
+                if (j != i)
+                    arr[j] = arr[i];
+                j++;
+            }
+        }
         return j;
     }
 
@@ -31,12 +34,12 @@ public class L27_RemoveElement {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[] {0, 1, 2, 0, 0, 0, 3, 4};
-        log(removeElement(arr1, 0));
+        int[] arr1 = new int[] {0, 1, 2, 2, 3, 0, 4, 2};
+        log(removeElement(arr1, 2));  // expects [0, 1, 3, 0, 4, ...]
         log(arr1);
 
         int[] arr2 = new int[] {0, 1, 2, 0, 0, 0, 3, 4};
-        log(removeElement2(arr2, 0));
+        log(removeElement2(arr2, 0));  // expects [1, 2, 3, 4, ...]
         log(arr2);
     }
 
