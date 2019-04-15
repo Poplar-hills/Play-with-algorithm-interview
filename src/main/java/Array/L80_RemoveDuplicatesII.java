@@ -8,7 +8,7 @@ import static Utils.Helpers.log;
 * - 解法时间复杂度为 O(n)，空间复杂度为 O(1)。
 * */
 
-public class L80_RemoveDuplicates2 {
+public class L80_RemoveDuplicatesII {
     public static int removeDuplicates(int[] arr) {
         int j = 2;
         for (int i = 2; i < arr.length; i++)
