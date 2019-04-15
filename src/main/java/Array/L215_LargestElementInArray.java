@@ -6,6 +6,13 @@ import java.util.Random;
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;
 
+/*
+* Kth Largest Element in an Array
+*
+* - 该问题有多种解法，下面实现两种。
+* - 更多解法 SEE：SortingAdvanced - Exercise_KthSmallestElement（注意是 Smallest 不是本题中的 Largest）
+* */
+
 public class L215_LargestElementInArray {
     /*
     * 解法1：堆排序
