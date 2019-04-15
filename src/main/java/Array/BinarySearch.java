@@ -11,7 +11,7 @@ public class BinarySearch {
         if (l > r) return -1;
         int mid = (r - l) / 2 + l;
         if (e.compareTo(arr[mid]) < 0)
-            return binarySearch(arr, e, 0, mid - 1);
+            return binarySearch(arr, e, l, mid - 1);
         if (e.compareTo(arr[mid]) > 0)
             return binarySearch(arr, e, mid + 1, r);
         return mid;
