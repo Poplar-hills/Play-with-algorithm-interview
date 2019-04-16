@@ -49,6 +49,16 @@ public class L167_TowSumII {
         return null;
     }
 
+    // 再优化一下：
+    public static int[] twoSum3(int[] nums, int target) {
+        int i = 0, j = nums.length - 1;
+        while (nums[i] + nums[j] != target) {
+            if (nums[i] + nums[j] < target) i++;
+            else j--;
+        }
+        return new int[] {i + 1, j + 1};
+    }
+
     public static void main(String[] args) {
         int[] arr1 = new int[] {2, 7, 11, 15};
         int[] arr2 = new int[] {2, 3, 4};  // 注意 target 不能是重复元素相加
@@ -57,7 +67,7 @@ public class L167_TowSumII {
 
         int[] arr3 = new int[] {2, 7, 11, 15};
         int[] arr4 = new int[] {2, 3, 4};
-        log(twoSum2(arr3, 9));       // expects [1, 2]（注意返回的得是索引+1）
-        log(twoSum2(arr4, 6));       // expects [2, 3]
+        log(twoSum3(arr3, 9));       // expects [1, 2]（注意返回的得是索引+1）
+        log(twoSum3(arr4, 6));       // expects [2, 3]
     }
 }
