@@ -59,7 +59,7 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-    * 解法2：窗口滑动
+    * 解法3：窗口滑动
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * - 因为要找的是连续子串，因此可以让两个边界 l 和 r 在数组中从前向后不断滑动，每次滑动一个边界后判断当前子串之和是否 ≥ s。
     * */
@@ -69,13 +69,39 @@ public class L209_MinimumSizeSubarraySum {
 
         int minLen = nums.length + 1;
         int l = 0, r = -1, sum = 0;  // 右边界初始化为-1，使得初始窗口不包含任何元素，这样初始 sum 才能为0
+
         while (l < nums.length) {    // 只要 l 还在数组内就继续滑动（当 r 抵达数组末尾后，l 还得继续滑动直到也抵达末尾后整个滑动过程才算结束）
-            if (sum < s && r < nums.length - 1)
+            if (sum < s && r < nums.length - 1)  // 因为下一句中 r 会先自增再访问数组，因此要小心越界问题
                 sum += nums[++r];
             else                     // 若 sum ≥ s 或 r 已经到头
                 sum -= nums[l++];
             if (sum >= s)
                 minLen = Math.min(r - l + 1, minLen);
+        }
+
+        return minLen == nums.length + 1 ? 0 : minLen;  // 注意若未找到 ≥ s 的子串则返回0
+    }
+
+    /*
+    * 解法4：窗口滑动的另一实现
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * */
+    public static int minSubArrayLen4(int s, int[] nums) {
+        if (s <= 0 || nums == null)
+            throw new IllegalArgumentException("Illegal Arguments");
+
+        int minLen = nums.length + 1;
+        int l = 0, r = -1, sum = 0;
+
+        while (r < nums.length - 1) {  // 与解法3中的不同，因为后面会使用 while 查找，所以这里只要 r 抵达数组末尾后整个滑动过程即结束
+            while (sum < s && r < nums.length - 1)
+                sum += nums[++r];
+            minLen = Math.min(r - l + 1, minLen);
+            while (sum >= s && l < nums.length) {
+                sum -= nums[l++];
+                if (sum >= s)
+                    minLen = Math.min(r - l + 1, minLen);
+            }
         }
 
         return minLen == nums.length + 1 ? 0 : minLen;  // 注意若未找到 ≥ s 的子串则返回0
@@ -91,5 +117,8 @@ public class L209_MinimumSizeSubarraySum {
 
         int[] nums3 = new int[] {2, 3, 1, 2, 4, 3};
         log(minSubArrayLen3(7, nums3));  // expects 2
+
+        int[] nums4 = new int[] {2, 3, 1, 2, 4, 3};
+        log(minSubArrayLen4(7, nums4));  // expects 2
     }
 }
