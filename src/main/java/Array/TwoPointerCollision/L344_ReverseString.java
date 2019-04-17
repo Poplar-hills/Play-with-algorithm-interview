@@ -1,4 +1,4 @@
-package Array;
+package Array.TwoPointerCollision;
 
 import static Utils.Helpers.log;
 

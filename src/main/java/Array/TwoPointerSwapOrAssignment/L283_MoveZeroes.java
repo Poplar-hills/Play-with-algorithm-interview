@@ -1,4 +1,4 @@
-package Array;
+package Array.TwoPointerSwapOrAssignment;
 
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;

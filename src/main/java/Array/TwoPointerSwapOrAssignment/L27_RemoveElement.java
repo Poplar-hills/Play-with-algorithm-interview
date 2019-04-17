@@ -1,9 +1,12 @@
-package Array;
+package Array.TwoPointerSwapOrAssignment;
 
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;
 
 /*
+* Remove Element
+*
+* - 去除数组中的制定元素。
 * - 题目中说明了 remove 的结果可以是将 remove 掉的元素放在数组尾部，不需要硬删除。
 * - 两个解法的思路与 L283_MoveZeros 一致。
 * - 两个解法时间复杂度为 O(n)，空间复杂度为 O(1)。
@@ -35,11 +38,11 @@ public class L27_RemoveElement {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[] {0, 1, 2, 2, 3, 0, 4, 2};
+        int[] arr1 = new int[] {0, 1, 2, 2, 3, 0, 4, 2};  // 去除数组中的所有2
         log(removeElement(arr1, 2));
         log(arr1);  // expects [0, 1, 3, 0, 4, ...]
 
-        int[] arr2 = new int[] {0, 1, 2, 0, 0, 0, 3, 4};
+        int[] arr2 = new int[] {0, 1, 2, 0, 0, 0, 3, 4};  // 去除数组中的所有0
         log(removeElement2(arr2, 0));
         log(arr2);  // expects [1, 2, 3, 4, ...]
     }

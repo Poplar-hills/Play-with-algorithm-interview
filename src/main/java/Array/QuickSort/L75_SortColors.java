@@ -1,4 +1,4 @@
-package Array;
+package Array.QuickSort;
 
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;

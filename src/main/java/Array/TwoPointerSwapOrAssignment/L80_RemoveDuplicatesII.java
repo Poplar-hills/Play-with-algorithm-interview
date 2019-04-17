@@ -1,9 +1,11 @@
-package Array;
+package Array.TwoPointerSwapOrAssignment;
 
 import static Utils.Helpers.log;
 
 /*
-* - 对数组去重，使得数组中的每个元素最多保留两个
+* Remove Duplicates II
+*
+* - 对数组去重，使得数组中的每个元素最多保留两个。
 * - 解法的思路与 L26_RemoveDuplicates 一致，只是判断条件不同。
 * - 解法时间复杂度为 O(n)，空间复杂度为 O(1)。
 * */
@@ -18,7 +20,7 @@ public class L80_RemoveDuplicatesII {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[] {1, 1, 1, 2, 2, 3};
+        int[] arr1 = new int[] {1, 1, 1, 2, 2, 3};  // 对1、2去重，每个重复元素最多保留两个
         log(removeDuplicates(arr1));
         log(arr1);  // expects [1, 1, 2, 2, 3, ...]
     }

@@ -1,4 +1,4 @@
-package Array;
+package Array.MergeSort;
 
 import static Utils.Helpers.log;
 
