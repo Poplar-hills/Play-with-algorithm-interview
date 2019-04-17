@@ -96,7 +96,8 @@ public class L209_MinimumSizeSubarraySum {
         while (r < nums.length - 1) {  // 与解法3中的不同，因为后面会使用 while 查找，所以这里只要 r 抵达数组末尾后整个滑动过程即结束
             while (sum < s && r < nums.length - 1)
                 sum += nums[++r];
-            minLen = Math.min(r - l + 1, minLen);
+            if (sum >= s)
+                minLen = Math.min(r - l + 1, minLen);
             while (sum >= s && l < nums.length) {
                 sum -= nums[l++];
                 if (sum >= s)
