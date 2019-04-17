@@ -58,11 +58,38 @@ public class L209_MinimumSizeSubarraySum {
         return minLen == nums.length + 1 ? 0 : minLen;  // 注意若未找到 ≥ s 的子串则返回0
     }
 
+    /*
+    * 解法2：窗口滑动
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * - 因为要找的是连续子串，因此可以让两个边界 l 和 r 在数组中从前向后不断滑动，每次滑动一个边界后判断当前子串之和是否 ≥ s。
+    * */
+    public static int minSubArrayLen3(int s, int[] nums) {
+        if (s <= 0 || nums == null)
+            throw new IllegalArgumentException("Illegal Arguments");
+
+        int minLen = nums.length + 1;
+        int l = 0, r = -1, sum = 0;  // 右边界初始化为-1，使得初始窗口不包含任何元素，这样初始 sum 才能为0
+        while (l < nums.length) {    // 只要 l 还在数组内就继续滑动（当 r 抵达数组末尾后，l 还得继续滑动直到也抵达末尾后整个滑动过程才算结束）
+            if (sum < s && r < nums.length - 1)
+                sum += nums[++r];
+            else                     // 若 sum ≥ s 或 r 已经到头
+                sum -= nums[l++];
+            if (sum >= s)
+                minLen = Math.min(r - l + 1, minLen);
+        }
+
+        return minLen == nums.length + 1 ? 0 : minLen;  // 注意若未找到 ≥ s 的子串则返回0
+    }
+
+    // 测试
     public static void main(String[] args) {
         int[] nums = new int[] {2, 3, 1, 2, 4, 3};
         log(minSubArrayLen(7, nums));  // expects 2. The subarray [4,3] has the minimal length
 
+        int[] nums2 = new int[] {2, 3, 1, 2, 4, 3};
+        log(minSubArrayLen2(7, nums2));  // expects 2
+
         int[] nums3 = new int[] {2, 3, 1, 2, 4, 3};
-        log(minSubArrayLen2(7, nums3));  // expects 2
+        log(minSubArrayLen3(7, nums3));  // expects 2
     }
 }
