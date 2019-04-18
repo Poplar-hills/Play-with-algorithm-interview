@@ -28,12 +28,12 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         int maxLen = 0;
         int[] freq = new int[128];  // ASCII 含有128个字符，因此开辟128的空间，若题中说明了只是0-9或者只是a-z，则开对应大小的空间即可
 
-        while (r < s.length() - 1) {               // 该题中只要 r 到头滑动过程就可以结束了（因为）
-            if (r < s.length() - 1 && freq[(int) s.charAt(r + 1)] == 0)  // 若窗口中不包含 r+1 处的字符
-                freq[(int) s.charAt(++r)]++;
+        while (r < s.length() - 1) {               // 该题中只要 r 到头滑动过程就可以结束了（不需要 l 到头）
+            if (r < s.length() - 1 && freq[s.charAt(r + 1)] == 0)  // 若窗口中不包含 r+1 处的字符
+                freq[s.charAt(++r)]++;
             else                                   // 若窗口中包含 r+1 处的字符，或 r 已经抵达数组末尾
-                freq[(int) s.charAt(l++)]--;
-            maxLen = Math.max(r - l + 1, maxLen);  // 上面4行保证了当前窗口中没有重复字符，此时比较长度即可
+                freq[s.charAt(l++)]--;
+            maxLen = Math.max(r - l + 1, maxLen);  // 上面保证了当前窗口中没有重复字符，此时比较长度即可
         }
 
         return maxLen;
@@ -49,7 +49,20 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
 
         int l = 0, r = -1;
         int maxLen = 0;
-        return 0;
+        int[] freq = new int[128];
+
+        while (r < s.length() - 1) {
+            while (r < s.length() - 1 && freq[s.charAt(r + 1)] == 0)
+                freq[s.charAt(++r)]++;
+            if (r < s.length() - 1) {
+                freq[s.charAt(++r)]++;  // 此处 r++ 后窗口右边界才有重复元素进入
+                while (l <= r && freq[s.charAt(r)] == 2)  // 窗口左边界向右滑，直到窗口内没有重复元素
+                    freq[s.charAt(l++)] --;
+            }
+            maxLen = Math.max(r - l + 1, maxLen);  // 上面保证了当前窗口中没有重复字符，此时比较长度即可
+        }
+
+        return maxLen;
     }
 
     public static void main(String[] args) {
@@ -58,5 +71,11 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         log(lengthOfLongestSubstring("bbbbba"));    // expects 2 ("ba")
         log(lengthOfLongestSubstring("pwwkew"));    // expects 3 ("wke")
         log(lengthOfLongestSubstring(""));          // expects 0
+
+        log(lengthOfLongestSubstring2("abcabcbb"));  // expects 3 ("abc" or "bca" or "cab")
+        log(lengthOfLongestSubstring2("bbbbb"));     // expects 1 ("b")
+        log(lengthOfLongestSubstring2("bbbbba"));    // expects 2 ("ba")
+        log(lengthOfLongestSubstring2("pwwkew"));    // expects 3 ("wke")
+        log(lengthOfLongestSubstring2(""));          // expects 0
     }
 }
