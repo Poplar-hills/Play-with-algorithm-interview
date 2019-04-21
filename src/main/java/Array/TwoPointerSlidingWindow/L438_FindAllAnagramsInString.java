@@ -17,7 +17,7 @@ public class L438_FindAllAnagramsInString {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;
 
-        int[] freq = new int[128];         // 记录字符的出现频次（不光是 p 中的字符，p 中没有的也会记录，见 "xxyz" 用例）
+        int[] freq = new int[128];         // 记录字符的出现频次（不光是 p 中的字符，p 中没有的也会记录，见 "xxyz" 用例）（也可以用 hash map）
         for (char c : p.toCharArray()) freq[c]++;  // 初始化为 p 中每个字符的出现频次
 
         int l = 0, r = 0, matchCount = 0;  // matchCount 是匹配计数器，用于记录窗口中出现了多少个 p 中的字符
