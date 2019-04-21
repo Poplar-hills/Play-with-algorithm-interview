@@ -31,9 +31,9 @@ public class L76_MinimumWindowSubstring {
 
     public static void main(String[] args) {
         log(minWindow("ABAACBAB", "ABC"));       // expects "ACB"
-//        log(minWindow("ADOBECODEBANC", "ABC"));  // expects "BANC"（可以有多余的字符）
-//        log(minWindow("a", "aa"));               // expects ""
-//        log(minWindow("aa", "aa"));              // expects "aa"
-//        log(minWindow("bba", "ab"));             // expects "ba"
+        log(minWindow("ADOBECODEBANC", "ABC"));  // expects "BANC"（可以有多余的字符）
+        log(minWindow("a", "aa"));               // expects ""
+        log(minWindow("aa", "aa"));              // expects "aa"
+        log(minWindow("bba", "ab"));             // expects "ba"
     }
 }
