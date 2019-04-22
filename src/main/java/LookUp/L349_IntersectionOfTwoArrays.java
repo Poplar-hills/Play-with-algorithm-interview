@@ -46,7 +46,7 @@ public class L349_IntersectionOfTwoArrays {
         Set<Integer> set = new HashSet<>();
         Arrays.sort(nums2);   // 要先排序才能对 nums2 进行二分查找，O(nlogn)
 
-        for (int n : nums1)   // 再进行 n 次 O(logn) 的查找
+        for (int n : nums1)   // 再进行 nums1.length 次 O(log(nums2.length)) 的查找
             if (binarySearch(nums2, 0, nums2.length - 1, n))
                 set.add(n);
 
