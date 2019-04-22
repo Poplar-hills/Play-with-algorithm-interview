@@ -67,8 +67,8 @@ public class L349_IntersectionOfTwoArrays {
     }
 
     public static void main(String[] args) {
-        log(intersection(new int[] {1, 2, 2, 1}, new int[] {2, 2}));
-        log(intersection(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}));
+        log(intersection(new int[] {1, 2, 2, 1}, new int[] {2, 2}));        // expects [2]
+        log(intersection(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}));  // expects [4, 9]
 
         log(intersection2(new int[] {1, 2, 2, 1}, new int[] {2, 2}));
         log(intersection2(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}));
