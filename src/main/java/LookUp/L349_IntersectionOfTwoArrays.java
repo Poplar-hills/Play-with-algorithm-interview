@@ -44,7 +44,7 @@ public class L349_IntersectionOfTwoArrays {
 
     public static int[] intersection3(int[] nums1, int[] nums2) {  // 解法3：二分查找，O(nlogn)
         Set<Integer> set = new HashSet<>();
-        Arrays.sort(nums2);   // 要先排序才能对 nums2 进行二分查找，O(nlogn)
+        Arrays.sort(nums2);   // 要先排序才能对 nums2 进行二分查找，O(nlogn)。若 nums2 本身是有序的，则整个算法复杂度降为 O(logn)
 
         for (int n : nums1)   // 再进行 nums1.length 次 O(log(nums2.length)) 的查找
             if (binarySearch(nums2, 0, nums2.length - 1, n))
