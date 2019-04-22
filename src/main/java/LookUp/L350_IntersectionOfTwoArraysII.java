@@ -9,13 +9,13 @@ import static Utils.Helpers.log;
 * */
 
 public class L350_IntersectionOfTwoArraysII {
-    public static int[] intersect(int[] nums1, int[] nums2) {  // 解法1：使用 map，复杂度 O(n)
+    public static int[] intersect(int[] nums1, int[] nums2) {  // 解法1：使用 map，时间复杂度 O(n)，空间复杂度 O(n)
         Map<Integer, Integer> map = new HashMap<>();
         List<Integer> list = new ArrayList<>();
 
-        for (int n : nums1)
+        for (int n : nums1)  // 时间复杂度 O(n)，空间复杂度 O(n)
             map.put(n, map.getOrDefault(n, 0) + 1);
-        for (int m : nums2) {
+        for (int m : nums2) {  // 时间复杂度 O(n)，空间复杂度 O(n)
             if (map.getOrDefault(m, 0) > 0) {
                 list.add(m);
                 map.put(m, map.get(m) - 1);
@@ -23,7 +23,7 @@ public class L350_IntersectionOfTwoArraysII {
         }
 
         int[] res = new int[list.size()];
-        for (int i = 0; i < res.length; i++)
+        for (int i = 0; i < res.length; i++)  // 时间复杂度 O(n)，空间复杂度 O(n)
             res[i] = list.get(i);
         return res;
     }

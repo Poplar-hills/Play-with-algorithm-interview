@@ -6,22 +6,30 @@ import static Utils.Helpers.log;
 
 /*
  * Intersection of Two Arrays
+ *
+ * - set 底层实现可以有3种：
+ *            普通数组   顺序数组   平衡二分搜索树   哈希表
+ *   - 插入     O(1)      O(n)       O(logn)      O(1)
+ *   - 查找     O(n)      O(logn)    O(logn)      O(1)
+ *   - 删除     O(n)      O(n)       O(logn)      O(1)
+ *
+ *   因此 set 各个操作的最低复杂度是 O(1)。
  * */
 
 public class L349_IntersectionOfTwoArrays {
-    public static int[] intersection(int[] nums1, int[] nums2) {  // 解法1：双 set，O(n)
+    public static int[] intersection(int[] nums1, int[] nums2) {  // 解法1：双 set，时间复杂度 O(n)，空间复杂度 O(n)
         Set<Integer> set = new HashSet<>();
         Set<Integer> common = new HashSet<>();
 
-        for (int n : nums1)
+        for (int n : nums1)  // 时间复杂度 O(n)，空间复杂度 O(n)
             set.add(n);
-        for (int m : nums2)
+        for (int m : nums2)  // 时间复杂度 O(n)，空间复杂度 O(n)
             if (set.contains(m))
                 common.add(m);
 
         int i = 0;
         int[] res = new int[common.size()];
-        for (int n : common) res[i++] = n;
+        for (int n : common) res[i++] = n;  // 时间复杂度 O(n)，空间复杂度 O(n)
         return res;
     }
 
