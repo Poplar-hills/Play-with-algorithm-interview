@@ -1,6 +1,5 @@
 package LookUp;
 
-import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +33,6 @@ public class L350_IntersectionOfTwoArraysII {
 
     public static void main(String[] args) {
         log(intersect(new int[] {1, 2, 2, 1}, new int[] {2, 2}));        // expects [2, 2]
-        log(intersect(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}));  // expects [4, 9]
+        log(intersect(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}));  // expects [4, 9] or [9, 4]
     }
 }
