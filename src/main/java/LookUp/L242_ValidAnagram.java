@@ -14,7 +14,17 @@ import static Utils.Helpers.log;
 * */
 
 public class L242_ValidAnagram {
-    public static boolean isAnagram(String s, String t) {  // 解法1：使用 map，时间复杂度 O(n)，空间复杂度 O(n)
+    public static boolean isAnagram(String s, String t) {  // 解法1：排序，时间复杂度 O(nlogn)，空间复杂度 O(1)
+        if (t.length() != s.length())
+            return false;
+        char[] sArr = s.toCharArray();
+        char[] tArr = t.toCharArray();
+        Arrays.sort(sArr);
+        Arrays.sort(tArr);
+        return Arrays.equals(sArr, tArr);
+    }
+
+    public static boolean isAnagram2(String s, String t) {  // 解法2：使用 map，时间复杂度 O(n)，空间复杂度 O(n)
         if (t.length() != s.length())
             return false;
 
@@ -34,7 +44,7 @@ public class L242_ValidAnagram {
         return map.isEmpty();
     }
 
-    public static boolean isAnagram2(String s, String t) {  // 解法2：使用 map，时间复杂度 O(n)，空间复杂度 O(n)
+    public static boolean isAnagram3(String s, String t) {  // 解法3：使用 map，时间复杂度 O(n)，空间复杂度 O(n)
         if (t.length() != s.length())
             return false;
 
@@ -52,21 +62,26 @@ public class L242_ValidAnagram {
         return true;
     }
 
-    public static boolean isAnagram3(String s, String t) {  // 解法3：排序，时间复杂度 O(nlogn)，空间复杂度 O(1)
+    public static boolean isAnagram4(String s, String t) {  // 解法4：思路与解法3一致，只是使用数组作为字典，时间复杂度 O(n)，空间复杂度 O(len(charset))
         if (t.length() != s.length())
             return false;
-        char[] sArr = s.toCharArray();
-        char[] tArr = t.toCharArray();
-        Arrays.sort(sArr);
-        Arrays.sort(tArr);
-        return Arrays.equals(sArr, tArr);
+
+        int[] freq = new int[128];  // 使用数组比使用 map 开销小很多
+        for (int i = 0; i < s.length(); i++) {
+            freq[s.charAt(i)]++;
+            freq[t.charAt(i)]--;
+        }
+        for (int n : freq)
+            if (n != 0)
+                return false;
+        return true;
     }
 
     public static void main(String[] args) {
-        log(isAnagram("anagram", "nagaram"));  // expects true
-        log(isAnagram("rat", "car"));          // expects false
-        log(isAnagram("abcd", "abc"));         // expects false
-        log(isAnagram("aacc", "ccac"));        // expects false
+        log(isAnagram4("anagram", "nagaram"));  // expects true
+        log(isAnagram4("rat", "car"));          // expects false
+        log(isAnagram4("abcd", "abc"));         // expects false
+        log(isAnagram4("aacc", "ccac"));        // expects false
 
         log(isAnagram2("anagram", "nagaram"));  // expects true
         log(isAnagram2("rat", "car"));          // expects false
