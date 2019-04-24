@@ -1,7 +1,9 @@
 package LookUp;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static Utils.Helpers.log;
 
@@ -17,7 +19,7 @@ import static Utils.Helpers.log;
 
 public class L202_HappyNumber {
     /*
-    * 解法1 - 使用 map
+    * 解法1 - 使用 map，递归
     * */
     public static boolean isHappy(int n) {
         Map<Integer, Integer> map = new HashMap<>();
@@ -41,9 +43,25 @@ public class L202_HappyNumber {
     }
 
     /*
-     * 解法3 - Floyd Cycle detection
+     * 解法2 - 使用 set，非递归
      * */
     public static boolean isHappy2(int n) {
+        Set<Integer> set = new HashSet<>();
+        set.add(n);
+        while (n != 1) {
+            int sum = sumOfDigitSquare(n);
+            if (set.contains(sum)) return false;
+            set.add(sum);
+            n = sum;
+        }
+        return true;
+    }
+
+    /*
+     * 解法3 - Floyd Cycle detection
+     * - 复杂度 O(1)
+     * */
+    public static boolean isHappy3(int n) {
         int slow = n, fast = n;
         do {
             slow = sumOfDigitSquare(slow);
@@ -56,5 +74,6 @@ public class L202_HappyNumber {
     public static void main(String[] args) {
         log(isHappy(19));  // true
         log(isHappy2(19));  // true
+        log(isHappy3(19));  // true
     }
 }
