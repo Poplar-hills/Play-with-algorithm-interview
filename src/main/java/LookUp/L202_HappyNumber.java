@@ -16,6 +16,9 @@ import static Utils.Helpers.log;
 * */
 
 public class L202_HappyNumber {
+    /*
+    * 解法1 - 使用 map
+    * */
     public static boolean isHappy(int n) {
         Map<Integer, Integer> map = new HashMap<>();
         return isHappy(n, map);
@@ -37,7 +40,21 @@ public class L202_HappyNumber {
         return sum;
     }
 
+    /*
+     * 解法3 - Floyd Cycle detection
+     * */
+    public static boolean isHappy2(int n) {
+        int slow = n, fast = n;
+        do {
+            slow = sumOfDigitSquare(slow);
+            fast = sumOfDigitSquare(fast);
+            fast = sumOfDigitSquare(fast);
+        } while (slow != fast);
+        return slow == 1;
+    }
+
     public static void main(String[] args) {
         log(isHappy(19));  // true
+        log(isHappy2(19));  // true
     }
 }
