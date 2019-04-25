@@ -1,4 +1,4 @@
-package LookUp;
+package HashTable;
 
 import java.util.HashMap;
 import java.util.Map;

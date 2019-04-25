@@ -1,4 +1,4 @@
-package LookUp;
+package HashTable;
 
 import static Utils.Helpers.log;
 
