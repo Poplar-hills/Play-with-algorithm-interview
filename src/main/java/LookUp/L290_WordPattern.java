@@ -17,33 +17,27 @@ public class L290_WordPattern {
     * - 时间复杂度 O(n)，空间复杂度 O(n)
     * */
     public static boolean wordPattern(String pattern, String str) {
-        Map<Character, String> charToStr = new HashMap<>();
-        Map<String, Character> strToChar = new HashMap<>();
-        char[] chars = pattern.toCharArray();
-        String[] strs = str.split(" ");
-
-        if (chars.length != strs.length)
+        String[] words = str.split(" ");
+        if (pattern.length() != words.length)
             return false;
 
-        for (int i = 0; i < chars.length; i++) {
-            String s = strs[i];
-            char c = chars[i];
+        Map<Character, String> charToWord = new HashMap<>();
+        Map<String, Character> wordToChar = new HashMap<>();
 
-            if (charToStr.containsKey(c) && !charToStr.get(c).equals(s))
+        for (int i = 0; i < words.length; i++) {
+            String w = words[i];
+            char c = pattern.charAt(i);
+
+            if (charToWord.containsKey(c) && !charToWord.get(c).equals(w))
                 return false;
-            if (strToChar.containsKey(s) && strToChar.get(s) != c)
+            if (wordToChar.containsKey(w) && wordToChar.get(w) != c)
                 return false;
 
-            charToStr.put(c, s);
-            strToChar.put(s, c);
+            charToWord.put(c, w);
+            wordToChar.put(w, c);
         }
 
         return true;
-    }
-
-    public static boolean wordPattern2(String pattern, String str) {
-
-        return false;
     }
 
     public static void main(String[] args) {
@@ -52,6 +46,6 @@ public class L290_WordPattern {
         log(wordPattern("aaaa", "dog cat cat dog"));   // false
         log(wordPattern("aaaa", "dog dog dog dog"));   // true
         log(wordPattern("abba", "dog dog dog dog"));   // false
-        log(wordPattern("jquery", "jquery"));   // false
+        log(wordPattern("jquery", "jquery"));          // false
     }
 }
