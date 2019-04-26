@@ -1,6 +1,9 @@
 package HashTable;
 
+import javafx.util.Pair;
+
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +16,29 @@ import static Utils.Helpers.log;
 * */
 
 public class L1_TwoSum {
+    /*
+    * 解法1：排序后指针对撞
+    * - 思路：若 nums 是有序数组，则通过指针对撞即可求得结果，因此可以先对 nums 排序。但这样引出另一个问题：排序后 nums 的索引会被
+    *        打乱，无法直接使用，因此需要有一种数据结构在排序之前记录下元素和索引的对应关系即可。
+    * - 时间复杂度 O(nlogn)，空间 O(n)。
+    * */
+    public static int[] twoSum(int[] nums, int target) {
+        Pair<Integer, Integer>[] indexedNums = new Pair[nums.length];
+        for (int i = 0; i < nums.length; i++)         // 时间 O(n)，空间 O(n)
+            indexedNums[i] = new Pair<>(i, nums[i]);  // 使用 Pair 记录索引和元素的对应关系
+
+        Arrays.sort(indexedNums, Comparator.comparingInt(Pair::getValue));  // 用自定义比较器进行排序，时间 O(nlogn)
+
+        int l = 0, r = indexedNums.length - 1;
+        while (l < r) {                               // 指针对撞找到和为 target 的两个元素，时间 O(n)
+            Pair<Integer, Integer> lNum = indexedNums[l], rNum = indexedNums[r];
+            if (lNum.getValue() + rNum.getValue() > target) r--;
+            else if (lNum.getValue() + rNum.getValue() < target) l++;
+            else return new int[] {lNum.getKey(), rNum.getKey()};  // 从 indexedNums 中取得这两个元素在 nums 中的索引并返回
+        }
+        return null;
+    }
+
     /*
      * 解法2：查找表
      * - 思路：将 nums 中的所有元素一次性放入 Map 中，之后遍历数组，若 target - nums[i] 存在于 Map 中，则找到了想要的结果。
@@ -35,8 +61,11 @@ public class L1_TwoSum {
         return null;
     }
 
-    public static void main(String[] args) {g
+    public static void main(String[] args) {
+        log(twoSum(new int[] {2, 7, 15, 11}, 9));   // expects [0, 1]
+        log(twoSum(new int[] {2, 7, 15, 7}, 14));   // expects [1, 3]
+
         log(twoSum2(new int[] {2, 7, 15, 11}, 9));   // expects [0, 1]
-        log(twoSum2(new int[] {2, 7, 15, 11}, 18));  // expects [1, 3]
+        log(twoSum2(new int[] {2, 7, 15, 7}, 14));   // expects [1, 3]
     }
 }
