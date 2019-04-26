@@ -12,7 +12,7 @@ import static Utils.Helpers.log;
 
 public class L15_3Sum {
     /*
-    * 解法1：外层遍历，内层指针对撞，结果用 Set 去重
+    * 解法1：先排序，之后外层遍历，内层指针对撞，结果用 Set 去重
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> threeSum(int[] nums) {
@@ -33,7 +33,7 @@ public class L15_3Sum {
     }
 
     /*
-     * 解法2：
+     * 解法2：先排序，之后外层遍历，内层指针对撞，采用手动跳过重复元素来去重
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> threeSum2(int[] nums) {
