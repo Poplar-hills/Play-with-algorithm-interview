@@ -60,7 +60,7 @@ public class L15_3Sum {
     }
 
     public static void main(String[] args) {
-        log(threeSum(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1, 0, 1], [-1, -1, 2]]
-        log(threeSum2(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1, 0, 1], [-1, -1, 2]]
+        log(threeSum(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum2(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
     }
 }
