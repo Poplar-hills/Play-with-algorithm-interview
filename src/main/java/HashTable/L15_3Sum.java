@@ -65,6 +65,7 @@ public class L15_3Sum {
      * 解法3：使用查找表
      * - 思路：先将 3Sum 化简为 2Sum，在用 TwoSum 中的解法2解决。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 同样可以使用 Set 作为去重手段，但效率会低一点。
      * */
     public static List<List<Integer>> threeSum3(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
