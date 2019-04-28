@@ -58,11 +58,35 @@ public class L18_4Sum {
         return res;
     }
 
+    /*
+     * 解法2：Set 去重
+     * - 虽然代码简洁，但性能慢于解法1，因为重复的结果仍然会被添加到 Set 中，然后再通过 Set 去重。
+     * */
+    public static List<List<Integer>> fourSum2(int[] nums, int target) {
+        Set<List<Integer>> res = new HashSet<>();
+        if (nums == null || nums.length < 4) return new ArrayList<>();
+        Arrays.sort(nums);
+
+        for (int i = 0; i < nums.length - 3; i++) {
+            for (int j = i + 1; j < nums.length - 2; j++) {
+                int l = j + 1, r = nums.length - 1;
+                while (l < r) {
+                    int sum = nums[i] + nums[j] + nums[l] + nums[r];
+                    if (sum < target) l++;
+                    else if (sum > target) r--;
+                    else res.add(Arrays.asList(nums[i], nums[j], nums[l++], nums[r--]));
+                }
+            }
+        }
+
+        return new ArrayList<>(res);
+    }
+
     public static void main(String[] args) {
-        log(fourSum(new int[] {1, 0, -1, 0, -2, 2}, 0));
+        log(fourSum2(new int[] {1, 0, -1, 0, -2, 2}, 0));
         // expects [[-1,0,0,1], [-2,-1,1,2], [-2,0,0,2]]
 
-        log(fourSum(new int[] {-1, 0, -5, -2, -2, -4, 0, 1, -2}, -9));
+        log(fourSum2(new int[] {-1, 0, -5, -2, -2, -4, 0, 1, -2}, -9));
         // expects [[-5,-4,-1,1], [-5,-4,0,0], [-5,-2,-2,0], [-4,-2,-2,-1]]
     }
 }
