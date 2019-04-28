@@ -16,6 +16,7 @@ public class L15_3Sum {
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> threeSum(int[] nums) {
+        if (nums == null || nums.length < 3) return new ArrayList<>();
         Set<List<Integer>> res = new HashSet<>();    // Set 可以直接对 List 进行去重
         Arrays.sort(nums);                           // 指针对撞的前提是数组有序，O(nlogn)
 
@@ -38,6 +39,7 @@ public class L15_3Sum {
      * */
     public static List<List<Integer>> threeSum2(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
+        if (nums == null || nums.length < 3) return res;
         Arrays.sort(nums);
 
         for (int i = 0; i < nums.length - 2; i++) {
@@ -57,7 +59,7 @@ public class L15_3Sum {
             while (i < nums.length - 2 && nums[i] == nums[i + 1]) i++;  // 碰到重复元素则 i 继续 ++
         }
         return res;
-    }
+    }g
 
     public static void main(String[] args) {
         log(threeSum(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]

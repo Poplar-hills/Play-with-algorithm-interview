@@ -68,7 +68,7 @@ public class L18_4Sum {
         if (nums == null || nums.length < 4) return new ArrayList<>();
         Arrays.sort(nums);
 
-        for (int i = 0; i < nums.length - 3; i++) {  // 每一次化简都不再需要手动去重，完全依靠 Set 去重g
+        for (int i = 0; i < nums.length - 3; i++) {  // 每一次化简都不再需要手动去重，完全依靠 Set 去重
             for (int j = i + 1; j < nums.length - 2; j++) {
                 int l = j + 1, r = nums.length - 1;
                 while (l < r) {
