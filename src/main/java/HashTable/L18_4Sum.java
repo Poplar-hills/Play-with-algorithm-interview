@@ -29,7 +29,7 @@ import static Utils.Helpers.log;
 
 public class L18_4Sum {
     /*
-    * 解法1：手动去重
+    * 解法1：化简成 2Sum + 指针对撞 + 手动去重
     * - 总结来说就是 1.化简 2.去重
     * */
     public static List<List<Integer>> fourSum(int[] nums, int target) {
@@ -60,7 +60,7 @@ public class L18_4Sum {
     }
 
     /*
-     * 解法2：Set 去重
+     * 解法2：化简成 2Sum + 指针对撞 + Set 去重
      * - 虽然代码简洁，但性能慢于解法1，因为重复的结果仍然会被添加到 Set 中，然后再通过 Set 去重。
      * */
     public static List<List<Integer>> fourSum2(int[] nums, int target) {
@@ -83,11 +83,39 @@ public class L18_4Sum {
         return new ArrayList<>(res);
     }
 
+    /*
+    * 解法3：查找表 + Set
+    * - 思路类似 TwoSum 中的解法2、3Sum 中的解法3。
+    * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
+    * - 代码最简洁，但性能差于前面两种解法，因为重复结果会先存入 Set，再利用 Set 去重，而手动去重不会有这个 g。
+    * */
+    public static List<List<Integer>> fourSum3(int[] nums, int target) {
+        if (nums == null || nums.length < 4) return new ArrayList<>();
+        Set<List<Integer>> res = new HashSet<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        Arrays.sort(nums);
+
+        for (int i = 0; i < nums.length; i++)
+            map.put(nums[i], i);
+
+        for (int i = 0; i < nums.length - 3; i++) {
+            for (int j = i + 1; j < nums.length - 2; j++) {
+                for (int k = j + 1; k < nums.length - 1; k++) {
+                    int complement = target - nums[i] - nums[j] - nums[k];
+                    if (map.containsKey(complement) && map.get(complement) > k)
+                        res.add(Arrays.asList(nums[i], nums[j], nums[k], complement));
+                }
+            }
+        }
+
+        return new ArrayList<>(res);
+    }
+
     public static void main(String[] args) {
-        log(fourSum2(new int[] {1, 0, -1, 0, -2, 2}, 0));
+        log(fourSum3(new int[] {1, 0, -1, 0, -2, 2}, 0));
         // expects [[-1,0,0,1], [-2,-1,1,2], [-2,0,0,2]]
 
-        log(fourSum2(new int[] {-1, 0, -5, -2, -2, -4, 0, 1, -2}, -9));
+        log(fourSum3(new int[] {-1, 0, -5, -2, -2, -4, 0, 1, -2}, -9));
         // expects [[-5,-4,-1,1], [-5,-4,0,0], [-5,-2,-2,0], [-4,-2,-2,-1]]
     }
 }
