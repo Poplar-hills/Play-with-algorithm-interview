@@ -12,18 +12,47 @@ import static Utils.Helpers.log;
 
 public class L15_3Sum {
     /*
-    * 解法1：先排序，之后外层遍历，内层指针对撞，结果用 Set 去重
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法1：通过固定第一个元素将 3Sum 化简为 2Sum 问题，手动去重（跳过重复元素）。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums == null || nums.length < 3) return res;
+        Arrays.sort(nums);
+
+        for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素将问题化简为 2Sum（∵ 要保证后面的 j,k 有元素可用 ∴ 至少要留出2个元素，即 i 的滑动范围是第0个~倒数第3个元素）
+            if (i == 0 || nums[i] != nums[i - 1]) {  // 手动去重（i == 0 时是第一个元素，不可能重复，而后面的元素只要不等于前一个元素即可）
+                int j = i + 1;
+                int k = nums.length - 1;
+                while (j < k) {                      // 内部指针对撞
+                    int sum = nums[i] + nums[j] + nums[k];
+                    if (sum < 0) j++;
+                    else if (sum > 0) k--;
+                    else {
+                        res.add(Arrays.asList(nums[i], nums[j++], nums[k--]));
+                        while (j < k && nums[j] == nums[j - 1]) j++;  // 碰到重复元素则 j 继续 ++
+                        while (j < k && nums[k] == nums[k + 1]) k--;  // 碰到重复元素则 k 继续 --
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    /*
+    * 解法2：通过固定第一个元素将 3Sum 化简为 2Sum 问题，结果用 Set 去重
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * - 通过 Set 去重，代码更简洁，但效率低一些。
+    * */
+    public static List<List<Integer>> threeSum2(int[] nums) {
         if (nums == null || nums.length < 3) return new ArrayList<>();
         Set<List<Integer>> res = new HashSet<>();    // Set 可以直接对 List 进行去重
         Arrays.sort(nums);                           // 指针对撞的前提是数组有序，O(nlogn)
 
-        for (int i = 0; i < nums.length - 2; i++) {  // 外层遍历（∵ 内层的指针 k 已经从最后一个元素开始了 ∴ 这里从倒数第二个开始即可），O(n)
+        for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素，后两个元素在内部指针对撞，O(n)
             int j = i + 1;
             int k = nums.length - 1;
-            while (j < k) {                          // 内层指针对撞，O(n)
+            while (j < k) {                          // 指针对撞，O(n)
                 int sum = nums[i] + nums[j] + nums[k];
                 if (sum > 0) k--;
                 else if (sum < 0) j++;
@@ -34,38 +63,8 @@ public class L15_3Sum {
     }
 
     /*
-     * 解法2：先排序，之后外层遍历，内层指针对撞，采用手动跳过重复元素来去重
+     * 解法3：与 TwoSum 的解法2思路相同，只不过需要先固定2个元素。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-     * */
-    public static List<List<Integer>> threeSum2(int[] nums) {
-        List<List<Integer>> res = new ArrayList<>();
-        if (nums == null || nums.length < 3) return res;
-        Arrays.sort(nums);
-
-        for (int i = 0; i < nums.length - 2; i++) {
-            int j = i + 1;
-            int k = nums.length - 1;
-
-            while (j < k) {
-                int sum = nums[i] + nums[j] + nums[k];
-                if (sum < 0) j++;
-                else if (sum > 0) k--;
-                else {
-                    res.add(Arrays.asList(nums[i], nums[j++], nums[k--]));
-                    while (j < k && nums[j] == nums[j - 1]) j++;  // 碰到重复元素则 j 继续 ++
-                    while (j < k && nums[k] == nums[k + 1]) k--;  // 碰到重复元素则 k 继续 --
-                }
-            }
-            while (i < nums.length - 2 && nums[i] == nums[i + 1]) i++;  // 碰到重复元素则 i 继续 ++
-        }
-        return res;
-    }
-
-    /*
-     * 解法3：使用查找表
-     * - 思路：先将 3Sum 化简为 2Sum，在用 TwoSum 中的解法2解决。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-     * - 同样可以使用 Set 作为去重手段，但效率会低一点。
      * */
     public static List<List<Integer>> threeSum3(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
@@ -90,9 +89,41 @@ public class L15_3Sum {
         return res;
     }
 
+    /*
+    * 解法4：二分查找 + Set 去重
+    * - 在固定前两个元素的情况下，不使用查找表，而是使用二分查找来在找到 complement。
+    * - 时间复杂度 O(n^2 * logn)，空间复杂度 O(1)。
+    * */
+    public static List<List<Integer>> threeSum4(int[] nums) {
+        if (nums == null || nums.length < 3) return new ArrayList<>();
+        Set<List<Integer>> res = new HashSet<>();
+        Arrays.sort(nums);
+
+        for (int i = 0; i < nums.length - 2; i++) {
+            for (int j = i + 1; j < nums.length - 1; j++) {
+                int complement = 0 - nums[i] - nums[j];
+                int k = binarySearch(nums, complement, j + 1, nums.length - 1);
+                if (k != -1) res.add(Arrays.asList(nums[i], nums[j], nums[k]));
+            }
+        }
+
+        return new ArrayList(res);
+    }
+
+    private static int binarySearch(int[] nums, int target, int l, int r) {
+        if (l > r) return -1;
+        int mid = (r - l) / 2 + l;
+        if (target < nums[mid])
+            return binarySearch(nums, target, l, mid - 1);
+        if (target > nums[mid])
+            return binarySearch(nums, target, mid + 1, r);
+        return mid;
+    }
+
     public static void main(String[] args) {
         log(threeSum(new int[] {-1, 0, 1, 2, -1, -4}));    // expects [[-1,0,1], [-1,-1,2]]
         log(threeSum2(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
         log(threeSum3(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum4(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
     }
 }
