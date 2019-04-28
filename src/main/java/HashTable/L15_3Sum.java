@@ -59,10 +59,39 @@ public class L15_3Sum {
             while (i < nums.length - 2 && nums[i] == nums[i + 1]) i++;  // 碰到重复元素则 i 继续 ++
         }
         return res;
-    }g
+    }
+
+    /*
+     * 解法3：使用查找表
+     * - 思路：先将 3Sum 化简为 2Sum，在用 TwoSum 中的解法2解决。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> threeSum3(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums == null || nums.length < 3) return res;
+        Map<Integer, Integer> map = new HashMap<>();
+        Arrays.sort(nums);
+
+        for (int i = 0; i < nums.length; i++)
+            map.put(nums[i], i);
+
+        for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素
+            if (i == 0 || nums[i] != nums[i - 1]) {  // 去重
+                for (int j = i + 1; j < nums.length - 1; j++) {  // 固定第二个元素
+                    if (j == i + 1 || nums[j] != nums[j - 1]) {  // 去重
+                        int complement = 0 - nums[i] - nums[j];  // TwoSum 解法
+                        if (map.containsKey(complement) && map.get(complement) > j)  // 注意这里要通过 > j 去重
+                            res.add(Arrays.asList(nums[i], nums[j], complement));
+                    }
+                }
+            }
+        }
+        return res;
+    }
 
     public static void main(String[] args) {
-        log(threeSum(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum(new int[] {-1, 0, 1, 2, -1, -4}));    // expects [[-1,0,1], [-1,-1,2]]
         log(threeSum2(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum3(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
     }
 }
