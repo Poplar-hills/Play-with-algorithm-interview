@@ -12,7 +12,7 @@ import static Utils.Helpers.log;
 
 public class L15_3Sum {
     /*
-     * 解法1：通过固定第一个元素将 3Sum 化简为 2Sum 问题，手动去重（跳过重复元素）。
+     * 解法1：化简成 2Sum + 指针对撞 + 手动去重
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> threeSum(int[] nums) {
@@ -40,7 +40,7 @@ public class L15_3Sum {
     }
 
     /*
-    * 解法2：通过固定第一个元素将 3Sum 化简为 2Sum 问题，结果用 Set 去重
+    * 解法2：化简成 2Sum + 指针对撞 + Set 去重
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * - 通过 Set 去重，代码更简洁，但效率低一些。
     * */
@@ -49,7 +49,7 @@ public class L15_3Sum {
         Set<List<Integer>> res = new HashSet<>();    // Set 可以直接对 List 进行去重
         Arrays.sort(nums);                           // 指针对撞的前提是数组有序，O(nlogn)
 
-        for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素，后两个元素在内部指针对撞，O(n)
+        for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素将问题化简为 2Sum，之后在内部做指针对撞，O(n)
             int j = i + 1;
             int k = nums.length - 1;
             while (j < k) {                          // 指针对撞，O(n)
@@ -63,8 +63,10 @@ public class L15_3Sum {
     }
 
     /*
-     * 解法3：与 TwoSum 的解法2思路相同，只不过需要先固定2个元素。
+     * 解法3：查找表 + 手动去重
+     * - 思路类似 TwoSum 中的解法2.
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 还可以采用 查找表 + Set 去重的解法，这里不再赘述。
      * */
     public static List<List<Integer>> threeSum3(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
