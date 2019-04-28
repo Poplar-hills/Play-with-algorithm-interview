@@ -30,6 +30,7 @@ import static Utils.Helpers.log;
 public class L18_4Sum {
     /*
     * 解法1：手动去重
+    * - 总结来说就是 1.化简 2.去重
     * */
     public static List<List<Integer>> fourSum(int[] nums, int target) {
         List<List<Integer>> res = new ArrayList<>();
@@ -47,7 +48,7 @@ public class L18_4Sum {
                             else if (sum > target) r--;
                             else {
                                 res.add(Arrays.asList(nums[i], nums[j], nums[l++], nums[r--]));
-                                while (l < r && nums[l] == nums[l - 1]) l++;
+                                while (l < r && nums[l] == nums[l - 1]) l++;  // 去重
                                 while (l < r && nums[r] == nums[r + 1]) r--;
                             }
                         }
@@ -67,7 +68,7 @@ public class L18_4Sum {
         if (nums == null || nums.length < 4) return new ArrayList<>();
         Arrays.sort(nums);
 
-        for (int i = 0; i < nums.length - 3; i++) {
+        for (int i = 0; i < nums.length - 3; i++) {  // 每一次化简都不再需要手动去重，完全依靠 Set 去重g
             for (int j = i + 1; j < nums.length - 2; j++) {
                 int l = j + 1, r = nums.length - 1;
                 while (l < r) {
