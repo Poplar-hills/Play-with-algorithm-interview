@@ -38,6 +38,7 @@ public class L454_4SumII {
      * - 优化：解法1中使用查找表记录 D[i] 的所有可能，如果再进一步，用查找表记录 C[i] + D[j] 的所有可能，则可以优化到 O(n^2)。
      *        又因为 n ≤ 500，因此用一个 Map 记录 500^2 个键值对是完全可以接受的。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n^2)。
+     * - 思考：查找表的核心问题是：我们到底要查找什么？
      * */
     public static int fourSumCount2(int[] A, int[] B, int[] C, int[] D) {
         int count = 0;
@@ -59,12 +60,12 @@ public class L454_4SumII {
         int[] B = new int[] {-2, -1};
         int[] C = new int[] {-1, 2};
         int[] D = new int[] {0, 2};
-        log(fourSumCount(A, B, C, D));  // expects 2 ([1, -2, -1, 2], [2, -1, -1, 0])
+        log(fourSumCount2(A, B, C, D));  // expects 2 ([1, -2, -1, 2], [2, -1, -1, 0])
 
         int[] A2 = new int[] {0, 1, -1};
         int[] B2 = new int[] {-1, 1, 0};
         int[] C2 = new int[] {0, 0, 1};  // 数组包含元素重复的情况
         int[] D2 = new int[] {-1, 1, 1};
-        log(fourSumCount(A2, B2, C2, D2));  // expects 17
+        log(fourSumCount2(A2, B2, C2, D2));  // expects 17
     }
 }
