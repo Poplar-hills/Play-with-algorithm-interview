@@ -21,21 +21,17 @@ public class L454_4SumII {
         int count = 0;
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (int i = 0; i < D.length; i++)
-            map.put(D[i], map.getOrDefault(D[i], 0) + 1);  // 考虑有重复的元素，因此记录要频次
+        for (int d : D)
+            map.put(d, map.getOrDefault(d, 0) + 1);  // 考虑有重复的元素，因此记录要频次
 
-        for (int i = 0; i < A.length; i++) {
-            for (int j = 0; j < B.length; j++) {
-                for (int k = 0; k < C.length; k++) {
-                    int complement = 0 - A[i] - B[j] - C[k];
-                    if (map.containsKey(complement))
-                        count += map.get(complement);  // 加上该元素的出现频次
-                }
-            }
-        }
+        for (int a : A)
+            for (int b : B)
+                for (int c : C)
+                    count += map.getOrDefault(0 - a - b - c, 0);  // 加上该元素的出现频次
 
         return count;
     }
+
     /*
      * 解法2：查找表2
      * - 由于题目中说 n ≤ 500，因此隐含条件是设计一个 O(n^2) 的算法即可满足要求。
@@ -47,17 +43,13 @@ public class L454_4SumII {
         int count = 0;
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (int i = 0; i < C.length; i++)
-            for (int j = 0; j < D.length; j++)
-                map.put(C[i] + D[j], map.getOrDefault(C[i] + D[j], 0) + 1);  // 考虑有重复的情况，因此记录要频次
+        for (int c : C)
+            for (int d : D)
+                map.put(c + d, map.getOrDefault(c + d, 0) + 1);
 
-        for (int i = 0; i < A.length; i++) {
-            for (int j = 0; j < B.length; j++) {
-                int complement = 0 - A[i] - B[j];
-                if (map.containsKey(complement))
-                    count += map.get(complement);
-            }
-        }
+        for (int a : A)
+            for (int b : B)
+                count += map.getOrDefault(0 - a - b, 0);
 
         return count;
     }
@@ -67,12 +59,12 @@ public class L454_4SumII {
         int[] B = new int[] {-2, -1};
         int[] C = new int[] {-1, 2};
         int[] D = new int[] {0, 2};
-        log(fourSumCount2(A, B, C, D));  // expects 2 ([1, -2, -1, 2], [2, -1, -1, 0])
+        log(fourSumCount(A, B, C, D));  // expects 2 ([1, -2, -1, 2], [2, -1, -1, 0])
 
         int[] A2 = new int[] {0, 1, -1};
         int[] B2 = new int[] {-1, 1, 0};
         int[] C2 = new int[] {0, 0, 1};  // 数组包含元素重复的情况
         int[] D2 = new int[] {-1, 1, 1};
-        log(fourSumCount2(A2, B2, C2, D2));  // expects 17
+        log(fourSumCount(A2, B2, C2, D2));  // expects 17
     }
 }
