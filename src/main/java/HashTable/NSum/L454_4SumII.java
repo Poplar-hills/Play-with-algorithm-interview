@@ -1,5 +1,8 @@
 package HashTable.NSum;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static Utils.Helpers.log;
 
 /*
@@ -10,8 +13,28 @@ import static Utils.Helpers.log;
 * */
 
 public class L454_4SumII {
+    /*
+    * 解法1：查找表
+    * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
+    * */
     public static int fourSumCount(int[] A, int[] B, int[] C, int[] D) {
+        int count = 0;
+        Map<Integer, Integer> map = new HashMap<>();
 
+        for (int i = 0; i < D.length; i++)
+            map.put(D[i], map.getOrDefault(D[i], 0) + 1);  // 考虑有重复元素的情况，因此记录要频次
+
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < B.length; j++) {
+                for (int k = 0; k < C.length; k++) {
+                    int complement = 0 - A[i] - B[j] - C[k];
+                    if (map.containsKey(complement))
+                        count += map.get(complement);  // 加上该元素的出现频次
+                }
+            }
+        }
+
+        return count;
     }
 
     public static void main(String[] args) {
@@ -19,6 +42,12 @@ public class L454_4SumII {
         int[] B = new int[] {-2, -1};
         int[] C = new int[] {-1, 2};
         int[] D = new int[] {0, 2};
-        log(fourSumCount(A, B, C, D));  // expects 2
+        log(fourSumCount(A, B, C, D));  // expects 2 ([1, -2, -1, 2], [2, -1, -1, 0])
+
+        int[] A2 = new int[] {0, 1, -1};
+        int[] B2 = new int[] {-1, 1, 0};
+        int[] C2 = new int[] {0, 0, 1};  // 数组包含元素重复的情况
+        int[] D2 = new int[] {-1, 1, 1};
+        log(fourSumCount(A2, B2, C2, D2));  // expects 17
     }
 }
