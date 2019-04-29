@@ -1,4 +1,4 @@
-package HashTable;
+package HashTable.NSum;
 
 import javafx.util.Pair;
 
