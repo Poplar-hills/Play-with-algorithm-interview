@@ -10,10 +10,15 @@ import static Utils.Helpers.log;
 * Valid Anagram
 *
 * - Determine if string t is an anagram of string s.
+* - 思路：找到 anagram 的特点 —— Two strings are anagrams if and only if their character counts are the same.
 * */
 
 public class L242_ValidAnagram {
-    public static boolean isAnagram(String s, String t) {  // 解法1：排序，时间复杂度 O(nlogn)，空间复杂度 O(1)
+    /*
+    * 解法1：排序
+    * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+    * */
+    public static boolean isAnagram(String s, String t) {
         if (t.length() != s.length())
             return false;
         char[] sArr = s.toCharArray();
@@ -23,7 +28,11 @@ public class L242_ValidAnagram {
         return Arrays.equals(sArr, tArr);
     }
 
-    public static boolean isAnagram2(String s, String t) {  // 解法2：使用 map，时间复杂度 O(n)，空间复杂度 O(n)
+    /*
+    * 解法2：使用 map
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static boolean isAnagram2(String s, String t) {
         if (t.length() != s.length())
             return false;
 
@@ -43,7 +52,11 @@ public class L242_ValidAnagram {
         return map.isEmpty();
     }
 
-    public static boolean isAnagram3(String s, String t) {  // 解法3：使用 map，时间复杂度 O(n)，空间复杂度 O(n)
+    /*
+    * 解法3：使用 map
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static boolean isAnagram3(String s, String t) {
         if (t.length() != s.length())
             return false;
 
@@ -61,7 +74,11 @@ public class L242_ValidAnagram {
         return true;
     }
 
-    public static boolean isAnagram4(String s, String t) {  // 解法4：思路与解法3一致，只是使用数组作为字典，时间复杂度 O(n)，空间复杂度 O(len(charset))
+    /*
+    * 解法4：思路与解法3一致，只是使用数组作为字典
+    * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
+    * */
+    public static boolean isAnagram4(String s, String t) {
         if (t.length() != s.length())
             return false;
 
