@@ -44,8 +44,15 @@ public class L447_NumberOfBoomerangs {
 
     /*
     * 解法二：minor optimisation
-    * 1. 等距点的个数统计不再最后进行，而是在遍历过程中完成 —— 每次等距点个数+1，能组成的三元组个数就会在原有基础上翻倍。
-    * 2. 所有枢纽点复用同一个 map，用完后 clear。
+    * 1. 所有枢纽点复用同一个 map，用完后 clear。
+    * 2. 距离计算不开根号（不需要精确值，只要能用于区分等距点组即可）。
+    * 3. 等距点的个数统计不再最后进行，而是在遍历过程中完成 —— 每次等距点个数+1，能组成的三元组个数就会规律性增加：
+    *      等距点个数  三元组个数
+    *         0          0
+    *         1          0 + 0*2 = 0
+    *         2          0 + 1*2 = 2
+    *         3          2 + 2*2 = 6
+    *         4          6 + 3*2 = 12
     * */
     public static int numberOfBoomerangs2(int[][] points) {
         int count = 0;
@@ -54,7 +61,7 @@ public class L447_NumberOfBoomerangs {
         for (int i = 0; i < points.length; i++) {
             for (int j = 0; j < points.length; j++) {
                 if (i != j) {
-                    double dis = distance(points[i], points[j]);
+                    double dis = distance2(points[i], points[j]);
                     int prevNum = map.getOrDefault(dis, 0);
                     count += prevNum * 2;            // 每次等距点个数+1，能组成的三元组个数就会在原有基础上翻倍
                     map.put(dis, prevNum + 1);
@@ -64,6 +71,10 @@ public class L447_NumberOfBoomerangs {
         }
 
         return count;
+    }
+
+    private static double distance2(int[] i, int[] j) {  // 不开根号
+        return Math.pow(i[0] - j[0], 2) + Math.pow(i[1] - j[1], 2);
     }
 
     public static void main(String[] args) {
