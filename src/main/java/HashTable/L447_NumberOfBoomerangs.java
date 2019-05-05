@@ -7,7 +7,7 @@ import static Utils.Helpers.log;
 /*
 * Number of Boomerangs
 *
-* - 平面上有 n 个点，寻找存在多少个由这些点构成的三元组 (i, j, k) 使得 i->j 的距离等于 i->k 的距离，返回这样的三元组的个数。
+* - 平面上有 n 个点，寻找存在多少个由这些点构成的三元组 (p, q, r) 使得 p->q 的距离等于 p->r 的距离，返回这样的三元组的个数。
 *   其中 n ≤ 500，且所有点的坐标在 [-10000, 10000] 之间。
 *
 * - 题中告知坐标范围的目的是不需要考虑整数越界 —— 因为在计算两点距离时有平方和计算，32位的 int 很可能不够造成整型越界，因此需
@@ -23,8 +23,8 @@ import static Utils.Helpers.log;
 public class L447_NumberOfBoomerangs {
     /*
     * 解法1：
-    * - 思路：因为满足条件的三元组是 j <- i -> k 的形状，即 i 是 j, k 之间的枢纽，因此可以将每一个点当做枢纽点，统计所有其他点到
-    *   达该枢纽点的距离，即对于一个点需要记录：到枢纽点的距离 - 等距点个数。之后再对其中点个数大于2的项进行统计，看 n 个等距点能
+    * - 思路：因为满足条件的三元组是 q <- p -> r 的形状，即 p 是 q, r 之间的枢纽，因此可以将每一个点当做枢纽点，统计所有其他点到
+    *   达该枢纽点的距离，即对于一个点需要记录 { 到枢纽点的距离: 点个数 }。之后再对其中点个数大于2的项进行统计，看 n 个等距点能
     *   与1个枢纽点组成几个三元组，这是个典型的排列组合问题了。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
@@ -32,7 +32,7 @@ public class L447_NumberOfBoomerangs {
         int count = 0;
 
         for (int i = 0; i < points.length; i++) {        // 将所有点当做枢纽点进行遍历
-            Map<Double, Integer> map = new HashMap<>();  // 为每个枢纽点建立（距离 - 等距点个数）的记录
+            Map<Double, Integer> map = new HashMap<>();  // 为每个枢纽点建立 { 距离: 点个数 } 的记录
             for (int j = 0; j < points.length; j++) {
                 if (i != j) {
                     double dis = distance(points[i], points[j]);
@@ -47,8 +47,8 @@ public class L447_NumberOfBoomerangs {
         return count;
     }
 
-    private static double distance(int[] i, int[] j) {
-        return Math.sqrt(Math.pow(i[0] - j[0], 2) + Math.pow(i[1] - j[1], 2));
+    private static double distance(int[] p, int[] q) {
+        return Math.sqrt(Math.pow(p[0] - q[0], 2) + Math.pow(p[1] - q[1], 2));
     }
 
     /*
@@ -82,8 +82,8 @@ public class L447_NumberOfBoomerangs {
         return count;
     }
 
-    private static double distance2(int[] i, int[] j) {  // 不开根号
-        return Math.pow(i[0] - j[0], 2) + Math.pow(i[1] - j[1], 2);
+    private static double distance2(int[] p, int[] q) {  // 不开根号
+        return Math.pow(p[0] - q[0], 2) + Math.pow(p[1] - q[1], 2);
     }
 
     public static void main(String[] args) {
