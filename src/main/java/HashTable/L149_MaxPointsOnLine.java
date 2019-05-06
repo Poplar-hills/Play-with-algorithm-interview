@@ -1,7 +1,8 @@
 package HashTable;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static Utils.Helpers.log;
 
@@ -20,42 +21,40 @@ public class L149_MaxPointsOnLine {
         if (points.length <= 0) return 0;
         if (points.length <= 2) return points.length;
         int res = 0;
+
         for (int i = 0; i < points.length; i++) {
-            Map<Double, Integer> map = new HashMap<>();
+            Map<BigDecimal, Integer> map = new HashMap<>();
             int sameXCount = 1;
             int samePointCount = 0;
             for (int j = 0; j < points.length; j++) {
-                if (i != j) {
-                    int[] p = points[i], q = points[j];
-                    if (p[0] == q[0]) {
-                        sameXCount++;
-                        res = Math.max(res, sameXCount);
-                        continue;
-                    }
-                    if (p[0] == q[0] && p[1] == q[1]) {
-                        samePointCount++;
-                        continue;
-                    }
-                    double s = slope(p, q);
-                    map.put(s, map.getOrDefault(s, 1) + 1);
-                    res = Math.max(res, map.get(s) + samePointCount);
+                if (i == j) continue;
+                int[] p = points[i], q = points[j];
+                if (Arrays.equals(p, q))
+                    samePointCount++;
+                if (p[0] == q[0]) {
+                    res = Math.max(res, ++sameXCount);
+                    continue;
                 }
+                BigDecimal s = slope(p, q);
+                map.put(s, map.getOrDefault(s, 1) + 1);
+                res = Math.max(res, map.get(s) + samePointCount);
             }
         }
         return res;
     }
 
-    private static double slope(int[] p, int[] q) {
-        return (double)(q[1] - p[1]) / (double)(q[0] - p[0]);  // equation for calculating the slope: (y2 - y1) / (x2 - x1)
+    private static BigDecimal slope(int[] p, int[] q) {
+        BigDecimal diffY = BigDecimal.valueOf(q[1] - p[1]);
+        BigDecimal diffX = BigDecimal.valueOf(q[0] - p[0]);
+        return diffY.divide(diffX, new MathContext(20));
     }
 
     public static void main(String[] args) {
         int[] p1 = new int[] {1, 1};
         int[] p2 = new int[] {2, 2};
         int[] p3 = new int[] {3, 3};
-        log(maxPoints(new int[][] {p1, p2, p3}));
+        log(maxPoints(new int[][] {p1, p2, p3}));  // expects 3
         /*
-        * expects 3:
         *   ^
         *   |
         *   |        o
@@ -71,9 +70,8 @@ public class L149_MaxPointsOnLine {
         int[] p7 = new int[] {4, 1};
         int[] p8 = new int[] {2, 3};
         int[] p9 = new int[] {1, 4};
-        log(maxPoints(new int[][] {p4, p5, p6, p7, p8, p9}));
+        log(maxPoints(new int[][] {p4, p5, p6, p7, p8, p9}));  // expects 4
         /*
-        * expects 4:
         *   ^
         *   |
         *   |  o
@@ -88,6 +86,16 @@ public class L149_MaxPointsOnLine {
         int[] q2 = new int[] {1, 1};
         int[] q3 = new int[] {2, 2};
         int[] q4 = new int[] {2, 2};
-        log(maxPoints(new int[][] {q1, q2, q3, q4}));  // expects 4.（重复的点也算）
+        log(maxPoints(new int[][] {q1, q2, q3, q4}));  // expects 4.（重复点的情况）
+
+        int[] q5 = new int[] {1, 1};
+        int[] q6 = new int[] {1, 1};
+        int[] q7 = new int[] {1, 1};
+        log(maxPoints(new int[][] {q5, q6, q7}));  // expects 3.（所有都是重复点的情况）
+
+        int[] r1 = new int[] {0, 0};
+        int[] r2 = new int[] {94911151, 94911150};
+        int[] r3 = new int[] {94911152, 94911151};
+        log(maxPoints(new int[][] {r1, r2, r3}));  // expects 2.（大数导致 double 精度不足的情况，需使用 BigDecimal）
     }
 }
