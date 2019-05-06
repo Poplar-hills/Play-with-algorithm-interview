@@ -13,7 +13,7 @@ import static Utils.Helpers.log;
 
 public class L219_ContainsDuplicateII {
     public static boolean containsNearbyDuplicate(int[] nums, int k) {
-        if (nums == null || nums.length < 2 || k == 0)
+        if (nums == null || nums.length < 2 || k <= 0)
             return false;
 
         Map<Integer, Integer> freq = new HashMap<>();
@@ -26,9 +26,10 @@ public class L219_ContainsDuplicateII {
                 return true;
 
         while (r < nums.length) {
-            freq.put(nums[l], freq.get(nums[l]) - 1);
-            freq.put(nums[r], freq.getOrDefault(nums[r], 0) + 1);
-            if (freq.get(nums[r]) > 1) return true;
+            int oldE = nums[l], newE = nums[r];
+            freq.put(oldE, freq.get(oldE) - 1);
+            freq.put(newE, freq.getOrDefault(newE, 0) + 1);
+            if (freq.get(newE) > 1) return true;
             l++; r++;
         }
         return false;
