@@ -47,10 +47,10 @@ public class L219_ContainsDuplicateII {
     /*
      * 解法2：查找表 + 滑动窗口
      * - 思路：使用 Set 既作为查找表（回答有没有的问题用 Set 即可）同时也作为滑动窗口（其中只保存 i - k 范围内的元素）。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n)，空间复杂度 O(k)。
      * */
     public static boolean containsNearbyDuplicate2(int[] nums, int k) {
-        Set<Integer> set = new HashSet<>();
+        Set<Integer> set = new HashSet<>();  // 查找表 & 窗口（最多存 k 个元素）
         for (int i = 0; i < nums.length; i++) {
             if (set.contains(nums[i])) return true;
             set.add(nums[i]);
