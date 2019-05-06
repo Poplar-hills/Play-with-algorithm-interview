@@ -15,8 +15,7 @@ import static Utils.Helpers.log;
 
 public class L219_ContainsDuplicateII {
     /*
-    * 解法1：
-    * - 思路：查找表 + 滑动窗口。
+    * 解法1：查找表 + 滑动窗口
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static boolean containsNearbyDuplicate(int[] nums, int k) {
@@ -46,11 +45,11 @@ public class L219_ContainsDuplicateII {
     }
 
     /*
-     * 解法2：
-     * - 思路：查找表 Map
-     *   - Map 中存储元素 -> 索引的映射。
-     *   - put 方法返回该 key 更新之前的 value，若之前 key 不存在则返回 null。利用这一点，在每次取到新元素时，用 put 存储该元素，
-     *     并查询上次存储该元素的索引，若索引存且与新元素索引之差小于 k，则 return true。
+     * 解法2：查找表 Map
+     * - 思路：
+     *   - 本题的关键点是重复元素的索引要在 k 之内，因此可以使用 Map 存储元素 -> 索引的映射。
+     *   - 再利用 put 方法返回该 key 更新之前的 value，若之前 key 不存在则返回 null。利用这一点，在每次取到新元素时，
+     *     用 put 存储该元素，并查询上次存储该元素的索引，若索引存且与新元素索引之差小于 k，则 return true。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean containsNearbyDuplicate2(int[] nums, int k) {
