@@ -1,5 +1,8 @@
 package HashTable.HashTableAndSlidingWindow;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static Utils.Helpers.log;
 
 /*
@@ -10,12 +13,32 @@ import static Utils.Helpers.log;
 
 public class L219_ContainsDuplicateII {
     public static boolean containsNearbyDuplicate(int[] nums, int k) {
+        if (nums == null || nums.length < 2 || k == 0)
+            return false;
 
+        Map<Integer, Integer> freq = new HashMap<>();
+        int l = 0, r = 0;
+
+        for (; r < nums.length && r - l <= k; r++)
+            freq.put(nums[r], freq.getOrDefault(nums[r], 0) + 1);
+        for (int f : freq.values())
+            if (f > 1)
+                return true;
+
+        while (r < nums.length) {
+            freq.put(nums[l], freq.get(nums[l]) - 1);
+            freq.put(nums[r], freq.getOrDefault(nums[r], 0) + 1);
+            if (freq.get(nums[r]) > 1) return true;
+            l++; r++;
+        }
+        return false;
     }
 
     public static void main(String[] args) {
-        log(containsNearbyDuplicate(new int[] {1, 2, 3, 1}, 3));        // expects true
         log(containsNearbyDuplicate(new int[] {1, 0, 1, 1}, 1));        // expects true
+        log(containsNearbyDuplicate(new int[] {4, 1, 2, 3, 1}, 3));     // expects true
         log(containsNearbyDuplicate(new int[] {1, 2, 3, 1, 2, 3}, 2));  // expects false
+        log(containsNearbyDuplicate(new int[] {1}, 1));                 // expects false
+        log(containsNearbyDuplicate(new int[] {99, 99}, 2));            // expects true
     }
 }
