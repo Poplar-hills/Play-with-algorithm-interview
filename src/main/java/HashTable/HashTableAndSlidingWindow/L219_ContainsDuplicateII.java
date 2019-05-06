@@ -19,19 +19,22 @@ public class L219_ContainsDuplicateII {
         Map<Integer, Integer> freq = new HashMap<>();
         int l = 0, r = 0;
 
-        for (; r < nums.length && r - l <= k; r++)
+        // 先将窗口拉宽到 k 的长度
+        for (; r < nums.length && r - l <= k; r++)  // 注意 r 的限制（SEE test case 4）
             freq.put(nums[r], freq.getOrDefault(nums[r], 0) + 1);
-        for (int f : freq.values())
+        for (int f : freq.values())  // 查看此时窗口内是否有 duplicate
             if (f > 1)
                 return true;
 
+        // 开始让窗口滑动
         while (r < nums.length) {
             int oldE = nums[l], newE = nums[r];
             freq.put(oldE, freq.get(oldE) - 1);
             freq.put(newE, freq.getOrDefault(newE, 0) + 1);
-            if (freq.get(newE) > 1) return true;
+            if (freq.get(newE) > 1) return true;  // 只需检查新进入的元素在窗口内是否有 duplicate 即可
             l++; r++;
         }
+
         return false;
     }
 
