@@ -1,4 +1,4 @@
-package HashTable;
+package HashTable.SetAndMapBasics;
 
 import static Utils.Helpers.log;
 

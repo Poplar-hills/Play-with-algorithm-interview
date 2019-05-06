@@ -1,4 +1,4 @@
-package HashTable.NSum;
+package HashTable.ClassicHashTableProblems;
 
 import javafx.util.Pair;
 

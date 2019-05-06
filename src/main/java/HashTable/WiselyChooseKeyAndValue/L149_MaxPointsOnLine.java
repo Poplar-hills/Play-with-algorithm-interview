@@ -1,4 +1,4 @@
-package HashTable;
+package HashTable.WiselyChooseKeyAndValue;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
