@@ -25,20 +25,20 @@ public class L149_MaxPointsOnLine {
 
         for (int i = 0; i < points.length; i++) {
             Map<BigDecimal, Integer> map = new HashMap<>();
-            int sameXCount = 1;           // 初始值为1
+            int sameXCount = 1;  // 初始值得是1
             int overlapCount = 0;
 
             for (int j = 0; j < points.length; j++) {
                 if (i == j) continue;
                 int[] p = points[i], q = points[j];
-                if (Arrays.equals(p, q))  // 若两点重叠（数组相等用 Arrays.equals 判读）
-                    overlapCount++;
-                if (p[0] == q[0]) {       // 若两点 x 坐标相等，则直线垂直于 x 轴，此时没有斜率，会使求斜率公式分母为零，因此单独处理
-                    res = Math.max(res, ++sameXCount);  // 处理方式是单独记录与当前点有相同 x 坐标的点的个数，并与 res 比较
+                if (Arrays.equals(p, q))  // 两点重叠的情况。如果这里不处理则会在下面的 if 块中直接 continue，跳过斜率计算，导致少算了一个点
+                    overlapCount++;       // 因此要在这里单独记录，并在后面加回到 res 里（因为重叠的点肯定在一条线上）
+                if (p[0] == q[0]) {  // 若两点 x 坐标相等（包括两点重叠的情况）此时直线垂直于 x 轴，没有斜率，斜率公式分母为零会报错，因此单独处理
+                    res = Math.max(res, ++sameXCount);  // 处理方式是用变量单独记录与当前点有相同 x 坐标的点的个数，并与 res 比较
                     continue;
                 }
                 BigDecimal s = slope(p, q);
-                map.put(s, map.getOrDefault(s, 1) + 1);  // 初始值为1
+                map.put(s, map.getOrDefault(s, 1) + 1);  // 初始值得是1
                 res = Math.max(res, map.get(s) + overlapCount);
             }
         }
@@ -52,37 +52,37 @@ public class L149_MaxPointsOnLine {
     }
 
     public static void main(String[] args) {
+        /*
+         *   ^
+         *   |
+         *   |        o
+         *   |     o
+         *   |  o
+         *   +------------->
+         *   0  1  2  3  4
+         * */
         int[] p1 = new int[] {1, 1};
         int[] p2 = new int[] {2, 2};
         int[] p3 = new int[] {3, 3};
-        log(maxPoints(new int[][] {p1, p2, p3}));  // expects 3
-        /*
-        *   ^
-        *   |
-        *   |        o
-        *   |     o
-        *   |  o
-        *   +------------->
-        *   0  1  2  3  4
-        * */
+//        log(maxPoints(new int[][] {p1, p2, p3}));  // expects 3
 
+        /*
+         *   ^
+         *   |
+         *   |  o
+         *   |     o        o
+         *   |        o
+         *   |  o        o
+         *   +------------------->
+         *   0  1  2  3  4  5  6
+         * */
         int[] p4 = new int[] {1, 1};
         int[] p5 = new int[] {3, 2};
         int[] p6 = new int[] {5, 3};
         int[] p7 = new int[] {4, 1};
         int[] p8 = new int[] {2, 3};
         int[] p9 = new int[] {1, 4};
-        log(maxPoints(new int[][] {p4, p5, p6, p7, p8, p9}));  // expects 4
-        /*
-        *   ^
-        *   |
-        *   |  o
-        *   |     o        o
-        *   |        o
-        *   |  o        o
-        *   +------------------->
-        *   0  1  2  3  4  5  6
-        * */
+//        log(maxPoints(new int[][] {p4, p5, p6, p7, p8, p9}));  // expects 4
 
         int[] q1 = new int[] {1, 1};
         int[] q2 = new int[] {1, 1};
