@@ -15,6 +15,8 @@ import static Utils.Helpers.log;
 *   有点的两两组合，并用 Map 记录斜率 -> 点个数的映射。但这种方式还有问题，即存在两条直线斜率 k 相等，但偏移量 b 不等
 *   的情况（y = kx + b），因此不能用一个 Map 统计所有斜率，需要为每个点单独统计，即为每个点创建一个 Map，记录该点与
 *   所有其他点连成的直线的斜率。
+*
+* - 时间复杂度 O(n^2)，空间复杂度 O(n)。
 * */
 
 public class L149_MaxPointsOnLine {

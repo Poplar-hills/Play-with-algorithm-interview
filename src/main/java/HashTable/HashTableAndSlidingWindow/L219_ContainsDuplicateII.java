@@ -12,6 +12,11 @@ import static Utils.Helpers.log;
 * */
 
 public class L219_ContainsDuplicateII {
+    /*
+    * 解法1：
+    * - 思路：查找表 + 滑动窗口。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
     public static boolean containsNearbyDuplicate(int[] nums, int k) {
         if (nums == null || nums.length < 2 || k <= 0)
             return false;
@@ -38,11 +43,29 @@ public class L219_ContainsDuplicateII {
         return false;
     }
 
+    /*
+     * 解法2：
+     * - 思路：查找表（利用 Java 里 Map 的 put 方法）
+     *   - Map 中存储元素 -> 索引的映射。
+     *   - put 方法返回该 key 更新之前的 value，若之前 key 不存在则返回 null。利用这一点，在每次取到新元素时，用 put 存储该元素，
+     *     并查询上次存储该元素的索引，若索引存且与新元素索引之差小于 k，则 return true。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean containsNearbyDuplicate2(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            Integer index = map.put(nums[i], i);
+            if (index != null && i - index <= k)
+                return true;
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
-        log(containsNearbyDuplicate(new int[] {1, 0, 1, 1}, 1));        // expects true
-        log(containsNearbyDuplicate(new int[] {4, 1, 2, 3, 1}, 3));     // expects true
-        log(containsNearbyDuplicate(new int[] {1, 2, 3, 1, 2, 3}, 2));  // expects false
-        log(containsNearbyDuplicate(new int[] {1}, 1));                 // expects false
-        log(containsNearbyDuplicate(new int[] {99, 99}, 2));            // expects true
+        log(containsNearbyDuplicate2(new int[] {1, 0, 1, 1}, 1));        // expects true
+        log(containsNearbyDuplicate2(new int[] {4, 1, 2, 3, 1}, 3));     // expects true
+        log(containsNearbyDuplicate2(new int[] {1, 2, 3, 1, 2, 3}, 2));  // expects false
+        log(containsNearbyDuplicate2(new int[] {1}, 1));                 // expects false
+        log(containsNearbyDuplicate2(new int[] {99, 99}, 2));            // expects true
     }
 }
