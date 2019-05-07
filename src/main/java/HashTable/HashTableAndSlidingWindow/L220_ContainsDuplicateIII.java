@@ -1,7 +1,5 @@
 package HashTable.HashTableAndSlidingWindow;
 
-import java.util.Arrays;
-import java.util.Set;
 import java.util.TreeSet;
 
 import static Utils.Helpers.log;
