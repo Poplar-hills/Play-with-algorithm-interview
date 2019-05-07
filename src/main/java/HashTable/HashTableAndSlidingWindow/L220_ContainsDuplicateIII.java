@@ -33,9 +33,10 @@ public class L220_ContainsDuplicateIII {
         TreeSet<Long> set = new TreeSet<>();  // set 的类型声明必须是 TreeSet 而不能是 Set，否则后面 ceiling 方法取不到（Set 接口上没有 ceiling 方法）
         for (int i = 0; i < nums.length; i++) {
             long next = (long) nums[i];
-            boolean elExistInRangeOfT = (set.ceiling(next) != null && set.ceiling(next) <= next + (long) t) ||
-                    (set.floor(next) != null && set.floor(next) >= next - (long) t);
-            if (elExistInRangeOfT) return true;
+            Long ceiling = set.ceiling(next), floor = set.floor(next);
+            boolean containsAlmostDuplicate = (ceiling != null && ceiling <= next + (long) t) ||
+                    (floor != null && floor >= next - (long) t);
+            if (containsAlmostDuplicate) return true;
             set.add(next);
             if (set.size() == k + 1)
                 set.remove((long) nums[i - k]);  // 注意这里也要转换成 long
