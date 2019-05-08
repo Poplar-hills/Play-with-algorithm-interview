@@ -38,10 +38,10 @@ public class L206_ReverseLinkedList {
      * */
     public static ListNode reverseList2(ListNode head) {
         if (head == null || head.next == null) return head;
-        ListNode rhead = reverseList2(head.next);
-        head.next.next = head;
-        head.next = null;
-        return rhead;
+        ListNode newHead = reverseList2(head.next);  // 这一句是递归的关键，要求 head 的 reverse，先求 head.next 的 reverse
+        head.next.next = head;  // 把 head 节点放在了尾部
+        head.next = null;       // 将尾部 head 节点前面的节点置为 null（这样完成递归后第一个节点就是 null 了，其他节点值会被上一句覆盖）
+        return newHead;
     }
 
     // 辅助工具方法
