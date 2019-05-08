@@ -31,7 +31,20 @@ public class L206_ReverseLinkedList {
         }
         return prev;
     }
-    
+
+    /*
+     * 解法2：递归
+     * - 时间复杂度 O(n)，空间复杂度 O(n)
+     * */
+    public static ListNode reverseList2(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode rhead = reverseList2(head.next);
+        head.next.next = head;
+        head.next = null;
+        return rhead;
+    }
+
+    // 辅助工具方法
     public static void printLinkedList(ListNode head) {
         StringBuilder s = new StringBuilder();
         while (head != null) {
@@ -55,6 +68,6 @@ public class L206_ReverseLinkedList {
         n4.next = n5;
         printLinkedList(head);  // 1->2->3->4->5->NULL
 
-        printLinkedList(reverseList(head));  // expects 5->4->3->2->1->NULL
+        printLinkedList(reverseList2(head));   // expects 5->4->3->2->1->NULL
     }
 }
