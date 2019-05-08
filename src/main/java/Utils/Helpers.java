@@ -1,5 +1,7 @@
 package Utils;
 
+import LinkedList.L206_ReverseLinkedList;
+
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -87,5 +89,22 @@ public class Helpers {
                 return false;
         }
         return true;
+    }
+
+    public static class ListNode {  // The node class for linked list. Have to make the attributes and the method public
+        public int val;
+        public ListNode next;
+        public ListNode(int x) { val = x; }
+    }
+
+    public static void printLinkedList(ListNode head) {
+        StringBuilder s = new StringBuilder();
+        while (head != null) {
+            s.append(head.val);
+            s.append("->");
+            head = head.next;
+        }
+        s.append("NULL");
+        log(s.toString());
     }
 }

@@ -1,20 +1,12 @@
 package LinkedList;
 
+import static Utils.Helpers.*;
+
 /*
 * Reverse Linked List
-*
-* -
 * */
 
-import static Utils.Helpers.log;
-
 public class L206_ReverseLinkedList {
-    public static class ListNode {
-        int val;
-        ListNode next;
-        ListNode(int x) { val = x; }
-    }
-
     /*
     * 解法1：遍历
     * - 时间复杂度 O(n)，空间复杂度 O(1)
@@ -42,18 +34,6 @@ public class L206_ReverseLinkedList {
         head.next.next = head;  // 把 head 节点放在了尾部
         head.next = null;       // 将尾部 head 节点前面的节点置为 null（这样完成递归后第一个节点就是 null 了，其他节点值会被上一句覆盖）
         return newHead;
-    }
-
-    // 辅助工具方法
-    public static void printLinkedList(ListNode head) {
-        StringBuilder s = new StringBuilder();
-        while (head != null) {
-            s.append(head.val);
-            s.append("->");
-            head = head.next;
-        }
-        s.append("NULL");
-        log(s.toString());
     }
 
     public static void main(String[] args) {
