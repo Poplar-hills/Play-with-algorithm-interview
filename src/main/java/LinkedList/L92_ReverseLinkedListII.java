@@ -92,6 +92,7 @@ public class L92_ReverseLinkedListII {
     *   - 因为反向两个节点之间的链接这个过程只需这两个节点参与，因此程序的大体结构是在 for 中不断获取前后两个节点，对他们进行反向或不反向。
     *   - 在进行步骤2时，需要能够在遍历结束后还能获取到 m-1 节点、m 节点、n 节点、n+1 节点，因此需要定义变量维护他们的引用。
     *   - 注意特殊情况的处理：test case 2、3。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static ListNode reverseBetween2(ListNode head, int m, int n) {
         if (head == null) return null;
@@ -121,6 +122,7 @@ public class L92_ReverseLinkedListII {
 
     /*
     * 解法3：与解法2思路完全一致，实现上稍有不同
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static ListNode reverseBetween3(ListNode head, int m, int n) {
         if (head == null) return null;
