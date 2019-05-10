@@ -80,32 +80,41 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-    * 解法2：不交换节点中的值，而是
-    * -
+    * 解法2：不交换节点中的值，而是改变节点间的链接
+    * - 思路：改变节点间的链接并不意味着要交换两个节点，而是可以：
+    *   1. 先将 [m, n] 范围内的节点之间的链接反向；
+    *   2. 再 fix 反向后的节点与 m 之前、n 之后的节点的链接。
+    *   具体来说，例如 7 -> 9 -> 2 -> 10 -> 1 -> 8 -> 6, m=2, n=5，则：
+    *   1. 先将9和8之间的链接反向：7 -> 9 <-> 2 <- 10 <- 1 <- 8   6，注意：
+    *     - 因为 8.next 指向了1，因此8于6之间的链接断开了。
+    *     - 对两个节点 a -> b 间的链接进行反向会断开 b 与后面节点间的链接，但因为9是范围内第一个节点，因此9指向2的链接没有断开。
+    *   2. 再 fix 反向后的节点与前后节点的链接：把8链接到7后面、把6链接到9后面。
+    *   - 因为反向两个节点之间的链接这个过程只需这两个节点参与，因此程序的大体结构是在 for 中不断获取前后两个节点，对他们进行反向或不反向。
+    *   - 在进行步骤2时，需要能够在遍历结束后还能获取到 m-1 节点、m 节点、n 节点、n+1 节点，因此需要定义变量维护他们的引用。
+    *   - 注意特殊情况的处理：test case 2、3。
     * */
     public static ListNode reverseBetween2(ListNode head, int m, int n) {
-        if (head == null) return head;
-
+        if (head == null) return null;
         ListNode prev = null, curr = head;
-        ListNode conn = head, tail = head;
+        ListNode conn = head, tail = head;  // 用于保存 m-1 节点、m 节点的引用
 
         for (int i = 1; i <= n; i++) {
             if (i == m) {
                 conn = prev;
                 tail = curr;
             }
-            if (i >= m + 1 && i <= n) {
-                ListNode third = curr.next;
+            if (i >= m + 1 && i <= n) {  // 在有效范围内对前后两个节点间的链接进行反向
+                ListNode third = curr.next;  // 先保存再后面一个节点的引用
                 curr.next = prev;
                 prev = curr;
                 curr = third;
-            } else {
+            } else {                     // 在有效范围外只移动指针
                 prev = curr;
                 curr = curr.next;
             }
         }
-        tail.next = curr;
-        if (conn != null) conn.next = prev;
+        tail.next = curr;                // 进行上面说的步骤2
+        if (conn != null) conn.next = prev;  // 在 test case2中 conn 会是 null，需要特殊处理
         else head = prev;
         return head;
     }
@@ -124,7 +133,7 @@ public class L92_ReverseLinkedListII {
         a5.next = null;
         printLinkedList(a1);  // 1->2->3->4->5->NULL
         printLinkedList(reverseBetween2(a1, 2, 4));
-
+//        // 解法1的测试
 //        ListNode reversed = new solution1().reverseBetween(n1, 2, 4);
 //        printLinkedList(reversed);  // 1->4->3->2->5->NULL
 
