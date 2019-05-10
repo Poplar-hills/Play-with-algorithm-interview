@@ -80,13 +80,15 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-    * 解法2：
+    * 解法2：不交换节点中的值，而是
     * -
     * */
     public static ListNode reverseBetween2(ListNode head, int m, int n) {
-        if (head == null || head.next == null || m >= n) return head;
+        if (head == null) return head;
+
         ListNode prev = null, curr = head;
         ListNode conn = head, tail = head;
+
         for (int i = 1; i <= n; i++) {
             if (i == m) {
                 conn = prev;
@@ -102,29 +104,42 @@ public class L92_ReverseLinkedListII {
                 curr = curr.next;
             }
         }
-        conn.next = prev;
         tail.next = curr;
+        if (conn != null) conn.next = prev;
+        else head = prev;
         return head;
     }
 
     public static void main(String[] args) {
-        ListNode head = new ListNode(1);
-        ListNode n2 = new ListNode(2);
-        ListNode n3 = new ListNode(3);
-        ListNode n4 = new ListNode(4);
-        ListNode n5 = new ListNode(5);
-        head.next = n2;
-        n2.next = n3;
-        n3.next = n4;
-        n4.next = n5;
-        printLinkedList(head);  // 1->2->3->4->5->NULL
+        // test case 1
+        ListNode a1 = new ListNode(1);
+        ListNode a2 = new ListNode(2);
+        ListNode a3 = new ListNode(3);
+        ListNode a4 = new ListNode(4);
+        ListNode a5 = new ListNode(5);
+        a1.next = a2;
+        a2.next = a3;
+        a3.next = a4;
+        a4.next = a5;
+        a5.next = null;
+        printLinkedList(a1);  // 1->2->3->4->5->NULL
+        printLinkedList(reverseBetween2(a1, 2, 4));
 
-//        ListNode reversed = new solution1().reverseBetween(head, 2, 4);
+//        ListNode reversed = new solution1().reverseBetween(n1, 2, 4);
 //        printLinkedList(reversed);  // 1->4->3->2->5->NULL
 
-        printLinkedList(reverseBetween2(head, 2, 4));
+        // test case 2
+        ListNode b1 = new ListNode(3);
+        ListNode b2 = new ListNode(5);
+        b1.next = b2;
+        b2.next = null;
+        printLinkedList(b1);  // 3->5->NULL
+        printLinkedList(reverseBetween2(b1, 1, 2));  // expects 5->3->NULL
 
-        ListNode head2 = new ListNode(5);
-
+        // test case 3
+        ListNode c1 = new ListNode(5);
+        c1.next = null;
+        printLinkedList(c1);  // 5->NULL
+        printLinkedList(reverseBetween2(c1, 1, 1));  // expects 5->NULL
     }
 }
