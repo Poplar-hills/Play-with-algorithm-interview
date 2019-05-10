@@ -149,34 +149,21 @@ public class L92_ReverseLinkedListII {
 
     public static void main(String[] args) {
         // test case 1
-        ListNode a1 = new ListNode(1);
-        ListNode a2 = new ListNode(2);
-        ListNode a3 = new ListNode(3);
-        ListNode a4 = new ListNode(4);
-        ListNode a5 = new ListNode(5);
-        a1.next = a2;
-        a2.next = a3;
-        a3.next = a4;
-        a4.next = a5;
-        a5.next = null;
-        printLinkedList(a1);  // 1->2->3->4->5->NULL
-        printLinkedList(reverseBetween3(a1, 2, 4));
+        ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        printLinkedList(l1);                                // 1->2->3->4->5->NULL
+        printLinkedList(reverseBetween3(l1, 2, 4));  // 1->4->3->2->5->NULL
 //        // 解法1的测试
 //        ListNode reversed = new solution1().reverseBetween(n1, 2, 4);
-//        printLinkedList(reversed);  // 1->4->3->2->5->NULL
+//        printLinkedList(reversed);
 
         // test case 2
-        ListNode b1 = new ListNode(3);
-        ListNode b2 = new ListNode(5);
-        b1.next = b2;
-        b2.next = null;
-        printLinkedList(b1);  // 3->5->NULL
-        printLinkedList(reverseBetween3(b1, 1, 2));  // expects 5->3->NULL
+        ListNode l2 = createLinkedListFromArray(new int[]{3, 5});
+        printLinkedList(l2);                                // 3->5->NULL
+        printLinkedList(reverseBetween3(l2, 1, 2));  // expects 5->3->NULL
 
         // test case 3
-        ListNode c1 = new ListNode(5);
-        c1.next = null;
-        printLinkedList(c1);  // 5->NULL
-        printLinkedList(reverseBetween3(c1, 1, 1));  // expects 5->NULL
+        ListNode l3 = createLinkedListFromArray(new int[]{5});
+        printLinkedList(l3);                                // 5->NULL
+        printLinkedList(reverseBetween3(l3, 1, 1));  // expects 5->NULL
     }
 }

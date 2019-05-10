@@ -95,6 +95,17 @@ public class Helpers {
         public int val;
         public ListNode next;
         public ListNode(int x) { val = x; }
+        public ListNode() { }
+    }
+
+    public static ListNode createLinkedListFromArray(int[] arr) {
+        ListNode dummyHead = new ListNode();
+        ListNode curr = dummyHead;
+        for (int n : arr) {
+            curr.next = new ListNode(n);
+            curr = curr.next;
+        }
+        return dummyHead.next;
     }
 
     public static void printLinkedList(ListNode head) {

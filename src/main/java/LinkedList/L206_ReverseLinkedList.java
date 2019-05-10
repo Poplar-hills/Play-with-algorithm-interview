@@ -8,13 +8,12 @@ import static Utils.Helpers.*;
 
 public class L206_ReverseLinkedList {
     /*
-    * 解法1：遍历
+    * 解法1：遍历过程中不断将两个节点间的链接反向
     * - 时间复杂度 O(n)，空间复杂度 O(1)
     * */
     public static ListNode reverseList(ListNode head) {
         if (head == null) return null;
-        ListNode prev = null;
-        ListNode curr = head;
+        ListNode prev = null, curr = head;
         while (curr != null) {
             ListNode next = curr.next;
             curr.next = prev;
@@ -37,17 +36,8 @@ public class L206_ReverseLinkedList {
     }
 
     public static void main(String[] args) {
-        ListNode head = new ListNode(1);
-        ListNode n2 = new ListNode(2);
-        ListNode n3 = new ListNode(3);
-        ListNode n4 = new ListNode(4);
-        ListNode n5 = new ListNode(5);
-        head.next = n2;
-        n2.next = n3;
-        n3.next = n4;
-        n4.next = n5;
-        printLinkedList(head);  // 1->2->3->4->5->NULL
-
-        printLinkedList(reverseList2(head));   // expects 5->4->3->2->1->NULL
+        ListNode l = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        printLinkedList(l);                 // 1->2->3->4->5->NULL
+        printLinkedList(reverseList2(l));   // expects 5->4->3->2->1->NULL
     }
 }
