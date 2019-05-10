@@ -103,19 +103,47 @@ public class L92_ReverseLinkedListII {
                 conn = prev;
                 tail = curr;
             }
-            if (i >= m + 1 && i <= n) {  // 在有效范围内对前后两个节点间的链接进行反向
+            if (i >= m + 1 && i <= n) {      // 在有效范围内对前后两个节点间的链接进行反向
                 ListNode third = curr.next;  // 先保存再后面一个节点的引用
                 curr.next = prev;
                 prev = curr;
                 curr = third;
-            } else {                     // 在有效范围外只移动指针
+            } else {                         // 在有效范围外只移动指针
                 prev = curr;
                 curr = curr.next;
             }
         }
-        tail.next = curr;                // 进行上面说的步骤2
-        if (conn != null) conn.next = prev;  // 在 test case2中 conn 会是 null，需要特殊处理
+        if (conn != null) conn.next = prev;  // 进行上面说的步骤2（在 test case2中 conn 会是 null，需要特殊处理）
         else head = prev;
+        tail.next = curr;
+        return head;
+    }
+
+    /*
+    * 解法3：与解法2思路完全一致，实现上稍有不同
+    * */
+    public static ListNode reverseBetween3(ListNode head, int m, int n) {
+        if (head == null) return null;
+
+        ListNode prev = null, curr = head;
+        while (m > 1) {  // 先让 prev、curr 分别移动到 m-1、m 位置
+            prev = curr;
+            curr = curr.next;
+            m--;
+            n--;
+        }
+
+        ListNode conn = prev, tail = curr;
+        while (n > 0) {  // 再开始反向节点间的链接
+            ListNode third = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = third;
+            n--;
+        }
+        if (conn != null) conn.next = prev;
+        else head = prev;
+        tail.next = curr;
         return head;
     }
 
@@ -132,7 +160,7 @@ public class L92_ReverseLinkedListII {
         a4.next = a5;
         a5.next = null;
         printLinkedList(a1);  // 1->2->3->4->5->NULL
-        printLinkedList(reverseBetween2(a1, 2, 4));
+        printLinkedList(reverseBetween3(a1, 2, 4));
 //        // 解法1的测试
 //        ListNode reversed = new solution1().reverseBetween(n1, 2, 4);
 //        printLinkedList(reversed);  // 1->4->3->2->5->NULL
@@ -143,12 +171,12 @@ public class L92_ReverseLinkedListII {
         b1.next = b2;
         b2.next = null;
         printLinkedList(b1);  // 3->5->NULL
-        printLinkedList(reverseBetween2(b1, 1, 2));  // expects 5->3->NULL
+        printLinkedList(reverseBetween3(b1, 1, 2));  // expects 5->3->NULL
 
         // test case 3
         ListNode c1 = new ListNode(5);
         c1.next = null;
         printLinkedList(c1);  // 5->NULL
-        printLinkedList(reverseBetween2(c1, 1, 1));  // expects 5->NULL
+        printLinkedList(reverseBetween3(c1, 1, 1));  // expects 5->NULL
     }
 }
