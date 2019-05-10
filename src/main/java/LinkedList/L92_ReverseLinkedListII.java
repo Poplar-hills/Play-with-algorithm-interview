@@ -5,8 +5,9 @@ import static Utils.Helpers.*;
 /*
 * Reverse Linked List II
 *
-* - Reverse a linked list from position m to n. Do it in one-pass. Note 1 ≤ m ≤ n ≤ length of list.
-*   注意 m 和 n 是从1开始的。
+* - Reverse a linked list from position m to n. Note:
+*   - 1 ≤ m ≤ n ≤ length of list（m 和 n 是从1开始的）
+*   - Do it in one-pass（要求在一次遍历内完成）
 * */
 
 public class L92_ReverseLinkedListII {
@@ -15,25 +16,25 @@ public class L92_ReverseLinkedListII {
     * - 大体思路对，但是最后因为无法从下一个节点回到上一个节点而最终失败。
     * - 虽然错误，但有助于理解解法1。
     * */
-//    public ListNode reverseBetween0(ListNode head, int m, int n) {
-//        ListNode left = head, right = head;
-//
-//        for (int i = 1; i < n; i++) {  // 先让两个指针各自走到 m, n 上
-//            right = right.next;
-//            if (i < m) left = left.next;
-//        }
-//
-//        while (left != right && right.next != left) {  // 开始指针对撞
-//            int temp = left.val;
-//            left.val = right.val;
-//            right.val = temp;
-//
-//            left = left.next;
-////            right = right.prev;  // 若是双向链表，节点上有 prev 属性，能回到上一个节点，则此解法就可以工作了
-//        }
-//
-//        return head;
-//    }
+    public ListNode reverseBetween0(ListNode head, int m, int n) {
+        ListNode left = head, right = head;
+
+        for (int i = 1; i < n; i++) {  // 先让两个指针各自走到 m, n 上
+            right = right.next;
+            if (i < m) left = left.next;
+        }
+
+        while (left != right && right.next != left) {  // 开始指针对撞
+            int temp = left.val;
+            left.val = right.val;
+            right.val = temp;
+
+            left = left.next;
+//            right = right.prev;  // 若是双向链表，节点上有 prev 属性，能回到上一个节点，则此解法就可以工作了
+        }
+
+        return head;
+    }
 
     /*
     * 解法1：递归指针对撞 + 交换节点值
@@ -78,6 +79,33 @@ public class L92_ReverseLinkedListII {
         }
     }
 
+    /*
+    * 解法2：
+    * -
+    * */
+    public static ListNode reverseBetween2(ListNode head, int m, int n) {
+        if (head == null || head.next == null || m >= n) return head;
+        ListNode prev = null, curr = head;
+        ListNode conn = head, tail = head;
+        for (int i = 1; i <= n; i++) {
+            if (i == m) {
+                conn = prev;
+                tail = curr;
+            }
+            if (i >= m + 1 && i <= n) {
+                ListNode third = curr.next;
+                curr.next = prev;
+                prev = curr;
+                curr = third;
+            } else {
+                prev = curr;
+                curr = curr.next;
+            }
+        }
+        conn.next = prev;
+        tail.next = curr;
+        return head;
+    }
 
     public static void main(String[] args) {
         ListNode head = new ListNode(1);
@@ -91,8 +119,12 @@ public class L92_ReverseLinkedListII {
         n4.next = n5;
         printLinkedList(head);  // 1->2->3->4->5->NULL
 
-        ListNode reversed = new solution1().reverseBetween(head, 2, 4);
-        printLinkedList(reversed);  // 1->4->3->2->5->NULL
+//        ListNode reversed = new solution1().reverseBetween(head, 2, 4);
+//        printLinkedList(reversed);  // 1->4->3->2->5->NULL
+
+        printLinkedList(reverseBetween2(head, 2, 4));
+
+        ListNode head2 = new ListNode(5);
 
     }
 }
