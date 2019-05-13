@@ -150,22 +150,16 @@ public class L92_ReverseLinkedListII {
     }
 
     public static void main(String[] args) {
-        // test case 1
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(l1);                                // 1->2->3->4->5->NULL
         printLinkedList(reverseBetween3(l1, 2, 4));  // 1->4->3->2->5->NULL
 //        // 解法1的测试
 //        ListNode reversed = new solution1().reverseBetween(n1, 2, 4);
 //        printLinkedList(reversed);
 
-        // test case 2
         ListNode l2 = createLinkedListFromArray(new int[]{3, 5});
-        printLinkedList(l2);                                // 3->5->NULL
         printLinkedList(reverseBetween3(l2, 1, 2));  // expects 5->3->NULL
 
-        // test case 3
         ListNode l3 = createLinkedListFromArray(new int[]{5});
-        printLinkedList(l3);                                // 5->NULL
         printLinkedList(reverseBetween3(l3, 1, 1));  // expects 5->NULL
     }
 }
