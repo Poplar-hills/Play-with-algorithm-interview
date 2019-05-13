@@ -12,13 +12,55 @@ import static Utils.Helpers.*;
 * */
 
 public class L328_OddEvenLinkedList {
+    /*
+     * 解法1：思路同 L86 的解法1
+     * */
     public static ListNode oddEvenList(ListNode head) {
+        ListNode dummyHead = new ListNode();
+        dummyHead.next = head;
+
+        ListNode joint = dummyHead, curr = head;
+        int i = 1;
+        while (curr != null && i % 2 != 0) {
+            joint = curr;
+            curr = curr.next;
+            i++;
+        }
+
+        ListNode prev = joint;
+        while (curr != null) {
+            if (i % 2 != 0) {
+                ListNode temp = curr.next;
+                joint = insertNode(curr, joint);
+                prev.next = temp;
+                curr = temp;
+            } else {
+                prev = curr;
+                curr = curr.next;
+            }
+            i++;
+        }
+
+        return dummyHead.next;
+    }
+
+    private static ListNode insertNode(ListNode node, ListNode prev) {
+        ListNode third = prev.next;
+        prev.next = node;
+        node.next = third;
+        return node;
+    }
+
+    /*
+    * 解法2：思路同 L86 的解法2
+    * */
+    public static ListNode oddEvenList2(ListNode head) {
         ListNode odd = new ListNode(), oddHead = odd;
         ListNode even = new ListNode(), evenHead = even;
         ListNode curr = head;
 
-        for (int i = 0; curr != null; i++, curr = curr.next) {
-            if (i % 2 == 0) {
+        for (int i = 1; curr != null; i++, curr = curr.next) {
+            if (i % 2 != 0) {
                 odd.next = curr;
                 odd = odd.next;
             } else {
