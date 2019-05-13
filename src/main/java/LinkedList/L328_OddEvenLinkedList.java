@@ -7,12 +7,29 @@ import static Utils.Helpers.*;
 /*
 * Odd Even Linked List
 *
-* -
+* - Given a singly linked list, group all odd-index nodes together followed by the even-index nodes.
+*   注意索引从1开始（即第一个元素的索引为1）。
 * */
 
 public class L328_OddEvenLinkedList {
     public static ListNode oddEvenList(ListNode head) {
-        return head;
+        ListNode odd = new ListNode(), oddHead = odd;
+        ListNode even = new ListNode(), evenHead = even;
+        ListNode curr = head;
+
+        for (int i = 0; curr != null; i++, curr = curr.next) {
+            if (i % 2 == 0) {
+                odd.next = curr;
+                odd = odd.next;
+            } else {
+                even.next = curr;
+                even = even.next;
+            }
+        }
+
+        even.next = null;
+        odd.next = evenHead.next;
+        return oddHead.next;
     }
 
     public static void main(String[] args) {
