@@ -44,11 +44,11 @@ public class L86_PartitionList {
         return dummyhead.next;
     }
 
-    private static ListNode insertNode(ListNode curr, ListNode p) {
-        ListNode third = p.next;
-        p.next = curr;
-        curr.next = third;
-        return curr;
+    private static ListNode insertNode(ListNode node, ListNode prev) {
+        ListNode third = prev.next;
+        prev.next = node;
+        node.next = third;
+        return node;
     }
 
     /*
