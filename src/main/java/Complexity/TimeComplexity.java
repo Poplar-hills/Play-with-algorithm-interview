@@ -5,12 +5,35 @@ import static Utils.Helpers.*;
 /*
 * 时间复杂度：
 *
-* 建立数据规模概念：
-* - O(n^2) 的算法大约可以在1s内处理 10^4 级别的数据；
-* - O(nlogn) 的算法大约可以在1s内处理 10^7 级别的数据；
-* - O(n) 的算法大约可以在1s内处理 10^8 级别的数据；
-* - O(logn) 的算法能处理的数据级别更大更大；
-* 这个规模并不准确，因为忽略了系数的影响，只作为粗略参考。
+* - 基础
+*   - O (big 0): In academia, it describes an upper bound on the time.
+*   - Ω (big omega): In academia, it describes an lower bound on the time.
+*   - In industry (and therefore in interviews), people seem to have merged Ω and O together.
+*
+* - 均摊时间/均摊复杂度（Amortized Time/Complexity）
+*   - For dynamically resizing array like ArrayList, X insertions take 0(2X) time. The amortized time for
+*     each insertion is 0(1).
+*
+* - Recursive Runtimes
+*                            f(4)
+*                     /               \
+*                  f(3)               f(3)
+*                /      \            /     \
+*             f(2)     f(2)       f(2)     f(2)
+*            /   \    /    \     /   \     /   \
+*          f(1) f(1) f(1) f(1) f(1) f(1) f(1) f(1)
+*
+*   Q: How many calls are in this tree?（该问题实际上是在问，深度为 n 的二叉树有几个节点？）
+*   A: There will be 2^0 + 2^1 + 2^2 + 2^3 ... + 2^n = 2^(n+1) - 1 nodes, namely 2^(n+1) - 1 calls, and O(2^n) runtime.
+*   - 二叉递归计算每往下递归一层就会多出一倍的计算量，所以时间复杂度是 O(2^n)；而二叉递归查找只会经过树高度个节点，因此是 O(logn)。
+*   - 二叉递归计算的空间复杂度是 O(n)  ∵ 虽然有 O(2^n) 个节点，但只有 O(n) 个节点会同时存在。
+*
+* - 建立数据规模概念：
+*   - O(n^2) 的算法大约可以在1s内处理 10^4 级别的数据；
+*   - O(nlogn) 的算法大约可以在1s内处理 10^7 级别的数据；
+*   - O(n) 的算法大约可以在1s内处理 10^8 级别的数据；
+*   - O(logn) 的算法能处理的数据级别更大更大；
+*   这个规模并不准确，因为忽略了系数的影响，只作为粗略参考。
 *
 * */
 
