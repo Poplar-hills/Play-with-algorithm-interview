@@ -15,6 +15,7 @@ public class L2_AddTwoNumbers {
     /*
     * 有一点缺陷的解法
     * - 无法处理超过 long 精度的链表（实际面试中很少有，因此不是个很大的问题）。
+    * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)，其中 m, n 分别为 l1, l2 的节点个数。
     * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         long num1 = linkedListToLong(l1);
@@ -26,7 +27,7 @@ public class L2_AddTwoNumbers {
         ListNode curr = l;
         StringBuilder s = new StringBuilder();
         while (curr != null) {
-            s.insert(0, curr.val);     // StringBuilder 除了 append 还可以 insert
+            s.insert(0, curr.val);     // 注意这里要 insert 而不是 append
             curr = curr.next;
         }
         return Long.parseLong(s.toString());  // "123" 转换为 123 的两种方法：1. Integer.parseInt 2. Integer.valueOf
@@ -45,6 +46,7 @@ public class L2_AddTwoNumbers {
 
     /*
     * 解法1：模拟加法运算
+    * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))，其中 m, n 分别为 l1, l2 的节点个数。
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         ListNode dummyHead = new ListNode();
