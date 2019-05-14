@@ -12,8 +12,43 @@ import static Utils.Helpers.*;
 * */
 
 public class L445_AddTwoNumbersII {
+    /*
+    * 解法1：先将链表反向，再用 L2 中解法3的思路求和，最后再反向。
+    * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode reversedL1 = reverseLinkedList(l1);
+        ListNode reversedL2 = reverseLinkedList(l2);
+        ListNode reversedSum = addTwoNumbers(reversedL1, reversedL2, 0);
+        return reverseLinkedList(reversedSum);
+    }
 
+    private static ListNode reverseLinkedList(ListNode l1) {
+        ListNode prev = null, curr = l1;
+        while (curr != null) {
+            ListNode third = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = third;
+        }
+        return prev;
+    }
+
+    private static ListNode addTwoNumbers(ListNode l1, ListNode l2, int carry) {
+        if (l1 == null && l2 == null && carry == 0)
+            return null;
+
+        int l1Val = l1 != null ? l1.val : 0;
+        int l2Val = l2 != null ? l2.val : 0;
+        int sum = l1Val + l2Val + carry;
+
+        carry = sum / 10;
+        ListNode s = new ListNode(sum % 10);
+
+        ListNode l1Next = l1 == null ? null : l1.next;
+        ListNode l2Next = l2 == null ? null : l2.next;
+        s.next = addTwoNumbers(l1Next, l2Next, carry);
+
+        return s;
     }
 
     public static void main(String[] args) {

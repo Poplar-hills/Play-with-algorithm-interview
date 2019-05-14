@@ -46,7 +46,7 @@ public class L2_AddTwoNumbers {
 
     /*
     * 解法1：模拟加法运算
-    * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))，其中 m, n 分别为 l1, l2 的节点个数。
+    * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         ListNode dummyHead = new ListNode();
@@ -73,6 +73,7 @@ public class L2_AddTwoNumbers {
     /*
     * 解法3：模拟加法运算（递归实现）
     * - 思路：递归地创建下一个节点，直到两个链表都穷尽。
+    * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
     * */
     public static ListNode addTwoNumbers3(ListNode l1, ListNode l2) {
         return addTwoNumbers3(l1, l2, 0);
