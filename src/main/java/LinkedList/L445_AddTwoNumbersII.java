@@ -16,13 +16,11 @@ public class L445_AddTwoNumbersII {
     * 解法1：先将链表反向，再用 L2 中解法3的思路求和，最后再反向。
     * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        ListNode reversedL1 = reverseLinkedList(l1);
-        ListNode reversedL2 = reverseLinkedList(l2);
-        ListNode reversedSum = addTwoNumbers(reversedL1, reversedL2, 0);
-        return reverseLinkedList(reversedSum);
+        ListNode reversedSum = addTwoNumbers(reverse(l1), reverse(l2), 0);
+        return reverse(reversedSum);
     }
 
-    private static ListNode reverseLinkedList(ListNode l1) {
+    private static ListNode reverse(ListNode l1) {  // 将一个链表反向
         ListNode prev = null, curr = l1;
         while (curr != null) {
             ListNode third = curr.next;
