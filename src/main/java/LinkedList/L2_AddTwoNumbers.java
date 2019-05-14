@@ -57,10 +57,9 @@ public class L2_AddTwoNumbers {
             int curr1Val = curr1 != null ? curr1.val : 0;
             int curr2Val = curr2 != null ? curr2.val : 0;
             int sum = curr1Val + curr2Val + carry;
-            int digit = sum % 10;
 
             carry = sum / 10;
-            curr.next = new ListNode(digit);
+            curr.next = new ListNode(sum % 10);
             curr = curr.next;
 
             if (curr1 != null) curr1 = curr1.next;
@@ -69,6 +68,14 @@ public class L2_AddTwoNumbers {
 
         if (carry != 0) curr.next = new ListNode(carry);  // 注意如果还有进位则需再加一位
         return dummyHead.next;
+    }
+
+    /*
+    * 解法3：模拟加法运算（递归实现）
+    * -
+    * */
+    public static ListNode addTwoNumbers3(ListNode l1, ListNode l2) {
+
     }
 
     public static void main(String[] args) {
