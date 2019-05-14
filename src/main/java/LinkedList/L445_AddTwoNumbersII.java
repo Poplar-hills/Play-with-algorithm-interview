@@ -14,10 +14,13 @@ import static Utils.Helpers.*;
 public class L445_AddTwoNumbersII {
     /*
     * 解法1：先将链表反向，再用 L2 中解法3的思路求和，最后再反向。
+    * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
     * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        ListNode reversedSum = addTwoNumbers(reverse(l1), reverse(l2), 0);
-        return reverse(reversedSum);
+        ListNode reverseL1 = reverse(l1);  // O(m)
+        ListNode reverseL2 = reverse(l2);  // O(n)
+        ListNode reversedSum = addTwoNumbers(reverseL1, reverseL2, 0);  // O(max(m,n))
+        return reverse(reversedSum);       // O(max(m,n))
     }
 
     private static ListNode reverse(ListNode l1) {  // 将一个链表反向
@@ -47,6 +50,13 @@ public class L445_AddTwoNumbersII {
         s.next = addTwoNumbers(l1Next, l2Next, carry);
 
         return s;
+    }
+
+    /*
+    * 解法2：
+    * */
+    public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
+
     }
 
     public static void main(String[] args) {
