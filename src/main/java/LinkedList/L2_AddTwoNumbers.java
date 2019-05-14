@@ -72,10 +72,28 @@ public class L2_AddTwoNumbers {
 
     /*
     * 解法3：模拟加法运算（递归实现）
-    * -
+    * - 思路：递归地创建下一个节点，直到两个链表都穷尽。
     * */
     public static ListNode addTwoNumbers3(ListNode l1, ListNode l2) {
+        return addTwoNumbers3(l1, l2, 0);
+    }
 
+    private static ListNode addTwoNumbers3(ListNode l1, ListNode l2, int carry) {
+        if (l1 == null && l2 == null && carry == 0)
+            return null;
+
+        int l1Val = l1 != null ? l1.val : 0;
+        int l2Val = l2 != null ? l2.val : 0;
+        int sum = l1Val + l2Val + carry;
+
+        carry = sum / 10;
+        ListNode s = new ListNode(sum % 10);
+
+        ListNode l1Next = l1 == null ? null : l1.next;
+        ListNode l2Next = l2 == null ? null : l2.next;
+        s.next = addTwoNumbers3(l1Next, l2Next, carry);
+
+        return s;
     }
 
     public static void main(String[] args) {
@@ -83,11 +101,13 @@ public class L2_AddTwoNumbers {
         ListNode l2 = createLinkedListFromArray(new int[]{5, 6, 4});
         printLinkedList(addTwoNumbers(l1, l2));   // expects 7->0->8->NULL
         printLinkedList(addTwoNumbers2(l1, l2));  // expects 7->0->8->NULL
+        printLinkedList(addTwoNumbers3(l1, l2));  // expects 7->0->8->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
         ListNode l4 = createLinkedListFromArray(new int[]{7});
         printLinkedList(addTwoNumbers(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
         printLinkedList(addTwoNumbers2(l3, l4));  // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
+        printLinkedList(addTwoNumbers3(l3, l4));  // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
     }
 }
 
