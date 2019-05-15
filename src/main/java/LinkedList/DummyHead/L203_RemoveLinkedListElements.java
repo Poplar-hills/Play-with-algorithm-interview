@@ -73,7 +73,7 @@ public class L203_RemoveLinkedListElements {
     public static ListNode removeElements4(ListNode head, int val) {
         if (head == null) return null;
         head.next = removeElements4(head.next, val);
-        return head.val == val ? head.next : head;
+        return head.val == val ? head.next : head;  // 处理逻辑在最后
     }
 
     public static void main(String[] args) {
