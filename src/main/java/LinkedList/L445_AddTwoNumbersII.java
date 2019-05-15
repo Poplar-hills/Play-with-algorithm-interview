@@ -2,6 +2,8 @@ package LinkedList;
 
 import Utils.Helpers.ListNode;
 
+import java.util.Stack;
+
 import static Utils.Helpers.*;
 
 /*
@@ -13,7 +15,8 @@ import static Utils.Helpers.*;
 
 public class L445_AddTwoNumbersII {
     /*
-    * 解法1：先将链表反向，再用 L2 中解法3的思路求和，最后再反向。
+    * 解法1：先将链表反向，再模拟加法运算（同 L2 中解法3），最后再反向。
+    * - 不足之处是该解法会修改输入链表。
     * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
     * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
@@ -53,15 +56,50 @@ public class L445_AddTwoNumbersII {
     }
 
     /*
-    * 解法2：
+    * 解法2：模拟加法运算（用 Stack 作为辅助数据结构）
+    * - 思路：本题与 L2 的不同点在于输入、输出都是顺序链表，因此在模拟加法运算之前需要解决位数对应的问题（个位与个位相加，
+    *   十位与十位相加……），解法1中先将链表反向的思路就是在解决这个问题，而更优雅的做法是使用 Stack 解决这个问题，这与
+    *   BST 的前序、中序遍历是同样的思路。
+    * - Bonus：该解法不会修改 l1、l2。
+    * - 时间复杂度 O()，空间复杂度 O()。
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
+        Stack<Integer> s1 = new Stack<>(), s2 = new Stack<>();
+        ListNode curr1 = l1, curr2 = l2;
 
+        while (curr1 != null || curr2 != null) {
+            if (curr1 != null) {
+                s1.push(curr1.val);
+                curr1 = curr1.next;
+            }
+            if (curr2 != null) {
+                s2.push(curr2.val);
+                curr2 = curr2.next;
+            }
+        }
+
+        ListNode list = null;
+        int carry = 0;
+        while (!s1.empty() || !s2.empty() || carry != 0) {
+            int s1Val = !s1.empty() ? s1.pop() : 0;
+            int s2Val = !s2.empty() ? s2.pop() : 0;
+            int sum = s1Val + s2Val + carry;
+
+            carry = sum / 10;
+            ListNode head = new ListNode(sum % 10);
+            head.next = list;
+            list = head;
+        }
+        return list;
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{7, 2, 4, 3});
-        ListNode l2 = createLinkedListFromArray(new int[]{5, 6, 4});
-        printLinkedList(addTwoNumbers(l1, l2));   // expects 7->8->0->7->NULL
+        ListNode l3 = createLinkedListFromArray(new int[]{7, 2, 4, 3});
+        ListNode l4 = createLinkedListFromArray(new int[]{5, 6, 4});
+        printLinkedList(addTwoNumbers2(l3, l4));   // expects 7->8->0->7->NULL
+
+        ListNode l5 = createLinkedListFromArray(new int[]{5});
+        ListNode l6 = createLinkedListFromArray(new int[]{5});
+        printLinkedList(addTwoNumbers2(l5, l6));   // expects 1->0->NULL
     }
 }
