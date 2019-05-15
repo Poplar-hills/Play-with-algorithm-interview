@@ -53,9 +53,9 @@ public class L86_PartitionList {
 
     /*
     * 解法2：双链表拼接
-    * - 模拟很多函数库中的 partition 操作，在遍历链表过程中将 < x 的节点放到一个链表（before）上，讲 ≥ x 的节点放到另一个链表（after）上，
-    *   最后将两个链表拼接在一起。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * - 模拟很多函数库中的 partition 操作，在遍历链表过程中将 < x 的节点放到一个链表 before 上，讲 ≥ x 的节点放到另一个
+    *   链表 after 上，最后将两个链表拼接在一起。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode partition2(ListNode head, int x) {
         ListNode before = new ListNode(), beforeHead = before;

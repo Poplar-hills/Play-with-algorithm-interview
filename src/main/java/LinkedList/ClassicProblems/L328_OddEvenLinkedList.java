@@ -14,6 +14,7 @@ import static Utils.Helpers.*;
 public class L328_OddEvenLinkedList {
     /*
      * 解法1：思路同 L86 的解法1
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode oddEvenList(ListNode head) {
         ListNode dummyHead = new ListNode();
@@ -53,6 +54,7 @@ public class L328_OddEvenLinkedList {
 
     /*
     * 解法2：思路同 L86 的解法2
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode oddEvenList2(ListNode head) {
         ListNode odd = new ListNode(), oddHead = odd;

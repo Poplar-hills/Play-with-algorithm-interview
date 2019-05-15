@@ -41,8 +41,7 @@ public class L92_ReverseLinkedListII {
     * - 思路：类似将一个数组倒序的思路 —— 先将两个指针移动到数组 m, n 的位置上，再在他们互相逼近的过程中不断 swap 节点里的值。但是因
     *   为单向链表没有从后一个节点指向前一个节点的指针，因此若要让右指针左移到上一个节点就需要借助递归来实现，因为在每层递归结束回到上
     *   一层调用栈时可以获得上一个节点。（过程可视化 SEE: https://leetcode.com/problems/reverse-linked-list-ii/solution/）
-    * - 时间复杂度 O(n)：遍历节点两遍
-    * - 空间复杂度 O(n)：递归深度最大是链表元素个数
+    * - 时间复杂度 O(n)：遍历节点两遍，空间复杂度 O(n)：递归深度最大是链表元素个数
     * */
     public static class solution1 {
         private ListNode left;

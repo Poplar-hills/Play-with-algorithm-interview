@@ -46,11 +46,11 @@ public class L445_AddTwoNumbersII {
         int sum = l1Val + l2Val + carry;
 
         carry = sum / 10;
-        ListNode s = new ListNode(sum % 10);
+        ListNode s = new ListNode(sum % 10);         // 空间复杂度（即最终新生成的链表长度）为 O(max(m,n))
 
         ListNode l1Next = l1 == null ? null : l1.next;
         ListNode l2Next = l2 == null ? null : l2.next;
-        s.next = addTwoNumbers(l1Next, l2Next, carry);
+        s.next = addTwoNumbers(l1Next, l2Next, carry);  // 空间复杂度（即递归深度）为 O(max(m,n))
 
         return s;
     }
@@ -61,13 +61,13 @@ public class L445_AddTwoNumbersII {
     *   十位与十位相加……），解法1中先将链表反向的思路就是在解决这个问题，而更优雅的做法是使用 Stack 解决这个问题，这与
     *   BST 的前序、中序遍历是同样的思路。
     * - Bonus：该解法不会修改 l1、l2。
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 时间复杂度 O(max(m,n))，空间复杂度 O(m+n)。
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         Stack<Integer> s1 = new Stack<>(), s2 = new Stack<>();
         ListNode curr1 = l1, curr2 = l2;
 
-        while (curr1 != null || curr2 != null) {
+        while (curr1 != null || curr2 != null) {  // O(max(m,n))
             if (curr1 != null) {
                 s1.push(curr1.val);
                 curr1 = curr1.next;
@@ -80,7 +80,7 @@ public class L445_AddTwoNumbersII {
 
         ListNode list = null;
         int carry = 0;
-        while (!s1.empty() || !s2.empty() || carry != 0) {
+        while (!s1.empty() || !s2.empty() || carry != 0) {  // O(max(m,n))
             int s1Val = !s1.empty() ? s1.pop() : 0;
             int s2Val = !s2.empty() ? s2.pop() : 0;
             int sum = s1Val + s2Val + carry;
