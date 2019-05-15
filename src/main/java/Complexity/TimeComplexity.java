@@ -103,4 +103,25 @@ public class TimeComplexity {
             return t * t * x;  // 例如 x=2, n=5，则 2^5 = 2^2 * 2^2 * 2
         return t * t;
     }
+
+    /* 内层遍历元素个数递减的情况，两种分析方法：
+     * 1. 数遍历次数：第一次 0~n（n 个元素），第二次 1~n（n-1 个元素），第三次 2~n（n-2 个元素）…… 最后一次 n~n（1个元素）
+     *    等差数列求和公式后为 n(n+1)/2，因此复杂度是 O(n^2)。
+     */
+    public void printUnorderedPairs(int[] array) {
+        for (int i = 0; i < array.length; i++)
+            for (int j = i + 1; j < array.length; j++)
+                System.out.println(array[i] + "," + array[j]);
+    }
+
+    /*
+    * Question: Suppose we had an algorithm that took in an array of strings, sorted each string, and then sorted
+    *           the full array. What would the runtime be?
+    * Solution: 1. Let m be the length of the longest string and n be the length of the array.
+    *           2. Sorting each string is O(mlogm), do this for n strings, so that's O(n * mlogm).
+    *           3. When sorting the n strings, first we need to compare them. Each string comparison takes O(m) time.
+    *              Sorting the array requires O(nlogn) comparisons, therefore this will take O(m * nlogn) time.
+    *           4. Adding up these parts, you get O(n * mlogm + m * nlogn) = O(n * m * (logm + logn).
+    * This is it. There is no way to reduce it further.
+    * */
 }
