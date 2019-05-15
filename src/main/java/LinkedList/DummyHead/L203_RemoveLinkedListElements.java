@@ -66,8 +66,21 @@ public class L203_RemoveLinkedListElements {
         return dummyHead.next;
     }
 
+    /*
+    * 解法4：解法2、3的递归版
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static ListNode removeElements4(ListNode head, int val) {
+        if (head == null) return null;
+        head.next = removeElements4(head.next, val);
+        return head.val == val ? head.next : head;
+    }
+
     public static void main(String[] args) {
         ListNode l = createLinkedListFromArray(new int[]{1, 2, 6, 3, 4, 5, 6});
-        printLinkedList(removeElements3(l, 6));
+        printLinkedList(removeElements4(l, 6));  // expects 1->2->3->4->5->NULL
+
+        ListNode l2 = createLinkedListFromArray(new int[]{6, 6});
+        printLinkedList(removeElements4(l2, 6));  // expects NULL
     }
 }
