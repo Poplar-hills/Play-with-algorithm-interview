@@ -72,6 +72,17 @@ public class L203_RemoveLinkedListElements {
     * */
     public static ListNode removeElements4(ListNode head, int val) {
         if (head == null) return null;
+        if (head.val == val) return removeElements4(head.next, val);  // 若当前节点 head 满足条件则直接跳过，处理下一个节点
+        head.next = removeElements4(head.next, val);  // 若不满足条件则不能跳过，链接上处理后的下一个节点后再链接到上一个节点上去
+        return head;
+    }
+
+    /*
+     * 解法5：解法4的改进版
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static ListNode removeElements5(ListNode head, int val) {
+        if (head == null) return null;
         head.next = removeElements4(head.next, val);
         return head.val == val ? head.next : head;  // 处理逻辑在最后
     }
