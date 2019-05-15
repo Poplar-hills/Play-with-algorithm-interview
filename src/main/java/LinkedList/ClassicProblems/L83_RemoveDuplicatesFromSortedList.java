@@ -1,4 +1,4 @@
-package LinkedList;
+package LinkedList.ClassicProblems;
 
 import Utils.Helpers.ListNode;
 

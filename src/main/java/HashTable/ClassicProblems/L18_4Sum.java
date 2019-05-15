@@ -1,4 +1,4 @@
-package HashTable.ClassicHashTableProblems;
+package HashTable.ClassicProblems;
 
 import java.util.*;
 
