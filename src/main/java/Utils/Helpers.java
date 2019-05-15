@@ -116,4 +116,10 @@ public class Helpers {
         s.append("NULL");
         log(s.toString());
     }
+
+    public static class Node {
+        public Node left;
+        public Node right;
+        public int value;
+    }
 }

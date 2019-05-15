@@ -124,4 +124,46 @@ public class TimeComplexity {
     *           4. Adding up these parts, you get O(n * mlogm + m * nlogn) = O(n * m * (logm + logn).
     * This is it. There is no way to reduce it further.
     * */
+
+    /*
+    * Sum of the values of all the nodes in a balanced binary search tree
+    * 两种思路：
+    * 1. 因为会遍历所有节点，因此是 O(n)；
+    * 2. 因为二叉树节点个数 n = 2^depth，因此要遍历每个节点就需 O(2^depth) = O(2^(logn)) = O(n)。
+    * */
+    public int sum(Node node) {
+        if (node == null)
+            return 0;
+        return sum(node.left) + node.value + sum(node.right);
+    }
+
+    /*
+    * 求 n 的阶乘（n factorial）：因为只有一条分支（不像上面二叉树那样有两个分支），因此是线性的，复杂度为 O(n)
+    * */
+    public int factorial(int n) {
+        if (n < 0) return -1;
+        else if (n == 0) return 1;
+        else return n * factorial(n - 1);
+    }
+
+    /*
+    * Computes the Nth Fibonacci number.
+    * 对比上面的求阶乘的代码，相同点是递归深度都是输入参数 n，不同点是这段里面有2个分支，因此是 O(2^n)。
+    * */
+    public int fib(int n) {
+        if (n <= 0) return 0;
+        else if (n == 1) return 1;
+        return fib(n - 1) + fib(n - 2);
+    }
+
+    /*
+    * Prints all Fibonacci numbers from O to n.
+    * 易错点：很容易想成 fib 是 O(2^n)，打印 n 个，因此是 O(n2^n)。错误之处在于 i 是从 0~n 变化的。实际上的运行次数：
+    * 2^0 + 2^1 + 2^2 ... 2^n，等比数列求和得 2^(n+1)-1，因此复杂度还是 O(2^n)。
+    * */
+    public void allFib(int n) {
+        for (int i = 0; i < n; i++)
+            System.out.println(i + " : "+ fib(i));  // fib 方法同上
+    }
+
 }
