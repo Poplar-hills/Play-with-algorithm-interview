@@ -26,8 +26,27 @@ public class L203_RemoveLinkedListElements {
         return dummyHead.next;
     }
 
+    /*
+     * 解法2：修改原有链表
+     * */
+    public static ListNode removeElements2(ListNode head, int val) {
+        ListNode dummyHead = new ListNode();
+        dummyHead.next = head;
+
+        ListNode prev = dummyHead, curr = head;
+        while (curr != null) {
+            if (curr.val == val)
+                prev.next = curr.next;
+            else
+                prev = prev.next;
+            curr = curr.next;
+        }
+
+        return dummyHead.next;
+    }
+
     public static void main(String[] args) {
         ListNode l = createLinkedListFromArray(new int[]{1, 2, 6, 3, 4, 5, 6});
-        printLinkedList(removeElements(l, 6));
+        printLinkedList(removeElements2(l, 6));
     }
 }
