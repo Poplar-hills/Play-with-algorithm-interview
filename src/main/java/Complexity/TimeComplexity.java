@@ -166,4 +166,38 @@ public class TimeComplexity {
             System.out.println(i + " : "+ fib(i));  // fib 方法同上
     }
 
+    /*
+    * Prints all Fibonacci numbers from O to n (using cache).
+    * 在使用缓存之后，每次计算 fib(i) 时，fib(i-1) 和 fib(i-2) 都已经存在于缓存之中了，因此每次 fib(i) 的计算复杂度为 O(1)，
+    * 从而总体复杂度为 O(n)。
+    * */
+    public void allFibUsingCache(int n) {
+        int[] memo = new int[n + 1];
+        for (int i = 0; i < n; i++)
+            System.out.println(i + " : " + fib(i, memo));
+    }
+
+    public int fib(int n, int[] memo) {
+        if (n <= 0) return 0;
+        else if (n == 1) return 1;
+        else if (memo[n] > 0) return memo[n];
+        memo[n] = fib(n - 1, memo) + fib(n - 2, memo);
+        return memo[n];
+    }
+
+    /*
+    * Prints the powers of 2 from 1 through n. For example, if n = 4, it would print 1, 2, 4.
+    * 因为每次递归都除以2，递归深度为 logn，因此时间复杂度为 O(logn)。
+    * */
+    public int powers0f2(int n) {
+        if (n < 1) return 0;
+        if (n == 1) {
+            System.out.println(1);
+            return 1;
+        }
+        int prev = powers0f2(n / 2);
+        int curr = prev * 2;
+        System.out.println(curr);
+        return curr;
+    }
 }
