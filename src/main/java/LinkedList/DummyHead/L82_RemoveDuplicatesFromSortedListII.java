@@ -1,6 +1,7 @@
 package LinkedList.DummyHead;
 
 import Utils.Helpers.ListNode;
+import javafx.util.Pair;
 
 import static Utils.Helpers.*;
 
@@ -25,9 +26,10 @@ public class L82_RemoveDuplicatesFromSortedListII {
     *             a    b            此时 b.next == null，结束遍历
     * - 注意特殊情况的处理：D -> 2 -> 1 -> 1，此时重复节点后面没有更多节点，因此 a 停在 2 上，b 停在最后一个1上，无法按上面的过
     *   程完成删除（即循环已结束，但标志位还是 true），因此可直接将 a.next 指向 null 即可。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
     */
     public static ListNode deleteDuplicates(ListNode head) {
-        if (head == null) return null;
+        if (head == null) return null;  // 注意这个 case 得特殊处理
         ListNode dummyHead = new ListNode();
         dummyHead.next = head;
         ListNode conn = dummyHead, curr = head;
@@ -55,17 +57,46 @@ public class L82_RemoveDuplicatesFromSortedListII {
         return dummyHead.next;
     }
 
+    /*
+    * 解法2：
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static ListNode deleteDuplicates2(ListNode head) {
+        if (head == null) return null;
+        Pair<ListNode, Boolean> pair = deleteHeadDuplicates(head);
+        ListNode r = pair.getKey();
+        return pair.getValue() ? r.next : r;
+    }
+
+    private static Pair<ListNode, Boolean> deleteHeadDuplicates(ListNode head) {
+        if (head.next == null)
+            return new Pair<>(head, false);
+
+        Pair<ListNode, Boolean> pair = deleteHeadDuplicates(head.next);
+        ListNode next = pair.getKey();
+        boolean foundDuplicate = pair.getValue();
+
+        if (head.val == next.val)
+            return new Pair<>(next, true);
+        if (foundDuplicate) {
+            head.next = next.next;
+            return new Pair<>(head, false);
+        }
+        head.next = next;
+        return new Pair<>(head, false);
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 3, 4, 4, 5});
-        printLinkedList(deleteDuplicates(l1));  // expects 1->2->5->NULL
+        printLinkedList(deleteDuplicates2(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 1, 1, 2, 3});
-        printLinkedList(deleteDuplicates(l2));  // expects 2->3->NULL
+        printLinkedList(deleteDuplicates2(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 1});
-        printLinkedList(deleteDuplicates(l3));  // expects NULL
+        printLinkedList(deleteDuplicates2(l3));  // expects NULL
 
         ListNode l4 = createLinkedListFromArray(new int[]{});
-        printLinkedList(deleteDuplicates(l4));  // expects NULL
+        printLinkedList(deleteDuplicates2(l4));  // expects NULL
     }
 }
