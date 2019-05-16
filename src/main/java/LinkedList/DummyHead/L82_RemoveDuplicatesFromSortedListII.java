@@ -58,7 +58,14 @@ public class L82_RemoveDuplicatesFromSortedListII {
     }
 
     /*
-    * 解法2：
+    * 解法2：解法1的递归版
+    * - 思路：关键在于返回上一层时需要让上一层知道是否已经出现了重复节点，从而删除其中一个，这就需要在 return 时加入标志位。
+    * - 演示：D -> 2 -> 3 -> 3 -> 4                      D -> 1 -> 1 -> 1 -> 2
+    *                         ← 返回 (4, false)                           ← 返回 (2, false)
+    *                    ← 返回 (3->4, false)                        ← 返回 (1->2, false)
+    *               ← 返回 (3->4，true)                         ← 返回 (1->2, true)
+    *          ← 返回 (2->4，false)                        ← 返回 (1->2, true)
+    *                                                   到达最上层时判断若标志位仍然为 true 则取第二个节点之后的链表，即只有2
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode deleteDuplicates2(ListNode head) {
