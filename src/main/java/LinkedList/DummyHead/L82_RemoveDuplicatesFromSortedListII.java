@@ -121,23 +121,33 @@ public class L82_RemoveDuplicatesFromSortedListII {
     }
 
     /*
-    * 解法4：
+    * 解法4：解法3的递归版
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode deleteDuplicates4(ListNode head) {
-        return head;
+        if (head == null || head.next == null) return head;
+        if (head.val == head.next.val) {
+            int duplicateVal = head.val;
+            while (head.next != null && head.next.val == duplicateVal)  // 通过 while 循环跳过 val 相同的节点
+                head = head.next;
+            return deleteDuplicates4(head.next);
+        } else {
+            head.next = deleteDuplicates4(head.next);
+            return head;
+        }
     }
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 3, 4, 4, 5});
-        printLinkedList(deleteDuplicates3(l1));  // expects 1->2->5->NULL
+        printLinkedList(deleteDuplicates4(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 1, 1, 2, 3});
-        printLinkedList(deleteDuplicates3(l2));  // expects 2->3->NULL
+        printLinkedList(deleteDuplicates4(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 1});
-        printLinkedList(deleteDuplicates3(l3));  // expects NULL
+        printLinkedList(deleteDuplicates4(l3));  // expects NULL
 
         ListNode l4 = createLinkedListFromArray(new int[]{});
-        printLinkedList(deleteDuplicates3(l4));  // expects NULL
+        printLinkedList(deleteDuplicates4(l4));  // expects NULL
     }
 }
