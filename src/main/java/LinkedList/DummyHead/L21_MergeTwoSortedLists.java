@@ -13,7 +13,7 @@ import static Utils.Helpers.*;
 public class L21_MergeTwoSortedLists {
     /*
     * 解法1：双指针模拟归并排序过程
-    * - 时间复杂度 O(max(m,n))，空间复杂度 O(1)。
+    * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
     * */
     public static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
         ListNode dummyHead = new ListNode(), curr = dummyHead, n1 = l1, n2 = l2;
