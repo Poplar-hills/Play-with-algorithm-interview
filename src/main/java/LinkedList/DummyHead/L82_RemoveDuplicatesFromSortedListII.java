@@ -93,17 +93,51 @@ public class L82_RemoveDuplicatesFromSortedListII {
         return new Pair<>(head, false);
     }
 
+    /*
+    * 解法3：内部 while 循环直到找到不重复节点
+    * - 思路：与解法1的相同点：都需要两个指针（conn, curr），分别指向重复节点之前和之后的节点；与解法1的不同点：不需要标志位，
+    *        而是当发现有重复节点后通过 while 循环一直往下找，直到找到不重复节点为止，再链接 conn 与不重复节点。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * */
+    public static ListNode deleteDuplicates3(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode dummyHead = new ListNode(), conn = dummyHead, curr = head;
+        dummyHead.next = head;
+        int duplicateVal;  // 记录发现的重复节点的节点值
+
+        while (curr != null) {
+            if (curr.next == null || curr.val != curr.next.val) {
+                conn = curr;
+                curr = curr.next;
+            } else {
+                duplicateVal = curr.val;
+                while (curr.next != null && curr.next.val == duplicateVal)  // 内部 while 循环
+                    curr = curr.next;
+                conn.next = curr = curr.next;
+            }
+        }
+
+        return dummyHead.next;
+    }
+
+    /*
+    * 解法4：
+    * */
+    public static ListNode deleteDuplicates4(ListNode head) {
+        return head;
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 3, 4, 4, 5});
-        printLinkedList(deleteDuplicates2(l1));  // expects 1->2->5->NULL
+        printLinkedList(deleteDuplicates3(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 1, 1, 2, 3});
-        printLinkedList(deleteDuplicates2(l2));  // expects 2->3->NULL
+        printLinkedList(deleteDuplicates3(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 1});
-        printLinkedList(deleteDuplicates2(l3));  // expects NULL
+        printLinkedList(deleteDuplicates3(l3));  // expects NULL
 
         ListNode l4 = createLinkedListFromArray(new int[]{});
-        printLinkedList(deleteDuplicates2(l4));  // expects NULL
+        printLinkedList(deleteDuplicates3(l4));  // expects NULL
     }
 }
