@@ -72,14 +72,26 @@ public class L24_SwapNodesInPairs {
         return second;
     }
 
+    /*
+    * 解法3：解法2的精简版
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static ListNode swapPairs3(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode second = head.next;
+        head.next = swapPairs3(second.next);
+        second.next = head;
+        return second;
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4});
-        printLinkedList(swapPairs2(l1));  // expects 2->1->4->3->NULL
+        printLinkedList(swapPairs3(l1));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(swapPairs2(l2));  // expects 2->1->4->3->5->NULL
+        printLinkedList(swapPairs3(l2));  // expects 2->1->4->3->5->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1});
-        printLinkedList(swapPairs2(l3));  // expects 1->NULL
+        printLinkedList(swapPairs3(l3));  // expects 1->NULL
     }
 }
