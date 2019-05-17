@@ -13,7 +13,10 @@ import static Utils.Helpers.*;
 public class L24_SwapNodesInPairs {
     /*
     * 解法1：遍历
-    * - 思路：D -> 1 -> 2 -> 3 -> 4 -> 5 -> NULL
+    * - 思路：要交换两个节点需要有指针指向这两个节点之前和之后的节点，这样交换完之后才能链回去。因此 swapNodes 方法的输入
+    *        参数应设计成：1. 待交换节点的前一个节点 2. 第一个待交换节点。但因为链表头结点前面没有更多节点，因此可以设置
+    *        虚拟一个头结点以便于交换链表的前两个节点。
+    * - 过程：D -> 1 -> 2 -> 3 -> 4 -> 5 -> NULL
     *        p    c                               交换节点1和2，返回节点1，并赋给 p，c = p.next
     *        D -> 2 -> 1 -> 3 -> 4 -> 5 -> NULL
     *                  p    c                     交换节点3和4，返回节点3，并赋给 p，c = p.next
@@ -30,15 +33,15 @@ public class L24_SwapNodesInPairs {
         ListNode prev = dummyHead, curr = head;
 
         while (curr != null) {
-            prev = swapNodes(prev, curr, curr.next);
-            if (prev.next != null) curr = prev.next;
-            else curr = null;
+            prev = swapNodes(prev, curr);  // 返回交换后的最后一个节点并赋给 prev（相当于让 prev 向后移两步）
+            curr = prev.next;
         }
 
         return dummyHead.next;
     }
 
-    private static ListNode swapNodes(ListNode prev, ListNode curr, ListNode next) {  // swap curr and next and return the last node after swap
+    private static ListNode swapNodes(ListNode prev, ListNode curr) {  // 交换 curr 和 next 并返回交换后的最后一个节点
+        ListNode next = curr.next;
         if (next == null) return curr;
         ListNode temp = next.next;
         next.next = curr;
@@ -56,12 +59,13 @@ public class L24_SwapNodesInPairs {
     * */
     public static ListNode swapPairs2(ListNode head) {
         if (head == null || head.next == null) return head;
-        ListNode prev = swapNodes2(head, head.next);
-        if (prev.next != null) prev.next.next = swapPairs(prev.next.next);
+        ListNode prev = swapNodes2(head, head.next), curr = prev.next;
+        if (curr != null)
+            curr.next = swapPairs(curr.next);
         return prev;
     }
 
-    private static ListNode swapNodes2(ListNode prev, ListNode curr) {  // swap prev and curr and return the first node after swap
+    private static ListNode swapNodes2(ListNode prev, ListNode curr) {  // 交换 prev 和 curr 并返回交换后的第一个节点
         if (curr == null) return prev;
         ListNode temp = curr.next;
         curr.next = prev;
