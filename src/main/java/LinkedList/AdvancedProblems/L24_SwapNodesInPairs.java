@@ -51,8 +51,9 @@ public class L24_SwapNodesInPairs {
     /*
     * 解法2：递归
     * - 思路：1 -> 2 -> 3 -> 4 -> 5 -> NULL
+    *                          ← 5->N
     *                ← 4->3->5->N
-    *          ← 2->1->4->3->5->N
+    *      ← 2->1->4->3->5->N
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode swapPairs2(ListNode head) {
