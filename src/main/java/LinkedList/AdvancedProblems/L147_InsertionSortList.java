@@ -7,7 +7,7 @@ import static Utils.Helpers.*;
 /*
 * Insertion Sort List
 *
-* -
+* - Sort a linked list using insertion sort.
 * */
 
 public class L147_InsertionSortList {

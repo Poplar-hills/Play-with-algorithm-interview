@@ -5,10 +5,10 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
- * Sort List
- *
- * -
- * */
+* Sort List
+*
+* - Sort a linked list in O(n log n) time using constant space complexity.
+* */
 
 public class L148_SortList {
     public static ListNode sortList(ListNode head) {
