@@ -12,7 +12,7 @@ import static Utils.Helpers.*;
 
 public class L25_ReverseNodesInKGroup {
     public static ListNode reverseKGroup(ListNode head, int k) {
-        
+        return head;
     }
 
     public static void main(String[] args) {
