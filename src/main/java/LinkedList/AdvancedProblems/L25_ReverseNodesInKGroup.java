@@ -12,42 +12,25 @@ import static Utils.Helpers.*;
 
 public class L25_ReverseNodesInKGroup {
     /*
-    * 解法1：不断局部反转节点
-    * - 思路：题中要求反转按组进行，因此需要一个方法能够反转给定链表中的 k 个节点，并返回反转后的链表头结点以链回原链表中。
-    *        当反转完一组之后，原链表中的索引向右移动到下一组的起点，继续反转。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * 解法1：
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode reverseKGroup(ListNode head, int k) {
-        ListNode dummyHead = new ListNode();
-        dummyHead.next = head;
-        ListNode prev = dummyHead, curr = prev.next;
-        int count = 0;
+        ListNode prev = null, curr = head, temp = head;
 
-        while (curr != null) {
-            prev.next = reverseNodes(curr, k);
-            while (curr != null && count < k) {  // 移动到下一组待反转节点的起点上
-                prev = prev.next;
-                curr = curr.next;
-            }
-        }
+        for (int i = 0; i < k; i++, temp = temp.next)  // 检查当前组中是否有足够的节点
+            if (temp == null)
+                return head;
 
-        return dummyHead.next;
-    }
-
-    private static ListNode reverseNodes(ListNode head, int n) {
-        if (head == null || head.next == null || n == 0) return head;
-        ListNode prev = head, curr = head.next;
-
-        while (curr != null && n > 1) {
-            ListNode third = curr.next;
+        for (int i = 0; i < k; i++) {  // 反向当前组中的节点
+            temp = curr.next;
             curr.next = prev;
             prev = curr;
-            curr = third;
-            n--;
+            curr = temp;
         }
 
-        head.next = curr;
-        return prev;
+        head.next = reverseKGroup(curr, k);  // 反转完成后 head 变成了当前组的尾节点，将下一组反转后连接到这个尾节点上
+        return prev;                         // 反转完成后 prev 变成了当前组的头节点，因此返回到上一层连接到上一层的尾节点上
     }
 
     public static void main(String[] args) {
@@ -56,5 +39,8 @@ public class L25_ReverseNodesInKGroup {
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 3, 4});
         printLinkedList(reverseKGroup(l2, 3));  // expects 3->2->1->4->NULL
+
+        ListNode l3 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        printLinkedList(reverseKGroup(l3, 3));  // expects 3->2->1->4->5->NULL
     }
 }
