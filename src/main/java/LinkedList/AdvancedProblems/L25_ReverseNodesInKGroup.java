@@ -56,7 +56,7 @@ public class L25_ReverseNodesInKGroup {
             curr = head;
             head = temp;
         }
-        return curr;  // 一组反转完成后 curr 会指向本组头结点，因此让 head 指向 curr 即
+        return curr;  // 一组反转完成后 curr 会指向本组头结点，因此返回 curr 即返回了反转后的头结点
     }
 
     public static void main(String[] args) {
