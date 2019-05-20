@@ -13,6 +13,7 @@ import static Utils.Helpers.*;
 public class L25_ReverseNodesInKGroup {
     /*
     * 解法1：
+    * - 思路：从左到右按组进行反转，反转前先检查节点是否充足。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode reverseKGroup(ListNode head, int k) {
@@ -33,14 +34,39 @@ public class L25_ReverseNodesInKGroup {
         return prev;                         // 反转完成后 prev 变成了当前组的头节点，因此返回到上一层连接到上一层的尾节点上
     }
 
+    /*
+     * 解法2：
+     * - 思路：先走到最右端，然后从右到左按组反转。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static ListNode reverseKGroup2(ListNode head, int k) {
+        ListNode curr = head;
+        int count = 0;
+
+        while (curr != null && count < k) {  // 先让 curr 走到下一组的第一个节点
+            curr = curr.next;
+            count++;
+        }
+        if (count != k) return head;         // 如果走不到说明本组节点不足
+
+        curr = reverseKGroup2(curr, k);      // 反转下一组节点
+        while (count-- > 0) {                // 反转本组节点
+            ListNode temp = head.next;
+            head.next = curr;
+            curr = head;
+            head = temp;
+        }
+        return curr;  // 一组反转完成后 curr 会指向本组头结点，因此让 head 指向 curr 即
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4});
-        printLinkedList(reverseKGroup(l1, 2));  // expects 2->1->4->3->NULL
+        printLinkedList(reverseKGroup2(l1, 2));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 3, 4});
-        printLinkedList(reverseKGroup(l2, 3));  // expects 3->2->1->4->NULL
+        printLinkedList(reverseKGroup2(l2, 3));  // expects 3->2->1->4->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(reverseKGroup(l3, 3));  // expects 3->2->1->4->5->NULL
+        printLinkedList(reverseKGroup2(l3, 3));  // expects 3->2->1->4->5->NULL
     }
 }
