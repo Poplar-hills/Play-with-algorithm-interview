@@ -39,11 +39,40 @@ public class L147_InsertionSortList {
         return dummyNode.next;
     }
 
+    /*
+    * 解法2：递归
+    * - 思路：先递归到最深处，在回程时将上一个节点放入合适的位置
+    *   -1 -> 5 -> 3 -> 4 -> 0 -> NULL
+    *                      ← 0->N
+    *                 ← 0->4->N    将4插到0的后面
+    *            ← 0->3->4->N      将3插到0的后面
+    *       ← 0->3->4->5->N        将5插到4的后面
+    *   ← -1->0->3->4->5->N        已经有序直接返回
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * */
+    public static ListNode insertionSortList2(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+
+        head.next = insertionSortList(head.next);
+        ListNode pos = head, next = head.next;
+        if (pos.val <= next.val)  // 若已经有序
+            return head;
+
+        while (pos.next != null && head.val > pos.next.val)  // 在有序部分中从前往后找到合适的插入位置
+            pos = pos.next;
+
+        head.next = pos.next;  // 插入
+        pos.next = head;
+        head = next;
+        return head;
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{4, 2, 1, 3});
-        printLinkedList(insertionSortList(l1));  // expects 1->2->3->4->NULL
+        printLinkedList(insertionSortList2(l1));  // expects 1->2->3->4->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{-1, 5, 3, 4, 0});
-        printLinkedList(insertionSortList(l2));  // expects -1->0->3->4->5->NULL
+        printLinkedList(insertionSortList2(l2));  // expects -1->0->3->4->5->NULL
     }
 }
