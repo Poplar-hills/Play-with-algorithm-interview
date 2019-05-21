@@ -64,7 +64,7 @@ public class L24_SwapNodesInPairs {
         return first;
     }
 
-    private static ListNode swapNodes2(ListNode first) {  // 交换 prev 和 curr 并返回交换后的第一个节点
+    private static ListNode swapNodes2(ListNode first) {  // 交换 first 和 second 并返回交换后的第一个节点（∵ 是用于递归 ∴ 不需要提供 first 的上一个节点）
         ListNode second = first.next;
         if (second == null) return first;
         ListNode temp = second.next;
