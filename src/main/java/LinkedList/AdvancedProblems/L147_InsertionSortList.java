@@ -48,7 +48,7 @@ public class L147_InsertionSortList {
     *            ← 0->3->4->N      将3插到0的后面
     *       ← 0->3->4->5->N        将5插到4的后面
     *   ← -1->0->3->4->5->N        已经有序直接返回
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)（递归深度是 logn，但任意时刻都需要存储 n 个元素，因此总体是 O(n)）。
     * */
     public static ListNode insertionSortList2(ListNode head) {
         if (head == null || head.next == null)

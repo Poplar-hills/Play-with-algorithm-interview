@@ -19,6 +19,7 @@ public class L148_SortList {
     *           链表中点。这里有个小坑 —— 当 fast 和 slow 都到达各自位置后，需要断开 fast 最后一个节点和 slow 第一个节点之间的链接，
     *           否则往下递归二分时 fast 仍然是整个链表，而非前半部分。
     *        2. 没啥好说的。
+    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)（递归深度是 logn，但任意时刻都需要存储 n 个元素，因此总体是 O(n)）。
     * */
     public static ListNode sortList(ListNode head) {
         if (head == null || head.next == null)
@@ -39,14 +40,8 @@ public class L148_SortList {
         ListNode dummyHead = new ListNode(), prev = dummyHead;
         ListNode n1 = l1, n2 = l2;
 
-        while (n1 != null || n2 != null) {
-            if (n1 == null) {
-                prev.next = n2;
-                n2 = n2.next;
-            } else if (n2 == null) {
-                prev.next = n1;
-                n1 = n1.next;
-            } else if (n1.val < n2.val) {
+        while (n1 != null && n2 != null) {
+            if (n1.val < n2.val) {
                 prev.next = n1;
                 n1 = n1.next;
             } else {
@@ -55,6 +50,9 @@ public class L148_SortList {
             }
             prev = prev.next;
         }
+
+        if (n1 != null) prev.next = n1;
+        if (n2 != null) prev.next = n2;
         return dummyHead.next;
     }
 
