@@ -41,7 +41,7 @@ public class L147_InsertionSortList {
 
     /*
     * 解法2：递归
-    * - 思路：先递归到最深处，在回程时将上一个节点放入合适的位置
+    * - 思路：先递归到最深处，在回程时将当前节点放入合适的位置
     *   -1 -> 5 -> 3 -> 4 -> 0 -> NULL
     *                      ← 0->N
     *                 ← 0->4->N    将4插到0的后面
@@ -54,18 +54,45 @@ public class L147_InsertionSortList {
         if (head == null || head.next == null)
             return head;
 
-        head.next = insertionSortList(head.next);
-        ListNode pos = head, next = head.next;
-        if (pos.val <= next.val)  // 若已经有序
+        ListNode list = insertionSortList(head.next);
+        if (head.val <= list.val) {
+            head.next = list;
             return head;
+        }
 
-        while (pos.next != null && head.val > pos.next.val)  // 在有序部分中从前往后找到合适的插入位置
+        ListNode pos = list;
+        while (pos.next != null && head.val > pos.next.val)  // 找到插入位置的前一个节点（循环结束后 pos 指向插入位置的前一个节点）
             pos = pos.next;
 
-        head.next = pos.next;  // 插入
+        head.next = pos.next;  // 插入节点
         pos.next = head;
-        head = next;
-        return head;
+
+        return list;
+    }
+
+    /*
+    * 解法3：递归（dummyNode 版）
+    * - 思路：与解法2一致，只是在插入节点时使用虚拟头结点。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    */
+    public static ListNode insertionSortList3(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+
+        ListNode list = insertionSortList2(head.next);
+        ListNode dummyNode = new ListNode(), curr = list, pos = dummyNode;
+
+        while (curr != null && head.val > curr.val) {  // 找到插入位置
+            pos.next = curr;
+            curr = curr.next;
+            pos = pos.next;
+        }
+
+        pos.next = head;
+        pos = pos.next;
+        pos.next = curr;
+
+        return dummyNode.next;
     }
 
     public static void main(String[] args) {
