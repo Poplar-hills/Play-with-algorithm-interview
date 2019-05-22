@@ -8,10 +8,18 @@ import static Utils.Helpers.*;
 * Sort List
 *
 * - Sort a linked list in O(nlogn) time using constant space complexity.
-* - 思路：因为 Quick sort 非常依赖于数组的随机访问能力，因此不适用于链表，而 Merge Sort 适用于链表，因此此题应采用 Merge Sort 思路。
 * */
 
 public class L148_SortList {
+    /*
+    * 解法1：Merge Sort
+    * - 思路：因为要求用 O(nlogn) 的算法排序，而 Quick Sort 非常依赖于数组的随机访问能力，不适用于链表，而 Merge Sort 适用于链表。
+    *        要使用 Merge Sort 为链表排序，则需解决：1. 如何对链表进行二分（分成前半部分和后半部分）；2. 如何对各自有序的链表进行合并。
+    *        1. 采用类似 Floyd Cycle detection 的方法，指针 slow 每次走1步，指针 fast 每次走2步，当 fast 到头时，slow 一定指向
+    *           链表中点。这里有个小坑 —— 当 fast 和 slow 都到达各自位置后，需要断开 fast 最后一个节点和 slow 第一个节点之间的链接，
+    *           否则往下递归二分时 fast 仍然是整个链表，而非前半部分。
+    *        2. 没啥好说的。
+    * */
     public static ListNode sortList(ListNode head) {
         if (head == null || head.next == null)
             return head;
