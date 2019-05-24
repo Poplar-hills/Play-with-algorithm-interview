@@ -1,4 +1,4 @@
-package LinkedList.ClassicProblems;
+package LinkedList.ClassicInterweaving;
 
 import Utils.Helpers.ListNode;
 
