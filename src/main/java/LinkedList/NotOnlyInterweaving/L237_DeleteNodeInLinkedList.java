@@ -12,11 +12,13 @@ import Utils.Helpers.ListNode;
 *   例子：要删除 1 -> 2 -> 3 -> 4 -> 5 中的节点3：
 *              1 -> 2 -> 4    4 -> 5
 *                        |_________↑
+* - 意义：本题不是通过操作节点 next 指针解决的，而是改变节点值，这种题比较少见，但也是有的。
 * */
 
 public class L237_DeleteNodeInLinkedList {
     public static void deleteNode(ListNode node) {
-        if (node == null || node.next == null) return;
+        if (node == null) return;
+        if (node.next == null) node = null;  // 待删除节点是链表最后一个节点
         node.val = node.next.val;
         node.next = node.next.next;
     }
