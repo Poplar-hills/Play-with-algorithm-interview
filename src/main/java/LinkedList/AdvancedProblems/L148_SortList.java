@@ -127,14 +127,49 @@ public class L148_SortList {
         return p;                           // 返回最后一个节点
     }
 
+    /*
+    * 解法3：Dual-Pivot Quick Sort (3-way Quick Sort)
+    * - 思路：直接将传入的 head 作为标定节点，建立三个子链表，分别存储 > head.val、== head.val、< head.val 的节点，
+    *        之后对除了 == head.val 以外的子链表进行递归排序，最后返回两两 merge 的结果。
+    * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+    * */
+    public static ListNode sortList3(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+
+        ListNode smallDummy = new ListNode(), small = smallDummy;
+        ListNode equalDummy = new ListNode(), equal = equalDummy;
+        ListNode largeDummy = new ListNode(), large = largeDummy;
+
+        ListNode curr = head;
+        while (curr != null) {
+            if (curr.val < head.val) {
+                small.next = curr;
+                small = small.next;
+            } else if (curr.val == head.val) {
+                equal.next = curr;
+                equal = equal.next;
+            } else {
+                large.next = curr;
+                large = large.next;
+            }
+            curr = curr.next;
+        }
+        small.next = equal.next = large.next = null;        // put an end
+
+        ListNode sortedSmall = sortList3(smallDummy.next);  // 对于 > head、< head 的子链表递归排序（== head 的子链表不需要再排）
+        ListNode sortedLarge = sortList3(largeDummy.next);
+        return merge(merge(sortedSmall, sortedLarge), equalDummy.next);  // 最终两两 merge 在一起（merge 顺序无所谓）
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{5, 1, 6, 4, 2, 7, 3});
-        printLinkedList(sortList2(l1));  // expects 1->2->3->4->5->6->7->NULL
+        printLinkedList(sortList3(l1));  // expects 1->2->3->4->5->6->7->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{4, 2, 1, 3});
-        printLinkedList(sortList2(l2));  // expects 1->2->3->4->NULL
+        printLinkedList(sortList3(l2));  // expects 1->2->3->4->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{-1, 5, 3, 4, 0});
-        printLinkedList(sortList2(l3));  // expects -1->0->3->4->5->NULL
+        printLinkedList(sortList3(l3));  // expects -1->0->3->4->5->NULL
     }
 }
