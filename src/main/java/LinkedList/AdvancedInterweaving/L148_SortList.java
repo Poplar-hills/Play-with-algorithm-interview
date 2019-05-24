@@ -98,7 +98,7 @@ public class L148_SortList {
     }
 
     private static ListNode split(ListNode left, int count) {  // 将一个链表按照给定的节点个数（count）切成两段（第二段可能不够 count 个），返回第二段链表的头节点
-        for (int i = 1; left != null && i < count; i++)
+        for (int i = 1; left != null && i < count; i++)        // 注：∵ Java is passed by value ∴ 可以直接用参数 left 作为指针来移动，不需要再定义 curr
             left = left.next;
 
         if (left == null) return null;
