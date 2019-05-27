@@ -12,7 +12,7 @@ import static Utils.Helpers.*;
 
 public class L61_RotateList {
     public static ListNode rotateRight(ListNode head, int k) {
-        
+
     }
 
     public static void main(String[] args) {
