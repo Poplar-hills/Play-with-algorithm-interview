@@ -25,13 +25,25 @@ public class L206_ReverseLinkedList {
 
     /*
      * 解法2：递归
+     * - 思路：当使用递归反向链表时，我们期望的过程是：
+     *        1 -> 2 -> 3 -> 4
+     *                     ← 4
+     *                ← 4<-3
+     *           ← 4<-3<-2
+     *      ← 4<-3<-2<-1
+     *   要实现这个过程：
+     *   1. 递归终止条件：head == null || head.next == null（这两种情况只需返回 head 即可，不需要改变节点顺序）
+     *   2. 递归单元逻辑：例如当 reserveList(head.next) 返回 4<-3 时，链表为：1->2->4<-3，此时 head 为 2。因此需要让 2<-4
+     *      反向，得到 1->2<-4<-3，再返回 head 到上一层。要反向 2<-4 就需要：
+     *      a. 让 4.next 指向 2 —— head.next.next = head
+     *      b. 移除 2.next 的指向 —— head.next = null
      * - 时间复杂度 O(n)，空间复杂度 O(n)
      * */
     public static ListNode reverseList2(ListNode head) {
         if (head == null || head.next == null) return head;
-        ListNode newHead = reverseList2(head.next);  // 这一句是递归的关键，要求 head 的 reverse，先求 head.next 的 reverse
-        head.next.next = head;  // 把 head 节点放在了尾部
-        head.next = null;       // 将尾部 head 节点前面的节点置为 null（这样完成递归后第一个节点就是 null 了，其他节点值会被上一句覆盖）
+        ListNode newHead = reverseList2(head.next);
+        head.next.next = head;
+        head.next = null;
         return newHead;
     }
 
