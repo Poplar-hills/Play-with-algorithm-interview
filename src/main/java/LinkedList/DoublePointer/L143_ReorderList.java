@@ -43,6 +43,7 @@ public class L143_ReorderList {
     *      1    2    3 -> 4    5   - 整个 reorder 过程完成
     *      |    |_________↑    ↑
     *      |___________________|
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * * */
     public static void reorderList(ListNode head) {
         if (head == null || head.next == null) return;
