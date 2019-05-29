@@ -99,17 +99,62 @@ public class L143_ReorderList {
         curr.next = null;  // 对于 test case 2 来说，最后这里 curr 不是指向 null，而是指向3节点（自己画一下）
     }
 
+    /*
+    * 解法3：生成反向链表
+    * - 思路：实际上如果我们需要的是一个能从后往前移动的指针，那么最直接的方式就是先生成一个反向链表。因此可知有这几步：
+    *   1. 生成反向链表 —— 不需包含全部节点，只需要原链表的后一半节点即可，因此需要一个方法找到链表的中间节点，从中间节点开始反向。
+    *   2. 将反向的半截链表中的每个节点插入原链表中：
+    *      head:  1 -> 2 -> 3 -> 4 -> 5，中间节点为3，可得反向链表：
+    *      head2: 5 -> 4 -> 3
+    *      将 head2 的每个节点插入 head 得到：1 -> 5 -> 2 -> 4 -> 3
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static void reorderList3(ListNode head) {
+        ListNode midNode = mid(head);
+        ListNode head2 = reverse(midNode);
+        ListNode prev1 = head, prev2 = head2;
+
+        while (prev2 != null && prev2.next != null) {  // 当反向列表中的元素耗尽时即插入完成
+            ListNode temp = prev1.next;
+            prev1.next = prev2;
+            prev2 = prev2.next;
+            prev1.next.next = temp;
+            prev1 = temp;
+        }
+    }
+
+    private static ListNode reverse(ListNode head) {
+        if (head == null) return null;
+        ListNode prev = null, curr = head;
+        while (curr != null) {
+            ListNode temp = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = temp;
+        }
+        return prev;
+    }
+
+    private static ListNode mid(ListNode head) {  // 找链表的中间点的方法有很多（如先求得长度），但这种 slow/fast 是最快的 O(n/2)
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        reorderList2(l1);
+        reorderList3(l1);
         printLinkedList(l1);  // expects 1->5->2->4->3->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 3, 4});
-        reorderList2(l2);
+        reorderList3(l2);
         printLinkedList(l2);  // expects 1->4->2->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3});
-        reorderList2(l3);
+        reorderList3(l3);
         printLinkedList(l3);  // expects 1->3->1->1->1->1->2->3->1->NULL
     }
 }
