@@ -73,17 +73,43 @@ public class L143_ReorderList {
         prev.next = null;  // put an end
     }
 
+    /*
+    * 解法2：借助 Stack 实现从右往左遍历（化简版）
+    * - 思路：不同于解法1中穿插的从 curr 和 Stack 中取节点的方式，该解法将 Stack 中的节点插入到链表的适合位置上。因此需要知道：
+    *   1. 每个节点的插入位置 —— 在链表上每隔一个节点插入一个 Stack 中的节点。
+    *   2. 停止条件 —— ∵ 只需要 Stack 中的前一半元素 ∴ 停止条件是 Stack.size / 2。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static void reorderList2(ListNode head) {
+        if (head == null || head.next == null) return;
+
+        Stack<ListNode> stack = new Stack<>();
+        for (ListNode curr = head; curr != null; curr = curr.next)
+            stack.push(curr);
+
+        int i = 0, len = stack.size();  // Stack 的 size 就是链表长度，不需解法1中的手动计算
+        ListNode curr = head;
+        while (i < len / 2) {
+            ListNode temp = curr.next;
+            curr.next = stack.pop();
+            curr.next.next = temp;
+            curr = temp;
+            i++;
+        }
+        curr.next = null;  // 对于 test case 2 来说，最后这里 curr 不是指向 null，而是指向3节点（自己画一下）
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        reorderList(l1);
+        reorderList2(l1);
         printLinkedList(l1);  // expects 1->5->2->4->3->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 3, 4});
-        reorderList(l2);
+        reorderList2(l2);
         printLinkedList(l2);  // expects 1->4->2->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3});
-        reorderList(l3);
+        reorderList2(l3);
         printLinkedList(l3);  // expects 1->3->1->1->1->1->2->3->1->NULL
     }
 }
