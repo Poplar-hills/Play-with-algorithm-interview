@@ -109,9 +109,9 @@ public class L234_PalindromeLinkedList {
         while (fast != null && fast.next != null) {
             preSlow = slow;
             slow = slow.next;
-            fast = fast.next.next;  // 若链表有偶数个节点则 fast 最后会停在 null 上，若有奇数个节点则会停在尾节点上
+            fast = fast.next.next;  // 若有偶数个节点则 fast 最后会停在 null 上，若有奇数个节点则会停在尾节点上
         }
-        if (fast == null) slow = preSlow;
+        if (fast == null) slow = preSlow;  // 若有偶数个节点则让 slow 往左移一位，从而可统一两种情况进行截断
         secondHalf = slow.next;
         slow.next = null;
         return secondHalf;
