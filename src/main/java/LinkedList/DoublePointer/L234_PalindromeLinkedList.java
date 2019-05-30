@@ -55,20 +55,50 @@ public class L234_PalindromeLinkedList {
         return true;
     }
 
+    /*
+    * 解法3：生成反向链表
+    * - 思路：直接生成一个反向链表。
+    * - 注意：反向链表需要重新创建，而不能用 L206_ReverseLinkedList 中原地修改的方式，否则原链表会被修改导致后面无法正确遍历。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static boolean isPalindrome3(ListNode head) {
+        ListNode curr1 = head, curr2 = createReversedList(head);
+        while (curr1 != null && curr2 != null && curr1 != curr2) {
+            if (curr1.val != curr2.val) return false;
+            curr1 = curr1.next;
+            curr2 = curr2.next;
+        }
+        return true;
+    }
+
+    private static ListNode createReversedList(ListNode head) {  // 该方法重新创建一个反向链表，而非原地修改
+        ListNode dummyNode = new ListNode(), curr = head;
+        while (curr != null) {
+            ListNode temp = dummyNode.next;
+            dummyNode.next = new ListNode(curr.val);  // 这里新建节点而不是直接将 curr 聊到 dummyNode 上
+            curr = curr.next;
+            dummyNode.next.next = temp;
+        }
+        return dummyNode.next;
+    }
+
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{1, 2});
-        log(isPalindrome2(l1));  // expects false
+        ListNode l0 = createLinkedListFromArray(new int[]{1, 2});
+        log(isPalindrome3(l0));  // expects false
+
+        ListNode l1 = createLinkedListFromArray(new int[]{1, 1, 2, 1});
+        log(isPalindrome3(l1));  // expects false
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 2, 1});
-        log(isPalindrome2(l2));  // expects true
+        log(isPalindrome3(l2));  // expects true
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 0, 1});
-        log(isPalindrome2(l3));  // expects true
+        log(isPalindrome3(l3));  // expects true
 
         ListNode l4 = createLinkedListFromArray(new int[]{1});
-        log(isPalindrome2(l4));  // expects true
+        log(isPalindrome3(l4));  // expects true
 
         ListNode l5 = createLinkedListFromArray(new int[]{});
-        log(isPalindrome2(l5));  // expects true
+        log(isPalindrome3(l5));  // expects true
     }
 }
