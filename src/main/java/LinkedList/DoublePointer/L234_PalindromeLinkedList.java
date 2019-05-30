@@ -13,6 +13,11 @@ import static Utils.Helpers.*;
 * */
 
 public class L234_PalindromeLinkedList {
+    /*
+    * 错误解：采用类似判断括号匹配的思路
+    * - 匹配的括号（如 {([])}）一定是 palindrome，而 palindrome 不一定是匹配括号的形态。例如 test case 3 中的 [1,0,1]，中间
+    *   有单个没有匹配的元素，这种情况也是 palindrome，但无法用括号匹配的思路来判断。
+    * */
     public static boolean isPalindrome(ListNode head) {
         if (head == null || head.next == null) return true;
 
