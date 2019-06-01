@@ -14,7 +14,7 @@ public class L20_Valid_Parentheses {
     public static boolean isValid(String s) {
         Stack<Character> stack = new Stack<Character>();
         for (char c : s.toCharArray()) {
-            if (isOpenningBracket(c))
+            if (isOpenBracket(c))
                 stack.push(c);
             else if (stack.isEmpty() || !match(stack.pop(), c))
                 return false;
@@ -22,7 +22,7 @@ public class L20_Valid_Parentheses {
         return stack.isEmpty();
     }
 
-    private static boolean isOpenningBracket(char c) {
+    private static boolean isOpenBracket(char c) {
         return c == '(' || c == '[' || c == '{';
     }
 
