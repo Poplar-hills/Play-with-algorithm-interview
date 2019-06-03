@@ -16,7 +16,7 @@ import static Utils.Helpers.*;
 
 public class L71_SimplifyPath {
     public static String simplifyPath(String path) {
-
+        return path;
     }
 
     public static void main(String[] args) {

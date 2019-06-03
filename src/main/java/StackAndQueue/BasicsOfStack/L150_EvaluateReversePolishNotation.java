@@ -10,11 +10,42 @@ import static Utils.Helpers.*;
 * - Evaluate the value of an arithmetic expression in Reverse Polish Notation.
 *   1. Valid operators are +, -, *, /.
 *   2. Each operand may be an integer or another expression.
+*   3. The given RPN expression is always valid. That means the expression would always evaluate to a result
+*      and there won't be any divide by zero operation.
 * */
 
 public class L150_EvaluateReversePolishNotation {
+    /*
+    * 解法1：
+    * */
     public static int evalRPN(String[] tokens) {
+        Stack<String> stack = new Stack<>();
 
+        for (String s : tokens) {
+            if (isOperator(s)) {
+              int operand2nd = Integer.parseInt(stack.pop());
+              int operand1st = Integer.parseInt(stack.pop());
+              stack.push(calculate(operand1st, operand2nd, s));
+            } else {
+                stack.push(s);
+            }
+        }
+
+        return Integer.parseInt(stack.pop());
+    }
+
+    private static boolean isOperator(String s) {
+        return s.equals("+") || s.equals("-") || s.equals("*") || s.equals("/");
+    }
+
+    private static String calculate(int operand1st, int operand2nd, String s) {
+        switch (s) {
+            case "+": return String.valueOf(operand1st + operand2nd);
+            case "-": return String.valueOf(operand1st - operand2nd);
+            case "*": return String.valueOf(operand1st * operand2nd);
+            case "/": return String.valueOf(operand1st / operand2nd);
+            default: return null;
+        }
     }
 
     public static void main(String[] args) {
