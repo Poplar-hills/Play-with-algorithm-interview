@@ -36,7 +36,7 @@ public class L71_SimplifyPath {
     }
 
     /*
-     * 解法2：解法1的 stream 版
+     * 解法2：解法1的 stream 版（其实没什么改进，运行效率反而低很多）
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static String simplifyPath2(String path) {
