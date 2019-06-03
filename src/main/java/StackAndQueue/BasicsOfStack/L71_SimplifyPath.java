@@ -1,7 +1,5 @@
 package StackAndQueue.BasicsOfStack;
 
-import java.util.Stack;
-
 import static Utils.Helpers.*;
 
 /*
