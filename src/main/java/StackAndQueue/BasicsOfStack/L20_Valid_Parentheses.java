@@ -12,6 +12,10 @@ import static Utils.Helpers.*;
 * */
 
 public class L20_Valid_Parentheses {
+    /*
+    * 解法1：Stack
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
     public static boolean isValid(String s) {
         Deque<Character> stack = new ArrayDeque<>();
         for (char c : s.toCharArray()) {

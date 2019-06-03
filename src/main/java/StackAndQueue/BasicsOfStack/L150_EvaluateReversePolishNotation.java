@@ -19,6 +19,7 @@ import static Utils.Helpers.*;
 public class L150_EvaluateReversePolishNotation {
     /*
     * 解法1：Stack
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int evalRPN(String[] tokens) {
         Deque<String> stack = new ArrayDeque<>();
@@ -52,6 +53,7 @@ public class L150_EvaluateReversePolishNotation {
 
     /*
     * 解法2：Stack（lambda 版）
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int evalRPN2(String[] tokens) {
         Deque<Integer> stack = new ArrayDeque<>();
