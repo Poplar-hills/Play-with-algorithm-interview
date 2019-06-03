@@ -16,16 +16,16 @@ import static Utils.Helpers.*;
 
 public class L150_EvaluateReversePolishNotation {
     /*
-    * 解法1：
+    * 解法1：Stack
     * */
     public static int evalRPN(String[] tokens) {
         Stack<String> stack = new Stack<>();
 
         for (String s : tokens) {
             if (isOperator(s)) {
-              int operand2nd = Integer.parseInt(stack.pop());
-              int operand1st = Integer.parseInt(stack.pop());
-              stack.push(calculate(operand1st, operand2nd, s));
+              int operand2 = Integer.parseInt(stack.pop());
+              int operand1 = Integer.parseInt(stack.pop());
+              stack.push(calculate(operand1, operand2, s));
             } else {
                 stack.push(s);
             }
@@ -38,12 +38,12 @@ public class L150_EvaluateReversePolishNotation {
         return s.equals("+") || s.equals("-") || s.equals("*") || s.equals("/");
     }
 
-    private static String calculate(int operand1st, int operand2nd, String s) {
-        switch (s) {
-            case "+": return String.valueOf(operand1st + operand2nd);
-            case "-": return String.valueOf(operand1st - operand2nd);
-            case "*": return String.valueOf(operand1st * operand2nd);
-            case "/": return String.valueOf(operand1st / operand2nd);
+    private static String calculate(int operand1, int operand2, String operator) {
+        switch (operator) {
+            case "+": return String.valueOf(operand1 + operand2);
+            case "-": return String.valueOf(operand1 - operand2);
+            case "*": return String.valueOf(operand1 * operand2);
+            case "/": return String.valueOf(operand1 / operand2);
             default: return null;
         }
     }
