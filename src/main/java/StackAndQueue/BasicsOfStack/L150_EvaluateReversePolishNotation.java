@@ -1,6 +1,8 @@
 package StackAndQueue.BasicsOfStack;
 
 import java.util.Stack;
+import java.util.function.Function;
+import java.util.function.IntBinaryOperator;
 
 import static Utils.Helpers.*;
 
@@ -48,12 +50,42 @@ public class L150_EvaluateReversePolishNotation {
         }
     }
 
+    /*
+    * 解法2：Stack（lambda 版）
+    * */
+    public static int evalRPN2(String[] tokens) {
+        Stack<Integer> stack = new Stack<>();
+
+        for (String s : tokens) {
+            IntBinaryOperator f = getFunction(s);
+            if (f != null) {
+                int operand2 = stack.pop();
+                int operand1 = stack.pop();
+                stack.push(f.applyAsInt(operand1, operand2));
+            } else {
+                stack.push(Integer.parseInt(s));
+            }
+        }
+
+        return stack.pop();
+    }
+
+    private static IntBinaryOperator getFunction(String operator) {
+        switch (operator) {
+            case "+": return (x, y) -> x + y;
+            case "-": return (x, y) -> x - y;
+            case "*": return (x, y) -> x * y;
+            case "/": return (x, y) -> x / y;
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
-        log(evalRPN(new String[]{"2", "1", "+", "3", "*"}));   // expects 9. ((2 + 1) * 3) = 9
+        log(evalRPN2(new String[]{"2", "1", "+", "3", "*"}));   // expects 9. ((2 + 1) * 3) = 9
 
-        log(evalRPN(new String[]{"4", "13", "5", "/", "+"}));  // expects 6. (4 + (13 / 5)) = 6
+        log(evalRPN2(new String[]{"4", "13", "5", "/", "+"}));  // expects 6. (4 + (13 / 5)) = 6
 
-        log(evalRPN(new String[]{"10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"}));
+        log(evalRPN2(new String[]{"10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"}));
         // expects 22.
         // ((10 * (6 / ((9 + 3) * -11))) + 17) + 5
         //= ((10 * (6 / (12 * -11))) + 17) + 5
