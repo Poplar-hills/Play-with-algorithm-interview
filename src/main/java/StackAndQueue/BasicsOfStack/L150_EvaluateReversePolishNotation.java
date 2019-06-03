@@ -1,7 +1,7 @@
 package StackAndQueue.BasicsOfStack;
 
 import java.util.Stack;
-import java.util.function.IntBinaryOperator;
+import java.util.function.BiFunction;
 
 import static Utils.Helpers.*;
 
@@ -56,11 +56,11 @@ public class L150_EvaluateReversePolishNotation {
         Stack<Integer> stack = new Stack<>();
 
         for (String s : tokens) {
-            IntBinaryOperator f = getFunction(s);
+            BiFunction<Integer, Integer, Integer> f = getFunction(s);
             if (f != null) {
                 int operand2 = stack.pop();
                 int operand1 = stack.pop();
-                stack.push(f.applyAsInt(operand1, operand2));
+                stack.push(f.apply(operand1, operand2));
             } else {
                 stack.push(Integer.parseInt(s));
             }
@@ -69,7 +69,7 @@ public class L150_EvaluateReversePolishNotation {
         return stack.pop();
     }
 
-    private static IntBinaryOperator getFunction(String operator) {
+    private static BiFunction<Integer, Integer, Integer> getFunction(String operator) {
         switch (operator) {
             case "+": return (x, y) -> x + y;
             case "-": return (x, y) -> x - y;
