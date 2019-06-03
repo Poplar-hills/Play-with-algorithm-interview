@@ -1,7 +1,6 @@
 package StackAndQueue.BasicsOfStack;
 
 import java.util.Stack;
-import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
 
 import static Utils.Helpers.*;
