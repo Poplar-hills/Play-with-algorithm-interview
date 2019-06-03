@@ -27,7 +27,7 @@ public class L71_SimplifyPath {
         Stack<String> stack = new Stack<>();  // 注意：如果使用 Deque 代替 Stack，则最后一句输出会是反的，因为他们 have reverse iteration orders（SEE: https://stackoverflow.com/questions/12524826/why-should-i-use-deque-over-stack）
 
         for (String s : path.split("/")) {
-            if (s.isEmpty() || s.equals("/") || s.equals(".")) continue;
+            if (s.isEmpty() || s.equals(".")) continue;
             if (!s.equals("..")) stack.push(s);
             else if (!stack.isEmpty()) stack.pop();
         }
@@ -44,7 +44,7 @@ public class L71_SimplifyPath {
         Stack<String> stack = new Stack<>();
 
         Stream.of(path.split("/"))
-                .filter(s -> !s.isEmpty() && !s.equals("/") && !s.equals("."))
+                .filter(s -> !s.isEmpty() && !s.equals("."))
                 .forEach(s -> {
                      if (!s.equals("..")) stack.push(s);
                      else if (!stack.isEmpty()) stack.pop();
