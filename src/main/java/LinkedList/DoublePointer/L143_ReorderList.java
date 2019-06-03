@@ -2,6 +2,8 @@ package LinkedList.DoublePointer;
 
 import Utils.Helpers.ListNode;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 import static Utils.Helpers.*;
@@ -48,7 +50,7 @@ public class L143_ReorderList {
     public static void reorderList(ListNode head) {
         if (head == null || head.next == null) return;
 
-        Stack<ListNode> stack = new Stack<>();
+        Deque<ListNode> stack = new ArrayDeque<>();
         int len = 0;
         for (ListNode curr = head; curr != null; curr = curr.next) {
             stack.push(curr);
@@ -83,7 +85,7 @@ public class L143_ReorderList {
     public static void reorderList2(ListNode head) {
         if (head == null || head.next == null) return;
 
-        Stack<ListNode> stack = new Stack<>();
+        Deque<ListNode> stack = new ArrayDeque<>();
         for (ListNode curr = head; curr != null; curr = curr.next)
             stack.push(curr);
 

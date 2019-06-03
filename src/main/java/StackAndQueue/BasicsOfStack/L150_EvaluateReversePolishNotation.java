@@ -1,6 +1,7 @@
 package StackAndQueue.BasicsOfStack;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.function.BiFunction;
 
 import static Utils.Helpers.*;
@@ -20,7 +21,7 @@ public class L150_EvaluateReversePolishNotation {
     * 解法1：Stack
     * */
     public static int evalRPN(String[] tokens) {
-        Stack<String> stack = new Stack<>();
+        Deque<String> stack = new ArrayDeque<>();
 
         for (String s : tokens) {
             if (isOperator(s)) {
@@ -53,7 +54,7 @@ public class L150_EvaluateReversePolishNotation {
     * 解法2：Stack（lambda 版）
     * */
     public static int evalRPN2(String[] tokens) {
-        Stack<Integer> stack = new Stack<>();
+        Deque<Integer> stack = new ArrayDeque<>();
 
         for (String s : tokens) {
             BiFunction<Integer, Integer, Integer> f = getFunction(s);

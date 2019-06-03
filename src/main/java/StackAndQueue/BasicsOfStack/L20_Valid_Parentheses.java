@@ -1,6 +1,7 @@
 package StackAndQueue.BasicsOfStack;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static Utils.Helpers.*;
 
@@ -12,7 +13,7 @@ import static Utils.Helpers.*;
 
 public class L20_Valid_Parentheses {
     public static boolean isValid(String s) {
-        Stack<Character> stack = new Stack<Character>();
+        Deque<Character> stack = new ArrayDeque<>();
         for (char c : s.toCharArray()) {
             if (isOpenBracket(c))
                 stack.push(c);

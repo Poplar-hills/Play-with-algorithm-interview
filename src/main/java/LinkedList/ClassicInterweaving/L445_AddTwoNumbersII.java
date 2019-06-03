@@ -2,7 +2,8 @@ package LinkedList.ClassicInterweaving;
 
 import Utils.Helpers.ListNode;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static Utils.Helpers.*;
 
@@ -64,7 +65,7 @@ public class L445_AddTwoNumbersII {
     * - 时间复杂度 O(max(m,n))，空间复杂度 O(m+n)。
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
-        Stack<Integer> s1 = new Stack<>(), s2 = new Stack<>();
+        Deque<Integer> s1 = new ArrayDeque<>(), s2 = new ArrayDeque<>();
         ListNode curr1 = l1, curr2 = l2;
 
         while (curr1 != null || curr2 != null) {  // O(max(m,n))
@@ -80,9 +81,9 @@ public class L445_AddTwoNumbersII {
 
         ListNode list = null;
         int carry = 0;
-        while (!s1.empty() || !s2.empty() || carry != 0) {  // O(max(m,n))
-            int s1Val = !s1.empty() ? s1.pop() : 0;
-            int s2Val = !s2.empty() ? s2.pop() : 0;
+        while (!s1.isEmpty() || !s2.isEmpty() || carry != 0) {  // O(max(m,n))
+            int s1Val = !s1.isEmpty() ? s1.pop() : 0;
+            int s2Val = !s2.isEmpty() ? s2.pop() : 0;
             int sum = s1Val + s2Val + carry;
 
             carry = sum / 10;

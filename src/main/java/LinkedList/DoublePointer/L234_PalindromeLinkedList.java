@@ -2,6 +2,8 @@ package LinkedList.DoublePointer;
 
 import Utils.Helpers.ListNode;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 import static Utils.Helpers.*;
@@ -21,7 +23,7 @@ public class L234_PalindromeLinkedList {
     public static boolean isPalindrome(ListNode head) {
         if (head == null || head.next == null) return true;
 
-        Stack<ListNode> stack = new Stack<>();
+        Deque<ListNode> stack = new ArrayDeque<>();
         for (ListNode curr = head; curr != null; curr = curr.next) {
             if (!stack.isEmpty() && curr.val == stack.peek().val)
                 stack.pop();
@@ -29,7 +31,7 @@ public class L234_PalindromeLinkedList {
                 stack.push(curr);
         }
 
-        return stack.empty();
+        return stack.isEmpty();
     }
 
     /*
@@ -41,7 +43,7 @@ public class L234_PalindromeLinkedList {
     public static boolean isPalindrome1(ListNode head) {
         if (head == null || head.next == null) return true;
 
-        Stack<ListNode> stack = new Stack<>();
+        Deque<ListNode> stack = new ArrayDeque<>();
         for (ListNode curr = head; curr != null; curr = curr.next)
             stack.push(curr);
 
