@@ -37,8 +37,25 @@ public class L145_BinaryTreePostorderTraversal {
      * */
     public static List<Integer> postorderTraversal2(TreeNode root) {
         List<Integer> list = new ArrayList<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        if (root == null) return list;
 
-
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            TreeNode temp = stack.peek();
+            if (temp.left != null) {
+                stack.push(temp.left);
+                temp.left = null;
+            }
+            else if (temp.right != null) {
+                stack.push(temp.right);
+                temp.right = null;
+            }
+            else {
+                list.add(temp.val);
+                stack.pop();
+            }
+        }
 
         return list;
     }
