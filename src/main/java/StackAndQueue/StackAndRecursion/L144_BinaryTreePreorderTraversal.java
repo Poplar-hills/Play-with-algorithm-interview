@@ -57,5 +57,8 @@ public class L144_BinaryTreePreorderTraversal {
 
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
         log(preorderTraversal2(t2));  // expects []
+
+        TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
+        log(preorderTraversal2(t3));  // expects [5, 3, 1, 4, 7, 6]
     }
 }

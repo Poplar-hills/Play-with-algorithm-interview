@@ -16,7 +16,7 @@ import static Utils.Helpers.*;
 public class L145_BinaryTreePostorderTraversal {
     /*
     * 解法1：递归
-    * -
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<Integer> postorderTraversal(TreeNode root) {
         List<Integer> list = new ArrayList<>();
@@ -31,14 +31,26 @@ public class L145_BinaryTreePostorderTraversal {
         list.add(node.val);
     }
 
+    /*
+     * 解法2：递归
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<Integer> postorderTraversal2(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+
+
+
+        return list;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
-        log(postorderTraversal(t1));  // expects [3, 2, 1]
+        log(postorderTraversal2(t1));  // expects [3, 2, 1]
 
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
-        log(postorderTraversal(t2));  // expects []
+        log(postorderTraversal2(t2));  // expects []
 
-        TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, null, 9});
-        log(postorderTraversal(t3));  // expects [1, 4, 3, 9, 7, 5]
+        TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
+        log(postorderTraversal2(t3));  // expects [1, 4, 3, 6, 7, 5]
     }
 }

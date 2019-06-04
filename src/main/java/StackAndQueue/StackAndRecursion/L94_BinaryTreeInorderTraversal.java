@@ -59,7 +59,7 @@ public class L94_BinaryTreeInorderTraversal {
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
         log(inorderTraversal2(t2));  // expects []
 
-        TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, null, 9});
-        log(inorderTraversal2(t3));  // expects [1, 3, 4, 5, 7, 9]
+        TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
+        log(inorderTraversal2(t3));  // expects [1, 3, 4, 5, 6, 7]
     }
 }
