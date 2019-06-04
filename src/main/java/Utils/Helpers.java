@@ -1,6 +1,10 @@
 package Utils;
 
+import javafx.util.Pair;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -119,5 +123,54 @@ public class Helpers {
         public Node left;
         public Node right;
         public int value;
+    }
+
+    public static class TreeNode {
+        public int val;
+        public TreeNode left;
+        public TreeNode right;
+        TreeNode(int x) { val = x; }
+    }
+
+    public static TreeNode createBinaryTreeFromArray(Integer[] arr) {
+        return createBinaryTreeFromArray(arr, 0).getValue();
+    }
+
+    private static Pair<Integer, TreeNode> createBinaryTreeFromArray(Integer[] arr, int i) {
+        TreeNode node = new TreeNode(arr[i]);
+
+        if (++i < arr.length && arr[i] != null) {
+            Pair<Integer, TreeNode> p = createBinaryTreeFromArray(arr, i);
+            i = p.getKey();
+            node.left = p.getValue();
+        }
+        if (++i < arr.length && arr[i] != null) {
+            Pair<Integer, TreeNode> p = createBinaryTreeFromArray(arr, i);
+            i = p.getKey();
+            node.right = p.getValue();
+        }
+
+        return new Pair<>(i, node);
+    }
+
+    public static void printBinaryTree(TreeNode node) {
+        ArrayList<Integer> list = new ArrayList<>();
+        printBinaryTree(node, list);
+        log(list);
+    }
+
+    private static void printBinaryTree(TreeNode node, List<Integer> list) {
+        if (node == null) {
+            list.add(null);
+            return;
+        }
+        list.add(node.val);
+        printBinaryTree(node.left, list);
+        printBinaryTree(node.right, list);
+    }
+
+    public static void main(String[] args) {
+        TreeNode t = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 8, null, 9, null, null});
+        printBinaryTree(t);
     }
 }
