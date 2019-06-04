@@ -42,10 +42,10 @@ public class L144_BinaryTreePreorderTraversal {
 
         stack.push(root);
         while (!stack.isEmpty()) {
-            TreeNode node = stack.pop();
-            list.add(node.val);
-            if (node.right != null) stack.push(node.right);
-            if (node.left != null) stack.push(node.left);
+            TreeNode curr = stack.pop();
+            list.add(curr.val);
+            if (curr.right != null) stack.push(curr.right);
+            if (curr.left != null) stack.push(curr.left);
         }
 
         return list;
