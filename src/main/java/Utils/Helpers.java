@@ -168,10 +168,4 @@ public class Helpers {
         printBinaryTree(node.left, list);
         printBinaryTree(node.right, list);
     }
-
-    public static void main(String[] args) {
-//        TreeNode t = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 8, null, 9, null, null});
-        TreeNode t = createBinaryTreeFromArray(new Integer[]{});
-        printBinaryTree(t);
-    }
 }
