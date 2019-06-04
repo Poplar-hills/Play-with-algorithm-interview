@@ -133,7 +133,7 @@ public class Helpers {
     }
 
     public static TreeNode createBinaryTreeFromArray(Integer[] arr) {
-        return createBinaryTreeFromArray(arr, 0).getValue();
+        return arr.length == 0 ? null : createBinaryTreeFromArray(arr, 0).getValue();
     }
 
     private static Pair<Integer, TreeNode> createBinaryTreeFromArray(Integer[] arr, int i) {
@@ -155,7 +155,7 @@ public class Helpers {
 
     public static void printBinaryTree(TreeNode node) {
         ArrayList<Integer> list = new ArrayList<>();
-        printBinaryTree(node, list);
+        if (node != null) printBinaryTree(node, list);
         log(list);
     }
 
@@ -170,7 +170,8 @@ public class Helpers {
     }
 
     public static void main(String[] args) {
-        TreeNode t = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 8, null, 9, null, null});
+//        TreeNode t = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 8, null, 9, null, null});
+        TreeNode t = createBinaryTreeFromArray(new Integer[]{});
         printBinaryTree(t);
     }
 }
