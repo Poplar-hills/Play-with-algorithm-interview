@@ -32,7 +32,7 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     /*
-     * 解法2：递归
+     * 解法2：迭代
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> postorderTraversal2(TreeNode root) {

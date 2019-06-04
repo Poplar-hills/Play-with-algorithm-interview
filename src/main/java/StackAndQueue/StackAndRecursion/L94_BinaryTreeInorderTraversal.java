@@ -41,13 +41,13 @@ public class L94_BinaryTreeInorderTraversal {
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {
-            while (curr != null) {
+            while (curr != null) {  // 对一个节点先一直往左递归到底
                 stack.push(curr);
                 curr = curr.left;
             }
             curr = stack.pop();
-            list.add(curr.val);
-            curr = curr.right;
+            list.add(curr.val);     // 到底后访问出栈的节点
+            curr = curr.right;      // 对其右子节点重新来过
         }
         return list;
     }
