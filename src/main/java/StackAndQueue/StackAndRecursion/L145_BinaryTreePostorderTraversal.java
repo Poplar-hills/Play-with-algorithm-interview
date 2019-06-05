@@ -59,7 +59,7 @@ public class L145_BinaryTreePostorderTraversal {
 
     /*
     * 解法3：迭代
-    * - 先从右侧开始入栈右子节点，再转而遍历左子节点，使用两个 stack。
+    * - 思路：先从右侧开始入栈右子节点，再转而遍历左子节点，使用两个 stack。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * - 注：Java 中 Stack 接口的实现有很多：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated）。
     * */
@@ -123,14 +123,54 @@ public class L145_BinaryTreePostorderTraversal {
         return list;
     }
 
+    /*
+    * 解法5：迭代
+    * - 思路：使用一个标志位表示一个节点是否已经被遍历过，若没有则遍历它，若已遍历过则访问它的值。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * */
+    static class TaggedNode {
+        boolean hasIterated;
+        TreeNode node;
+        TaggedNode(TreeNode node) {
+            this.node = node;
+            hasIterated = false;
+        }
+    }
+
+    public static List<Integer> postorderTraversal5(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        Deque<TaggedNode> stack = new ArrayDeque<>();
+        if (root == null) return list;
+
+        TreeNode curr = root;
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) {
+                stack.push(new TaggedNode(curr));
+                curr = curr.left;
+            }
+            TaggedNode tNode = stack.pop();
+            curr = tNode.node;
+            if (!tNode.hasIterated) {
+                tNode.hasIterated = true;
+                stack.push(tNode);        // 将标志位置为 true 后放回 stack 中
+                curr = curr.right;
+            } else {
+                list.add(curr.val);
+                curr = null;              // 访问过值的节点就直接丢弃掉
+            }
+        }
+
+        return list;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
-        log(postorderTraversal3(t1));  // expects [3, 2, 1]
+        log(postorderTraversal5(t1));  // expects [3, 2, 1]
 
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
-        log(postorderTraversal3(t2));  // expects []
+        log(postorderTraversal5(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(postorderTraversal3(t3));  // expects [1, 4, 3, 6, 7, 5]
+        log(postorderTraversal5(t3));  // expects [1, 4, 3, 6, 7, 5]
     }
 }
