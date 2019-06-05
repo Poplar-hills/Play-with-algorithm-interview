@@ -1,9 +1,6 @@
 package StackAndQueue.StackAndRecursion;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 import static Utils.Helpers.*;
 
@@ -60,13 +57,40 @@ public class L145_BinaryTreePostorderTraversal {
         return list;
     }
 
+    /*
+    * 解法3：迭代
+    * - 先从右侧开始入栈右子节点，再转而遍历左子节点，使用两个 stack。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * - 注：Java 中 Stack 接口的实现有很多：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated）。
+    * */
+    public static List<Integer> postorderTraversal3(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        Deque<TreeNode> stack1 = new ArrayDeque<>(), stack2 = new ArrayDeque<>();  // stack1 可入可出，stack2 只入不出
+        TreeNode curr = root;
+
+        while (curr != null || !stack1.isEmpty()) {
+            if (curr != null) {     // 先沿着右侧遍历所有右子节点
+                stack1.push(curr);  // 将右子节点同时入栈到 stack1、stack2 中
+                stack2.push(curr);
+                curr = curr.right;
+            } else {                // 当不再有右子节点，转而开始遍历 stack1 中节点的左子节点
+                curr = stack1.pop();
+                curr = curr.left;
+            }
+        }
+
+        while (!stack2.isEmpty())
+            list.add(stack2.pop().val);
+
+        return list;
+    }
 
     /*
-     * 解法4：遍历3
-     * - 思路：模拟系统栈的指令
-     * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L144 的解法4）。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
-     * */
+    * 解法4：迭代
+    * - 思路：模拟系统栈的指令
+    * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L144 的解法5）。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * */
     static class Command {
         String type;
         TreeNode node;
@@ -77,8 +101,8 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     public static List<Integer> postorderTraversal4(TreeNode root) {
-        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
         List<Integer> list = new ArrayList<>();
+        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
         if (root == null) return list;
 
         stack.push(new Command("iterate", root));
@@ -88,7 +112,7 @@ public class L145_BinaryTreePostorderTraversal {
             if (cmd.type.equals("visit"))
                 list.add(cmd.node.val);
             else {
-                stack.push(new Command("visit", curr));
+                stack.push(new Command("visit", curr));  // visit 指令最先入栈、最后执行
                 if (curr.right != null)
                     stack.push(new Command("iterate", curr.right));
                 if (curr.left != null)
@@ -101,12 +125,12 @@ public class L145_BinaryTreePostorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
-        log(postorderTraversal4(t1));  // expects [3, 2, 1]
+        log(postorderTraversal3(t1));  // expects [3, 2, 1]
 
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
-        log(postorderTraversal4(t2));  // expects []
+        log(postorderTraversal3(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(postorderTraversal4(t3));  // expects [1, 4, 3, 6, 7, 5]
+        log(postorderTraversal3(t3));  // expects [1, 4, 3, 6, 7, 5]
     }
 }

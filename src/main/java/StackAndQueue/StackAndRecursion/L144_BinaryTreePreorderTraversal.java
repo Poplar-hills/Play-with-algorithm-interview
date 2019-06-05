@@ -32,13 +32,13 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     /*
-    * 解法2：遍历
+    * 解法2：迭代
     * - 思路：访问并入栈每个元素，出栈时入栈其左右子节点。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> preorderTraversal2(TreeNode root) {
-        Deque<TreeNode> stack = new ArrayDeque<>();
         List<Integer> list = new ArrayList<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
         if (root == null) return list;
 
         stack.push(root);
@@ -53,13 +53,13 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     /*
-     * 解法3：遍历2
+     * 解法3：迭代
      * - 思路：先向左递归到底，入栈并访问每一个左子节点，到底后出栈并遍历每一个节点的右子节点。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
      * */
     public static List<Integer> preorderTraversal3(TreeNode root) {
-        Deque<TreeNode> stack = new ArrayDeque<>();
         List<Integer> list = new ArrayList<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
         if (root == null) return list;
 
         TreeNode curr = root;
@@ -75,7 +75,30 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     /*
-    * 解法4：遍历3
+     * 解法4：迭代（解法3的变种）
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+     * */
+    public static List<Integer> preorderTraversal4(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode curr = root;
+
+        while (curr != null || !stack.isEmpty()) {
+            if (curr != null) {
+                list.add(curr.val);
+                stack.push(curr);
+                curr = curr.left;
+            } else {
+                curr = stack.pop();
+                curr = curr.right;
+            }
+        }
+
+        return list;
+    }
+
+    /*
+    * 解法5：迭代
     * - 思路：模拟系统栈的指令 —— 解法1的递归过程可以抽象为：1.访问节点值 2.遍历左子节点 3.遍历右子节点。这个过程若用栈来模拟：
     *               5       |      |       |      |
     *            /    \     |      |       |______|
@@ -96,9 +119,9 @@ public class L144_BinaryTreePreorderTraversal {
         }
     }
 
-    public static List<Integer> preorderTraversal4(TreeNode root) {
-        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
+    public static List<Integer> preorderTraversal5(TreeNode root) {
         List<Integer> list = new ArrayList<>();
+        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
         if (root == null) return list;
 
         stack.push(new Command("iterate", root));
@@ -112,7 +135,7 @@ public class L144_BinaryTreePreorderTraversal {
                     stack.push(new Command("iterate", curr.right));
                 if (curr.left != null)
                     stack.push(new Command("iterate", curr.left));
-                stack.push(new Command("visit", curr));  // 最后入栈的 visit 指令将最先被出栈处理
+                stack.push(new Command("visit", curr));  // visit 指令最后入栈、最先执行
             }
         }
 
@@ -121,12 +144,12 @@ public class L144_BinaryTreePreorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
-        log(preorderTraversal4(t1));  // expects [1, 2, 3]
+        log(preorderTraversal5(t1));  // expects [1, 2, 3]
 
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
-        log(preorderTraversal4(t2));  // expects []
+        log(preorderTraversal5(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(preorderTraversal4(t3));  // expects [5, 3, 1, 4, 7, 6]
+        log(preorderTraversal5(t3));  // expects [5, 3, 1, 4, 7, 6]
     }
 }

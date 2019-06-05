@@ -54,9 +54,33 @@ public class L94_BinaryTreeInorderTraversal {
     }
 
     /*
-    * 解法4：遍历3
+     * 解法3：迭代（解法2的变种）
+     * - 思路：（与 L144 的解法3思路相同）先向左递归到底，入栈每一个左子节点，到底后出栈并访问每一个节点的右子节点。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+     * */
+    public static List<Integer> inorderTraversal3(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode curr = root;
+
+        while (curr != null || !stack.isEmpty()) {
+            if (curr != null) {
+                stack.push(curr);
+                curr = curr.left;
+            } else {
+                curr = stack.pop();
+                list.add(curr.val);
+                curr = curr.right;
+            }
+        }
+
+        return list;
+    }
+
+    /*
+    * 解法4：迭代
     * - 思路：模拟系统栈的指令
-    * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法4、L145 的解法4）。
+    * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法5、L145 的解法4）。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     static class Command {
@@ -69,8 +93,8 @@ public class L94_BinaryTreeInorderTraversal {
     }
 
     public static List<Integer> inorderTraversal4(TreeNode root) {
-        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
         List<Integer> list = new ArrayList<>();
+        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
         if (root == null) return list;
 
         stack.push(new Command("iterate", root));
@@ -82,7 +106,7 @@ public class L94_BinaryTreeInorderTraversal {
             else {
                 if (curr.right != null)
                     stack.push(new Command("iterate", curr.right));
-                stack.push(new Command("visit", curr));
+                stack.push(new Command("visit", curr));  // visit 指令在 iterate 两个子节点之间执行
                 if (curr.left != null)
                     stack.push(new Command("iterate", curr.left));
             }
