@@ -52,21 +52,35 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     /*
-     * 解法2：遍历
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * 解法2：遍历2
+     * - 思路：先向左递归到底，再访问右节点。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
      * */
     public static List<Integer> preorderTraversal3(TreeNode root) {
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        List<Integer> list = new ArrayList<>();
+        if (root == null) return list;
 
+        TreeNode curr = root;
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) {
+                list.add(curr.val);  // 与 L94 的解法2不同，前序遍历在这里访问节点
+                stack.push(curr);
+                curr = curr.left;
+            }
+            curr = stack.pop().right;
+        }
+        return list;
     }
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
-        log(preorderTraversal2(t1));  // expects [1, 2, 3]
+        log(preorderTraversal3(t1));  // expects [1, 2, 3]
 
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
-        log(preorderTraversal2(t2));  // expects []
+        log(preorderTraversal3(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(preorderTraversal2(t3));  // expects [5, 3, 1, 4, 7, 6]
+        log(preorderTraversal3(t3));  // expects [5, 3, 1, 4, 7, 6]
     }
 }

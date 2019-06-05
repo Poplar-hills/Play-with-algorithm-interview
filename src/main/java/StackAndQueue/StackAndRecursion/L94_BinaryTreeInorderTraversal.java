@@ -33,6 +33,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     /*
     * 解法2：迭代
+    * - 思路：先向左递归到底，再访问右节点（与 L144 的解法3思路相同）。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
@@ -46,7 +47,7 @@ public class L94_BinaryTreeInorderTraversal {
                 curr = curr.left;
             }
             curr = stack.pop();
-            list.add(curr.val);     // 到底后访问出栈的节点
+            list.add(curr.val);     // 到底后访问出栈的节点（与 L144 的解法3不同，中序遍历在这里访问节点）
             curr = curr.right;      // 对其右子节点重新来过
         }
         return list;
