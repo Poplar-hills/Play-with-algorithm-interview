@@ -18,7 +18,12 @@ import java.util.*;
 * - Example 2: Input: [1,[4,[6]]], Output: [1,4,6].
 * */
 
-public class NestedIterator implements Iterator<Integer> {
+
+/*
+ * 解法1：Eager approach
+ * - 缺点：对于大数据集存在性能问题 —— we are pre-computing and pre-loading everything into the queue, which is a big waste of resource.
+ * */
+class NestedIterator implements Iterator<Integer> {
     private Queue<Integer> queue = new LinkedList<>();
 
     public NestedIterator(List<NestedInteger> nestedList) {
@@ -28,7 +33,7 @@ public class NestedIterator implements Iterator<Integer> {
     private void addToQueue(List<NestedInteger> nestedList) {
         for (NestedInteger n : nestedList) {
             if (n.isInteger())
-                queue.add(n.getInteger());
+                queue.offer(n.getInteger());
             else
                 addToQueue(n.getList());
         }
@@ -39,4 +44,33 @@ public class NestedIterator implements Iterator<Integer> {
 
     @Override
     public boolean hasNext() { return !queue.isEmpty(); }
+}
+
+
+/*
+ * 解法2：Lazy approach
+ * -
+ * */
+class NestedIterator2 implements Iterator<Integer> {
+    private Deque<NestedInteger> stack = new ArrayDeque<>();  // Deque 接口的实现可以是：ArrayDeque, LinkedList
+
+    public NestedIterator2(List<NestedInteger> nestedList) {
+        for (NestedInteger n : nestedList)
+            stack.push(n);
+    }
+
+    @Override
+    public boolean hasNext() {
+        while (!stack.isEmpty() && !stack.peek().isInteger()) {
+            List<NestedInteger> nestedList = stack.pop().getList();
+            for (int i = nestedList.size() - 1; i >= 0; i--)
+                stack.push(nestedList.get(i));
+        }
+        return !stack.isEmpty();
+    }
+
+    @Override
+    public Integer next() {
+        return hasNext() ? stack.pop().getInteger() : null;
+    }
 }
