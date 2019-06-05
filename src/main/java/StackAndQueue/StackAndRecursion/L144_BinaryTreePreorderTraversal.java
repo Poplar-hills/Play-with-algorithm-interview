@@ -16,7 +16,7 @@ import static Utils.Helpers.*;
 public class L144_BinaryTreePreorderTraversal {
     /*
     * 解法1：递归
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> preorderTraversal(TreeNode root) {
         List<Integer> list = new ArrayList<>();
@@ -33,7 +33,7 @@ public class L144_BinaryTreePreorderTraversal {
 
     /*
     * 解法2：遍历
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> preorderTraversal2(TreeNode root) {
         Deque<TreeNode> stack = new ArrayDeque<>();
@@ -49,6 +49,14 @@ public class L144_BinaryTreePreorderTraversal {
         }
 
         return list;
+    }
+
+    /*
+     * 解法2：遍历
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<Integer> preorderTraversal3(TreeNode root) {
+
     }
 
     public static void main(String[] args) {

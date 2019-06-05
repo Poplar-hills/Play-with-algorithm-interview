@@ -16,7 +16,7 @@ import static Utils.Helpers.*;
 public class L94_BinaryTreeInorderTraversal {
     /*
     * 解法1：递归
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> inorderTraversal(TreeNode root) {
         List<Integer> list = new ArrayList<>();
@@ -33,7 +33,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     /*
     * 解法2：迭代
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
         List<Integer> list = new ArrayList<>();
