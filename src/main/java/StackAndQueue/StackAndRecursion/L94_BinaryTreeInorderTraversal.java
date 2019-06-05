@@ -33,7 +33,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     /*
     * 解法2：迭代
-    * - 思路：先向左递归到底，再访问右节点（与 L144 的解法3思路相同）。
+    * - 思路：（与 L144 的解法3思路相同）先向左递归到底，入栈每一个左子节点，到底后出栈并访问每一个节点的右子节点。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
@@ -53,14 +53,53 @@ public class L94_BinaryTreeInorderTraversal {
         return list;
     }
 
+    /*
+    * 解法4：遍历3
+    * - 思路：模拟系统栈的指令
+    * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法4、L145 的解法4）。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * */
+    static class Command {
+        String type;
+        TreeNode node;
+        Command(String type, TreeNode node) {
+            this.type = type;
+            this.node = node;
+        }
+    }
+
+    public static List<Integer> inorderTraversal4(TreeNode root) {
+        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
+        List<Integer> list = new ArrayList<>();
+        if (root == null) return list;
+
+        stack.push(new Command("iterate", root));
+        while (!stack.isEmpty()) {
+            Command cmd = stack.pop();
+            TreeNode curr = cmd.node;
+            if (cmd.type.equals("visit"))
+                list.add(cmd.node.val);
+            else {
+                if (curr.right != null)
+                    stack.push(new Command("iterate", curr.right));
+                stack.push(new Command("visit", curr));
+                if (curr.left != null)
+                    stack.push(new Command("iterate", curr.left));
+            }
+        }
+
+        return list;
+    }
+
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
-        log(inorderTraversal2(t1));  // expects [1, 3, 2]
+        log(inorderTraversal4(t1));  // expects [1, 3, 2]
 
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
-        log(inorderTraversal2(t2));  // expects []
+        log(inorderTraversal4(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(inorderTraversal2(t3));  // expects [1, 3, 4, 5, 6, 7]
+        log(inorderTraversal4(t3));  // expects [1, 3, 4, 5, 6, 7]
     }
 }

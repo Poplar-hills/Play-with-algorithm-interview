@@ -33,6 +33,7 @@ public class L144_BinaryTreePreorderTraversal {
 
     /*
     * 解法2：遍历
+    * - 思路：访问并入栈每个元素，出栈时入栈其左右子节点。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> preorderTraversal2(TreeNode root) {
@@ -52,8 +53,8 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     /*
-     * 解法2：遍历2
-     * - 思路：先向左递归到底，再访问右节点。
+     * 解法3：遍历2
+     * - 思路：先向左递归到底，入栈并访问每一个左子节点，到底后出栈并遍历每一个节点的右子节点。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
      * */
     public static List<Integer> preorderTraversal3(TreeNode root) {
@@ -73,14 +74,59 @@ public class L144_BinaryTreePreorderTraversal {
         return list;
     }
 
+    /*
+    * 解法4：遍历3
+    * - 思路：模拟系统栈的指令 —— 解法1的递归过程可以抽象为：1.访问节点值 2.遍历左子节点 3.遍历右子节点。这个过程若用栈来模拟：
+    *               5       |      |       |      |
+    *            /    \     |      |       |______|
+    *          3       8    |      |  -->  |_v__5_| 访问5
+    *        /  \     /     |______|       |_i__3_| 遍历左子节点3
+    *       1    4   6      |_i__5_|       |_i__8_| 遍历右子节点8
+    *   根据这种模拟能写出解法2，但解法2的实现是只在栈中存储节点。若我们在栈中存节点的同时还存入对该节点的操作指令（遍历或访问），
+    *   即将节点和操作 pair 起来存储，从而可以得到另一种解法。
+    * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L145 的解法4）。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * */
+    static class Command {  // 将节点和指令的 pair 抽象成一个 Command
+        String type;        // type 的取值只能为 "iterate" or "visit"（遍历或访问）（更好的方式是用枚举）
+        TreeNode node;
+        Command(String type, TreeNode node) {
+            this.type = type;
+            this.node = node;
+        }
+    }
+
+    public static List<Integer> preorderTraversal4(TreeNode root) {
+        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
+        List<Integer> list = new ArrayList<>();
+        if (root == null) return list;
+
+        stack.push(new Command("iterate", root));
+        while (!stack.isEmpty()) {
+            Command cmd = stack.pop();
+            TreeNode curr = cmd.node;
+            if (cmd.type.equals("visit"))
+                list.add(curr.val);
+            else {                          // 若是 "iterate"
+                if (curr.right != null)
+                    stack.push(new Command("iterate", curr.right));
+                if (curr.left != null)
+                    stack.push(new Command("iterate", curr.left));
+                stack.push(new Command("visit", curr));  // 最后入栈的 visit 指令将最先被出栈处理
+            }
+        }
+
+        return list;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
-        log(preorderTraversal3(t1));  // expects [1, 2, 3]
+        log(preorderTraversal4(t1));  // expects [1, 2, 3]
 
         TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
-        log(preorderTraversal3(t2));  // expects []
+        log(preorderTraversal4(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(preorderTraversal3(t3));  // expects [5, 3, 1, 4, 7, 6]
+        log(preorderTraversal4(t3));  // expects [5, 3, 1, 4, 7, 6]
     }
 }
