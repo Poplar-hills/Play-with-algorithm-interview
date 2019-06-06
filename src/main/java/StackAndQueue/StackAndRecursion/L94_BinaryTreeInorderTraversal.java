@@ -115,7 +115,6 @@ public class L94_BinaryTreeInorderTraversal {
         return list;
     }
 
-
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
         log(inorderTraversal4(t1));  // expects [1, 3, 2]
