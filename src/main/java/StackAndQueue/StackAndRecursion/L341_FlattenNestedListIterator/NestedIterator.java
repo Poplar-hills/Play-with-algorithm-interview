@@ -49,7 +49,7 @@ class NestedIterator implements Iterator<Integer> {
 
 /*
  * 解法2：Lazy approach
- * - 实现：因为使用迭代而非递归。
+ * - 实现：使用迭代而非递归。
  * - 注：Stack 是尾进尾出:          Deque 实现的 stack 是头进头出；Deque 实现的 queue 是尾进头出：
  *                                          poll <--
  *      [ | | | | ]  <--- push              push -->  [ | | | | ]  <-- offer
