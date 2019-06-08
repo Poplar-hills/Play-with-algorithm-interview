@@ -1,6 +1,11 @@
 package StackAndQueue.ClassicQueue;
 
+import javafx.util.Pair;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import static Utils.Helpers.*;
 
@@ -12,7 +17,28 @@ import static Utils.Helpers.*;
 
 public class L102_BinaryTreeLevelOrderTraversal {
     public static List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> list = new ArrayList<>();
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        if (root == null) return list;
 
+        q.offer(new Pair<>(root, 1));
+        while (!q.isEmpty()) {
+            Pair<TreeNode, Integer> pair = q.poll();
+            TreeNode node = pair.getKey();
+            Integer level = pair.getValue();
+
+            if (level > list.size()) {
+                List<Integer> l = new ArrayList<>();
+                l.add(node.val);
+                list.add(l);
+            } else
+                list.get(level - 1).add(node.val);
+
+            if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
+            if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
+        }
+
+        return list;
     }
 
     public static void main(String[] args) {
