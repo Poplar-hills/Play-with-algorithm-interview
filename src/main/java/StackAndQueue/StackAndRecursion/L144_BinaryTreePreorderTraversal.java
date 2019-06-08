@@ -143,13 +143,13 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
+        TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
         log(preorderTraversal5(t1));  // expects [1, 2, 3]
 
-        TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
+        TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
         log(preorderTraversal5(t2));  // expects []
 
-        TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
+        TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
         log(preorderTraversal5(t3));  // expects [5, 3, 1, 4, 7, 6]
     }
 }

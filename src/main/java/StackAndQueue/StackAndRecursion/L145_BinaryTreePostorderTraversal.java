@@ -164,13 +164,13 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeFromArray(new Integer[]{1, null, 2, 3});
+        TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
         log(postorderTraversal5(t1));  // expects [3, 2, 1]
 
-        TreeNode t2 = createBinaryTreeFromArray(new Integer[]{});
+        TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
         log(postorderTraversal5(t2));  // expects []
 
-        TreeNode t3 = createBinaryTreeFromArray(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
+        TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
         log(postorderTraversal5(t3));  // expects [1, 4, 3, 6, 7, 5]
     }
 }

@@ -16,6 +16,9 @@ import static Utils.Helpers.*;
 * */
 
 public class L102_BinaryTreeLevelOrderTraversal {
+    /*
+    * 解法1：
+    * */
     public static List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> list = new ArrayList<>();
         Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
@@ -42,7 +45,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
     }
 
     public static void main(String[] args) {
-        TreeNode t = createBinaryTreeFromArray(new Integer[]{3, 9, 20, null, null, 15, 7});
+        TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
         log(levelOrder(t));  // expects [[3], [9,20], [15,7]]
     }
 }

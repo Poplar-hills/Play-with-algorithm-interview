@@ -2,10 +2,7 @@ package Utils;
 
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class Helpers {
@@ -132,25 +129,43 @@ public class Helpers {
         TreeNode(int x) { val = x; }
     }
 
-    public static TreeNode createBinaryTreeFromArray(Integer[] arr) {
-        return arr.length == 0 ? null : createBinaryTreeFromArray(arr, 0).getValue();
+    public static TreeNode createBinaryTreeDepthFirst(Integer[] arr) {
+        return arr.length == 0 ? null : createBinaryTreeDepthFirst(arr, 0).getValue();
     }
 
-    private static Pair<Integer, TreeNode> createBinaryTreeFromArray(Integer[] arr, int i) {
+    private static Pair<Integer, TreeNode> createBinaryTreeDepthFirst(Integer[] arr, int i) {
         TreeNode node = new TreeNode(arr[i]);
 
         if (++i < arr.length && arr[i] != null) {
-            Pair<Integer, TreeNode> p = createBinaryTreeFromArray(arr, i);
+            Pair<Integer, TreeNode> p = createBinaryTreeDepthFirst(arr, i);
             i = p.getKey();
             node.left = p.getValue();
         }
         if (++i < arr.length && arr[i] != null) {
-            Pair<Integer, TreeNode> p = createBinaryTreeFromArray(arr, i);
+            Pair<Integer, TreeNode> p = createBinaryTreeDepthFirst(arr, i);
             i = p.getKey();
             node.right = p.getValue();
         }
 
         return new Pair<>(i, node);
+    }
+
+    public static TreeNode createBinaryTreeBreadthFirst(Integer[] arr) {
+        if (arr == null || arr.length == 0 || arr[0] == null) return null;
+        Queue<TreeNode> q = new LinkedList<>();
+        int i = 0;
+        TreeNode tree = new TreeNode(arr[i++]);
+        q.offer(tree);
+        while (i < arr.length && !q.isEmpty()) {
+            TreeNode curr = q.poll();
+            if (arr[i] != null) curr.left = new TreeNode(arr[i]);
+            i++;
+            if (arr[i] != null) curr.right = new TreeNode(arr[i]);
+            i++;
+            if (curr.left != null) q.offer(curr.left);
+            if (curr.right != null) q.offer(curr.right);
+        }
+        return tree;
     }
 
     public static void printBinaryTree(TreeNode node) {
