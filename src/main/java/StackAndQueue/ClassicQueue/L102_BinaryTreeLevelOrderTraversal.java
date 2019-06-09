@@ -36,7 +36,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
 
     /*
     * 解法1：迭代
-    * - 思路：在复习1的基础上实现，区别在于队列中以 Pair 形式同时保存节点和节点的层级信息。
+    * - 思路：在复习1的基础上实现，区别在于队列中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> levelOrder(TreeNode root) {
@@ -50,13 +50,9 @@ public class L102_BinaryTreeLevelOrderTraversal {
             TreeNode node = pair.getKey();
             Integer level = pair.getValue();
 
-            if (level == res.size()) {  // 此时需要在 res 中创建新的列表存储新一层的节点值（比如上面 q.poll 出来的是 level = 0 的根节点，此时 res 中还没有任何列表，因此需要创建）
-                List<Integer> l = new ArrayList<>();
-                l.add(node.val);
-                res.add(l);
-            } else {                    // 若 level < res.size()，则说明 res 中已存在这一层的列表，直接将节点值推进即可
-                res.get(level).add(node.val);
-            }
+            if (level == res.size())  // 此时需在 res 中创建新的列表存储新一层的节点值（如上面 poll 出来的是 level=0 的根节点，此时 res 中还没有任何列表，因此需要创建）
+                res.add(new ArrayList<>());
+            res.get(level).add(node.val);  // 创建完或者 res 中本来已经存在，则将节点值推入
 
             if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
             if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
@@ -71,20 +67,38 @@ public class L102_BinaryTreeLevelOrderTraversal {
     public static List<Integer> simpleLevelOrder2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        res.add(root.val);
+        res.add(root.val);  // 先把根节点的值装入 res 中，再递归之后的节点
         simpleLevelOrder2(root, res);
         return res;
     }
 
     private static void simpleLevelOrder2(TreeNode node, List<Integer> res) {
-        if (node.left != null)
-            res.add(node.left.val);
-        if (node.right != null)
-            res.add(node.right.val);
-        if (node.left != null)
-            simpleLevelOrder2(node.left, res);
-        if (node.right != null)
-            simpleLevelOrder2(node.right, res);
+        if (node == null) return;
+        if (node.left != null) res.add(node.left.val);
+        if (node.right != null) res.add(node.right.val);
+        simpleLevelOrder2(node.left, res);
+        simpleLevelOrder2(node.right, res);
+    }
+
+    /*
+     * 解法2：递归
+     * - 思路：并没有在复习2的基础上实现，而是直接从根节点开始递归。关键在于判断当前 level 与 res.size() 是否相等
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> levelOrder2(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        levelOrder2(root, res, 0);
+        return res;
+    }
+
+    private static void levelOrder2(TreeNode node, List<List<Integer>> res, int level) {
+        if (node == null) return;
+        if (level == res.size())       // 若 == 则说明需在 res 中创建新的列表存储新一层的节点值
+            res.add(new ArrayList<>());
+        res.get(level).add(node.val);  // 创建完之后这里再获取，从而统一了两种情况（创建新列表或直接添加），而不再需要 if else。
+        levelOrder2(node.left, res, level + 1);
+        levelOrder2(node.right, res, level + 1);
     }
 
     public static void main(String[] args) {
@@ -94,6 +108,6 @@ public class L102_BinaryTreeLevelOrderTraversal {
         log(simpleLevelOrder2(t));  // expects [3, 9, 20, 8, 15, 7]
 
         log(levelOrder(t));  // expects [[3], [9,20], [8,15,7]]
-//        log(levelOrder2(t));  // expects [[3], [9,20], [8,15,7]]
+        log(levelOrder2(t));  // expects [[3], [9,20], [8,15,7]]
     }
 }
