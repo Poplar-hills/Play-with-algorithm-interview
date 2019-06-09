@@ -19,9 +19,9 @@ public class L94_BinaryTreeInorderTraversal {
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> inorderTraversal(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
-        inorderTraversal(root, list);
-        return list;
+        List<Integer> res = new ArrayList<>();
+        inorderTraversal(root, res);
+        return res;
     }
 
     private static void inorderTraversal(TreeNode node, List<Integer> list) {
@@ -37,7 +37,7 @@ public class L94_BinaryTreeInorderTraversal {
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<TreeNode> stack = new ArrayDeque<>();
         TreeNode curr = root;
 
@@ -47,10 +47,10 @@ public class L94_BinaryTreeInorderTraversal {
                 curr = curr.left;
             }
             curr = stack.pop();
-            list.add(curr.val);     // 到底后访问出栈的节点（与 L144 的解法3不同，中序遍历在这里访问节点）
+            res.add(curr.val);     // 到底后访问出栈的节点（与 L144 的解法3不同，中序遍历在这里访问节点）
             curr = curr.right;      // 对其右子节点重新来过
         }
-        return list;
+        return res;
     }
 
     /*
@@ -59,7 +59,7 @@ public class L94_BinaryTreeInorderTraversal {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
      * */
     public static List<Integer> inorderTraversal3(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<TreeNode> stack = new ArrayDeque<>();
         TreeNode curr = root;
 
@@ -69,12 +69,12 @@ public class L94_BinaryTreeInorderTraversal {
                 curr = curr.left;
             } else {
                 curr = stack.pop();
-                list.add(curr.val);
+                res.add(curr.val);
                 curr = curr.right;
             }
         }
 
-        return list;
+        return res;
     }
 
     /*
@@ -93,16 +93,16 @@ public class L94_BinaryTreeInorderTraversal {
     }
 
     public static List<Integer> inorderTraversal4(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
-        if (root == null) return list;
+        if (root == null) return res;
 
         stack.push(new Command("iterate", root));
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
             TreeNode curr = cmd.node;
             if (cmd.type.equals("visit"))
-                list.add(cmd.node.val);
+                res.add(cmd.node.val);
             else {
                 if (curr.right != null)
                     stack.push(new Command("iterate", curr.right));
@@ -112,7 +112,7 @@ public class L94_BinaryTreeInorderTraversal {
             }
         }
 
-        return list;
+        return res;
     }
 
     public static void main(String[] args) {

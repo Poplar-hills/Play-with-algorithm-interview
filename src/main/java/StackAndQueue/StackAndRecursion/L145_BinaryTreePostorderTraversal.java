@@ -16,9 +16,9 @@ public class L145_BinaryTreePostorderTraversal {
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> postorderTraversal(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
-        postorderTraversal(root, list);
-        return list;
+        List<Integer> res = new ArrayList<>();
+        postorderTraversal(root, res);
+        return res;
     }
 
     private static void postorderTraversal(TreeNode node, List<Integer> list) {
@@ -33,9 +33,9 @@ public class L145_BinaryTreePostorderTraversal {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
      * */
     public static List<Integer> postorderTraversal2(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<TreeNode> stack = new ArrayDeque<>();
-        if (root == null) return list;
+        if (root == null) return res;
 
         stack.push(root);
         while (!stack.isEmpty()) {
@@ -49,12 +49,12 @@ public class L145_BinaryTreePostorderTraversal {
                 temp.right = null;
             }
             else {
-                list.add(temp.val);
+                res.add(temp.val);
                 stack.pop();
             }
         }
 
-        return list;
+        return res;
     }
 
     /*
@@ -64,7 +64,7 @@ public class L145_BinaryTreePostorderTraversal {
     * - 注：Java 中 Stack 接口的实现有很多：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated）。
     * */
     public static List<Integer> postorderTraversal3(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<TreeNode> stack1 = new ArrayDeque<>(), stack2 = new ArrayDeque<>();  // stack1 可入可出，stack2 只入不出
         TreeNode curr = root;
 
@@ -80,9 +80,9 @@ public class L145_BinaryTreePostorderTraversal {
         }
 
         while (!stack2.isEmpty())
-            list.add(stack2.pop().val);
+            res.add(stack2.pop().val);
 
-        return list;
+        return res;
     }
 
     /*
@@ -101,16 +101,16 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     public static List<Integer> postorderTraversal4(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
-        if (root == null) return list;
+        if (root == null) return res;
 
         stack.push(new Command("iterate", root));
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
             TreeNode curr = cmd.node;
             if (cmd.type.equals("visit"))
-                list.add(cmd.node.val);
+                res.add(cmd.node.val);
             else {
                 stack.push(new Command("visit", curr));  // visit 指令最先入栈、最后执行
                 if (curr.right != null)
@@ -120,7 +120,7 @@ public class L145_BinaryTreePostorderTraversal {
             }
         }
 
-        return list;
+        return res;
     }
 
     /*
@@ -138,9 +138,9 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     public static List<Integer> postorderTraversal5(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<TaggedNode> stack = new ArrayDeque<>();
-        if (root == null) return list;
+        if (root == null) return res;
 
         TreeNode curr = root;
         while (curr != null || !stack.isEmpty()) {
@@ -155,12 +155,12 @@ public class L145_BinaryTreePostorderTraversal {
                 stack.push(tNode);        // 将标志位置为 true 后放回 stack 中
                 curr = curr.right;
             } else {
-                list.add(curr.val);
+                res.add(curr.val);
                 curr = null;              // 访问过值的节点就直接丢弃掉
             }
         }
 
-        return list;
+        return res;
     }
 
     public static void main(String[] args) {

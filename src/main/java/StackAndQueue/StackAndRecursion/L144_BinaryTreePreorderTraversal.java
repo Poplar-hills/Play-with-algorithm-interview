@@ -19,9 +19,9 @@ public class L144_BinaryTreePreorderTraversal {
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> preorderTraversal(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
-        preorderTraversal(root, list);
-        return list;
+        List<Integer> res = new ArrayList<>();
+        preorderTraversal(root, res);
+        return res;
     }
 
     private static void preorderTraversal(TreeNode node, List<Integer> list) {
@@ -37,19 +37,19 @@ public class L144_BinaryTreePreorderTraversal {
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
     * */
     public static List<Integer> preorderTraversal2(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<TreeNode> stack = new ArrayDeque<>();
-        if (root == null) return list;
+        if (root == null) return res;
 
         stack.push(root);
         while (!stack.isEmpty()) {
             TreeNode curr = stack.pop();
-            list.add(curr.val);
+            res.add(curr.val);
             if (curr.right != null) stack.push(curr.right);
             if (curr.left != null) stack.push(curr.left);
         }
 
-        return list;
+        return res;
     }
 
     /*
@@ -58,20 +58,20 @@ public class L144_BinaryTreePreorderTraversal {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
      * */
     public static List<Integer> preorderTraversal3(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<TreeNode> stack = new ArrayDeque<>();
-        if (root == null) return list;
+        if (root == null) return res;
 
         TreeNode curr = root;
         while (curr != null || !stack.isEmpty()) {
             while (curr != null) {
-                list.add(curr.val);  // 与 L94 的解法2不同，前序遍历在这里访问节点
+                res.add(curr.val);  // 与 L94 的解法2不同，前序遍历在这里访问节点
                 stack.push(curr);
                 curr = curr.left;
             }
             curr = stack.pop().right;
         }
-        return list;
+        return res;
     }
 
     /*
@@ -79,13 +79,13 @@ public class L144_BinaryTreePreorderTraversal {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
      * */
     public static List<Integer> preorderTraversal4(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<TreeNode> stack = new ArrayDeque<>();
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {
             if (curr != null) {
-                list.add(curr.val);
+                res.add(curr.val);
                 stack.push(curr);
                 curr = curr.left;
             } else {
@@ -94,7 +94,7 @@ public class L144_BinaryTreePreorderTraversal {
             }
         }
 
-        return list;
+        return res;
     }
 
     /*
@@ -120,16 +120,16 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     public static List<Integer> preorderTraversal5(TreeNode root) {
-        List<Integer> list = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
-        if (root == null) return list;
+        if (root == null) return res;
 
         stack.push(new Command("iterate", root));
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
             TreeNode curr = cmd.node;
             if (cmd.type.equals("visit"))
-                list.add(curr.val);
+                res.add(curr.val);
             else {                          // 若是 "iterate"
                 if (curr.right != null)
                     stack.push(new Command("iterate", curr.right));
@@ -139,7 +139,7 @@ public class L144_BinaryTreePreorderTraversal {
             }
         }
 
-        return list;
+        return res;
     }
 
     public static void main(String[] args) {
