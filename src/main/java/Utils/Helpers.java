@@ -129,11 +129,11 @@ public class Helpers {
         TreeNode(int x) { val = x; }
     }
 
-    public static TreeNode createBinaryTreeDepthFirst(Integer[] arr) {
+    public static TreeNode createBinaryTreeDepthFirst(Integer[] arr) {  // 以深度优先的方式从数组生成二叉树
         return arr.length == 0 ? null : createBinaryTreeDepthFirst(arr, 0).getValue();
     }
 
-    private static Pair<Integer, TreeNode> createBinaryTreeDepthFirst(Integer[] arr, int i) {
+    private static Pair<Integer, TreeNode> createBinaryTreeDepthFirst(Integer[] arr, int i) {  // i 指向 arr 中下一个待访问的元素
         TreeNode node = new TreeNode(arr[i]);
 
         if (++i < arr.length && arr[i] != null) {
@@ -150,20 +150,27 @@ public class Helpers {
         return new Pair<>(i, node);
     }
 
-    public static TreeNode createBinaryTreeBreadthFirst(Integer[] arr) {
-        if (arr == null || arr.length == 0 || arr[0] == null) return null;
+    public static TreeNode createBinaryTreeBreadthFirst(Integer[] arr) {  // 以广度优先的方式从数组生成二叉树
+        if (arr == null || arr.length == 0 || arr[0] == null)
+            return null;
+
+        int i = 0;  // i 指向 arr 中下一个待访问的元素
         Queue<TreeNode> q = new LinkedList<>();
-        int i = 0;
         TreeNode tree = new TreeNode(arr[i++]);
         q.offer(tree);
+
         while (i < arr.length && !q.isEmpty()) {
             TreeNode curr = q.poll();
-            if (arr[i] != null) curr.left = new TreeNode(arr[i]);
+            if (arr[i] != null) {
+                curr.left = new TreeNode(arr[i]);
+                q.offer(curr.left);
+            }
             i++;
-            if (arr[i] != null) curr.right = new TreeNode(arr[i]);
+            if (arr[i] != null) {
+                curr.right = new TreeNode(arr[i]);
+                q.offer(curr.right);
+            }
             i++;
-            if (curr.left != null) q.offer(curr.left);
-            if (curr.right != null) q.offer(curr.right);
         }
         return tree;
     }
