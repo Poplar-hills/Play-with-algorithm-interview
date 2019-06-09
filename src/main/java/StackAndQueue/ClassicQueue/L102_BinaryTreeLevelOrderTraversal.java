@@ -33,6 +33,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
         }
         return res;
     }
+
     /*
     * 解法1：
     * */
@@ -41,18 +42,19 @@ public class L102_BinaryTreeLevelOrderTraversal {
         Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();  // 因为结果要求同一层的节点放在一个列表中，因此这里队列中除了保存节点之外还需要保存层级信息
         if (root == null) return res;
 
-        q.offer(new Pair<>(root, 1));
+        q.offer(new Pair<>(root, 0));  // 层数从0开始
         while (!q.isEmpty()) {
             Pair<TreeNode, Integer> pair = q.poll();
             TreeNode node = pair.getKey();
             Integer level = pair.getValue();
 
-            if (level > res.size()) {  //
+            if (level == res.size()) {  // 此时需要在 res 中创建新的列表存储新一层的节点值（比如上面 q.poll 出来的是 level = 0 的根节点，此时 res 中还没有任何列表，因此需要创建）
                 List<Integer> l = new ArrayList<>();
                 l.add(node.val);
                 res.add(l);
-            } else
-                res.get(level - 1).add(node.val);
+            } else {                    // 若 level < res.size()，则说明 res 中已存在这一层的列表，直接将节点值推进即可
+                res.get(level).add(node.val);
+            }
 
             if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
             if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
