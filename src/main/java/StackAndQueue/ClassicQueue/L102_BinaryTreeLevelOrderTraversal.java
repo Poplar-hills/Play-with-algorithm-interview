@@ -17,7 +17,7 @@ import static Utils.Helpers.*;
 
 public class L102_BinaryTreeLevelOrderTraversal {
     /*
-    * 该方法是最基本的层序遍历，不是该题的解，只是用于和解法1进行对比。
+    * 复习1：二叉树非递归层序遍历，用于和解法1进行对比。
     * */
     public static List<Integer> simpleLevelOrder(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -35,7 +35,9 @@ public class L102_BinaryTreeLevelOrderTraversal {
     }
 
     /*
-    * 解法1：
+    * 解法1：迭代
+    * - 思路：在复习1的基础上实现，区别在于队列中以 Pair 形式同时保存节点和节点的层级信息。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
@@ -63,11 +65,35 @@ public class L102_BinaryTreeLevelOrderTraversal {
         return res;
     }
 
-    public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(simpleLevelOrder(t1));  // expects [3, 9, 20, 15, 7]
+    /*
+    * 复习2：二叉树递归层序遍历，用于和解法2进行对比。
+    * */
+    public static List<Integer> simpleLevelOrder2(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        res.add(root.val);
+        simpleLevelOrder2(root, res);
+        return res;
+    }
 
-        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(levelOrder(t2));  // expects [[3], [9,20], [15,7]]
+    private static void simpleLevelOrder2(TreeNode node, List<Integer> res) {
+        if (node.left != null)
+            res.add(node.left.val);
+        if (node.right != null)
+            res.add(node.right.val);
+        if (node.left != null)
+            simpleLevelOrder2(node.left, res);
+        if (node.right != null)
+            simpleLevelOrder2(node.right, res);
+    }
+
+    public static void main(String[] args) {
+        TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7});
+
+        log(simpleLevelOrder(t));  // expects [3, 9, 20, 8, 15, 7]
+        log(simpleLevelOrder2(t));  // expects [3, 9, 20, 8, 15, 7]
+
+        log(levelOrder(t));  // expects [[3], [9,20], [8,15,7]]
+//        log(levelOrder2(t));  // expects [[3], [9,20], [8,15,7]]
     }
 }
