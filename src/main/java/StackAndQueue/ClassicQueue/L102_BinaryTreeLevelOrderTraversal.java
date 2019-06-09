@@ -82,7 +82,8 @@ public class L102_BinaryTreeLevelOrderTraversal {
 
     /*
      * 解法2：递归
-     * - 思路：并没有在复习2的基础上实现，而是直接从根节点开始递归。关键在于判断当前 level 与 res.size() 是否相等
+     * - 思路：并没有在复习2的基础上实现，而是直接从根节点开始递归。关键在于判断当前 level 与 res.size() 是否相等，若相等则说明
+     *   需要在 res 中创建新的列表存储新一层的节点值。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> levelOrder2(TreeNode root) {
@@ -94,7 +95,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
 
     private static void levelOrder2(TreeNode node, List<List<Integer>> res, int level) {
         if (node == null) return;
-        if (level == res.size())       // 若 == 则说明需在 res 中创建新的列表存储新一层的节点值
+        if (level == res.size())       // 是否需要在 res 中创建新的列表存储新一层的节点值
             res.add(new ArrayList<>());
         res.get(level).add(node.val);  // 创建完之后这里再获取，从而统一了两种情况（创建新列表或直接添加），而不再需要 if else。
         levelOrder2(node.left, res, level + 1);
