@@ -1,5 +1,7 @@
 package StackAndQueue.ClassicQueue;
 
+import javafx.util.Pair;
+
 import java.util.*;
 
 import static Utils.Helpers.*;
@@ -52,20 +54,48 @@ public class L107_BinaryTreeLevelOrderTraversalII {
             if (node.left != null) arr.add(node.left);
         }
 
-        for (int j = arr.size() - 1; j >= 0; j--)
-            res.add(arr.get(j).val);
+        for (int i = arr.size() - 1; i >= 0; i--)
+            res.add(arr.get(i).val);
 
         return res;
     }
 
-//    public static List<List<Integer>> levelOrderBottom(TreeNode root) {
-//
-//    }
+    /*
+    * 解法1：在基础2的基础上实现，区别在于 arr 中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static List<List<Integer>> levelOrderBottom(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Pair<TreeNode, Integer>> arr = new ArrayList<>();
+        if (root == null) return res;
+
+        arr.add(new Pair<>(root, 0));
+        for (int i = 0; i < arr.size(); i++) {
+            TreeNode node = arr.get(i).getKey();
+            int level = arr.get(i).getValue();
+
+            if (node.right != null)
+                arr.add(new Pair<>(node.right, level + 1));
+            if (node.left != null)
+                arr.add(new Pair<>(node.left, level + 1));
+            if (level == res.size())
+                res.add(new ArrayList<>());
+        }
+
+        int maxLevel = arr.get(arr.size() - 1).getValue();
+        for (int i = arr.size() - 1; i >= 0; i--) {
+            TreeNode node = arr.get(i).getKey();
+            int level = arr.get(i).getValue();
+            res.get(maxLevel - level).add(node.val);
+        }
+
+        return res;
+    }
 
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7});
-        log(simpleLevelOrderBottom(t));    // expects [8, 15, 7, 9, 20, 3]
-        log(simpleLevelOrderBottom2(t));   // expects [8, 15, 7, 9, 20, 3]
-//        log(levelOrderBottom(t));        // expects [[8,15,7], [9,20], [3]]
+        log(simpleLevelOrderBottom(t));   // expects [8, 15, 7, 9, 20, 3]
+        log(simpleLevelOrderBottom2(t));  // expects [8, 15, 7, 9, 20, 3]
+        log(levelOrderBottom(t));         // expects [[8,15,7], [9,20], [3]]
     }
 }
