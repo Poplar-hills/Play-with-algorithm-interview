@@ -113,7 +113,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-    * 解法3：迭代（）
+    * 解法3：迭代（第2版）
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> levelOrderBottom3(TreeNode root) {
@@ -137,6 +137,26 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         return res;
     }
 
+    /*
+     * 解法3：递归（第2版）
+     * - 思路：与解法2大体相同，区别在于递归最后 res.get() 时的索引没有倒置，因此递归结束后需要再 reverse 一下，因此统计性能稍差于解法2。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
+     * */
+    public static List<List<Integer>> levelOrderBottom4(TreeNode root) {
+        List<List<Integer>> res = new LinkedList<>();
+        levelOrderBottom4(root, res, 0);
+        Collections.reverse(res);  // 递归结束后需要再 reverse 一下
+        return res;
+    }
+
+    private static void levelOrderBottom4(TreeNode node, List<List<Integer>> res, int level) {
+        if (node == null) return;
+        if (level == res.size()) res.add(new LinkedList<>());
+        levelOrderBottom4(node.left, res, level + 1);
+        levelOrderBottom4(node.right, res, level + 1);
+        res.get(level).add(node.val);  // 直接获取第 level 个列表，因此递归结束后得到的 res 是反着的
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7});
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
@@ -147,9 +167,11 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         log(levelOrderBottom(t1));         // expects [[8,15,7], [9,20], [3]]
         log(levelOrderBottom2(t1));        // expects [[8,15,7], [9,20], [3]]
         log(levelOrderBottom3(t1));        // expects [[8,15,7], [9,20], [3]]
+        log(levelOrderBottom4(t1));        // expects [[8,15,7], [9,20], [3]]
 
         log(levelOrderBottom(t2));        // expects [[15,7], [9,20], [3]]
         log(levelOrderBottom2(t2));       // expects [[15,7], [9,20], [3]] (注意不应该是 [[9,15,7], [20], [3]])
         log(levelOrderBottom3(t2));       // expects [[15,7], [9,20], [3]]
+        log(levelOrderBottom4(t2));       // expects [[15,7], [9,20], [3]]
     }
 }
