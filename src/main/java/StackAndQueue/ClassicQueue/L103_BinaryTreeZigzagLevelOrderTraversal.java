@@ -12,8 +12,29 @@ import static Utils.Helpers.*;
 * */
 
 public class L103_BinaryTreeZigzagLevelOrderTraversal {
+    /*
+    * 解法1：递归 + 最后 reverse
+    * */
     public static List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        zigzagLevelOrder(root, res, 0);
+        reverseOddLists(res);
+        return res;
+    }
 
+    private static void zigzagLevelOrder(TreeNode node, List<List<Integer>> res, int level) {
+        if (node == null) return;
+        if (level == res.size()) res.add(new ArrayList<>());
+        res.get(level).add(node.val);
+        zigzagLevelOrder(node.left, res, level + 1);
+        zigzagLevelOrder(node.right, res, level + 1);
+    }
+
+    private static void reverseOddLists(List<List<Integer>> res) {
+        for (int i = 0; i < res.size(); i++)
+            if (i % 2 == 1)
+                Collections.reverse(res.get(i));
     }
 
     public static void main(String[] args) {
