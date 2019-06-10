@@ -1,5 +1,7 @@
 package StackAndQueue.ClassicQueue;
 
+import javafx.util.Pair;
+
 import java.util.*;
 
 import static Utils.Helpers.*;
@@ -62,9 +64,42 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
         zigzagLevelOrder2(node.right, res, level + 1);
     }
 
+    /*
+    * 解法3：迭代
+    * - 思路：队列中以 Pair 形式同时保持节点和节点层级信息，在向层级列表 levelList 添加节点值时根据节点的层级进行判断，若是奇数层级
+    *   则添加到列表头部，否则正常添加到尾部。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static List<List<Integer>> zigzagLevelOrder3(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        if (root == null) return res;
+
+        q.offer(new Pair<>(root, 0));
+        while (!q.isEmpty()) {
+            List<Integer> levelList = new ArrayList<>();
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                Pair<TreeNode, Integer> pair = q.poll();
+                TreeNode node = pair.getKey();
+                int level = pair.getValue();
+
+                if (level % 2 == 1) levelList.add(0, node.val);
+                else levelList.add(node.val);
+
+                if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
+                if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
+            }
+            res.add(levelList);
+        }
+
+        return res;
+    }
+
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
         log(zigzagLevelOrder(t));   // expects [[3], [20,9], [15,7]]
         log(zigzagLevelOrder2(t));  // expects [[3], [20,9], [15,7]]
+        log(zigzagLevelOrder3(t));  // expects [[3], [20,9], [15,7]]
     }
 }
