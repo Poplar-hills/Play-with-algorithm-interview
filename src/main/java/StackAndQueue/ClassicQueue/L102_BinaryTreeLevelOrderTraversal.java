@@ -17,7 +17,7 @@ import static Utils.Helpers.*;
 
 public class L102_BinaryTreeLevelOrderTraversal {
     /*
-    * 复习1：二叉树非递归层序遍历，用于和解法1进行对比。
+    * 基础1：二叉树非递归层序遍历，用于和解法1进行对比。
     * */
     public static List<Integer> simpleLevelOrder(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -36,7 +36,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
 
     /*
     * 解法1：迭代
-    * - 思路：在复习1的基础上实现，区别在于队列中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
+    * - 思路：在基础1的基础上实现，区别在于队列中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> levelOrder(TreeNode root) {
@@ -62,7 +62,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
     }
 
     /*
-    * 复习2：二叉树递归层序遍历，用于和解法2进行对比。
+    * 基础2：二叉树递归层序遍历，用于和解法2进行对比。
     * */
     public static List<Integer> simpleLevelOrder2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -82,8 +82,8 @@ public class L102_BinaryTreeLevelOrderTraversal {
 
     /*
      * 解法2：递归
-     * - 思路：并没有在复习2的基础上实现，而是直接从根节点开始递归。关键在于判断当前 level 与 res.size() 是否相等，若相等则说明
-     *   需要在 res 中创建新的列表存储新一层的节点值。
+     * - 思路：并没有在 simpleLevelOrder2 的基础上实现，而是直接从根节点开始递归。关键在于判断当前 level 与 res.size() 是否相等，
+     *   若相等则说明需要在 res 中创建新的列表存储新一层的节点值。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> levelOrder2(TreeNode root) {
