@@ -92,10 +92,36 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         return res;
     }
 
+    /*
+    * 解法2：递归
+    * */
+    public static List<List<Integer>> levelOrderBottom2(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        levelOrderBottom2(root, res, 0);
+        return res;
+    }
+
+    private static void levelOrderBottom2(TreeNode node, List<List<Integer>> res, int level) {
+        if (node == null) return;
+        if (level == res.size())
+            res.add(0, new ArrayList<>());       // 在 res 头部插入空列表（否则 test cast t2 会出错，试一下就知道了）
+        levelOrderBottom2(node.left, res, level + 1);
+        levelOrderBottom2(node.right, res, level + 1);
+        res.get(res.size() - 1 - level).add(node.val);  // 递归到底之后再开始将节点值推入 res 中的对应列表
+    }
+
     public static void main(String[] args) {
-        TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7});
-        log(simpleLevelOrderBottom(t));   // expects [8, 15, 7, 9, 20, 3]
-        log(simpleLevelOrderBottom2(t));  // expects [8, 15, 7, 9, 20, 3]
-        log(levelOrderBottom(t));         // expects [[8,15,7], [9,20], [3]]
+        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7});
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
+
+        log(simpleLevelOrderBottom(t1));   // expects [8, 15, 7, 9, 20, 3]
+        log(simpleLevelOrderBottom2(t1));  // expects [8, 15, 7, 9, 20, 3]
+
+        log(levelOrderBottom(t1));         // expects [[8,15,7], [9,20], [3]]
+        log(levelOrderBottom2(t1));        // expects [[8,15,7], [9,20], [3]]
+
+        log(levelOrderBottom(t2));        // expects [[15,7], [9,20], [3]]
+        log(levelOrderBottom2(t2));       // expects [[15,7], [9,20], [3]] (注意不应该是 [[9,15,7], [20], [3]])
     }
 }
