@@ -114,6 +114,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
     /*
     * 解法3：迭代（第2版）
+    * - 思路：与解法1相比，该解法更聪明更精简，不需要再队列中保持节点的层级信息，每次 while 循环都完成一个层级的节点遍历，因此不需要
+    *   根据当前层级来判断是否需要创建新的层级列表，并根据队列的 size 就可以判断该层级有多少个节点需要处理。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> levelOrderBottom3(TreeNode root) {

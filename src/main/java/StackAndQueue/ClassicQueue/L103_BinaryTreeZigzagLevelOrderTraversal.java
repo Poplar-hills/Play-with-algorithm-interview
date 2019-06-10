@@ -96,10 +96,42 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
         return res;
     }
 
+    /*
+     * 解法4：迭代2
+     * - 思路：与解法3类似，不同之处在于不在队列中保持节点的层级信息，而是在层级列表 levelList 生成完之后判断是否需要 reverse，
+     *   而判断的依据就是当前已经创建了多少个层级列表，这就需要使用 levelCount 变量进行追踪，每次创建层级列表就 ++。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> zigzagLevelOrder4(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        Queue<TreeNode> q = new LinkedList<>();
+        if (root == null) return res;
+
+        q.offer(root);
+        int levelCount = -1;
+        while (!q.isEmpty()) {
+            List<Integer> levelList = new ArrayList<>();
+            int size = q.size();
+            levelCount++;
+            for (int i = 0; i < size; i++) {
+                TreeNode node = q.poll();
+                levelList.add(node.val);
+                if (node.left != null) q.offer(node.left);
+                if (node.right != null) q.offer(node.right);
+            }
+            if (levelCount % 2 == 1)  // 最后根据当前已经创建了多少个层级列表来判断该列表是否需要 reverse
+                Collections.reverse(levelList);
+            res.add(levelList);
+        }
+
+        return res;
+    }
+
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
         log(zigzagLevelOrder(t));   // expects [[3], [20,9], [15,7]]
         log(zigzagLevelOrder2(t));  // expects [[3], [20,9], [15,7]]
         log(zigzagLevelOrder3(t));  // expects [[3], [20,9], [15,7]]
+        log(zigzagLevelOrder4(t));  // expects [[3], [20,9], [15,7]]
     }
 }
