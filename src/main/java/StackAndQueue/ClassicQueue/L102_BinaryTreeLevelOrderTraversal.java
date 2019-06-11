@@ -13,6 +13,7 @@ import static Utils.Helpers.*;
 * Binary Tree Level Order Traversal
 *
 * - Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
+* - 本质：在树中进行层序遍历的本质就是广度优先遍历（BFS）。
 * */
 
 public class L102_BinaryTreeLevelOrderTraversal {
