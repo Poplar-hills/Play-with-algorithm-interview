@@ -43,10 +43,10 @@ public class L279_PerfectSquares {
             int num = pair.getKey();
             int step = pair.getValue();
 
-            if (num == 0) return step;  // 若到达终点则返回路径步数
             for (int i = 1; num - i * i >= 0; i++) {  // 若还未到达终点则将所有与当前顶点相差一个完全平方数的顶点入队（这里相当于 BFS 中将所有相邻顶点入队）
                 int next = num - i * i;
-                if (!visited[next]) {   // 已访问过的节点不入队
+                if (next == 0) return step + 1;       // 若下一步到达终点则返回路径步数
+                if (!visited[next]) {                 // 已访问过的节点不入队
                     q.offer(new Pair<>(next, step + 1));
                     visited[next] = true;
                 }
