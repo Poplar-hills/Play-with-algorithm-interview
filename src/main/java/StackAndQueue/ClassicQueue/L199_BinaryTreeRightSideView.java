@@ -18,6 +18,10 @@ import static Utils.Helpers.*;
 * */
 
 public class L199_BinaryTreeRightSideView {
+    /*
+    * 解法1：迭代
+    * - 时间复杂度 O(n)，空间复杂度 O(h)（因为队列中只存 h 个元素），其中 h 为树高。
+    * */
     public static List<Integer> rightSideView(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         Queue<TreeNode> q = new LinkedList<>();
@@ -37,10 +41,35 @@ public class L199_BinaryTreeRightSideView {
         return res;
     }
 
+    /*
+    * 解法2：递归
+    * - 思路：根据题意可知树的每一层会出一个节点作为 res 中的对应位置上，如第0层出一个节点会放到 res[0] 上、第1层出一个节点会放到 res[1] 上。
+    *   因此在向 res 添加元素时，若对应位置上已有元素则用 set 进行替换，若没有则用 add 添加。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
+    * */
+    public static List<Integer> rightSideView2(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        rightSideView2(root, res, 0);
+        return res;
+    }
+
+    private static void rightSideView2(TreeNode node, List<Integer> res, int level) {
+        if (node == null) return;
+        if (level >= res.size()) res.add(level, node.val);
+        else res.set(level, node.val);
+        rightSideView2(node.left, res, level + 1);
+        rightSideView2(node.right, res, level + 1);
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 5, null, 4});
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 5});
-        log(rightSideView(t1));  // expects [1, 3, 4]
-        log(rightSideView(t2));  // expects [1, 3, 5]
+
+        log(rightSideView(t1));   // expects [1, 3, 4]
+        log(rightSideView2(t1));  // expects [1, 3, 4]
+
+        log(rightSideView(t2));   // expects [1, 3, 5]
+        log(rightSideView2(t2));  // expects [1, 3, 5]
     }
 }
