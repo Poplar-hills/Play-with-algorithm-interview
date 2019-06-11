@@ -56,10 +56,30 @@ public class L199_BinaryTreeRightSideView {
 
     private static void rightSideView2(TreeNode node, List<Integer> res, int level) {
         if (node == null) return;
-        if (level >= res.size()) res.add(level, node.val);
+        if (level == res.size()) res.add(level, node.val);
         else res.set(level, node.val);
         rightSideView2(node.left, res, level + 1);
         rightSideView2(node.right, res, level + 1);
+    }
+
+    /*
+     * 解法3：递归
+     * - 思路：在解法2的基础上改进 —— 对于一个节点，若每次先遍历它的右子节点再遍历左子节点，则第一个访问到的节点值就是所需节点值。
+     *   因此对于每一层来说，只需向 res 中放入第一个访问到的节点值即可。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
+     * */
+    public static List<Integer> rightSideView3(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        rightSideView2(root, res, 0);
+        return res;
+    }
+
+    private static void rightSideView3(TreeNode node, List<Integer> res, int level) {
+        if (node == null) return;
+        if (level == res.size()) res.add(node.val);
+        rightSideView2(node.right, res, level + 1);
+        rightSideView2(node.left, res, level + 1);
     }
 
     public static void main(String[] args) {
@@ -68,8 +88,10 @@ public class L199_BinaryTreeRightSideView {
 
         log(rightSideView(t1));   // expects [1, 3, 4]
         log(rightSideView2(t1));  // expects [1, 3, 4]
+        log(rightSideView3(t1));  // expects [1, 3, 4]
 
         log(rightSideView(t2));   // expects [1, 3, 5]
         log(rightSideView2(t2));  // expects [1, 3, 5]
+        log(rightSideView3(t2));  // expects [1, 3, 5]
     }
 }
