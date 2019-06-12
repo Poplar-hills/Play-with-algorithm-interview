@@ -2,6 +2,7 @@ package StackAndQueue.BFSAndGraphShortestPath;
 
 import javafx.util.Pair;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -15,26 +16,29 @@ import static Utils.Helpers.log;
 
 public class L279_PerfectSquares {
     /*
-    * 解法1：BFS
-    * - 思路：将该问题建模成一个图论问题：从 n 到 0，每个数字表示一个顶点；若两顶点之间相差一个完全平方数，则链接两顶点，由此得到一个
-    *   无权图，并且该问题转化为了求该无权图中从 n 到 0 的最短路径的步数。例如：
+    * 解法1：BFS（借助 Queue 实现）
+    * - 思路："正整数 n 最少能用几个完全平方数组成"，这个问题可以转化为"正整数 n 最少减去几个完全平方数后等于0"。如果把 n 和 0 看成
+    *   图上的两个顶点，把"减去一个完全平方数"看做两点间的一段路径，则该问题即可转化为"求顶点 n 到 0 之间的最短路径"。至此我们将原问题
+    *   转化为了一个图论问题，从新描述一遍就是：从 n 到 0，每个数字表示一个顶点；若两顶点之间相差一个完全平方数，则链接两顶点，由此得到
+    *   一个无权图，并且该问题转化为了求该无权图中从 n 到 0 的最短路径的步数。例如：
     *                                    0 -- 1 -- 2                 0 -- 1 ---- 2
     *          0 -- 1 -- 2               |    |    |                 |    |    / |
     *          |         |               |    5    |                 |    5 - 6  |
     *          4 ------- 3               |    |    |                 |    |      |
     *      n = 4 时最短路径为1步           +--- 4 -- 3                 +--- 4 ---- 3
     *                                n = 5 时最短路径为2步          n = 6 时最短路径为3步
-    * - 实现过程：要求无权图中两点的最短路径可使用广度优先遍历（BFS）实现（有权图不适用）—— 使用队列作为辅助数据结构，从起点开始，
-    *   不断将所有相邻顶点加入队列，直到到达终点为止。∵ 最终要返回找到的最短路径的步数，因此队列中除了保存顶点之外还要有步数信息。
+    * - 实现过程：求无权图中两点的最短路径可使用广度优先遍历（BFS）实现（有权图不适用）：
+    *   - 使用队列作为辅助数据结构，即从起点开始，入队相邻顶点、访问出队的顶点，再将其相邻顶点入队，直到到达终点为止。
+    *   - ∵ 最终要返回找到的最短路径的步数，因此队列中除了保存顶点之外还要保存步数信息。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares(int n) {
         assert n > 0;
 
         Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点所走过的步数>
-        q.offer(new Pair<>(n, 0));  // 顶点 n 作为 BFS 的起点，因此经过0步路径到达
+        q.offer(new Pair<>(n, 0));                 // 顶点 n 作为 BFS 的起点
 
-        boolean[] visited = new boolean[n + 1];  // 从 n 到 0 需要开 n+1 的空间
+        boolean[] visited = new boolean[n + 1];    // 用于记录某个顶点是否已经计算过（n+1 是因为从 n 到 0 需要开 n+1 的空间）
         visited[n] = true;
 
         while (!q.isEmpty()) {
@@ -42,20 +46,46 @@ public class L279_PerfectSquares {
             int num = pair.getKey();
             int step = pair.getValue();
 
-            for (int i = 1; num - i * i >= 0; i++) {  // 若还未到达终点则将所有与当前顶点相差一个完全平方数的顶点入队（这里相当于 BFS 中将所有相邻顶点入队）
+            for (int i = 1; num - i * i >= 0; i++) {  // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点（相当于 BFS 中将所有相邻顶点入队）
                 int next = num - i * i;
-                if (next == 0) return step + 1;       // 若下一步到达终点则返回路径步数
+                if (next == 0) return step + 1;       // 若下一步就是终点则返回该路径的步数（第一条到达终点的路径就是最短路径，直接 return）
                 if (!visited[next]) {                 // 已访问过的节点不入队
-                    q.offer(new Pair<>(next, step + 1));
+                    q.offer(new Pair<>(next, step + 1));  // 将下一步的顶点入队，其距离起点的步数 = 当前顶点距离起点的步数 + 1
                     visited[next] = true;
                 }
             }
         }
-        throw new IllegalStateException("No Solution.");  // 只要输入参数正确则不会到达这行 ∵ 所有正整数最终都可以用1相加得到
+        throw new IllegalStateException("No Solution.");  // 只要输入参数正确则不会到达这行 ∵ 所有正整数最终都可以用多个1相加得到
+    }
+
+    /*
+    * 解法2：DFS（借助 buckets 数组实现）
+    * - 思路：基于解法1中的图论建模思路，在具体实现时采用深度优先遍历（DFS），即类似 Play-with-algorithms/Graph/Path.java 中的思路，
+    *   为每一个顶点寻找其到达0的多条路径，从中选取最短的路径，并记录该最短路径的步数。该过程通常采用递归实现。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static int numSquares2(int n) {
+        int[] steps = new int[n + 1];  // 保存每个顶点到达0的最短路径的步数（n+1 是因为从 n 到 0 需要开 n+1 的空间）
+        Arrays.fill(steps, -1);
+        return numSquares2(n, steps);
+    }
+
+    private static int numSquares2(int n, int[] memory) {
+        if (n == 0) return 0;                   // 顶点0到达0的步数为0
+        if (memory[n] != -1) return memory[n];  // 计算过的顶点直接返回（以免重复计算）
+
+        int minStep = Integer.MAX_VALUE;        // 保存每个顶点的到0的已知最短路径的步数
+        for (int i = 1; n - i * i >= 0; i++)    // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点
+            minStep = Math.min(minStep, numSquares2(n - i * i, memory) + 1);  // 不同的下一步顶点对应了不同的到达0的路径，找到其中最短的路径的步数（递归实现 DFS）
+
+        return memory[n] = minStep;
     }
 
     public static void main(String[] args) {
-        log(numSquares(12));  // expects 3. (12 = 4 + 4 + 4)
-        log(numSquares(13));  // expects 2. (13 = 4 + 9)
+        log(numSquares(12));   // expects 3. (12 = 4 + 4 + 4)
+        log(numSquares2(12));  // expects 3. (12 = 4 + 4 + 4)
+
+        log(numSquares(13));   // expects 2. (13 = 4 + 9)
+        log(numSquares2(13));  // expects 2. (13 = 4 + 9)
     }
 }
