@@ -60,8 +60,9 @@ public class L279_PerfectSquares {
 
     /*
     * 解法2：DFS（借助 buckets 数组实现）
-    * - 思路：基于解法1中的图论建模思路，在具体实现时采用深度优先遍历（DFS），即类似 Play-with-algorithms/Graph/Path.java 中的思路，
-    *   为每一个顶点寻找其到达0的多条路径，从中选取最短的路径，并记录该最短路径的步数。该过程通常采用递归实现。
+    * - 思路：基于解法1中的图论建模思路，在具体实现时采用深度优先遍历（DFS）（SEE: Play-with-algorithms/Graph/Path.java)。
+    *   通过 DFS 能获得两点之间的所有路径，利用该特性我们可以为图中每一个顶点寻找其到达0的所有路径，再从中选取最短的路径，并记录该最
+    *   短路径的步数。该过程通常采用递归实现。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares2(int n) {
@@ -81,11 +82,29 @@ public class L279_PerfectSquares {
         return memory[n] = minStep;
     }
 
+    /*
+    * 解法3：Dynamic Programming
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static int numSquares3(int n) {
+        int[] steps = new int[n + 1];
+        Arrays.fill(steps, Integer.MAX_VALUE);
+        steps[0] = 0;
+
+        for (int i = 1; i <= n; i++)  // 使用双重循环为 1~n 间的每一个数字计算到达0的最小步数
+            for (int j = 1; i - j * j >= 0; j++)
+                steps[i] = Math.min(steps[i], steps[i - j * j] + 1);
+
+        return steps[n];
+    }
+
     public static void main(String[] args) {
         log(numSquares(12));   // expects 3. (12 = 4 + 4 + 4)
         log(numSquares2(12));  // expects 3. (12 = 4 + 4 + 4)
+        log(numSquares3(12));  // expects 3. (12 = 4 + 4 + 4)
 
         log(numSquares(13));   // expects 2. (13 = 4 + 9)
         log(numSquares2(13));  // expects 2. (13 = 4 + 9)
+        log(numSquares3(13));  // expects 2. (13 = 4 + 9)
     }
 }
