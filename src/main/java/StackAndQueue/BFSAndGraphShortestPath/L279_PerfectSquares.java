@@ -91,7 +91,7 @@ public class L279_PerfectSquares {
         Arrays.fill(steps, Integer.MAX_VALUE);
         steps[0] = 0;
 
-        for (int i = 1; i <= n; i++)  // 使用双重循环为 1~n 间的每一个数字计算到达0的最小步数
+        for (int i = 1; i <= n; i++)  // 使用双重循环从小到大为 1~n 间的每一个数字计算到达0的最小步数
             for (int j = 1; i - j * j >= 0; j++)
                 steps[i] = Math.min(steps[i], steps[i - j * j] + 1);
 
