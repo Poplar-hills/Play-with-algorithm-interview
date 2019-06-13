@@ -67,7 +67,7 @@ public class L127_WordLadder {
     *   2. 首先会想到可使用 Map<String, Boolean> 的方式记录，但所有 value 为 boolean 的 map 都可以使用 set 化简 —— 一个元素
     *      "在/不在" set 中即可表达是否访问过，因此无需再为其设置 true/false。因此只需创建一个 set 并放入 wordList 中的元素即可。
     *   3. 需要注意的是，当需要一边遍历 set，一边增/删其中元素（动态增删）时，不能使用 for, while 或者 forEach，需要使用 iterator。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
@@ -76,12 +76,12 @@ public class L127_WordLadder {
         Queue<Pair<String, Integer>> q = new LinkedList<>();
         q.offer(new Pair<>(beginWord, 1));
 
-        while (!q.isEmpty()) {
+        while (!q.isEmpty()) {  // 最差情况下遍历了所有顶点才到达 endWord，因此时间复杂度 O(n)
             Pair<String, Integer> pair = q.poll();
             String word = pair.getKey();
             int step = pair.getValue();
 
-            for (Iterator<String> it = wordSet.iterator(); it.hasNext(); ) {  // 遍历所有没访问过的 word（不再遍历 wordList）
+            for (Iterator<String> it = wordSet.iterator(); it.hasNext(); ) {  // 遍历 wordSet 而非 wordList（遍历所有没访问过的 word），时间复杂度 O(n)
                 String w = it.next();
                 if (isSimilar(w, word)) {
                     if (w.equals(endWord)) return step + 1;
