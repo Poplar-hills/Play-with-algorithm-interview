@@ -1,7 +1,8 @@
 package StackAndQueue.BFSAndGraphShortestPath;
 
-import java.util.Arrays;
-import java.util.List;
+import javafx.util.Pair;
+
+import java.util.*;
 
 import static Utils.Helpers.log;
 
@@ -20,8 +21,45 @@ import static Utils.Helpers.log;
 * */
 
 public class L127_WordLadder {
+    /*
+    * 解法1：BFS
+    * */
     public static int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        if (!wordList.contains(endWord)) return 0;
+
+        Set<String> wordSet = new HashSet<>(wordList);
+        Queue<Pair<String, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(beginWord, 1));
+
+        while (!q.isEmpty()) {
+            Pair<String, Integer> pair = q.poll();
+            String word = pair.getKey();
+            int step = pair.getValue();
+
+            for (Iterator<String> it = wordSet.iterator(); it.hasNext(); ) {
+                String w = it.next();
+                if (isSimilarTo(w, word)) {
+                    if (w.equals(endWord)) return step + 1;
+                    q.offer(new Pair<>(w, step + 1));
+                    it.remove();
+                }
+            }
+        }
+
         return 0;
+    }
+
+    private static boolean isSimilarTo(String word1, String word2) {
+        if (word1.length() != word2.length() || word1.equals(word2))
+            return false;
+
+        int diffCount = 0;
+        for (int i = 0; i < word1.length(); i++) {
+            if (word1.charAt(i) != word2.charAt(i)) diffCount++;
+            if (diffCount > 1) return false;
+        }
+
+        return true;
     }
 
     public static void main(String[] args) {
@@ -32,5 +70,9 @@ public class L127_WordLadder {
         List<String> wordList2 = Arrays.asList("hot", "dot", "dog", "lot", "log");
         log(ladderLength("hit", "cog", wordList2));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
+
+        List<String> wordList3 = Arrays.asList("hot", "dog");
+        log(ladderLength("hot", "dog", wordList3));
+        // expects 0. (No solution)
     }
 }
