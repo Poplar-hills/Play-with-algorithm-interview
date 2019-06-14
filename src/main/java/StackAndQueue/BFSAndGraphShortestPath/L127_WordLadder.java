@@ -14,10 +14,11 @@ import static Utils.Helpers.log;
 *   1. Only one letter can be changed at a time.
 *   2. Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
 *   3. Return 0 if there is no such transformation sequence.
-*   4. All words have the same length.
-*   5. All words contain only lowercase alphabetic characters.
-*   6. You may assume no duplicates in the word list.
-*   7. You may assume beginWord and endWord are non-empty and are not the same.
+*   Note that:
+*   1. All words have the same length.
+*   2. All words contain only lowercase alphabetic characters.
+*   3. You may assume no duplicates in the word list.
+*   4. You may assume beginWord and endWord are non-empty and are not the same.
 * */
 
 public class L127_WordLadder {
@@ -81,7 +82,7 @@ public class L127_WordLadder {
             String word = pair.getKey();
             int step = pair.getValue();
 
-            for (Iterator<String> it = wordSet.iterator(); it.hasNext(); ) {  // 遍历 wordSet 而非 wordList（遍历所有没访问过的 word），时间复杂度 O(n)
+            for (Iterator<String> it = wordSet.iterator(); it.hasNext(); ) {  // 遍历 wordSet 而非 wordList，时间复杂度 O(n)
                 String w = it.next();
                 if (isSimilar(w, word)) {
                     if (w.equals(endWord)) return step + 1;
@@ -94,17 +95,82 @@ public class L127_WordLadder {
         return 0;
     }
 
+    /*
+    * 解法2：Bi-directional BFS
+    * -
+    * */
+    public static int ladderLength3(String beginWord, String endWord, List<String> wordList) {
+        if (!wordList.contains(endWord)) return 0;
+
+        Queue<Pair<String, Integer>> q1 = new LinkedList<>(), q2 = new LinkedList<>();
+        q1.offer(new Pair<>(beginWord, 1));
+        q2.offer(new Pair<>(endWord, 1));
+
+        Set<String> wordSet = new HashSet<>(wordList);
+        wordSet.remove(endWord);
+
+        while (!q1.isEmpty() && !q2.isEmpty()) {
+            Pair<String, Integer> p1 = q1.poll(), p2 = q2.poll();
+            String word1 = p1.getKey(), word2 = p2.getKey();
+            int step1 = p1.getValue(), step2 = p2.getValue();
+
+            if (isSimilar(word1, word2)) return step1 + step2;
+            List<String> s1 = findSimilar(word1, wordSet);
+            if (s1.contains(endWord)) return step1 + 1;
+            List<String> s2 = findSimilar(word2, wordSet);
+            Set<String> intersection = new HashSet<>(s1);
+            intersection.retainAll(s2);
+
+            if (intersection.size() > 0)
+                return step1 + step2 + 1;
+            for (String s : s1) {
+                q1.add(new Pair<>(s, step1 + 1));
+                wordSet.remove(s);
+            }
+            for (String s : s2) {
+                q2.add(new Pair<>(s, step2 + 1));
+                wordSet.remove(s);
+            }
+        }
+
+        return 0;
+    }
+
+    private static List<String> findSimilar(String word, Set<String> wordSet) {
+        List<String> res = new ArrayList<>();
+        for (String w : wordSet)
+            if (isSimilar(w, word))
+                res.add(w);
+        return res;
+    }
+
     public static void main(String[] args) {
         List<String> wordList = Arrays.asList("hot", "dot", "dog", "lot", "log", "cog");
-        log(ladderLength2("hit", "cog", wordList));
-        // expects 5. (As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
+        log(ladderLength3("hit", "cog", wordList));
+        // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
-        List<String> wordList2 = Arrays.asList("hot", "dot", "dog", "lot", "log");
-        log(ladderLength2("hit", "cog", wordList2));
+        List<String> wordList2 = Arrays.asList("a", "b", "c");
+        log(ladderLength3("a", "c", wordList2));
+        // expects 2. ("a" -> "c")
+
+        List<String> wordList3 = Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee");
+        log(ladderLength3("red", "tax", wordList3));
+        // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
+
+        List<String> wordList4 = Arrays.asList("hot", "dot", "dog", "lot", "log");
+        log(ladderLength3("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
-        List<String> wordList3 = Arrays.asList("hot", "dog");
-        log(ladderLength2("hot", "dog", wordList3));
+        List<String> wordList5 = Arrays.asList("hot", "dog");
+        log(ladderLength3("hot", "dog", wordList5));
         // expects 0. (No solution)
+
+        List<String> wordList6 = Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost");
+        log(ladderLength3("leet", "code", wordList6));
+        // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
+
+        List<String> wordList7 = Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss");
+        log(ladderLength3("kiss", "tusk", wordList7));
+        // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
 }
