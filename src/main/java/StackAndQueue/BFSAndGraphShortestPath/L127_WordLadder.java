@@ -106,13 +106,13 @@ public class L127_WordLadder {
     *
     * - 思路：虽然代码不少，但思路并不复杂：
     *   1. startQ 放入起点，endQ 放入终点；
-    *   2. 从 startQ 开始，遍历其中每一个顶点，为每一个顶点寻找其所有邻居顶点：
-    *      a. 若其中任一邻居顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回路径上的顶点数即可；
-    *      b. 若没有邻居顶点出现在 endQ 中，则说明正反向查找还未相遇，此时：
+    *   2. 从 startQ 开始，遍历其中每一个顶点，为每一个顶点寻找其所有相邻顶点：
+    *      a. 若其中任一相邻顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回路径上的顶点数即可；
+    *      b. 若没有相邻顶点出现在 endQ 中，则说明正反向查找还未相遇，此时：
     *        1). 经过的顶点数+1；
-    *        2). 从所有邻居顶点中筛出所有之前未访问过的，加入 neighbours 集合（同时也加入 visited 集合）；
+    *        2). 从所有相邻顶点中筛出所有之前未访问过的，加入 neighbours 集合（同时也加入 visited 集合）；
     *        2). 调换方向开始下一轮查找（刚才是正向查找一步，下一轮是反向查找一步），将 endQ 作为 startQ 开始遍历，并将 neighbours
-    *            作为 endQ 用于查看下一轮中的邻居顶点是否出现在对面方向最外层顶点中。
+    *            作为 endQ 用于查看下一轮中的相邻顶点是否出现在对面方向最外层顶点中。
     *
     * - 优化：在最后要调换方向时，加一步判断 —— Choose the shortest between the startQ and endQ in hopes to alternate
     *   between them to meet somewhere at the middle. This optimizes the code, because we are processing smallest
@@ -132,14 +132,14 @@ public class L127_WordLadder {
         while (!startQ.isEmpty()) {
             Set<String> neighbours = new HashSet<>();
             for (String word: startQ) {                    // 遍历 startQ 中的每一个单词
-                for (int i = 0; i < word.length(); i++) {  // 访问每一个单词的相邻单词（neighbouring words）
+                for (int i = 0; i < word.length(); i++) {  // 寻找每一个单词的相邻单词（neighbouring words）
                     StringBuilder transformWord = new StringBuilder(word);
                     char exclude = transformWord.charAt(i);
-                    for (char c = 'a'; c <= 'z'; c++) {
+                    for (char c = 'a'; c <= 'z'; c++) {    // 替换 word 中的每个字母，查看替换后的单词 tWord 是否是 word 的相邻单词
                         if (c == exclude) continue;
-                        transformWord.setCharAt(i, c);           // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
+                        transformWord.setCharAt(i, c);     // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
                         String tWord = transformWord.toString();
-                        if (endQ.contains(tWord)) return steps;  // 本侧的邻居顶点出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
+                        if (endQ.contains(tWord)) return steps;  // 本侧的相邻顶点出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
                         if (wordSet.contains(tWord) && visited.add(tWord))  // 如果是有效的、未访问过的顶点（这里用了 add 返回值的技巧）
                             neighbours.add(tWord);
                     }
@@ -150,7 +150,7 @@ public class L127_WordLadder {
 
             if (endQ.size() < neighbours.size()) {  // 若 endQ 中的顶点数少，则调换方向，下一轮从反向查找，遍历 endQ 中的顶点
                 startQ = endQ;
-                endQ = neighbours;                  // 本轮中找到的邻居顶点（本侧最外层顶点）作为下一轮中的 endQ，用于检测是否正反向相遇
+                endQ = neighbours;                  // 本轮中找到的相邻顶点（本侧最外层顶点）作为下一轮中的 endQ，用于检测是否正反向相遇
             }
             else startQ = neighbours;               // 若 endQ 中顶点多，则下一轮继续正向查找（即将本轮中正向的最外层顶点作为 startQ）
         }
