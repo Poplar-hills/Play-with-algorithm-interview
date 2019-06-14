@@ -19,6 +19,8 @@ import static Utils.Helpers.log;
 *   2. All words contain only lowercase alphabetic characters.
 *   3. You may assume no duplicates in the word list.
 *   4. You may assume beginWord and endWord are non-empty and are not the same.
+*
+* - 注意：本题求的是最短路径上的顶点数（包含头尾顶点），而非最短路径的上步数（L279 中求的是步数），这个要区分清楚。
 * */
 
 public class L127_WordLadder {
@@ -97,51 +99,63 @@ public class L127_WordLadder {
 
     /*
     * 解法2：Bi-directional BFS
-    * -
+    * - 策略：采用 Bi-directional BFS 能有效减小搜索复杂度：
+    *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的的时间及空间
+    *     复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
+    *   - 使用条件：1. 已知头尾两个顶点  2. 两个方向的 branching factor 相同。
+    *
+    * - 思路：虽然代码不少，但思路并不复杂：
+    *   1. startQ 放入起点，endQ 放入终点；
+    *   2. 从 startQ 开始，遍历其中每一个顶点，为每一个顶点寻找其所有邻居顶点：
+    *      a. 若其中任一邻居顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回路径上的顶点数即可；
+    *      b. 若没有邻居顶点出现在 endQ 中，则说明正反向查找还未相遇，此时：
+    *        1). 经过的顶点数+1；
+    *        2). 从所有邻居顶点中筛出所有之前未访问过的，加入 neighbours 集合（同时也加入 visited 集合）；
+    *        2). 调换方向开始下一轮查找（刚才是正向查找一步，下一轮是反向查找一步），将 endQ 作为 startQ 开始遍历，并将 neighbours
+    *            作为 endQ 用于查看下一轮中的邻居顶点是否出现在对面方向最外层顶点中。
+    *
+    * - 优化：在最后要调换方向时，加一步判断 —— Choose the shortest between the startQ and endQ in hopes to alternate
+    *   between them to meet somewhere at the middle. This optimizes the code, because we are processing smallest
+    *   queue first, so the # of words in the queues dont blow up too fast. basically balancing between the two queues.
     * */
     public static int ladderLength3(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
 
-        Queue<Pair<String, Integer>> q1 = new LinkedList<>(), q2 = new LinkedList<>();
-        q1.offer(new Pair<>(beginWord, 1));
-        q2.offer(new Pair<>(endWord, 1));
-
         Set<String> wordSet = new HashSet<>(wordList);
-        wordSet.remove(endWord);
+        Set<String> visited = new HashSet<>();
+        Set<String> startQ = new HashSet<>();  // 辅助正向 BFS 的队列
+        Set<String> endQ = new HashSet<>();    // 辅助反向 BFS 的队列
+        startQ.add(beginWord);
+        endQ.add(endWord);
 
-        while (!q1.isEmpty() && !q2.isEmpty()) {
-            Pair<String, Integer> p1 = q1.poll(), p2 = q2.poll();
-            String word1 = p1.getKey(), word2 = p2.getKey();
-            int step1 = p1.getValue(), step2 = p2.getValue();
-
-            if (isSimilar(word1, word2)) return step1 + step2;
-            List<String> s1 = findSimilar(word1, wordSet);
-            if (s1.contains(endWord)) return step1 + 1;
-            List<String> s2 = findSimilar(word2, wordSet);
-            Set<String> intersection = new HashSet<>(s1);
-            intersection.retainAll(s2);
-
-            if (intersection.size() > 0)
-                return step1 + step2 + 1;
-            for (String s : s1) {
-                q1.add(new Pair<>(s, step1 + 1));
-                wordSet.remove(s);
+        int steps = 2;                         // steps 为该题所求的最短路径顶点数，从2开始是已包含头尾的顶点
+        while (!startQ.isEmpty()) {
+            Set<String> neighbours = new HashSet<>();
+            for (String word: startQ) {                    // 遍历 startQ 中的每一个单词
+                for (int i = 0; i < word.length(); i++) {  // 访问每一个单词的相邻单词（neighbouring words）
+                    StringBuilder transformWord = new StringBuilder(word);
+                    char exclude = transformWord.charAt(i);
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        if (c == exclude) continue;
+                        transformWord.setCharAt(i, c);           // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
+                        String tWord = transformWord.toString();
+                        if (endQ.contains(tWord)) return steps;  // 本侧的邻居顶点出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
+                        if (wordSet.contains(tWord) && visited.add(tWord))  // 如果是有效的、未访问过的顶点（这里用了 add 返回值的技巧）
+                            neighbours.add(tWord);
+                    }
+                }
             }
-            for (String s : s2) {
-                q2.add(new Pair<>(s, step2 + 1));
-                wordSet.remove(s);
+
+            steps++;                                // 路径上的顶点数+1
+
+            if (endQ.size() < neighbours.size()) {  // 若 endQ 中的顶点数少，则调换方向，下一轮从反向查找，遍历 endQ 中的顶点
+                startQ = endQ;
+                endQ = neighbours;                  // 本轮中找到的邻居顶点（本侧最外层顶点）作为下一轮中的 endQ，用于检测是否正反向相遇
             }
+            else startQ = neighbours;               // 若 endQ 中顶点多，则下一轮继续正向查找（即将本轮中正向的最外层顶点作为 startQ）
         }
 
         return 0;
-    }
-
-    private static List<String> findSimilar(String word, Set<String> wordSet) {
-        List<String> res = new ArrayList<>();
-        for (String w : wordSet)
-            if (isSimilar(w, word))
-                res.add(w);
-        return res;
     }
 
     public static void main(String[] args) {
