@@ -3,8 +3,6 @@ package StackAndQueue.BFSAndGraphShortestPath;
 import javafx.util.Pair;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 import static Utils.Helpers.log;
 
@@ -175,9 +173,8 @@ public class L127_WordLadder {
             for (String word: startQ) {                    // 遍历 startQ 中的每一个单词
                 for (int i = 0; i < word.length(); i++) {  // 寻找每一个单词的相邻单词（neighbouring words）
                     StringBuilder transformed = new StringBuilder(word);
-                    char exclude = transformed.charAt(i);
                     for (char c = 'a'; c <= 'z'; c++) {
-                        if (c == exclude) continue;
+                        if (c == word.charAt(i)) continue;
                         transformed.setCharAt(i, c);
                         String tWord = transformed.toString();
                         if (endQ.contains(tWord)) return stepCount;  // 本侧的相邻顶点出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
@@ -217,6 +214,7 @@ public class L127_WordLadder {
             for (int i = 0; i < word.length(); i++) {
                 StringBuilder transformed = new StringBuilder(word);
                 for (char c = 'a'; c <= 'z'; c++) {
+                    if (c == word.charAt(i)) continue;
                     transformed.setCharAt(i, c);
                     String tWord = transformed.toString();
                     if (endQ.contains(tWord)) return stepCount;
@@ -231,7 +229,6 @@ public class L127_WordLadder {
                 ? ladderLength4(endQ, neighbours, wordSet, stepCount + 1)
                 : ladderLength4(neighbours, endQ, wordSet, stepCount + 1);
     }
-
 
     public static void main(String[] args) {
         List<String> wordList = Arrays.asList("hot", "dot", "dog", "lot", "log", "cog");
