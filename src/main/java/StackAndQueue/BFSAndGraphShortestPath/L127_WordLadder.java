@@ -3,6 +3,8 @@ package StackAndQueue.BFSAndGraphShortestPath;
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static Utils.Helpers.log;
 
@@ -98,7 +100,44 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法2：Bi-directional BFS
+    * 解法2：解法1的性能改进版
+    * - 思路：改进点在于寻找相邻顶点的过程 —— 解法1中该过程是通过 isSimilar 方法比较 wordSet 中每个单词是否与待比较单词 word
+    *   相邻来完成的；而本解法中采用另一种策略 —— 尝试对 word 中的每个字母用 a-z 中的字母进行替换，看替换后的单词 tWord 是否
+    *   存在于 wordSet 中，若存在则说明确实与 word 相邻。这种方法复杂度更低 ∵ 只有26个字母（a-z），∴ 复杂度为 len(word) * 26；
+    *   而解法1中的复杂度为 wordSet.size() * len(word)，因此在 wordSet 中元素数较多时，性能会差于解法2。
+    * */
+    private static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
+        if (!wordList.contains(endWord)) return 0;
+
+        Queue<Pair<String, Integer>> q = new LinkedList<>();
+        Set<String> wordSet = new HashSet<>(wordList);
+        q.offer(new Pair<>(beginWord, 1));
+
+        while (!q.isEmpty()) {
+            Pair<String, Integer> p = q.poll();
+            String word = p.getKey();
+            int step = p.getValue();
+
+            for (int i = 0; i < word.length(); i++) {
+                StringBuilder transformed = new StringBuilder(word);
+                for (char c = 'a'; c <= 'z'; c++) {  // 替换 word 中的每个字母，查看替换后的单词 tWord 是否与 word 相邻
+                    if (c == word.charAt(i)) continue;
+                    transformed.setCharAt(i, c);     // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
+                    String tWord = transformed.toString();
+                    if (wordSet.contains(tWord)) {
+                        if (tWord.equals(endWord)) return step + 1;
+                        q.offer(new Pair<>(tWord, step + 1));
+                        wordSet.remove(tWord);
+                    }
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /*
+    * 解法3：Bi-directional BFS
     * - 策略：采用 Bi-directional BFS 能有效减小搜索复杂度：
     *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的的时间及空间
     *     复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
@@ -120,7 +159,7 @@ public class L127_WordLadder {
     *
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
-    public static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
+    public static int ladderLength3(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
 
         Set<String> wordSet = new HashSet<>(wordList);
@@ -137,9 +176,9 @@ public class L127_WordLadder {
                 for (int i = 0; i < word.length(); i++) {  // 寻找每一个单词的相邻单词（neighbouring words）
                     StringBuilder transformed = new StringBuilder(word);
                     char exclude = transformed.charAt(i);
-                    for (char c = 'a'; c <= 'z'; c++) {    // 替换 word 中的每个字母，查看替换后的单词 tWord 是否是 word 的相邻单词
+                    for (char c = 'a'; c <= 'z'; c++) {
                         if (c == exclude) continue;
-                        transformed.setCharAt(i, c);       // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
+                        transformed.setCharAt(i, c);
                         String tWord = transformed.toString();
                         if (endQ.contains(tWord)) return stepCount;  // 本侧的相邻顶点出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
                         if (wordSet.contains(tWord) && visited.add(tWord))  // 如果是有效的、未访问过的顶点（注意 add 返回值的技巧，或不用
@@ -161,17 +200,17 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法3：解法2的递归版
+    * 解法4：解法3的递归版
     * - 思路：每次递归都相当于从正/反方向往前走一步，进行一次正/反向查找，查找这一侧最外层顶点的相邻顶点。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
-    public static int ladderLength3(String beginWord, String endWord, List<String> wordList) {
+    public static int ladderLength4(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Set<String> wordSet = new HashSet<>(wordList);
-        return ladderLength3(Collections.singleton(beginWord), Collections.singleton(endWord), wordSet, 2);
+        return ladderLength4(Collections.singleton(beginWord), Collections.singleton(endWord), wordSet, 2);
     }
 
-    private static int ladderLength3(Set<String> startQ, Set<String> endQ, Set<String> wordSet, int stepCount) {
+    private static int ladderLength4(Set<String> startQ, Set<String> endQ, Set<String> wordSet, int stepCount) {
         if (startQ.size() == 0) return 0;
         Set<String> neighbours = new HashSet<>();
         for (String word : startQ) {
@@ -189,37 +228,38 @@ public class L127_WordLadder {
             }
         }
         return endQ.size() < neighbours.size()
-                ? ladderLength3(endQ, neighbours, wordSet, stepCount + 1)
-                : ladderLength3(neighbours, endQ, wordSet, stepCount + 1);
+                ? ladderLength4(endQ, neighbours, wordSet, stepCount + 1)
+                : ladderLength4(neighbours, endQ, wordSet, stepCount + 1);
     }
+
 
     public static void main(String[] args) {
         List<String> wordList = Arrays.asList("hot", "dot", "dog", "lot", "log", "cog");
-        log(ladderLength3("hit", "cog", wordList));
+        log(ladderLength4("hit", "cog", wordList));
         // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
         List<String> wordList2 = Arrays.asList("a", "b", "c");
-        log(ladderLength3("a", "c", wordList2));
+        log(ladderLength4("a", "c", wordList2));
         // expects 2. ("a" -> "c")
 
         List<String> wordList3 = Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee");
-        log(ladderLength3("red", "tax", wordList3));
+        log(ladderLength4("red", "tax", wordList3));
         // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
 
         List<String> wordList4 = Arrays.asList("hot", "dot", "dog", "lot", "log");
-        log(ladderLength3("hit", "cog", wordList4));
+        log(ladderLength4("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
         List<String> wordList5 = Arrays.asList("hot", "dog");
-        log(ladderLength3("hot", "dog", wordList5));
+        log(ladderLength4("hot", "dog", wordList5));
         // expects 0. (No solution)
 
         List<String> wordList6 = Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost");
-        log(ladderLength3("leet", "code", wordList6));
+        log(ladderLength4("leet", "code", wordList6));
         // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
         List<String> wordList7 = Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss");
-        log(ladderLength3("kiss", "tusk", wordList7));
+        log(ladderLength4("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
 }
