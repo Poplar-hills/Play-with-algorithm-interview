@@ -209,7 +209,7 @@ public class L127_WordLadder {
     }
 
     private static int ladderLength4(Set<String> startQ, Set<String> endQ, Set<String> wordSet, int stepCount) {
-        if (startQ.size() == 0) return 0;
+        if (startQ.isEmpty()) return 0;
         Set<String> neighbours = new HashSet<>();
         for (String word : startQ) {
             for (int i = 0; i < word.length(); i++) {
@@ -237,44 +237,65 @@ public class L127_WordLadder {
     * */
     public static int ladderLength5(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
-
-        if (!wordList.contains(beginWord))
-            wordList.add(beginWord);
-        int beginIndex = wordList.indexOf(beginWord);
+        if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
         int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];
+        boolean[][] graph = new boolean[n][n];  // 创建邻接矩阵
         for (int i = 0; i < n; i++)
-            for (int j = 0; j < i; j++)  // 是 i < j（不是 i < n），即从左上往右下遍历
-                graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));  // 填充邻接矩阵
+            for (int j = 0; j < i; j++)         // 是 i < j（不是 i < n），即从左上往右下遍历
+                graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));  // 矩阵中存储的是两两 word 是否相邻的关系
+
+        return bsf(graph, wordList, beginWord, endWord);  // 在邻接矩阵上进行 BFS
+    }
+
+    private static int bsf(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
+        Queue<Integer> q = new LinkedList<>();   // q 中存储的是 steps 数组的索引，而非具体单词
+        int[] steps = new int[wordList.size()];  // steps 中每个位置存储从 beginWord 出发到 wordList 中对应位置上的单词的步数
+        int beginIndex = wordList.indexOf(beginWord);
+        int endIndex = wordList.indexOf(endWord);
+
+        q.offer(beginIndex);
+        steps[beginIndex] = 1;  // 因为题中要求最终结果里 beginWord 也算一步，因此这里初始化为1
+
+        while (!q.isEmpty()) {
+            int currIndex = q.poll();
+            for (int i = 0; i < wordList.size(); i++) {
+                if (steps[i] == 0 && graph[currIndex][i]) {  // 如果是 currIndex 所指单词的相邻单词，且还未被访问过
+                    if (i == endIndex) return steps[currIndex] + 1;
+                    steps[i] = steps[currIndex] + 1;
+                    q.offer(i);
+                }
+            }
+        }
+        return 0;
     }
 
     public static void main(String[] args) {
-        List<String> wordList = Arrays.asList("hot", "dot", "dog", "lot", "log", "cog");
+        List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
         log(ladderLength5("hit", "cog", wordList));
         // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
-        List<String> wordList2 = Arrays.asList("a", "b", "c");
+        List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
         log(ladderLength5("a", "c", wordList2));
         // expects 2. ("a" -> "c")
 
-        List<String> wordList3 = Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee");
+        List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
         log(ladderLength5("red", "tax", wordList3));
         // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
 
-        List<String> wordList4 = Arrays.asList("hot", "dot", "dog", "lot", "log");
+        List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
         log(ladderLength5("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
-        List<String> wordList5 = Arrays.asList("hot", "dog");
+        List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
         log(ladderLength5("hot", "dog", wordList5));
         // expects 0. (No solution)
 
-        List<String> wordList6 = Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost");
+        List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
         log(ladderLength5("leet", "code", wordList6));
         // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
-        List<String> wordList7 = Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss");
+        List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
         log(ladderLength5("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
