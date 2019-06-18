@@ -234,15 +234,16 @@ public class L127_WordLadder {
     /*
     * 解法5：生成 Graph + BFS
     * - 思路：不同于解法1-4，该解法先通过生成邻接矩阵更直接地将问题建模为图论问题，再通过 BFS 进行求解。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int ladderLength5(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
         int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];  // 创建邻接矩阵
+        boolean[][] graph = new boolean[n][n];  // 创建基于 wordList 的邻接矩阵
         for (int i = 0; i < n; i++)
-            for (int j = 0; j < i; j++)         // 是 i < j（不是 i < n），即从左上往右下遍历
+            for (int j = 0; j < i; j++)  // 是 i < j（不是 i < n），即只遍历左下部分，而通过下面的 graph[i][j] = graph[j][i] = .. 使得右上也被遍历到
                 graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));  // 矩阵中存储的是两两 word 是否相邻的关系
 
         return bsf(graph, wordList, beginWord, endWord);  // 在邻接矩阵上进行 BFS
@@ -250,7 +251,7 @@ public class L127_WordLadder {
 
     private static int bsf(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
         Queue<Integer> q = new LinkedList<>();   // q 中存储的是 steps 数组的索引，而非具体单词
-        int[] steps = new int[wordList.size()];  // steps 中每个位置存储从 beginWord 出发到 wordList 中对应位置上的单词的步数
+        int[] steps = new int[wordList.size()];  // steps 中每个位置存储从 beginWord 出发到 wordList 中对应位置上的单词的步数（这是不同于 Queue<String, Integer> 的另一种计数方式）
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
 
@@ -258,9 +259,10 @@ public class L127_WordLadder {
         steps[beginIndex] = 1;  // 因为题中要求最终结果里 beginWord 也算一步，因此这里初始化为1
 
         while (!q.isEmpty()) {
-            int currIndex = q.poll();
-            for (int i = 0; i < wordList.size(); i++) {
-                if (steps[i] == 0 && graph[currIndex][i]) {  // 如果是 currIndex 所指单词的相邻单词，且还未被访问过
+            int currIndex = q.poll();             // poll 出来的是 index，而非具体单词
+            boolean[] edges = graph[currIndex];   // 在邻接矩阵中找到当前顶点与其他顶点的链接关系
+            for (int i = 0; i < edges.length; i++) {
+                if (steps[i] == 0 && edges[i]) {  // 如果是 currIndex 所指单词的相邻单词，且还未被访问过
                     if (i == endIndex) return steps[currIndex] + 1;
                     steps[i] = steps[currIndex] + 1;
                     q.offer(i);
@@ -270,33 +272,91 @@ public class L127_WordLadder {
         return 0;
     }
 
+    /*
+    * 解法6：生成 Graph + Bidirectional BFS
+    * - 思路：在解法5的基础上使用双向 BFS。
+    * */
+    public static int ladderLength6(String beginWord, String endWord, List<String> wordList) {
+        if (!wordList.contains(endWord)) return 0;
+        if (!wordList.contains(beginWord)) wordList.add(beginWord);
+
+        int n = wordList.size();
+        boolean[][] graph = new boolean[n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < i; j++)
+                graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));
+
+        return biDirectionalBfs(graph, wordList, beginWord, endWord);
+    }
+
+    private static int biDirectionalBfs(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
+        Queue<Integer> beginQ = new LinkedList<>();
+        Queue<Integer> endQ = new LinkedList<>();
+        int beginIndex = wordList.indexOf(beginWord);
+        int endIndex = wordList.indexOf(endWord);
+        beginQ.add(beginIndex);
+        endQ.add(endIndex);
+
+        int[] beginSteps = new int[wordList.size()];
+        int[] endSteps = new int[wordList.size()];
+        beginSteps[beginIndex] = endSteps[endIndex] = 1;
+
+        while (!beginQ.isEmpty() && !endQ.isEmpty()) {
+            int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();
+
+            for (int i = 0; i < wordList.size(); i++) {
+                if (graph[currBeginIndex][i] && beginSteps[i] == 0) {
+                    beginSteps[i] = beginSteps[currBeginIndex] + 1;
+                    beginQ.offer(i);
+                }
+            }
+
+            for (int i = 0; i < wordList.size(); i++) {
+                if (graph[currEndIndex][i] && endSteps[i] == 0) {
+                    endSteps[i] = endSteps[currEndIndex] + 1;
+                    endQ.offer(i);
+                }
+            }
+
+            int minStep = Integer.MAX_VALUE;
+            for (int i = 0; i < wordList.size(); i++)
+                if (beginSteps[i] != 0 && endSteps[i] != 0)
+                    minStep = Integer.min(minStep, beginSteps[i] + endSteps[i] - 1);
+
+            if (minStep != Integer.MAX_VALUE)
+                return minStep;
+        }
+
+        return 0;
+    }
+
     public static void main(String[] args) {
-        List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(ladderLength5("hit", "cog", wordList));
-        // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
-
-        List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(ladderLength5("a", "c", wordList2));
-        // expects 2. ("a" -> "c")
-
-        List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(ladderLength5("red", "tax", wordList3));
-        // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
-
-        List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(ladderLength5("hit", "cog", wordList4));
-        // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
-
-        List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(ladderLength5("hot", "dog", wordList5));
-        // expects 0. (No solution)
-
-        List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(ladderLength5("leet", "code", wordList6));
-        // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
+//        List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
+//        log(ladderLength6("hit", "cog", wordList));
+//        // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
+//
+//        List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
+//        log(ladderLength6("a", "c", wordList2));
+//        // expects 2. ("a" -> "c")
+//
+//        List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
+//        log(ladderLength6("red", "tax", wordList3));
+//        // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
+//
+//        List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
+//        log(ladderLength6("hit", "cog", wordList4));
+//        // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
+//
+//        List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
+//        log(ladderLength6("hot", "dog", wordList5));
+//        // expects 0. (No solution)
+//
+//        List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
+//        log(ladderLength6("leet", "code", wordList6));
+//        // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
         List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(ladderLength5("kiss", "tusk", wordList7));
+        log(ladderLength6("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
 }
