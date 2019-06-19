@@ -138,7 +138,7 @@ public class L127_WordLadder {
     /*
     * 解法3：Bi-directional BFS
     * - 策略：采用 Bi-directional BFS 能有效减小搜索复杂度：
-    *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的的时间及空间
+    *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的时间及空间
     *     复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
     *   - 使用条件：1. 已知头尾两个顶点  2. 两个方向的 branching factor 相同。
     *
@@ -275,12 +275,11 @@ public class L127_WordLadder {
     /*
     * 解法6：生成 Graph + Bi-directional BFS
     * - 思路：在解法5（生成邻接矩阵）的基础上使用 Bi-directional BFS。但该解法中 Bi-directional BFS 的实现（即 biDirectionalBfs
-    *   方法）不同于解法3、4中两个方向交替进行查找的方式，而是采用：
-    *   1. 从起点开始对整个图进行广度优先遍历，计算从起点到图中其余每个顶点的步数，并将结果记录在 beginSteps 中。
-    *   2. 从终点开始对整个图进行广度优先遍历，计算从终点到图中其余每个顶点的步数，并将结别记录在 endSteps 中。
-    *   3. 检测 beginSteps、endSteps 中是否存在能同时从起点、终点到达的路径，并从所有这样的路径中求出最短的来。
-    * - 缺陷：该方法虽然也是 Bidirectional BFS，但没有像解法3、4那样体现出 Bidirectional BFS 的优势。原因是该解法需要从起点、终点
-    *   对图进行完整遍历后再检测是否有联通路径，而非像解法3、4中那样在一遍遍历一遍检测，一旦检测到就停止遍历。
+    *   方法）不同于解法3、4中两个方向交替进行查找的方式，而是
+    *   1. 同时从起点和终点开始对整个图进行广度优先遍历。
+    *   2. 每次正向和反向都向前查找一个顶点的所有相邻顶点，计算从起/终点到这些顶点的步数，并分别记录在 beginSteps 和 endSteps 中。
+    *   3. 检测 beginSteps、endSteps 中是否存在能同时从起、终点到达的顶点，并从所有这样的路径中求出最短的来。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int ladderLength6(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
@@ -307,27 +306,24 @@ public class L127_WordLadder {
         int[] beginSteps = new int[n], endSteps = new int[n];  // 为正向和反向 BFS 各设置一个 steps 数组，这样会不干扰
         beginSteps[beginIndex] = endSteps[endIndex] = 1;
 
-        while (!beginQ.isEmpty() && !endQ.isEmpty()) {
-            int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();
+        while (!beginQ.isEmpty() && !endQ.isEmpty()) {  // 若其中一个方向的查找完成时还没有从起点到终点的路径出现则说明无解，程序结束
+            int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();  // 正向、反向队列分别吐出一个顶点
 
-            for (int i = 0; i < n; i++) {  // 从起点开始对整个图进行广度优先遍历
+            for (int i = 0; i < n; i++) {  // 查找吐出的这两个顶点的所有相邻顶点，并计算从起/终点开始到到这些顶点的步数
                 if (graph[currBeginIndex][i] && beginSteps[i] == 0) {
                     beginSteps[i] = beginSteps[currBeginIndex] + 1;
                     beginQ.offer(i);
                 }
-            }
-
-            for (int i = 0; i < n; i++) {  // 从终点开始对整个图进行广度优先遍历
                 if (graph[currEndIndex][i] && endSteps[i] == 0) {
                     endSteps[i] = endSteps[currEndIndex] + 1;
                     endQ.offer(i);
                 }
             }
-
+            // check intersection
             int minStep = Integer.MAX_VALUE;
             for (int i = 0; i < n; i++)
-                if (beginSteps[i] != 0 && endSteps[i] != 0)  // 若 beginSteps、endSteps 在位置 i 上同时有值则说明从起点、终点都能到达该 i 上的顶点，即存在一条有效路径
-                    minStep = Integer.min(minStep, beginSteps[i] + endSteps[i] - 1);  // 求所有有效路径中最短的那条
+                if (beginSteps[i] != 0 && endSteps[i] != 0)  // 若 beginSteps、endSteps 在位置 i 上同时有值则说明从起点、终点都能到达 i 上的顶点，即存在一条联通起终点的路径
+                    minStep = Integer.min(minStep, beginSteps[i] + endSteps[i] - 1);  // 求所有联通路径中最短的那条
 
             if (minStep != Integer.MAX_VALUE)
                 return minStep;
