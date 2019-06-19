@@ -104,9 +104,9 @@ public class TimeComplexity {
         return t * t;
     }
 
-    /* 内层遍历元素个数递减的情况，两种分析方法：
-     * 1. 数遍历次数：第一次 0~n（n 个元素），第二次 1~n（n-1 个元素），第三次 2~n（n-2 个元素）…… 最后一次 n~n（1个元素）
-     *    等差数列求和公式后为 n(n+1)/2，因此复杂度是 O(n^2)。
+    /* 内层遍历元素个数递减：
+     * - 数遍历次数：第一次 0~n（n 个元素），第二次 1~n（n-1 个元素），第三次 2~n（n-2 个元素）…… 直到最后一次 n~n（1个元素）
+     *   等差数列求和公式后为 n(n+1)/2，因此复杂度仍是 O(n^2)。
      */
     public void printUnorderedPairs(int[] array) {
         for (int i = 0; i < array.length; i++)

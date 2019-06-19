@@ -241,7 +241,7 @@ public class L127_WordLadder {
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
         int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];  // 创建基于 wordList 的邻接矩阵
+        boolean[][] graph = new boolean[n][n];  // 创建基于 wordList 的邻接矩阵（邻接表也可以，SEE L127）
         for (int i = 0; i < n; i++)
             for (int j = 0; j < i; j++)  // 是 i < j（不是 i < n），即只遍历左下部分，而通过下面的 graph[i][j] = graph[j][i] = .. 使得右上也被遍历到
                 graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));  // 矩阵中存储的是两两 word 是否相邻的关系
