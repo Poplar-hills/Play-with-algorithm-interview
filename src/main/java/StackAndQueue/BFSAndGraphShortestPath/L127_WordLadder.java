@@ -273,8 +273,8 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法6：生成 Graph + Bidirectional BFS
-    * - 思路：在解法5（生成邻接矩阵）的基础上使用 Bidirectional BFS。但该解法中 Bidirectional BFS 的实现（即 biDirectionalBfs
+    * 解法6：生成 Graph + Bi-directional BFS
+    * - 思路：在解法5（生成邻接矩阵）的基础上使用 Bi-directional BFS。但该解法中 Bi-directional BFS 的实现（即 biDirectionalBfs
     *   方法）不同于解法3、4中两个方向交替进行查找的方式，而是采用：
     *   1. 从起点开始对整个图进行广度优先遍历，计算从起点到图中其余每个顶点的步数，并将结果记录在 beginSteps 中。
     *   2. 从终点开始对整个图进行广度优先遍历，计算从终点到图中其余每个顶点的步数，并将结别记录在 endSteps 中。
@@ -303,21 +303,21 @@ public class L127_WordLadder {
         beginQ.offer(beginIndex);
         endQ.offer(endIndex);
 
-        int[] beginSteps = new int[wordList.size()];  // 为正向和反向 BFS 各设置一个 steps 数组，这样会不干扰
-        int[] endSteps = new int[wordList.size()];
+        int n = wordList.size();
+        int[] beginSteps = new int[n], endSteps = new int[n];  // 为正向和反向 BFS 各设置一个 steps 数组，这样会不干扰
         beginSteps[beginIndex] = endSteps[endIndex] = 1;
 
         while (!beginQ.isEmpty() && !endQ.isEmpty()) {
             int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();
 
-            for (int i = 0; i < wordList.size(); i++) {  // 从起点开始对整个图进行广度优先遍历
+            for (int i = 0; i < n; i++) {  // 从起点开始对整个图进行广度优先遍历
                 if (graph[currBeginIndex][i] && beginSteps[i] == 0) {
                     beginSteps[i] = beginSteps[currBeginIndex] + 1;
                     beginQ.offer(i);
                 }
             }
 
-            for (int i = 0; i < wordList.size(); i++) {  // 从终点开始对整个图进行广度优先遍历
+            for (int i = 0; i < n; i++) {  // 从终点开始对整个图进行广度优先遍历
                 if (graph[currEndIndex][i] && endSteps[i] == 0) {
                     endSteps[i] = endSteps[currEndIndex] + 1;
                     endQ.offer(i);
@@ -325,7 +325,7 @@ public class L127_WordLadder {
             }
 
             int minStep = Integer.MAX_VALUE;
-            for (int i = 0; i < wordList.size(); i++)
+            for (int i = 0; i < n; i++)
                 if (beginSteps[i] != 0 && endSteps[i] != 0)  // 若 beginSteps、endSteps 在位置 i 上同时有值则说明从起点、终点都能到达该 i 上的顶点，即存在一条有效路径
                     minStep = Integer.min(minStep, beginSteps[i] + endSteps[i] - 1);  // 求所有有效路径中最短的那条
 
