@@ -1,7 +1,6 @@
 package StackAndQueue.BFSAndGraphShortestPath;
 
 import java.util.*;
-import java.util.function.Function;
 
 import static Utils.Helpers.log;
 
@@ -44,7 +43,7 @@ public class L126_WordLadderII {
 
         List<Integer> indexPath = new ArrayList<>();    // 用于回溯，存储最短路径上每个顶点的 index
         indexPath.add(beginIndex);
-        getRes(graph, beginIndex, endIndex, wordList, steps, indexPath, res);  // 根据 steps 回溯，找到所有最短路径
+        backTrace(graph, beginIndex, endIndex, wordList, steps, indexPath, res);  // 根据 steps 回溯，找到所有最短路径
 
         return res;
     }
@@ -65,7 +64,7 @@ public class L126_WordLadderII {
         }
     }
 
-    private static void getRes(List<List<Integer>> graph, int currIndex, int endIndex, List<String> wordList, Map<Integer, Integer> steps, List<Integer> indexPath, List<List<String>> res) {
+    private static void backTrace(List<List<Integer>> graph, int currIndex, int endIndex, List<String> wordList, Map<Integer, Integer> steps, List<Integer> indexPath, List<List<String>> res) {
         if (!indexPath.isEmpty() && indexPath.get(indexPath.size() - 1) == endIndex) {  // 检查是否到达 endWord
             res.add(getPath(indexPath, wordList));  // 若到达则说明 indexPath 中的索引组成了一条最短路径，将对应的 word path 添加到 res 中
             return;
@@ -73,7 +72,7 @@ public class L126_WordLadderII {
         for (int adjIndex : graph.get(currIndex)) {
             if (steps.get(adjIndex) == steps.get(currIndex) + 1) {  // 检查 adjIndex 所指顶点是否是最短路径上的下一个顶点
                 indexPath.add(adjIndex);
-                getRes(graph, adjIndex, endIndex, wordList, steps, indexPath, res);  // 递归查找下一个 adjIndex
+                backTrace(graph, adjIndex, endIndex, wordList, steps, indexPath, res);  // 递归查找下一个 adjIndex
                 indexPath.remove(indexPath.size() - 1);  // 递归结束后将 adjIndex 移除，放入下一个再继续查找
             }
         }
