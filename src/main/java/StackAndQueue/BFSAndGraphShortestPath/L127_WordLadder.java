@@ -218,7 +218,7 @@ public class L127_WordLadder {
                     if (c == word.charAt(i)) continue;
                     transformed.setCharAt(i, c);
                     String tWord = transformed.toString();
-                    if (endQ.contains(tWord)) return stepCount;
+                    if (endQ.contains(tWord)) return stepCount;  // 当正反向查找找到交点时，wordSet 也为空了（∵ 正反向查找时都会从中 remove 元素）
                     if (wordSet.contains(tWord)) {  // 不再像解法2中使用 visited 变量，而是将访问过的顶点从 wordSet 中移除，效果一样
                         neighbours.add(tWord);
                         wordSet.remove(tWord);
@@ -334,31 +334,31 @@ public class L127_WordLadder {
 
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(ladderLength6("hit", "cog", wordList));
+        log(ladderLength4("hit", "cog", wordList));
         // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
         List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(ladderLength6("a", "c", wordList2));
+        log(ladderLength4("a", "c", wordList2));
         // expects 2. ("a" -> "c")
 
         List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(ladderLength6("red", "tax", wordList3));
+        log(ladderLength4("red", "tax", wordList3));
         // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
 
         List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(ladderLength6("hit", "cog", wordList4));
+        log(ladderLength4("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
         List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(ladderLength6("hot", "dog", wordList5));
+        log(ladderLength4("hot", "dog", wordList5));
         // expects 0. (No solution)
 
         List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(ladderLength6("leet", "code", wordList6));
+        log(ladderLength4("leet", "code", wordList6));
         // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
         List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(ladderLength6("kiss", "tusk", wordList7));
+        log(ladderLength4("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
 }

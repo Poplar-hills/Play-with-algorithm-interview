@@ -96,73 +96,74 @@ public class L126_WordLadderII {
     }
 
     /*
-    * 解法2：
-    * -
+    * 解法2：更简洁更高效的解法（没有完全看懂）
     * */
     public static List<List<String>> findLadders2(String beginWord, String endWord, List<String> wordList) {
-        HashMap<String, ArrayList<String>> map = new HashMap<>();
-        Set<String> beginSet = new HashSet<>(), endSet = new HashSet<>();
+        List<List<String>> res = new ArrayList<>();
+        if (!wordList.contains(endWord)) return res;
+
+        HashMap<String, List<String>> nextMap = new HashMap<>();
+        Set<String> beginSet = new HashSet<>();
+        Set<String> endSet = new HashSet<>();
+        Set<String> wordSet = new HashSet<>(wordList);
         beginSet.add(beginWord);
         endSet.add(endWord);
-        bfs(beginSet, endSet, wordList, map, true);
+        bfs(beginSet, endSet, wordSet, nextMap, true);
 
-        List<List<String>> res = new ArrayList<>();
         List<String> currList = new ArrayList<>();
         currList.add(beginWord);
-        dfs(beginWord, endWord, map, currList, res);
+        dfs(beginWord, endWord, nextMap, currList, res);
+
         return res;
     }
 
-    private static void bfs(Set<String> beginSet, Set<String> endSet, List<String> wordList, HashMap<String, ArrayList<String>> map, boolean forward) {
-        if (beginSet.size() > endSet.size()) {
-            bfs(endSet, beginSet, wordList, map, !forward);
-            return;
-        }
+    private static void bfs(Set<String> beginSet, Set<String> endSet, Set<String> wordList, HashMap<String, List<String>> nextMap, boolean isForwardSearch) {
         wordList.removeAll(beginSet);
         wordList.removeAll(endSet);
         boolean connected = false;
         Set<String> neighbours = new HashSet<>();
 
         for (String word : beginSet) {
-            char[] chars = word.toCharArray();
-            for (int i = 0, len = chars.length; i < len; i++) {
-                char c = chars[i];
-                for (char x = 'a'; x <= 'z'; x++)
-                    if (x != c) {
-                        chars[i] = x;
-                        String transformed = new String(chars);
-                        if (endSet.contains(transformed) || (!connected && wordList.contains(transformed))) {
-                            if (endSet.contains(transformed))
-                                connected = true;
-                            else
-                                neighbours.add(transformed);
+            for (int i = 0, l = word.length(); i < l; i++) {
+                StringBuilder transformed = new StringBuilder(word);
+                for (char c = 'a'; c <= 'z'; c++) {
+                    if (c == word.charAt(i)) continue;
+                    transformed.setCharAt(i, c);
+                    String tWord = transformed.toString();
+                    if (endSet.contains(tWord) || (!connected && wordList.contains(tWord))) {
+                        if (endSet.contains(tWord)) connected = true;
+                        else neighbours.add(tWord);
 
-                            String cand1 = forward ? transformed : word;
-                            String s1 = forward ? word : transformed;
-                            ArrayList<String> cur = map.containsKey(s1) ? map.get(s1) : new ArrayList();
-                            cur.add(cand1);
-                            map.put(s1, cur);
-                        }
+                        String nextWord = isForwardSearch ? tWord : word;
+                        String currWord = isForwardSearch ? word : tWord;
+                        List<String> nextWords = nextMap.containsKey(currWord) ? nextMap.get(currWord) : new ArrayList<>();
+                        nextWords.add(nextWord);
+                        nextMap.put(currWord, nextWords);
                     }
-                chars[i] = c;
+                }
             }
         }
-        if (!connected && !neighbours.isEmpty())
-            bfs(neighbours, endSet, wordList, map, forward);
+
+        if (!connected && !neighbours.isEmpty()) {  // 若已经找到最短路径则不再继续递归
+            if (beginSet.size() > endSet.size())
+                bfs(endSet, neighbours, wordList, nextMap, !isForwardSearch);
+            else
+                bfs(neighbours, endSet, wordList, nextMap, isForwardSearch);
+        }
     }
 
-    private static void dfs(String currWord, String endWord, HashMap<String, ArrayList<String>> map, List<String> currList, List<List<String>> res) {
-        if (currWord.equals(endWord)) {
-            res.add(new ArrayList<>(currList));
+    private static void dfs(String currWord, String endWord, HashMap<String, List<String>> nextMap, List<String> currList, List<List<String>> res) {
+        if (currWord.equals(endWord)) {          // 递归到底的条件是到达 endWord
+            res.add(new ArrayList<>(currList));  // 到达 endWord 后将该最短路径加入 res
             return;
         }
+        if (!nextMap.containsKey(currWord)) return;
+        List<String> nextWords = nextMap.get(currWord);
 
-        if (!map.containsKey(currWord)) return;
-        List<String> path = map.get(currWord);
-        for (String adjWord : path) {
-            currList.add(adjWord);
-            dfs(adjWord, endWord, map, currList, res);
-            currList.remove(currList.size() - 1);
+        for (String next : nextWords) {
+            currList.add(next);
+            dfs(next, endWord, nextMap, currList, res);
+            currList.remove(currList.size() - 1);  // 递归到底后，在返回上层调用栈的过程中每层去除一个 currList 的元素，从而在有分叉的路径上可以改变方向进行检索
         }
     }
 
