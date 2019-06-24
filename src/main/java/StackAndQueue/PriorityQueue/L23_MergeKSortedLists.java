@@ -10,7 +10,7 @@ import static Utils.Helpers.*;
 
 public class L23_MergeKSortedLists {
     public static ListNode mergeKLists(ListNode[] lists) {
-
+        return lists[0];
     }
 
     public static void main(String[] args) {
