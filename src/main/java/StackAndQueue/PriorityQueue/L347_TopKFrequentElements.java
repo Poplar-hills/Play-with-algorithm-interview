@@ -16,24 +16,24 @@ import static Utils.Helpers.*;
 public class L347_TopKFrequentElements {
     /*
     * 解法1：
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 思路：要求 most frequent elements，自然想到先用 map 统计所有元素的出现频率。之后问题就只剩下如何从 map 中选出频率
+    *   最高的 k 个 entry 了。
+    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
     * */
     public static List<Integer> topKFrequent(int[] nums, int k) {
         List<Integer> res = new ArrayList<>();
         if (nums.length == 0) return res;
+
         Map<Integer, Integer> freq = new HashMap<>();
+        for (int n : nums)  // O(n)
+            freq.put(n, freq.getOrDefault(n, 0) + 1);
 
-        for (int n : nums) {  // O(n)
-            int newFreq = freq.getOrDefault(n, 0) + 1;
-            freq.put(n, newFreq);
-        }
-
-        Queue<Entry<Integer, Integer>> pq = new PriorityQueue<>((a, b) -> b.getValue() - a.getValue());
-        for (Entry<Integer, Integer> entry : freq.entrySet())  // O(nlogn)（freq 中最多有 n 个 entry，pq 会对每个 entry 进行一次 sift up，因此是 O(n * logn)）
-            pq.offer(entry);
+        Queue<Integer> pq = new PriorityQueue<>((a, b) -> freq.get(b) - freq.get(a));  // 创建最大堆
+        for (int key : freq.keySet())  // O(nlogn)（freq 中最多有 n 个 entry，pq 会对每个 entry 进行一次 sift up，因此是 O(n * logn)）
+            pq.offer(key);
 
         for (int i = 0; i < k; i++)  // O(n)
-            res.add(pq.poll().getKey());
+            res.add(pq.poll());
 
         return res;
     }
