@@ -43,18 +43,19 @@ public class L347_TopKFrequentElements {
      * - 思路：与解法1思路相同，不同点在于：
      *   1. 创建最小堆而非解法1中的最大堆；
      *   2. 堆中只保留 k 个频率最大的 key，频率小的 key 会被频率大的替换出去；
-     *   3. 
+     *   注：最后得到的结果的元素顺序可能跟解法1不同。
+     * - 时间复杂度 O()，空间复杂度 O(n)。
      * */
     public static List<Integer> topKFrequent2(int[] nums, int k) {
         List<Integer> res = new ArrayList<>();
         if (nums.length == 0) return res;
 
         Map<Integer, Integer> freq = new HashMap<>();
-        for (int n : nums)  // O(n)
+        for (int n : nums)      // O(n)
             freq.put(n, freq.getOrDefault(n, 0) + 1);
 
         Queue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(freq::get));  // 创建最小堆
-        for (int key : freq.keySet()) {
+        for (int key : freq.keySet()) {  // O(n)
             if (pq.size() < k)  // 在入队之前先判断 size
                 pq.offer(key);
             else if (freq.get(key) > freq.get(pq.peek())) {  // 若当前 key 的频率 > 堆顶 key 的频率则移除堆顶 key、添加当前 key
