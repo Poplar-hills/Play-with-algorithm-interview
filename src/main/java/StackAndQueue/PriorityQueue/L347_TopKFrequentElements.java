@@ -1,7 +1,6 @@
 package StackAndQueue.PriorityQueue;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 import static Utils.Helpers.*;
 
@@ -15,9 +14,9 @@ import static Utils.Helpers.*;
 
 public class L347_TopKFrequentElements {
     /*
-    * 解法1：map + PriorityQueue（最大堆）
-    * - 思路：要求 most frequent elements，自然想到先用 map 统计所有元素的出现频率。之后问题就只剩下如何从 map 中选出频率
-    *   最高的 k 个 entry 了。
+    * 解法1：map + sort（merge sort）
+    * - 思路：要求 most frequent elements，自然想到先用 map 统计所有元素的出现频率。之后问题就是如何从 map 中选出频率
+    *   最高的 k 个 key 了，最直接的实现就是排序 —— 对 map 中的 key 根据 value 进行排序，最后拿到前 k 个最大的。
     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
     * */
     public static List<Integer> topKFrequent(int[] nums, int k) {
@@ -25,27 +24,45 @@ public class L347_TopKFrequentElements {
         if (nums.length == 0) return res;
 
         Map<Integer, Integer> freq = new HashMap<>();
-        for (int n : nums)  // O(n)
+        for (int n : nums)
+            freq.put(n, freq.getOrDefault(n, 0) + 1);
+
+        for (int key : freq.keySet()) res.add(key);
+        res.sort((a, b) -> freq.get(b) - freq.get(a));  // sort 底层是把 list 转成 array 进行 Arrays.sort（本质是 merge sort，且对近乎有序的数组有很好的优化）
+
+        return res.subList(0, k);
+    }
+
+    /*
+    * 解法2：map + sort (heap sort)
+    * - 思路：与解法1相同，排序选择的是堆排序；堆排序的实现可以选择 PriorityQueue，因为底层实现是堆（默认是最小堆，但这里需要最大堆）。
+    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+    * */
+    public static List<Integer> topKFrequent2(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+        if (nums.length == 0) return res;
+
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int n : nums)
             freq.put(n, freq.getOrDefault(n, 0) + 1);
 
         Queue<Integer> pq = new PriorityQueue<>((a, b) -> freq.get(b) - freq.get(a));  // 创建最大堆
-        pq.addAll(freq.keySet());  // O(nlogn)（freq 中最多有 n 个 entry，pq 会对每个 entry 进行一次 sift up，因此是 O(n * logn)）
+        pq.addAll(freq.keySet());  // 装入所有元素来进行堆排序
 
-        for (int i = 0; i < k; i++)  // O(n)
+        for (int i = 0; i < k; i++)  // 最后 poll 出 k 个元素
             res.add(pq.poll());
 
         return res;
     }
 
     /*
-     * 解法2：map + PriorityQueue (最小堆)
-     * - 思路：与解法1思路相同，不同点在于：
-     *   1. 创建最小堆而非解法1中的最大堆；
-     *   2. 堆中只保留 k 个频率最大的 key，频率小的 key 会被频率大的替换出去；
-     *   注：最后得到的结果的元素顺序可能跟解法1不同。
-     * - 时间复杂度 O()，空间复杂度 O(n)。
+     * 解法3：map + PriorityQueue (最小堆)
+     * - 思路：与解法1、2不同，该解法不进行排序，而是充分利用最小堆的特性求解：最小堆中只保留 k 个频率最大的 key，而频率小的 key
+     *   会在向堆中添加 key 的过程中不断被 sift up 到堆顶，最后被移除出去，从而堆中只剩下频率最大的 k 个 key。
+     * - 注：最后得到的结果的元素顺序可能跟解法1、2不同。
+     * - 时间复杂度 O(nlogk)，空间复杂度 O(n)。∵ 一直在只有 k 个元素的优先队列中工作，因此 poll, offer 都是 O(logk) 级别的。
      * */
-    public static List<Integer> topKFrequent2(int[] nums, int k) {
+    public static List<Integer> topKFrequent3(int[] nums, int k) {
         List<Integer> res = new ArrayList<>();
         if (nums.length == 0) return res;
 
@@ -58,8 +75,8 @@ public class L347_TopKFrequentElements {
             if (pq.size() < k)  // 在入队之前先判断 size
                 pq.offer(key);
             else if (freq.get(key) > freq.get(pq.peek())) {  // 若当前 key 的频率 > 堆顶 key 的频率则移除堆顶 key、添加当前 key
-                pq.poll();      // 因为 pq 是最小堆，每次 poll 会移除频率最小的，这样到最后留在 pq 中的就是频率最大的 k 个 key
-                pq.offer(key);
+                pq.poll();      // 因为 pq 是最小堆，每次 poll 会移除频率最小的 key，而最后留在 pq 中的就是频率最大的 k 个 key。时间复杂度为 O(logk)
+                pq.offer(key);  // O(logk)
             }
         }
 
@@ -70,9 +87,9 @@ public class L347_TopKFrequentElements {
     }
 
     public static void main(String[] args) {
-        log(topKFrequent2(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
-        log(topKFrequent2(new int[]{4, 1, -1, 2, -1, 2, 3}, 2));   // expects [-1, 2] or [2, -1]
-        log(topKFrequent2(new int[]{1}, 1));                       // expects [1]
-        log(topKFrequent2(new int[]{}, 1));                        // expects []
+        log(topKFrequent(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
+        log(topKFrequent(new int[]{4, 1, -1, 2, -1, 2, 3}, 2));   // expects [-1, 2] or [2, -1]
+        log(topKFrequent(new int[]{1}, 1));                       // expects [1]
+        log(topKFrequent(new int[]{}, 1));                        // expects []
     }
 }
