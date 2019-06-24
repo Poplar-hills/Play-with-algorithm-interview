@@ -61,6 +61,7 @@ public class L347_TopKFrequentElements {
      *   会在向堆中添加 key 的过程中不断被 sift up 到堆顶，最后被移除出去，从而堆中只剩下频率最大的 k 个 key。
      * - 注：最后得到的结果的元素顺序可能跟解法1、2不同。
      * - 时间复杂度 O(nlogk)，空间复杂度 O(n)。∵ 一直在只有 k 个元素的优先队列中工作，因此 poll, offer 都是 O(logk) 级别的。
+     *   - 这个时间复杂度在 n 和 k 差距较大的情况下优势较明显，若 n 和 k 相近则没什么优势。
      * */
     public static List<Integer> topKFrequent3(int[] nums, int k) {
         List<Integer> res = new ArrayList<>();
@@ -86,10 +87,19 @@ public class L347_TopKFrequentElements {
         return res;
     }
 
+    /*
+    * 解法4：
+    * - 思路：
+    * - 时间复杂度 O(nlog(n-k))，空间复杂度 O(n)。
+    * */
+    public static List<Integer> topKFrequent4(int[] nums, int k) {
+
+    }
+
     public static void main(String[] args) {
-        log(topKFrequent(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
-        log(topKFrequent(new int[]{4, 1, -1, 2, -1, 2, 3}, 2));   // expects [-1, 2] or [2, -1]
-        log(topKFrequent(new int[]{1}, 1));                       // expects [1]
-        log(topKFrequent(new int[]{}, 1));                        // expects []
+        log(topKFrequent4(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
+        log(topKFrequent4(new int[]{4, 1, -1, 2, -1, 2, 3}, 2));   // expects [-1, 2] or [2, -1]
+        log(topKFrequent4(new int[]{1}, 1));                       // expects [1]
+        log(topKFrequent4(new int[]{}, 1));                        // expects []
     }
 }
