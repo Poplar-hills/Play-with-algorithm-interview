@@ -29,8 +29,7 @@ public class L347_TopKFrequentElements {
             freq.put(n, freq.getOrDefault(n, 0) + 1);
 
         Queue<Integer> pq = new PriorityQueue<>((a, b) -> freq.get(b) - freq.get(a));  // 创建最大堆
-        for (int key : freq.keySet())  // O(nlogn)（freq 中最多有 n 个 entry，pq 会对每个 entry 进行一次 sift up，因此是 O(n * logn)）
-            pq.offer(key);
+        pq.addAll(freq.keySet());  // O(nlogn)（freq 中最多有 n 个 entry，pq 会对每个 entry 进行一次 sift up，因此是 O(n * logn)）
 
         for (int i = 0; i < k; i++)  // O(n)
             res.add(pq.poll());
