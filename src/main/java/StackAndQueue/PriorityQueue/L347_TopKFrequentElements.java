@@ -46,7 +46,7 @@ public class L347_TopKFrequentElements {
         for (int n : nums)
             freq.put(n, freq.getOrDefault(n, 0) + 1);
 
-        Queue<Integer> pq = new PriorityQueue<>((a, b) -> freq.get(b) - freq.get(a));  // 创建最大堆
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> freq.get(b) - freq.get(a));  // 创建最大堆
         pq.addAll(freq.keySet());  // 装入所有元素来进行堆排序
 
         for (int i = 0; i < k; i++)  // 最后 poll 出 k 个元素
@@ -102,7 +102,7 @@ public class L347_TopKFrequentElements {
         for (int n : nums)      // O(n)
             freq.put(n, freq.getOrDefault(n, 0) + 1);
 
-        Queue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(freq::get));  // 创建最小堆
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(freq::get));  // 创建最小堆
         for (int key : freq.keySet()) {  // O(n)
             if (pq.size() < k)  // 在入队之前先判断 size
                 pq.offer(key);
