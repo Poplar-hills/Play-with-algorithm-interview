@@ -78,7 +78,7 @@ public class L347_TopKFrequentElements {
         set.addAll(freq.keySet());           // 向 TreeSet 中插入所有元素，O(nlogn) 操作
 
         for (int key : set) {  // 遍历 TreeSet 时元素是顺序输出的（元素在 TreeSet 内部也是顺序存储的）（只能用 for (:) 遍历）
-            if (res.size() >= 2) break;
+            if (res.size() >= k) break;
             res.add(key);
         }
 
@@ -87,8 +87,9 @@ public class L347_TopKFrequentElements {
 
     /*
      * 解法4：map + PriorityQueue (最小堆)
-     * - 思路：与前三种解法不同，该解法不进行排序，而是充分利用最小堆的特性求解：最小堆中只保留 k 个频率最大的 key，而频率小的 key
-     *   会在向堆中添加 key 的过程中不断被 sift up 到堆顶，最后被移除出去，从而堆中只剩下频率最大的 k 个 key。
+     * - 思路：The trick of this problem is that it does not need to be fully sorted. 与前三种解法不同，该解法不进行排序，
+     *   而是充分利用最小堆的特性求解：最小堆中只保留 k 个频率最大的 key，而频率小的 key 会在向堆中添加 key 的过程中不断被 sift up
+     *   到堆顶，最后被移除出去，从而堆中只剩下频率最大的 k 个 key。
      * - 注：最后得到的结果的元素顺序可能跟前三种解法不同。
      * - 时间复杂度 O(nlogk)，空间复杂度 O(n)。∵ 一直在只有 k 个元素的优先队列中工作，因此 poll, offer 都是 O(logk) 级别的。
      *   - 这个时间复杂度在 n 和 k 差距较大的情况下优势较明显，若 n 和 k 相近则没什么优势。
@@ -118,13 +119,32 @@ public class L347_TopKFrequentElements {
     }
 
     /*
-    * 解法4：
-    * - 思路：
-    * - 时间复杂度 O(nlog(n-k))，空间复杂度 O(n)。
+    * 解法5：
+    * - 思路：创建 n+1 大小的 buckets 数组，下标为频次，内容为有相同频次的键值 list。这使得我们不再需要借助堆，而是通过空间换时间
+    *   的方式达到从 map 中选出频率最高的 k 个 key 的目的。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
-//    public static List<Integer> topKFrequent4(int[] nums, int k) {
-//
-//    }
+    public static List<Integer> topKFrequent5(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+        if (nums.length == 0) return res;
+
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int n : nums)  // O(n)
+            freq.put(n, freq.getOrDefault(n, 0) + 1);
+
+        List[] buckets = new List[nums.length + 1];  // buckets 数组（频率最大时是 n，因此数组大小为 n+1），下标为频次，内容为有相同频次的键值 list
+        for (int key : freq.keySet()) {  // O(n)
+            int f = freq.get(key);
+            if (buckets[f] == null) buckets[f] = new ArrayList<>();
+            buckets[f].add(key);
+        }
+
+        for (int i = buckets.length - 1; i >= 0 && res.size() < k; i--)  // O(n)。从频率最大的一端开始遍历
+            if (buckets[i] != null)
+                res.addAll(buckets[i]);
+
+        return res;
+    }
 
     public static void main(String[] args) {
         log(topKFrequent3(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
