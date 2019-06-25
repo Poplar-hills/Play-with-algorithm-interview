@@ -37,8 +37,8 @@ public class L23_MergeKSortedLists {
 
     /*
      * 解法2：merge sort
-     * - 思路：另一种 intuitive 的排序方案就是 merge sort。因为 lists 可能有2个以上的链表，因此可采用 reduce 的思路，
-     *   即将多个链表的归并分解成两两链表归并。
+     * - 思路：另一种 intuitive 的排序方案就是 merge sort。因为 lists 可能有2个以上的链表，因此可采用 reduce 的思路，即将多个链表
+     *   的归并 reduce 成两两链表的归并。
      * - todo: 时间复杂度怎么分析？？？时间复杂度 O(?)，空间复杂度 O(n)，（其中 n 为 lists 中所有链表的节点数之和）。
      * */
     public static ListNode mergeKLists2(ListNode[] lists) {
@@ -69,7 +69,8 @@ public class L23_MergeKSortedLists {
 
     /*
      * 解法3：merge sort (改进版)
-     * - 思路：解法2中，将多个链表 reduce 成一个的过程不是二分的，因此效率较低。该解法中对此进行改进。
+     * - 思路：解法2中，将多个链表 reduce 成一个的过程不是二分的（不是将 lists 中的链表两两 merge，而是每个链表都和上一次 merge 的
+     *   结果进行 merge），因此效率较低，该解法中对此进行改进。
      * - 时间复杂度 O(n)，空间复杂度 O(n)，（其中 n 为 lists 中所有链表的节点数之和）。
      * */
     public static ListNode mergeKLists3(ListNode[] lists) {
@@ -77,12 +78,10 @@ public class L23_MergeKSortedLists {
         if (len == 0) return null;
 
         while (len > 1) {
-            for (int i = 0; i < len / 2; i++) {
-                lists[i] = merge2List(lists[i], lists[len - 1 - i]);
-                lists[len - 1 - i] = null;
-            }
-            len = (len + 1) / 2;
-        }
+            for (int i = 0; i < len / 2; i++)  // 遍历 lists 中的前一半的链表
+                lists[i] = merge2List(lists[i], lists[len - 1 - i]);  // 对第 i 个和倒数第 i 个链表进行 merge，并将结果放回 i 上
+            len = (len + 1) / 2;  // merge 完后将 len 砍半（注意 len 要+1，因为若 len 为奇数，则经过上面的 for 循环后，lists 中间
+        }                         // 的链表没有和其他链表进行过 merge，因此需要放到下一轮中继续 merge）
         return lists[0];
     }
 
