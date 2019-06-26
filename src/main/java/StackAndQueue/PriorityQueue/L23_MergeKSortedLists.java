@@ -46,11 +46,11 @@ public class L23_MergeKSortedLists {
         if (lists.length == 0) return null;
         ListNode merged = lists[0];
         for (int i = 1; i < lists.length; i++)  // 将 lists 中的所有链表 reduce 成一个链表
-            merged = merge2List(merged, lists[i]);
+            merged = merge2Lists(merged, lists[i]);
         return merged;
     }
 
-    private static ListNode merge2List(ListNode l1, ListNode l2) {
+    private static ListNode merge2Lists(ListNode l1, ListNode l2) {  // 即 L21_MergeTwoSortedLists 的解法3
         ListNode dummyHead = new ListNode(), curr = dummyHead;
 
         while (l1 != null && l2 != null) {
@@ -81,21 +81,49 @@ public class L23_MergeKSortedLists {
 
         while (len > 1) {         // 当 len = 1 时说明已经 merge 了所有链表
             for (int i = 0; i < len / 2; i++)  // 遍历 lists 中的前一半的链表
-                lists[i] = merge2List(lists[i], lists[len - 1 - i]);  // 对第 i 个和倒数第 i 个链表进行 merge，并将结果放回 i 上
+                lists[i] = merge2Lists(lists[i], lists[len - 1 - i]);  // 对第 i 个和倒数第 i 个链表进行 merge，并将结果放回 i 上
             len = (len + 1) / 2;  // merge 完后将 len 砍半（注意 len 要+1，因为若 len 为奇数，则经过上面的 for 循环后，lists 中间
         }                         // 的链表没有和其他链表进行过 merge，因此需要放到下一轮中继续 merge）
         return lists[0];
     }
 
     /*
-     * 解法4：使用 PriorityQueue 模拟 merge sort
+     * 解法4：解法3的递归版
+     * - 时间复杂度 O()，空间复杂度 O()。
+     * */
+    public static ListNode mergeKLists4(ListNode[] lists) {
+        if (lists == null || lists.length == 0) return null;
+        return partition(lists, 0, lists.length - 1);
+    }
+
+    private static ListNode partition(ListNode[] lists, int i, int j) {  // 对 lists 中的链表进行二分，然后两两一组进行 merge
+        if (i == j) return lists[i];
+        int mid = (j - i) / 2 + i;
+        ListNode l1 = partition(lists, i, mid);
+        ListNode l2 = partition(lists, mid + 1, j);
+        return merge(l1, l2);  // 二分到底后开始两两 merge
+    }
+
+    private static ListNode merge(ListNode l1, ListNode l2) {  // merge2Lists 的递归版（即 L21_MergeTwoSortedLists 的解法4）
+        if (l1 == null) return l2;
+        if (l2 == null) return l1;
+        if (l1.val < l2.val) {
+            l1.next = merge(l1.next, l2);  // 对链表递归大多是这种模式：l.next = recursiveFn(...)
+            return l1;
+        } else {
+            l2.next = merge(l1, l2.next);
+            return l2;
+        }
+    }
+
+    /*
+     * 解法5：使用 PriorityQueue 模拟 merge sort
      * - 思路：与解法1不同，该解法不将所有节点放入 PriorityQueue 中进行排序，而是只放入 k 个节点，但每个节点实际上都是一个链表。
      *   在 PriorityQueue 中我们只比较链表的首节点大小，不断将 k 个节点中最小的出队，再将其下一个节点入队，以此方式模拟 merge sort
      *   的过程。
      * - 时间复杂度 O(nlogk)，空间复杂度 O(k)。其中 k 为链表个数，n 为所有节点数。
-     *   -
      * */
-    public static ListNode mergeKLists4(ListNode[] lists) {
+    public static ListNode mergeKLists5(ListNode[] lists) {
         PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));
         for (ListNode l : lists)    // 把 k 个链表装入最小堆中，因此堆操作的复杂度为 O(logk)
             if (l != null)          // 跳过 lists 中可能存在的空链表
