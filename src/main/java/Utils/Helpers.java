@@ -4,6 +4,7 @@ import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Helpers {
     public static void log(Object content) { System.out.println(content); }
@@ -51,6 +52,13 @@ public class Helpers {
     public static void timeIt(Comparable[] arr, Consumer<Comparable[]> fn) {
         double startTime = System.nanoTime();
         fn.accept(arr);
+        double endTime = System.nanoTime();
+        log(String.format("Time consumed: %s", (endTime - startTime) / 1000000000.0));
+    }
+
+    public static void timeIt(Integer num, Function<Integer, Integer> fn) {
+        double startTime = System.nanoTime();
+        fn.apply(num);
         double endTime = System.nanoTime();
         log(String.format("Time consumed: %s", (endTime - startTime) / 1000000000.0));
     }

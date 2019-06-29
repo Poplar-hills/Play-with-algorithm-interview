@@ -148,11 +148,10 @@ public class TimeComplexity {
 
     /*
     * Computes the Nth Fibonacci number.
-    * 对比上面的求阶乘的代码，相同点是递归深度都是输入参数 n，不同点是这段里面有2个分支，因此是 O(2^n)。
+    * 对比上面的求阶乘的代码，相同点是递归深度都是输入参数 n，不同点是这段里面有2个分支，因此是 O(2^n)，这是个非常高的复杂度。
     * */
     public int fib(int n) {
-        if (n <= 0) return 0;
-        else if (n == 1) return 1;
+        if (n < 2) return n;
         return fib(n - 1) + fib(n - 2);
     }
 
@@ -167,20 +166,19 @@ public class TimeComplexity {
     }
 
     /*
-    * Prints all Fibonacci numbers from O to n (using cache).
+    * Prints all Fibonacci numbers from O to n using cache (or called memory search).
     * 在使用缓存之后，每次计算 fib(i) 时，fib(i-1) 和 fib(i-2) 都已经存在于缓存之中了，因此每次 fib(i) 的计算复杂度为 O(1)，
-    * 从而总体复杂度为 O(n)。
+    * 从而总体复杂度为 O(n)。换一种方式理解：每个数字都只计算一次，因此总共计算 n 次，即 O(n)。
     * */
     public void allFibUsingCache(int n) {
-        int[] memo = new int[n + 1];
+        int[] memo = new int[n + 1];  // 范围是 [0, n]，因此开辟 n+1 的空间（或使用 HashMap 也可）
         for (int i = 0; i < n; i++)
-            System.out.println(i + " : " + fib(i, memo));
+            log(i + " : " + fib(i, memo));
     }
 
     public int fib(int n, int[] memo) {
-        if (n <= 0) return 0;
-        else if (n == 1) return 1;
-        else if (memo[n] > 0) return memo[n];
+        if (n < 2) return n;
+        if (memo[n] > 0) return memo[n];
         memo[n] = fib(n - 1, memo) + fib(n - 2, memo);
         return memo[n];
     }
