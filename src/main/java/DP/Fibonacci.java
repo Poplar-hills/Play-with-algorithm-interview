@@ -7,7 +7,7 @@ import static Utils.Helpers.log;
 import static Utils.Helpers.timeIt;
 
 /*
-* 通过求 Fibonacci Sequence 中的第 n 个数来理解 DP 的理念。
+* 通过求第 n 个 Fibonacci 数来理解 DP 的理念。
 *
 * - （看完解法1、2、3之后再看这个）总结：
 *   - DP 定义: Dynamic programming is a method for solving a complex problem by breaking it down into simpler

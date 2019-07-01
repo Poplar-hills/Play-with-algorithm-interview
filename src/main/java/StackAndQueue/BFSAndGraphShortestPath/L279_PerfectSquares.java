@@ -18,9 +18,9 @@ public class L279_PerfectSquares {
     /*
     * 解法1：BFS（借助 Queue 实现）
     * - 思路："正整数 n 最少能用几个完全平方数组成"，这个问题可以转化为"正整数 n 最少减去几个完全平方数后等于0"。如果把 n 和 0 看成
-    *   图上的两个顶点，把"减去一个完全平方数"看做两点间的一段路径，则该问题即可转化为"求顶点 n 到 0 之间的最短路径"。至此我们将原问题
-    *   转化为了一个图论问题，从新描述一遍就是：从 n 到 0，每个数字表示一个顶点；若两顶点之间相差一个完全平方数，则链接两顶点，由此得到
-    *   一个无权图，并且该问题转化为了求该无权图中从 n 到 0 的最短路径的步数。例如：
+    *   图上的两个顶点，把"减去一个完全平方数"看做两点间的一段路径，则该问题即可转化为"求顶点 n 到 0 之间的最短路径"，即将原问题转化
+    *   为了一个图论问题，重新描述一遍就是：从 n 到 0，每个数字表示一个顶点；若两顶点之间相差一个完全平方数，则链接两顶点，由此得到
+    *   一个有向无权图（方向都是从大顶点指向小顶点）；该问题转化为了求该无权图中从 n 到 0 的最短路径的步数。例如：
     *                                    0 -- 1 -- 2                 0 -- 1 ---- 2
     *          0 -- 1 -- 2               |    |    |                 |    |    / |
     *          |         |               |    5    |                 |    5 - 6  |
@@ -33,12 +33,11 @@ public class L279_PerfectSquares {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares(int n) {
-        assert n > 0;
-
+        if (n <= 0) return 0;
         Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点所走过的步数>
         q.offer(new Pair<>(n, 0));                 // 顶点 n 作为 BFS 的起点
 
-        boolean[] visited = new boolean[n + 1];    // 用于记录某个顶点是否已经计算过（n+1 是因为从 n 到 0 需要开 n+1 的空间）
+        boolean[] visited = new boolean[n + 1];    // 记录某个顶点是否已经计算过（n+1 是因为从 n 到 0 需要开 n+1 的空间）
         visited[n] = true;
 
         while (!q.isEmpty()) {
@@ -46,7 +45,7 @@ public class L279_PerfectSquares {
             int num = pair.getKey();
             int step = pair.getValue();
 
-            for (int i = 1; num - i * i >= 0; i++) {  // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点（相当于 BFS 中将所有相邻顶点入队）
+            for (int i = 1; num - i * i >= 0; i++) {  // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点（相当于 BFS 中找到所有相邻顶点）
                 int next = num - i * i;
                 if (next == 0) return step + 1;       // 若下一步就是终点则返回该路径的步数（第一条到达终点的路径就是最短路径，直接 return）
                 if (!visited[next]) {                 // 已访问过的节点不入队
