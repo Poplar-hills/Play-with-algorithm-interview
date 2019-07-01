@@ -48,7 +48,7 @@ public class L279_PerfectSquares {
             for (int i = 1; num - i * i >= 0; i++) {  // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点（相当于 BFS 中找到所有相邻顶点）
                 int next = num - i * i;
                 if (next == 0) return step + 1;       // 若下一步就是终点则返回该路径的步数（第一条到达终点的路径就是最短路径，直接 return）
-                if (!visited[next]) {                 // 已访问过的节点不入队
+                if (!visited[next]) {                 // 已访问过顶点不入队
                     q.offer(new Pair<>(next, step + 1));  // 将下一步的顶点入队，其距离起点的步数 = 当前顶点距离起点的步数 + 1
                     visited[next] = true;
                 }
@@ -61,7 +61,7 @@ public class L279_PerfectSquares {
     * 解法2：DFS（借助 buckets 数组实现）
     * - 思路：基于解法1中的图论建模思路，在具体实现时采用深度优先遍历（DFS）（SEE: Play-with-algorithms/Graph/Path.java)。
     *   通过 DFS 能获得两点之间的所有路径，利用该特性我们可以为图中每一个顶点寻找其到达0的所有路径，再从中选取最短的路径，并记录该最
-    *   短路径的步数。该过程通常采用递归实现。
+    *   短路径的步数。该过程通常采用递归实现（好好体会一下，很精妙）。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares2(int n) {
@@ -78,11 +78,12 @@ public class L279_PerfectSquares {
         for (int i = 1; n - i * i >= 0; i++)    // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点
             minStep = Math.min(minStep, numSquares2(n - i * i, memory) + 1);  // 不同的下一步顶点对应了不同的到达0的路径，找到其中最短的路径的步数（递归实现 DFS）
 
-        return memory[n] = minStep;
+        return memory[n] = minStep;             // 赋值语句的返回值为所赋的值
     }
 
     /*
     * 解法3：Dynamic Programming
+    * - 思路：类似 DP/Fibonacci 中解法3的思路（自下而上求解）。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares3(int n) {
