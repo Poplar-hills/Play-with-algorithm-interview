@@ -96,7 +96,7 @@ public class L126_WordLadderII {
     }
 
     /*
-    * 解法2：更简洁更高效的解法（没有完全看懂）
+    * 解法2：更简洁更高效的解法（todo: 没有完全看懂）
     * */
     public static List<List<String>> findLadders2(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
@@ -108,7 +108,7 @@ public class L126_WordLadderII {
         Set<String> wordSet = new HashSet<>(wordList);
         beginSet.add(beginWord);
         endSet.add(endWord);
-        bfs(beginSet, endSet, wordSet, nextMap, true);
+        bfs(beginSet, endSet, wordSet, nextMap, true);  // 通过 bfs 计算各个节点的相邻节点，并放入 nextMap
 
         List<String> currList = new ArrayList<>();
         currList.add(beginWord);
@@ -154,16 +154,16 @@ public class L126_WordLadderII {
 
     private static void dfs(String currWord, String endWord, HashMap<String, List<String>> nextMap, List<String> currList, List<List<String>> res) {
         if (currWord.equals(endWord)) {          // 递归到底的条件是到达 endWord
-            res.add(new ArrayList<>(currList));  // 到达 endWord 后将该最短路径加入 res
+            res.add(new ArrayList<>(currList));  // 到达 endWord 后将该最短路径以复制的方式 add 到 res 里（new ArrayList(currList) 就是复制 currList）
             return;
         }
         if (!nextMap.containsKey(currWord)) return;
         List<String> nextWords = nextMap.get(currWord);
 
-        for (String next : nextWords) {
+        for (String next : nextWords) {  // 对每个顶点的对每个分支路径进行 DFS，找出该路径上的所有顶点并放入 currList，再切换到下一个分支上继续
             currList.add(next);
             dfs(next, endWord, nextMap, currList, res);
-            currList.remove(currList.size() - 1);  // 递归到底后，在返回上层调用栈的过程中每层去除一个 currList 的元素，从而在有分叉的路径上可以改变方向进行检索
+            currList.remove(currList.size() - 1);  // 递归到底后，在每次从下层顶点返回上层顶点之前都移除 currList 的最后一个元素，从而在有分叉的路径上可以改变方向进行检索
         }
     }
 
