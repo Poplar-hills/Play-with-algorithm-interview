@@ -61,7 +61,9 @@ public class L279_PerfectSquares {
     * 解法2：DFS（借助 buckets 数组实现）
     * - 思路：基于解法1中的图论建模思路，在具体实现时采用深度优先遍历（DFS）（SEE: Play-with-algorithms/Graph/Path.java)。
     *   通过 DFS 能获得两点之间的所有路径，利用该特性我们可以为图中每一个顶点寻找其到达0的所有路径，再从中选取最短的路径，并记录该最
-    *   短路径的步数。该过程通常采用递归实现（好好体会一下，很精妙）。
+    *   短路径的步数。该过程通常采用递归实现。
+    * - 本质：该解法实际上也是一种 DP（Dynamic Programming），只不过实现方式是 top-down 的（因为采用了递归），以及其中对于 overlap
+    *   sub-problem 的优化策略采用的是 Memoization，而非 bottom-up 的 DP 中的 Tabulation。SEE: https://zhuanlan.zhihu.com/p/68059061
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares2(int n) {
@@ -82,8 +84,11 @@ public class L279_PerfectSquares {
     }
 
     /*
-    * 解法3：Dynamic Programming
-    * - 思路：类似 DP/Fibonacci 中解法3的思路（自下而上求解）。
+    * 解法3：Dynamic Programming (bottom-up)
+    * - 思路：
+    *   - 类似 DP/Fibonacci 中解法3的自下而上的求解思路。
+    *   - 与解法2的不同之处在于，bottom-up DP 的过程需要保证在解决 big problem 之前先解决 sub-problems，对应到该解中就是在
+    *     计算较大的 n 之前需要先计算好较小的 n。较大的 n 的解是在较小的 n 的解的基础上得到的。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares3(int n) {
