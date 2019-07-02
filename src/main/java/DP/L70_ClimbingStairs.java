@@ -36,9 +36,10 @@ public class L70_ClimbingStairs {
 
     /*
      * 解法2：BFS
-     * - 思路：解法1中对该题使用图论建模后，题目就转化成了：求图上两点之间的路径条数，若采用正统一些的解法就是 BFS 或 DFS。
-     * - 实现：在进行 BFS 或 DFS 过程中需要能取到任一顶点的所有相邻顶点，有两种方式：1.提前创建好 graph  2.需要的时候再计算。
-     *   该解中采用 DFS + 提前创建好 graph 的方式。
+     * - 思路：解法1中对该题使用图论建模后，题目就转化成了：求图上两点之间的路径条数，若采用正统一些的解法就是 BFS 或 DFS。该解法
+     *   采用 DFS，因为逻辑比较 intuitive —— 任意顶点到终点的路径条数 = 该顶点的所有相邻顶点的路径条数之和。使用递归求解非常自然。
+     * - 实现：不管是 BFS 或 DFS，过执行程中都需要能取到任一顶点的所有相邻顶点，有两种方式：1.提前创建好 graph  2.需要的时候再计算。
+     *     该解中采用提前创建好 graph 的方式。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs2(int n) {
@@ -71,7 +72,6 @@ public class L70_ClimbingStairs {
         return pathNums[curr] = pathNum;
     }
 
-
     /*
     * 解法3：解法2的优化版
     * - 思路：解法2的通用性较强，但创建 graph 的过程会增加时间复杂度，因此这里采用解法2的"实现"描述中的第2种思路：到需要的时候再计算
@@ -97,9 +97,18 @@ public class L70_ClimbingStairs {
         return pathNums[curr] = pathNum;
     }
 
+    /*
+     * 解法4：
+     * - 思路：
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int climbStairs4(int n) {
+        return 0;
+    }
+
     public static void main(String[] args) {
-        log(climbStairs3(2));  // expects 2 (1+1, 2 in one go)
-        log(climbStairs3(3));  // expects 3 (1+1, 1+2, 2+1)
-        log(climbStairs3(5));  // expects 8
+        log(climbStairs4(2));  // expects 2 (1+1, 2 in one go)
+        log(climbStairs4(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs4(5));  // expects 8
     }
 }
