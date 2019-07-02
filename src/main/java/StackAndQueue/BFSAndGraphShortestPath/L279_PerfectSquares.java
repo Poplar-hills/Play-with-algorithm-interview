@@ -33,47 +33,29 @@ public class L279_PerfectSquares {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares(int n) {
-        int[] steps = new int[n + 1];
-        Arrays.fill(steps, -1);
-        return numSquares(n, steps);
-    }
+        if (n <= 0) return 0;
+        Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点所走过的步数>
+        q.offer(new Pair<>(n, 0));                 // 顶点 n 作为 BFS 的起点
 
-    private static int numSquares(int n, int[] steps) {
-        if (n == 0) return 0;
-        if (steps[n] != -1) return steps[n];
+        boolean[] visited = new boolean[n + 1];    // 记录某个顶点是否已经计算过（n+1 是因为从 n 到 0 需要开 n+1 的空间）
+        visited[n] = true;
 
-        int minStep = Integer.MAX_VALUE;
-        for (int i = 1; n - i * i >= 0; i++) {
-            int next = n - i * i;
-            minStep = Math.min(minStep, numSquares(next, steps) + 1);
+        while (!q.isEmpty()) {
+            Pair<Integer, Integer> pair = q.poll();
+            int num = pair.getKey();
+            int step = pair.getValue();
+
+            for (int i = 1; num - i * i >= 0; i++) {  // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点（相当于 BFS 中找到所有相邻顶点）
+                int next = num - i * i;
+                if (next == 0) return step + 1;       // 若下一步就是终点则返回该路径的步数（第一条到达终点的路径就是最短路径，直接 return）
+                if (!visited[next]) {                 // 已访问过顶点不入队
+                    q.offer(new Pair<>(next, step + 1));  // 将下一步的顶点入队，其距离起点的步数 = 当前顶点距离起点的步数 + 1
+                    visited[next] = true;
+                }
+            }
         }
-        return steps[n] = minStep;
+        throw new IllegalStateException("No Solution.");  // 只要输入参数正确则不会到达这行 ∵ 所有正整数最终都可以用多个1相加得到
     }
-
-//    public static int numSquares(int n) {
-//        if (n <= 0) return 0;
-//        Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点所走过的步数>
-//        q.offer(new Pair<>(n, 0));                 // 顶点 n 作为 BFS 的起点
-//
-//        boolean[] visited = new boolean[n + 1];    // 记录某个顶点是否已经计算过（n+1 是因为从 n 到 0 需要开 n+1 的空间）
-//        visited[n] = true;
-//
-//        while (!q.isEmpty()) {
-//            Pair<Integer, Integer> pair = q.poll();
-//            int num = pair.getKey();
-//            int step = pair.getValue();
-//
-//            for (int i = 1; num - i * i >= 0; i++) {  // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点（相当于 BFS 中找到所有相邻顶点）
-//                int next = num - i * i;
-//                if (next == 0) return step + 1;       // 若下一步就是终点则返回该路径的步数（第一条到达终点的路径就是最短路径，直接 return）
-//                if (!visited[next]) {                 // 已访问过顶点不入队
-//                    q.offer(new Pair<>(next, step + 1));  // 将下一步的顶点入队，其距离起点的步数 = 当前顶点距离起点的步数 + 1
-//                    visited[next] = true;
-//                }
-//            }
-//        }
-//        throw new IllegalStateException("No Solution.");  // 只要输入参数正确则不会到达这行 ∵ 所有正整数最终都可以用多个1相加得到
-//    }
 
     /*
     * 解法2：DFS（借助 buckets 数组实现）
