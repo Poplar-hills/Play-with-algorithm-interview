@@ -8,6 +8,7 @@ import static Utils.Helpers.log;
 * Word Ladder II
 *
 * - 题目与 L127 基本一致，区别在于返回结果得是所有的最短路径。
+* - 与该题类似的：找出图上任意两点之间的所有路径，SEE: play-with-algorithms/Graph/Path 中的 allPaths 方法。
 * */
 
 public class L126_WordLadderII {
