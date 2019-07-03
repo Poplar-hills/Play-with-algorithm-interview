@@ -35,7 +35,7 @@ public class L70_ClimbingStairs {
     }
 
     /*
-     * 解法2：BFS
+     * 解法2：DFS
      * - 思路：解法1中对该题使用图论建模后，题目就转化成了：求图上两点之间的路径条数，若采用正统一些的解法就是 BFS 或 DFS。该解法
      *   采用 DFS，因为逻辑比较 intuitive —— 任意顶点到终点的路径条数 = 该顶点的所有相邻顶点的路径条数之和。使用递归求解非常自然。
      * - 实现：不管是 BFS 或 DFS，过执行程中都需要能取到任一顶点的所有相邻顶点，有两种方式：1.提前创建好 graph  2.需要的时候再计算。
@@ -76,7 +76,6 @@ public class L70_ClimbingStairs {
     * 解法3：解法2的优化版
     * - 思路：解法2的通用性较强，但创建 graph 的过程会增加时间复杂度，因此这里采用解法2的"实现"描述中的第2种思路：到需要的时候再计算
     *   顶点的所有相邻顶点。
-    * - 实现：在 DFS 过程中，因为相邻的两个顶点的值不能相差超过2，因此只有两种可能，因此不再需要遍历。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int climbStairs3(int n) {
@@ -91,24 +90,47 @@ public class L70_ClimbingStairs {
         if (pathNums[curr] != -1) return pathNums[curr];
 
         int pathNum = 0;
-        if (curr + 1 <= target) pathNum += dfs(curr + 1, target, pathNums);
-        if (curr + 2 <= target) pathNum += dfs(curr + 2, target, pathNums);
+        for (int i = 1; i <= 2 && curr + i <= target; i++)  // 相邻的两个顶点的值不能相差超过2，且顶点值不能超过 n
+            pathNum += dfs(curr + i, target, pathNums);
 
         return pathNums[curr] = pathNum;
     }
 
     /*
-     * 解法4：
-     * - 思路：
+     * 超时解：BFS 全搜索（虽然超时，但是结果正确）
+     * - 思路：先用 BFS 找出图上从 0 到 n 之间的所有路径，再取个数，解释 SEE: play-with-algorithms/Graph/Path 中的 allPaths 方法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs4(int n) {
-        return 0;
+        List<List<Integer>> res = new ArrayList<>();
+
+        Queue<List<Integer>> q = new LinkedList<>();
+        List<Integer> initialPath = new ArrayList<>();
+        initialPath.add(0);
+        q.offer(initialPath);
+
+        while (!q.isEmpty()) {
+            List<Integer> path = q.poll();
+            int lastVertex = path.get(path.size() - 1);
+            if (lastVertex == n) {
+                res.add(path);
+                continue;
+            }
+            for (int i = 1; i <= 2 && lastVertex + i <= n; i++) {
+                int adj = lastVertex + i;
+                if (path.contains(adj)) continue;
+                List<Integer> newPath = new ArrayList<>(path);
+                newPath.add(adj);
+                q.offer(newPath);
+            }
+        }
+
+        return res.size();
     }
 
     public static void main(String[] args) {
-        log(climbStairs4(2));  // expects 2 (1+1, 2 in one go)
-        log(climbStairs4(3));  // expects 3 (1+1, 1+2, 2+1)
-        log(climbStairs4(5));  // expects 8
+        log(climbStairs3(2));  // expects 2 (1+1, 2 in one go)
+        log(climbStairs3(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs3(5));  // expects 8
     }
 }
