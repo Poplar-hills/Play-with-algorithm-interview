@@ -1,8 +1,6 @@
 package DP;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static Utils.Helpers.log;
 
@@ -16,8 +14,36 @@ import static Utils.Helpers.log;
 * */
 
 public class L120_Triangle {
+    /*
+    * 超时解：找到所有 path 后再计算最小的 sum。
+    * - 思路：与 L70_ClimbingStairs 中的超时解一致。
+    * */
     public static int minimumTotal(List<List<Integer>> triangle) {
+        int res = Integer.MAX_VALUE;
 
+        Queue<List<Integer>> q = new LinkedList<>();  // 队列中存放 index path，每条 path 中存放元素的 index 而非元素值本身
+        List<Integer> initialIndexPath = new ArrayList<>();
+        initialIndexPath.add(0);
+        q.offer(initialIndexPath);
+
+        while (!q.isEmpty()) {
+            List<Integer> indexPath = q.poll();
+            if (indexPath.size() == triangle.size()) {
+                int sum = 0;
+                for (int i = 0; i < indexPath.size(); i++)
+                    sum += triangle.get(i).get(indexPath.get(i));    // 求该 path 的所有元素值之和
+                res = Math.min(res, sum);
+                continue;
+            }
+            int currIndex = indexPath.get(indexPath.size() - 1);     // 获取当前元素在其 level 上的 index
+            for (int i = 0; i < 2; i++) {                            // 遍历所有可能的下一步节点
+                List<Integer> newPath = new ArrayList<>(indexPath);  // 复制当前的 path
+                newPath.add(currIndex + i);                          // 将下一步节点的 index 放入 newPath 中
+                q.offer(newPath);
+            }
+        }
+
+        return res;
     }
 
     public static void main(String[] args) {
