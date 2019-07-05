@@ -46,7 +46,7 @@ public class L75_SortColors {
     private static void sortColors2(int[] arr) {
         int last0Index = -1;                  // 指向最后一个等于0的元素
         int first2Index = arr.length;         // 指向第一个等于2的元素
-        for (int i = 0; i < first2Index; ) {  // 手动控制 i 的自增（因为 == 1 的情况不需要自增）
+        for (int i = 0; i < first2Index; ) {  // 手动控制 i 的自增（因为 == 2 时 i 不需要自增）
             if (arr[i] == 0)
                 swap(arr, i++, ++last0Index);
             else if (arr[i] == 2)
