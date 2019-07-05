@@ -59,9 +59,9 @@ public class L88_MergeSortedArray {
         int[] arr4 = new int[] {2, 3, 6, 7};  // nums2 的有效元素比 nums1 多
 
         merge(arr1, 4, arr2, 3);
-        log(arr1);
+        log(arr1);  // expects [1, 2, 2, 3, 5, 6, 8]
 
         merge(arr3, 3, arr4, 4);
-        log(arr3);
+        log(arr3);  // expects [1, 2, 3, 3, 6, 6, 7]
     }
 }
