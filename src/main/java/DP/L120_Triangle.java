@@ -31,7 +31,8 @@ public class L120_Triangle {
             if (indexPath.size() == triangle.size()) {
                 int sum = 0;
                 for (int i = 0; i < indexPath.size(); i++)
-                    sum += triangle.get(i).get(indexPath.get(i));    // 求该 path 的所有元素值之和
+                    sum += triangle.get(i).get(indexPath.get(i));    // 求该 path 的所有元素值之和    public static int minimumTotal(List<List<Integer>> triangle) {
+
                 res = Math.min(res, sum);
                 continue;
             }
@@ -46,15 +47,33 @@ public class L120_Triangle {
         return res;
     }
 
+    /*
+    * 解法1：
+    * -
+    * */
+    public static int minimumTotal1(List<List<Integer>> triangle) {
+        int n = triangle.size();
+        int[] results = new int[n];
+
+        for (int i = 0; i < n; i++)
+            results[i] = triangle.get(n - 1).get(i);  // 将 results 初始化为 triangle 的最后一行（triangle 的行数与列数相等）
+
+        for (int i = n - 2; i >= 0; i--)              // 从倒数第2行开始向上遍历
+            for (int j = 0; j <= i; j++)              // 遍历每行中的所有元素（行数 i 同时也是一行中的元素个数）
+                results[j] = Math.min(results[j], results[j + 1]) + triangle.get(i).get(j);
+
+        return results[0];
+    }
+
     public static void main(String[] args) {
-        log(minimumTotal(Arrays.asList(
+        log(minimumTotal1(Arrays.asList(
                 Arrays.asList(2),
                 Arrays.asList(3, 4),
                 Arrays.asList(6, 5, 7),
                 Arrays.asList(4, 1, 8, 3)
         )));  // expects 11 (2 + 3 + 5 + 1)
 
-        log(minimumTotal(Arrays.asList(
+        log(minimumTotal1(Arrays.asList(
                 Arrays.asList(-1),
                 Arrays.asList(2, 3),
                 Arrays.asList(1, -1, -3)
