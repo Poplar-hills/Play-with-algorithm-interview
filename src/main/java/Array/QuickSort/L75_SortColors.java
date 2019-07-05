@@ -25,7 +25,7 @@ import static Utils.Helpers.swap;
 public class L75_SortColors {
     /*
     * 解法1：计数排序
-    * - 时间复杂度 O(2n)。
+    * - 时间复杂度 O(2n)，遍历数组2遍。
     * */
     private static void sortColors1(int[] arr) {
         int[] buckets = new int[3];               // 构造 bucket 数组，其三个位置分别存储 arr 中 0，1，2 的个数（计数过程）
@@ -40,19 +40,18 @@ public class L75_SortColors {
     }
 
     /*
-    * 解法2：采用三路排序，只遍历数组1遍
-    * - 时间复杂度 O(n)。
+    * 解法2：三路快速排序
+    * - 时间复杂度 O(n)，只遍历数组1遍。
     * */
     private static void sortColors2(int[] arr) {
-        int last0Index = -1;                      // 最后一个等于0的元素索引
-        int first2Index = arr.length;             // 第一个等于2的元素索引
-
-        for (int i = 0; i < first2Index; ) {      // 手动控制 i 的自增（因为 == 1 的情况不需要自增）
+        int last0Index = -1;                  // 指向最后一个等于0的元素
+        int first2Index = arr.length;         // 指向第一个等于2的元素
+        for (int i = 0; i < first2Index; ) {  // 手动控制 i 的自增（因为 == 1 的情况不需要自增）
             if (arr[i] == 0)
                 swap(arr, i++, ++last0Index);
             else if (arr[i] == 2)
                 swap(arr, i, --first2Index);
-            else i++;
+            else i++;                         // arr[i] == 1 的情况
         }
     }
 
