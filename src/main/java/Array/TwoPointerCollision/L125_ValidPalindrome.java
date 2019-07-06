@@ -12,7 +12,7 @@ import static Utils.Helpers.log;
 public class L125_ValidPalindrome {
     /*
     * 解法1：指针对撞
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     private static boolean validPalindrome(String s) {
         s = s.toLowerCase();
