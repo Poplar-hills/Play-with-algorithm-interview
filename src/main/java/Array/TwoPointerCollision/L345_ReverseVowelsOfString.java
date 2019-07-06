@@ -21,8 +21,8 @@ public class L345_ReverseVowelsOfString {
         char[] arr = s.toCharArray();
         for (int i = 0, j = arr.length - 1; i < j; i++, j--) {
             while (i < j && !isVowel(arr[i])) i++;
-            while (j > i && !isVowel(arr[j])) j--;
-            swap(arr, i, j);
+            while (i < j && !isVowel(arr[j])) j--;
+            if (i != j) swap(arr, i, j);         // 若没有上面得出的 i 和 j 一定是合法的（i < j）
         }
         return String.valueOf(arr);  // Java 中将 char array 转成 String 的方式
     }
@@ -46,8 +46,8 @@ public class L345_ReverseVowelsOfString {
         char[] arr = s.toCharArray();
         for (int i = 0, j = s.length() - 1; i < j; i++, j--) {
             while (i < j && !vowels.contains(Character.toLowerCase(arr[i]))) i++;  // 在检查是否是元音之前先 toLowerCase
-            while (j > i && !vowels.contains(Character.toLowerCase(arr[j]))) j--;
-            swap(arr, i, j);
+            while (i < j && !vowels.contains(Character.toLowerCase(arr[j]))) j--;
+            if (i != j) swap(arr, i, j);
         }
         return String.valueOf(arr);
     }
