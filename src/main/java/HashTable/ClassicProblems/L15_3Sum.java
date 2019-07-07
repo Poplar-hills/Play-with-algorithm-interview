@@ -46,7 +46,7 @@ public class L15_3Sum {
     * */
     public static List<List<Integer>> threeSum2(int[] nums) {
         if (nums == null || nums.length < 3) return new ArrayList<>();
-        Set<List<Integer>> res = new HashSet<>();    // Set 可以直接对 List 进行去重
+        Set<List<Integer>> set = new HashSet<>();    // Set 可以直接对 List 进行去重
         Arrays.sort(nums);                           // 指针对撞的前提是数组有序，O(nlogn)
 
         for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素将问题化简为 2Sum，之后在内部做指针对撞，O(n)
@@ -56,15 +56,15 @@ public class L15_3Sum {
                 int sum = nums[i] + nums[j] + nums[k];
                 if (sum > 0) k--;
                 else if (sum < 0) j++;
-                else res.add(Arrays.asList(nums[i], nums[j++], nums[k--]));  // 注意不要忘记让 j++，k--
+                else set.add(Arrays.asList(nums[i], nums[j++], nums[k--]));  // 注意不要忘记让 j++，k--
             }
         }
-        return new ArrayList<>(res);                 // Set 和 List 可以通过构造函数互相直接转化
+        return new ArrayList<>(set);                 // Set 和 List 可以通过构造函数互相直接转化
     }
 
     /*
      * 解法3：查找表 + 手动去重
-     * - 思路类似 TwoSum 中的解法2.
+     * - 思路：类似 L1_TwoSum 中的解法2。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * - 还可以采用 查找表 + Set 去重的解法，这里不再赘述。
      * */
@@ -93,7 +93,7 @@ public class L15_3Sum {
 
     /*
     * 解法4：二分查找 + Set 去重
-    * - 在固定前两个元素的情况下，不使用查找表，而是使用二分查找来在找到 complement。
+    * - 思路：在固定前两个元素的情况下，不使用查找表，而是使用二分查找来在找到 complement（因为数组有序）。
     * - 时间复杂度 O(n^2 * logn)，空间复杂度 O(1)。
     * */
     public static List<List<Integer>> threeSum4(int[] nums) {
@@ -108,7 +108,6 @@ public class L15_3Sum {
                 if (k != -1) res.add(Arrays.asList(nums[i], nums[j], nums[k]));
             }
         }
-
         return new ArrayList(res);
     }
 
@@ -123,9 +122,8 @@ public class L15_3Sum {
     }
 
     public static void main(String[] args) {
-        log(threeSum(new int[] {-1, 0, 1, 2, -1, -4}));    // expects [[-1,0,1], [-1,-1,2]]
-        log(threeSum2(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
-        log(threeSum3(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
-        log(threeSum4(new int[] {-1, 0, 1, 2, -1, -4}));   // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum0(new int[] {-1, 0, 1, 2, -1, -4}));  // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum0(new int[] {-1, 0, 1}));             // expects [-1, 0, 1]
+        log(threeSum0(new int[] {1, 0, 1, 0}));           // expects []
     }
 }
