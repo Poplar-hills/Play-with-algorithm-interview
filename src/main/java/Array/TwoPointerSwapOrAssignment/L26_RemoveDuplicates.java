@@ -12,16 +12,14 @@ import static Utils.Helpers.swap;
 *   1. Do not allocate extra space.
 *   2. 结果可以是将 remove 掉的元素放在数组尾部，不需要硬删除。
 *   3. 除了被 remove 掉的元素之外，其他元素的相对顺序不能变。
-*
-* - 解法的思路与 L283_MoveZeros, L27_RemoveElement 一致，只是判断条件不同。
-* - 解法时间复杂度为 O(n)，空间复杂度为 O(1)。
 * */
 
 public class L26_RemoveDuplicates {
     /*
     * 解法1：
     * - 思路：从前往后遍历，在检测到之前没见过的元素时，将其复制到前面，让数组头部形成不重复的元素序列（后面的元素是什么不用管）。
-    * - 解法时间复杂度为 O(n)，空间复杂度为 O(1)。
+    *        思路与 L283_MoveZeros, L27_RemoveElement 的解法1一致，只是判断条件不同。
+    * - 时间复杂度为 O(n)，空间复杂度为 O(1)。
     * */
     public static int removeDuplicates(int[] arr) {
         int j = 1;                              // j 指向数组头部下一个待赋值的位置
