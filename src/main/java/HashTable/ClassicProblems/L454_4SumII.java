@@ -8,8 +8,8 @@ import static Utils.Helpers.log;
 /*
 * 4Sum II
 *
-* 给定4个数组 A, B, C, D，查找有多少 i, j, k, l 的组合使得 A[i] + B[j] + C[k] + D[l] == 0。
-* 其中 A, B, C, D 元素个数 n 相等，且 0 ≤ n ≤ 500。返回 i, j, k, l 的组合数。
+* - 给定4个数组 A, B, C, D，查找有多少 i, j, k, l 的组合使得 A[i] + B[j] + C[k] + D[l] == 0。
+*   其中 A, B, C, D 的元素个数 n 相等，且 0 ≤ n ≤ 500。返回 i, j, k, l 的组合数。
 * */
 
 public class L454_4SumII {
@@ -21,8 +21,8 @@ public class L454_4SumII {
         int count = 0;
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (int d : D)
-            map.put(d, map.getOrDefault(d, 0) + 1);  // 考虑有重复的元素，因此记录要频次
+        for (int d : D)                                          // 使用查找表记录 D[i] 的所有可能
+            map.put(d, map.getOrDefault(d, 0) + 1);  // 考虑可能有重复的元素，因此要记录每个元素的频次
 
         for (int a : A)
             for (int b : B)
@@ -35,8 +35,8 @@ public class L454_4SumII {
     /*
      * 解法2：查找表2
      * - 由于题目中说 n ≤ 500，因此隐含条件是设计一个 O(n^2) 的算法即可满足要求。
-     * - 优化：解法1中使用查找表记录 D[i] 的所有可能，如果再进一步，用查找表记录 C[i] + D[j] 的所有可能，则可以优化到 O(n^2)。
-     *        又因为 n ≤ 500，因此用一个 Map 记录 500^2 个键值对是完全可以接受的。
+     * - 优化：解法1中使用查找表记录 D[i] 的所有可能，如果再进一步，用查找表记录 C[i] + D[j] 的所有组合，则可以优化到 O(n^2)。
+     *   又因为 n ≤ 500，因此用一个 Map 记录 500^2 个键值对是完全可以接受的。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n^2)。
      * - 思考：查找表的核心问题是：我们到底要查找什么？
      * */
@@ -44,11 +44,11 @@ public class L454_4SumII {
         int count = 0;
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (int c : C)
+        for (int c : C)        // 用查找表记录 C[i] + D[j] 的所有组合，并记录每种组合的频次
             for (int d : D)
                 map.put(c + d, map.getOrDefault(c + d, 0) + 1);
 
-        for (int a : A)
+        for (int a : A)        // 从 A[k] + B[l] 的所有组合与 C[i] + D[j] 的所有组合中找到满足条件的组合的频次，加到 count 上
             for (int b : B)
                 count += map.getOrDefault(0 - a - b, 0);
 
