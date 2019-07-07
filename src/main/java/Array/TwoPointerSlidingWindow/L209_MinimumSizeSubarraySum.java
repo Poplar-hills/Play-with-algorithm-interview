@@ -5,10 +5,11 @@ import static Utils.Helpers.log;
 /*
 * Minimum Size Subarray Sum
 *
-* - Given an array of n positive integers and a positive integer s, find the minimal length of a
-*   contiguous subarray (连续子数组) of which the sum ≥ s. If there isn't one, return 0 instead.
-* - 题中要求找到元素之和 ≥ s 的最短子串，即对于子串 nums[l...r] 来说，需要在 sum(l...r) ≥ s 的基础上找到
-*   最小的 r-l+1。可见本题需要通过改变 l 和 r 来找到符合要求的子串。
+* - Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous subarray
+*   (连续子数组) of which the sum ≥ s. If there isn't one, return 0 instead.
+*
+* - 题中要求找到元素之和 ≥ s 的最短子串，即对于子串 nums[l...r] 来说，需要在 sum(l...r) ≥ s 的基础上找到最小的 r-l+1。
+*   可见本题需要通过改变 l 和 r 来找到符合要求的子串。
 * */
 
 public class L209_MinimumSizeSubarraySum {
@@ -71,7 +72,7 @@ public class L209_MinimumSizeSubarraySum {
         int l = 0, r = -1, sum = 0;  // 右边界初始化为-1，使得初始窗口不包含任何元素，这样初始 sum 才能为0
 
         while (l < nums.length) {    // 只要 l 还在数组内就继续滑动（当 r 抵达数组末尾后，l 还得继续滑动直到也抵达末尾后整个滑动过程才算结束）
-            if (sum < s && r < nums.length - 1)  // 因为下一句中 r 会先自增再访问数组，因此要小心越界问题
+            if (sum < s && r + 1 < nums.length)  // 因为下一句中 r 会先自增再访问数组，因此要小心越界问题
                 sum += nums[++r];
             else                     // 若 sum ≥ s 或 r 已经到头
                 sum -= nums[l++];
@@ -93,8 +94,8 @@ public class L209_MinimumSizeSubarraySum {
         int minLen = nums.length + 1;
         int l = 0, r = -1, sum = 0;
 
-        while (r < nums.length - 1) {  // 与解法3中的不同，因为后面会使用 while 查找，所以这里只要 r 抵达数组末尾后整个滑动过程即结束
-            while (sum < s && r < nums.length - 1)
+        while (r + 1 < nums.length) {  // 与解法3中的不同 ∵ 后面会使用 while 查找 ∴ 这里只要 r 抵达数组末尾后整个滑动过程即结束，而又因为下面的 r+1 不能越界，因此这里是 r+1 < nums.length，而不是 r < nums.length
+            while (sum < s && r + 1 < nums.length)
                 sum += nums[++r];
             if (sum >= s)
                 minLen = Math.min(r - l + 1, minLen);
@@ -108,18 +109,8 @@ public class L209_MinimumSizeSubarraySum {
         return minLen == nums.length + 1 ? 0 : minLen;  // 注意若未找到 ≥ s 的子串则返回0
     }
 
-    // 测试
     public static void main(String[] args) {
         int[] nums = new int[] {2, 3, 1, 2, 4, 3};
-        log(minSubArrayLen(7, nums));  // expects 2. The subarray [4,3] has the minimal length
-
-        int[] nums2 = new int[] {2, 3, 1, 2, 4, 3};
-        log(minSubArrayLen2(7, nums2));  // expects 2
-
-        int[] nums3 = new int[] {2, 3, 1, 2, 4, 3};
-        log(minSubArrayLen3(7, nums3));  // expects 2
-
-        int[] nums4 = new int[] {2, 3, 1, 2, 4, 3};
-        log(minSubArrayLen4(7, nums4));  // expects 2
+        log(minSubArrayLen4(7, nums));  // expects 2. The subarray [4,3] has the minimal length
     }
 }
