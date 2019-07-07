@@ -13,7 +13,7 @@ public class L80_RemoveDuplicatesII {
     /*
     * 解法1：
     * - 思路：与 L26_RemoveDuplicates 一致，只是判断条件不同。
-    * - 解法时间复杂度为 O(n)，空间复杂度为 O(1)。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static int removeDuplicates(int[] arr) {
         int j = 2;
