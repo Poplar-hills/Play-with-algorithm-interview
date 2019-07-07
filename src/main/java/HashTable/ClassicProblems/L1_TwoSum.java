@@ -14,6 +14,8 @@ import static Utils.Helpers.log;
 *
 * - 对于整型数组 nums，返回其中两个不同元素（值相同可以）的索引 i 和 j 使得 nums[i] + nums[j] = target。
 * - You may assume that each input would have exactly one solution.
+*
+* - 与 3Sum、4Sum 不同之处在于 3Sum、4Sum 要返回的是元素值，而 TwoSum 要返回的是元素索引。
 * */
 
 public class L1_TwoSum {
@@ -45,7 +47,7 @@ public class L1_TwoSum {
      * 解法2：使用查找表
      * - 思路：将 nums 中的所有元素一次性放入 Map 中，之后遍历数组，若 target - nums[i] 存在于 Map 中，则找到了想要的结果。
      * - 问题：若一次性将所有元素都放入 Map 中，则对于 test cast 2 中 [2, 7, 15, 7] 这样的数组会有问题，因为其中有重复元素7，
-     *   在加入 Map 是会产生覆盖，导致找不到结果。
+     *   在加入 Map 时会产生覆盖，导致找不到正确的索引。
      * - 修正：不一次性将所有元素放入 Map，而是在每次要将元素 nums[i] 放入 Map 之前，先检查已放入 Map 中的元素是否有
      *   target - nums[i]，若有则说明找到了，没有则再继续放入。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。

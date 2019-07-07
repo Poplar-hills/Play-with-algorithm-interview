@@ -30,7 +30,8 @@ public class L16_3SumClosest {
     }
 
     /*
-     * 解法2：化简为 2Sum
+     * 解法2：化简为 2Sum + 指针对撞
+     * - 思路：与 L15_3Sum 的解法2类似。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static int threeSumClosest2(int[] nums, int target) {

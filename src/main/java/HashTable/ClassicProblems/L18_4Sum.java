@@ -79,19 +79,18 @@ public class L18_4Sum {
                 }
             }
         }
-
         return new ArrayList<>(res);
     }
 
     /*
-    * 解法3：查找表 + Set
-    * - 思路类似 TwoSum 中的解法2、3Sum 中的解法3。
+    * 解法3：查找表 + Set 去重
+    * - 思路：类似 L1_TwoSum 中的解法2、L15_3Sum 中的解法4。
     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
-    * - 代码最简洁，但性能差于前面两种解法，因为重复结果会先存入 Set，再利用 Set 去重，而手动去重不会有这个 g。
+    * - 代码最简洁，但性能差于前面两种解法，因为重复结果会先存入 Set，再利用 Set 去重，而手动去重不会有这个过程。
     * */
     public static List<List<Integer>> fourSum3(int[] nums, int target) {
         if (nums == null || nums.length < 4) return new ArrayList<>();
-        Set<List<Integer>> res = new HashSet<>();
+        Set<List<Integer>> set = new HashSet<>();
         Map<Integer, Integer> map = new HashMap<>();
         Arrays.sort(nums);
 
@@ -103,12 +102,11 @@ public class L18_4Sum {
                 for (int k = j + 1; k < nums.length - 1; k++) {
                     int complement = target - nums[i] - nums[j] - nums[k];
                     if (map.containsKey(complement) && map.get(complement) > k)
-                        res.add(Arrays.asList(nums[i], nums[j], nums[k], complement));
+                        set.add(Arrays.asList(nums[i], nums[j], nums[k], complement));
                 }
             }
         }
-
-        return new ArrayList<>(res);
+        return new ArrayList<>(set);
     }
 
     public static void main(String[] args) {
