@@ -22,16 +22,16 @@ public class L15_3Sum {
 
         for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素将问题化简为 2Sum（∵ 要保证后面的 j,k 有元素可用 ∴ 至少要留出2个元素，即 i 的滑动范围是第0个~倒数第3个元素）
             if (i == 0 || nums[i] != nums[i - 1]) {  // 手动去重（i == 0 时是第一个元素，不可能重复，而后面的元素只要不等于前一个元素即可）
-                int j = i + 1;
-                int k = nums.length - 1;
-                while (j < k) {                      // 内部指针对撞
-                    int sum = nums[i] + nums[j] + nums[k];
-                    if (sum < 0) j++;
-                    else if (sum > 0) k--;
+                int l = i + 1;
+                int r = nums.length - 1;
+                while (l < r) {                      // 内部指针对撞
+                    int sum = nums[i] + nums[l] + nums[r];
+                    if (sum < 0) l++;
+                    else if (sum > 0) r--;
                     else {
-                        res.add(Arrays.asList(nums[i], nums[j++], nums[k--]));
-                        while (j < k && nums[j] == nums[j - 1]) j++;  // 碰到重复元素则 j 继续 ++
-                        while (j < k && nums[k] == nums[k + 1]) k--;  // 碰到重复元素则 k 继续 --
+                        res.add(Arrays.asList(nums[i], nums[l++], nums[r--]));
+                        while (l < r && nums[l] == nums[l - 1]) l++;  // 碰到重复元素则 l 继续 ++
+                        while (l < r && nums[r] == nums[r + 1]) r--;  // 碰到重复元素则 r 继续 --
                     }
                 }
             }
@@ -50,13 +50,13 @@ public class L15_3Sum {
         Arrays.sort(nums);                           // 指针对撞的前提是数组有序，O(nlogn)
 
         for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素将问题化简为 2Sum，之后在内部做指针对撞，O(n)
-            int j = i + 1;
-            int k = nums.length - 1;
-            while (j < k) {                          // 指针对撞，O(n)
-                int sum = nums[i] + nums[j] + nums[k];
-                if (sum > 0) k--;
-                else if (sum < 0) j++;
-                else set.add(Arrays.asList(nums[i], nums[j++], nums[k--]));  // 注意不要忘记让 j++，k--
+            int l = i + 1;
+            int r = nums.length - 1;
+            while (l < r) {                          // 指针对撞，O(n)
+                int sum = nums[i] + nums[l] + nums[r];
+                if (sum > 0) r--;
+                else if (sum < 0) l++;
+                else set.add(Arrays.asList(nums[i], nums[l++], nums[r--]));  // 注意不要忘记让 l++，r--
             }
         }
         return new ArrayList<>(set);                 // Set 和 List 可以通过构造函数互相直接转化

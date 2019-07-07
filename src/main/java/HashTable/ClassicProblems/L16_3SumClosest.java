@@ -7,7 +7,7 @@ import static Utils.Helpers.log;
 /*
 * 3Sum Closest
 *
-* 从数组中找出三个元素 a, b, c，使得他们的和 sum 最接近给定的 target，返回 sum。
+* - 从数组中找出三个元素 a, b, c，使得他们的和 sum 最接近给定的 target，最后返回 sum。
 * */
 
 public class L16_3SumClosest {
@@ -30,7 +30,7 @@ public class L16_3SumClosest {
     }
 
     /*
-     * 解法2：
+     * 解法2：化简为 2Sum
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static int threeSumClosest2(int[] nums, int target) {
@@ -38,9 +38,10 @@ public class L16_3SumClosest {
         Arrays.sort(nums);
         int minSum = nums[0] + nums[1] + nums[2];
 
-        for (int i = 0; i < nums.length - 2; i++) {
-            int l = i + 1, r = nums.length - 1;
-            while (l < r) {
+        for (int i = 0; i < nums.length - 2; i++) {  // 固定第一个元素将问题化简为 2Sum，之后在内部做指针对撞，O(n)
+            int l = i + 1;
+            int r = nums.length - 1;
+            while (l < r) {                          // 指针对撞，O(n)
                 int sum = nums[i] + nums[l] + nums[r];
                 if (Math.abs(sum - target) < Math.abs(minSum - target))
                     minSum = sum;
@@ -54,7 +55,7 @@ public class L16_3SumClosest {
     }
 
     public static void main(String[] args) {
-        log(threeSumClosest2(new int[] {-1, 2, 1, -4}, 1));  // expects 2
-        log(threeSumClosest2(new int[] {0, 1, 2}, 0));       // expects 3
+        log(threeSumClosest2(new int[]{-1, 2, 1, -4}, 1));  // expects 2
+        log(threeSumClosest2(new int[]{0, 1, 2}, 0));       // expects 3
     }
 }
