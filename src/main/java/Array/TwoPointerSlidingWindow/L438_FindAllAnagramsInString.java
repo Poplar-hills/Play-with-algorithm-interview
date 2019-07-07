@@ -55,11 +55,11 @@ public class L438_FindAllAnagramsInString {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;
 
-        int[] freq = new int[128];         // 记录字符的出现频次（不光是 p 中的字符，p 中没有的也会记录，见 "xxyz" 用例）（也可以用 hash map）
+        int[] freq = new int[128];
         for (char c : p.toCharArray()) freq[c]++;  // 将 p 中每个字符的出现频次初始化为1
 
         int l = 0, r = 0;
-        int matchCount = 0;  // 记录窗口中出现了多少个 p 中的字符
+        int matchCount = 0;                // 记录窗口中出现了多少个 p 中的字符
 
         while (r < s.length()) {
             if (freq[s.charAt(r)] > 0) {   // 若 r 处的字符匹配上了（即存在于 p 中）
