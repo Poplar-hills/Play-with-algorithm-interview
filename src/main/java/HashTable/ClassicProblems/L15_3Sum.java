@@ -122,8 +122,8 @@ public class L15_3Sum {
     }
 
     public static void main(String[] args) {
-        log(threeSum0(new int[] {-1, 0, 1, 2, -1, -4}));  // expects [[-1,0,1], [-1,-1,2]]
-        log(threeSum0(new int[] {-1, 0, 1}));             // expects [-1, 0, 1]
-        log(threeSum0(new int[] {1, 0, 1, 0}));           // expects []
+        log(threeSum(new int[] {-1, 0, 1, 2, -1, -4}));  // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum(new int[] {-1, 0, 1}));             // expects [-1, 0, 1]
+        log(threeSum(new int[] {1, 0, 1, 0}));           // expects []
     }
 }
