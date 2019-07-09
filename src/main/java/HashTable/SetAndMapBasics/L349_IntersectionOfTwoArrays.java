@@ -17,40 +17,50 @@ import static Utils.Helpers.log;
  * */
 
 public class L349_IntersectionOfTwoArrays {
-    public static int[] intersection(int[] nums1, int[] nums2) {  // 解法1：双 set，时间复杂度 O(n)，空间复杂度 O(n)
+    /*
+    * 解法1：双 Set
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static int[] intersection(int[] nums1, int[] nums2) {
         Set<Integer> set = new HashSet<>();
         Set<Integer> common = new HashSet<>();
 
-        for (int n : nums1)  // 时间复杂度 O(n)，空间复杂度 O(n)
-            set.add(n);
-        for (int m : nums2)  // 时间复杂度 O(n)，空间复杂度 O(n)
+        for (int n : nums1) set.add(n);
+        for (int m : nums2)
             if (set.contains(m))
                 common.add(m);
 
         int i = 0;
         int[] res = new int[common.size()];
-        for (int n : common) res[i++] = n;  // 时间复杂度 O(n)，空间复杂度 O(n)
+        for (int n : common) res[i++] = n;  // 将 Set 手动转为 array
+
         return res;
     }
 
-    public static int[] intersection2(int[] nums1, int[] nums2) {  // 解法2：使用 set 的 retainAll 方法，O(n)
+    /*
+    * 解法2：使用 set 的 retainAll 方法
+    * - 时间复杂度 O(n)。
+    * */
+    public static int[] intersection2(int[] nums1, int[] nums2) {
         Set<Integer> set1 = new HashSet<>();
         Set<Integer> set2 = new HashSet<>();
 
-        for (int n : nums1)
-            set1.add(n);
-        for (int m : nums2)
-            set2.add(m);
-
-        set1.retainAll(set2);
+        for (int n : nums1) set1.add(n);
+        for (int m : nums2) set2.add(m);
+        set1.retainAll(set2);   // 执行之后 set1 中只有公共元素
 
         int i = 0;
         int[] res = new int[set1.size()];
-        for (int n : set1) res[i++] = n;
+        for (int n : set1) res[i++] = n;  // 将 Set 手动转为 array
+
         return res;
     }
 
-    public static int[] intersection3(int[] nums1, int[] nums2) {  // 解法3：二分查找，O(nlogn)
+    /*
+    * 解法3：二分查找
+    * - 时间复杂度 O(nlogn)。
+    * */
+    public static int[] intersection3(int[] nums1, int[] nums2) {
         Set<Integer> set = new HashSet<>();
         Arrays.sort(nums2);   // 要先排序才能对 nums2 进行二分查找，O(nlogn)。若 nums2 本身是有序的，则整个算法复杂度降为 O(logn)
 

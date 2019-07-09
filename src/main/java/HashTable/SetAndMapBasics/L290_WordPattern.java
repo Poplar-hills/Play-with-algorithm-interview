@@ -50,7 +50,7 @@ public class L290_WordPattern {
         if (words.length != pattern.length())
             return false;
 
-        Map map = new HashMap();
+        Map map = new HashMap();  // Map 的 key 既有 Character 也有 String
         for (Integer i = 0; i < words.length; i++)
             if (map.put(pattern.charAt(i), i) != map.put(words[i], i))
                 return false;
