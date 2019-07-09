@@ -10,7 +10,7 @@ import static Utils.Helpers.log;
 
 public class L205_IsomorphicStrings {
     /*
-    * 解法1：双 map
+    * 解法1：双查找表
     * - 思路：判断两个字符串是否是 isomorphic 的，只需判断两者中各字符的相对位置是否相同，因此需要建立 s 中的字符 -> t 中的字符的映射。
     * - 实现：两个 map 分别记录 s[i] -> t[i] 和 t[i] -> s[i] 的映射关系，之后在遍历字符串过程中检查每个字符的映射关系是否与之前记录的映射关系一致。
     * - 时间复杂度 O(n)，空间复杂度 O(2len(charset))。
@@ -22,7 +22,7 @@ public class L205_IsomorphicStrings {
         char[] sMap = new char[256];  // 也可以使用 Map 实现
         char[] tMap = new char[256];
 
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {     // 遍历一个字符串
             char sc = s.charAt(i), tc = t.charAt(i);
             if (sMap[sc] == 0 && tMap[tc] == 0) {  // 若 sc 和 tc 没有被记录过则记录下来（char[] 的默认值是 '\u0000'，其十进制值为0）
                 sMap[sc] = tc;
@@ -36,13 +36,13 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法2：单 map
-     * - 思路：对于 s 和 t 中的每个字符（如 s[i], t[i]）来说，只需要知道他们上次出现时的索引相同即可判断 s 和 t 是 isomorphic 的。
-     * - 实现：一个 map 分成两部分使用，每部分分别记录 s[i] -> i 和 t[i] -> i 的映射。
+     * 解法2：单查找表
+     * - 思路：对于 s 和 t 中的每个字符 s[i]、t[i] 来说，只需要知道他们上次出现时的索引相同即可判断 s 和 t 是 isomorphic 的。
+     * - 实现：一个查找表分成两部分使用，两部分分别记录 s[i] -> i 和 t[i] -> i 的映射。
      * - 时间复杂度 O(n)，空间复杂度 O(2len(charset))。
      * */
     public static boolean isIsomorphic2(String s, String t) {
-        int[] map = new int[256];
+        int[] map = new int[256];                               // 无法用 Map 实现
         for (int i = 0; i < s.length(); i++) {
             if (map[s.charAt(i)] != map[t.charAt(i) + 128])
                 return false;
