@@ -10,7 +10,7 @@ import static Utils.Helpers.log;
 /*
 * Contains Duplicate II
 *
-* - 对于整型数组 nums 和整数 k，是否存在索引 i 和 j，使得 nums[i] == nums[j]，且 i 和 j 之间的差不超过 k。
+* - 对于整型数组 nums 和整数 k，是否存在索引 i 和 j，使得 nums[i] == nums[j]，且 i 和 j 之差不超过 k。
 * */
 
 public class L219_ContainsDuplicateII {
@@ -46,7 +46,10 @@ public class L219_ContainsDuplicateII {
 
     /*
      * 解法2：查找表 + 滑动窗口
-     * - 思路：使用 Set 既作为查找表（回答有没有的问题用 Set 即可）同时也作为滑动窗口（其中只保存 i - k 范围内的元素）。
+     * - 思路：题中说"i 和 j 之差不超过 k"，可理解为有一个长度为 k 的窗口在数组上滑动，若窗口内存在两个值相同的元素即可返回 true。
+     *   既可以作为滑动窗口，又能回答"有没有"的问题的数据结构就是查找表了，具体来说，可以采用 Set：
+     *   1. 作为滑动窗口：Set 中只保存 k 个元素，即索引在 [i-k+1, i] 范围内的元素；
+     *   2. 回答"有没有"的问题：当遍历到新元素时检查它是否已存在与 Set 中（说明元素值相等）。
      * - 时间复杂度 O(n)，空间复杂度 O(k)。
      * */
     public static boolean containsNearbyDuplicate2(int[] nums, int k) {
@@ -54,7 +57,7 @@ public class L219_ContainsDuplicateII {
         for (int i = 0; i < nums.length; i++) {
             if (set.contains(nums[i])) return true;
             set.add(nums[i]);
-            if (set.size() == k + 1)  // set 中元素个数达到 k+1 之前只添加，不删除
+            if (set.size() == k + 1)  // Set 中元素个数达到 k+1 之前只添加不删除
                 set.remove(nums[i - k]);
         }
         return false;
@@ -63,15 +66,15 @@ public class L219_ContainsDuplicateII {
     /*
      * 解法3：查找表 Map
      * - 思路：
-     *   - 本题的关键点是重复元素的索引要在 k 之内，因此可以使用 Map 存储元素 -> 索引的映射。
-     *   - 再利用 put 方法返回该 key 更新之前的 value，若之前 key 不存在则返回 null。利用这一点，在每次取到新元素时，
-     *     用 put 存储该元素，并查询上次存储该元素的索引，若索引存且与新元素索引之差小于 k，则 return true。
+     *   - 本题的关键点是重复元素的索引要在 k 之内，因此可以建立 Map<存储元素, 索引> 的映射。
+     *   - 再利用 Map.put() 方法的特性 -- 在更新某个 key 的 value 时，若该 key 已存在于 Map 中则返回其 value，若不存在则返回 null
+     *     并直接添加。利用这一点，在遍历到处理新元素时，用 put 查询上次存储的该值的索引，若索引存且与新元素索引之差小于 k，则返回 true。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean containsNearbyDuplicate3(int[] nums, int k) {
         Map<Integer, Integer> map = new HashMap<>();
         for (int i = 0; i < nums.length; i++) {
-            Integer index = map.put(nums[i], i);
+            Integer index = map.put(nums[i], i);  // 若 map 中之前已有 key 为 nums[i] 的 entry 则会返回其 value，否则返回 null
             if (index != null && i - index <= k)
                 return true;
         }
