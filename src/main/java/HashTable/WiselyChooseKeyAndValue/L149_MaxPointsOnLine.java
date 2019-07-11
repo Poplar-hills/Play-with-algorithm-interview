@@ -18,7 +18,7 @@ public class L149_MaxPointsOnLine {
     * - 思路：该问题的关键在于如何判断多个点在一条直线上。首先想到可以通过两点一线的斜率（slope）来判断。具体来说，遍历所
     *   有点的两两组合，并用 Map 记录斜率 -> 点个数的映射。但这种方式还有问题，即存在两条直线斜率 k 相等，但偏移量 b 不等
     *   的情况（y = kx + b），因此不能用一个 Map 统计所有斜率，需要为每个点单独统计，即为每个点创建一个 Map，记录该点与
-    *   所有其他点连成的直线的斜率。
+    *   所有其他点连成的直线的斜率，并找出所有这些点的 Map 中最大的 value。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int maxPoints(int[][] points) {
@@ -26,32 +26,32 @@ public class L149_MaxPointsOnLine {
         if (points.length <= 2) return points.length;
         int res = 0;
 
-        for (int i = 0; i < points.length; i++) {
+        for (int i = 0; i < points.length; i++) {  // 遍历每个点
             Map<BigDecimal, Integer> map = new HashMap<>();
-            int sameXCount = 1;  // 初始值得是1
-            int overlapCount = 0;
+            int sameXCount = 1;    // 初始值设为1
+            int overlapCount = 0;  // 重叠
 
-            for (int j = 0; j < points.length; j++) {
+            for (int j = 0; j < points.length; j++) {  // 在固定一个点的基础上遍历所有其他点
                 if (i == j) continue;
-                int[] p = points[i], q = points[j];
-                if (Arrays.equals(p, q))  // 两点重叠的情况。如果这里不处理则会在下面的 if 块中直接 continue，跳过斜率计算，导致少算了一个点
-                    overlapCount++;       // 因此要在这里单独记录，并在后面加回到 res 里（因为重叠的点肯定在一条线上）
-                if (p[0] == q[0]) {  // 若两点 x 坐标相等（包括两点重叠的情况）此时直线垂直于 x 轴，没有斜率，斜率公式分母为零会报错，因此单独处理
+                int[] p1 = points[i], p2 = points[j];
+                if (Arrays.equals(p1, p2))  // 两点重叠的情况。如果这里不处理则会在下面的 if 块中直接 continue，跳过斜率计算，导致少算了一个点
+                    overlapCount++;         // 因此要在这里单独记录，并在后面加回到 res 里（因为重叠的点肯定在一条线上）
+                if (p1[0] == p2[0]) {       // 若两点 x 坐标相等（包括两点重叠的情况）此时两点所连成的线垂直于 x 轴，没有斜率，斜率公式分母为零会报错，因此单独处理
                     res = Math.max(res, ++sameXCount);  // 处理方式是用变量单独记录与当前点有相同 x 坐标的点的个数，并与 res 比较
                     continue;
                 }
-                BigDecimal s = slope(p, q);
-                map.put(s, map.getOrDefault(s, 1) + 1);  // 初始值得是1
-                res = Math.max(res, map.get(s) + overlapCount);
+                BigDecimal s = slope(p1, p2);           // 上面处理完两个特殊情况后，这里是一般情况
+                map.put(s, map.getOrDefault(s, 1) + 1);  // 初始值设为1
+                res = Math.max(res, map.get(s) + overlapCount);      // 记得要加上重叠的点的个数
             }
         }
         return res;
     }
 
-    private static BigDecimal slope(int[] p, int[] q) {  // double 可能会精度不足因此使用 BigDecimal（SEE test case 5）
-        BigDecimal diffY = BigDecimal.valueOf(q[1] - p[1]);
-        BigDecimal diffX = BigDecimal.valueOf(q[0] - p[0]);
-        return diffY.divide(diffX, new MathContext(20));  // equation for calculating slope: (y2 - y1) / (x2 - x1)
+    private static BigDecimal slope(int[] p1, int[] p2) {      // double 可能会精度不足因此使用 BigDecimal（SEE test case 5）
+        BigDecimal diffY = BigDecimal.valueOf(p2[1] - p1[1]);  // 使用 valueOf() 将 int 转为 BigDecimal
+        BigDecimal diffX = BigDecimal.valueOf(p2[0] - p1[0]);
+        return diffY.divide(diffX, new MathContext(20));  // calculating slope: (y2 - y1) / (x2 - x1)
     }
 
     public static void main(String[] args) {
