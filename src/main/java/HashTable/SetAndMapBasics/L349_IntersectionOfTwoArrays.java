@@ -7,6 +7,9 @@ import static Utils.Helpers.log;
 /*
  * Intersection of Two Arrays
  *
+ * - Given two arrays, write a function to compute their intersection.
+ * - 注意：返回的数组应该是去重过的，SEE test case 1。
+ *
  * - set 底层实现可以有3种：
  *            普通数组   顺序数组   平衡二分搜索树   哈希表
  *   - 插入     O(1)      O(n)       O(logn)      O(1)
@@ -32,7 +35,7 @@ public class L349_IntersectionOfTwoArrays {
 
         int i = 0;
         int[] res = new int[common.size()];
-        for (int n : common) res[i++] = n;  // 将 Set 手动转为 array
+        for (int n : common) res[i++] = n;  // 将 Set 中的元素逐个放入 array
 
         return res;
     }
@@ -51,7 +54,7 @@ public class L349_IntersectionOfTwoArrays {
 
         int i = 0;
         int[] res = new int[set1.size()];
-        for (int n : set1) res[i++] = n;  // 将 Set 手动转为 array
+        for (int n : set1) res[i++] = n;  // 将 Set 中的元素逐个放入 array
 
         return res;
     }
@@ -85,13 +88,7 @@ public class L349_IntersectionOfTwoArrays {
     }
 
     public static void main(String[] args) {
-        log(intersection(new int[] {1, 2, 2, 1}, new int[] {2, 2}));        // expects [2]
+        log(intersection(new int[] {1, 2, 2, 1}, new int[] {2, 2}));        // expects [2]. 注意返回的数组应该是去重过的
         log(intersection(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}));  // expects [4, 9]
-
-        log(intersection2(new int[] {1, 2, 2, 1}, new int[] {2, 2}));
-        log(intersection2(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}));
-
-        log(intersection3(new int[] {1, 2, 2, 1}, new int[] {2, 2}));
-        log(intersection3(new int[] {4, 9, 5}, new int[] {9, 4, 9, 8, 4}));
     }
 }
