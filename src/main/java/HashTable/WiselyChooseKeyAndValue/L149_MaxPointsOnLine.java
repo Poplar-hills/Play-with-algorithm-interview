@@ -26,14 +26,15 @@ public class L149_MaxPointsOnLine {
         if (points.length <= 2) return points.length;
         int res = 0;
 
-        for (int i = 0; i < points.length; i++) {  // 遍历每个点
-            Map<BigDecimal, Integer> map = new HashMap<>();
-            int sameXCount = 1;    // 初始值设为1
-            int overlapCount = 0;  // 重叠
+        for (int i = 0; i < points.length; i++) {            // 遍历每个点
+            Map<BigDecimal, Integer> map = new HashMap<>();  // 为每个点创建查找表，记录 {斜率: 点个数}
+            int sameXCount = 1;                              // 记录 x 坐标相同的点的个数（初始值设为1）
+            int overlapCount = 0;                            // 记录重叠点的个数
 
-            for (int j = 0; j < points.length; j++) {  // 在固定一个点的基础上遍历所有其他点
+            for (int j = 0; j < points.length; j++) {        // 在固定一个点的基础上遍历所有其他点
                 if (i == j) continue;
                 int[] p1 = points[i], p2 = points[j];
+
                 if (Arrays.equals(p1, p2))  // 两点重叠的情况。如果这里不处理则会在下面的 if 块中直接 continue，跳过斜率计算，导致少算了一个点
                     overlapCount++;         // 因此要在这里单独记录，并在后面加回到 res 里（因为重叠的点肯定在一条线上）
                 if (p1[0] == p2[0]) {       // 若两点 x 坐标相等（包括两点重叠的情况）此时两点所连成的线垂直于 x 轴，没有斜率，斜率公式分母为零会报错，因此单独处理
