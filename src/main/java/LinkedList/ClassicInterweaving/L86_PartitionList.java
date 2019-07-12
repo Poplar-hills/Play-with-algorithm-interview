@@ -28,15 +28,15 @@ public class L86_PartitionList {
             curr = curr.next;
         }
 
-        ListNode start = joint;  // joint 是新的遍历起点
+        ListNode prev = joint;  // 从 joint 节点开始新的遍历
         while (curr != null) {
             if (curr.val < x) {  // 若节点值 < x 则停下来处理
                 ListNode temp = curr.next;
                 joint = insertNode(curr, joint);  // 将该节点移动到 joint 后面，并让 joint 后移一步
-                start.next = temp;
+                prev.next = temp;
                 curr = temp;
             } else {             // 若节点值 ≥ x 则直接跳过
-                start = curr;
+                prev = curr;
                 curr = curr.next;
             }
         }
