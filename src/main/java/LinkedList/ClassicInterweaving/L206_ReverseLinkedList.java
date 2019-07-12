@@ -50,7 +50,6 @@ public class L206_ReverseLinkedList {
 
     public static void main(String[] args) {
         ListNode l = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(l);                 // 1->2->3->4->5->NULL
-        printLinkedList(reverseList2(l));   // expects 5->4->3->2->1->NULL
+        printLinkedList(reverseList2(l));    // expects 5->4->3->2->1->NULL
     }
 }

@@ -6,8 +6,8 @@ import static Utils.Helpers.*;
 * Reverse Linked List II
 *
 * - Reverse a linked list from position m to n. Note:
-*   - 1 ≤ m ≤ n ≤ length of list（m 和 n 是从1开始的）
-*   - Do it in one-pass（要求在一次遍历内完成）
+*   - 1 ≤ m ≤ n ≤ length of list (m 和 n 是从1开始的)
+*   - Do it in one-pass (要求在一次遍历内完成)
 * */
 
 public class L92_ReverseLinkedListII {
@@ -148,17 +148,61 @@ public class L92_ReverseLinkedListII {
         return head;
     }
 
+    /*
+    * 解法4：
+    * - 思路：先找到并标记需要反向的部分，进行反向后将结果链回原链表中。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * */
+    public static ListNode reverseBetween4(ListNode head, int m, int n) {
+        if (head == null || m == n) return head;
+        ListNode dummyHead = new ListNode();
+        dummyHead.next = head;
+
+        ListNode curr = head;
+        ListNode prev = null, start = null, tail = null;
+        if (m == 1) {          // 从第1个元素开始就要反向属于特例，单独处理
+            prev = dummyHead;
+            start = head;
+        }
+        for (int i = 1; i <= n; i++) {  // 只要遍历到第 n 个元素即可，后面的无需处理
+            if (i == m - 1) {  // 若到达要反向的首节点的前一个节点，标记 prev, start
+                prev = curr;
+                start = curr.next;
+            }
+            if (i == n) {      // 若到达要反向的末节点，标记 tail，并断开与后面节点的链接（∵ 反向过程需要知道结尾在哪）
+                tail = curr.next;
+                curr.next = null;
+            }
+            curr = curr.next;
+        }
+        prev.next = reverseList(start);  // 进行反向，并将反向后的结果链回原链表中
+        start.next = tail;
+        return dummyHead.next;
+    }
+
+    private static ListNode reverseList(ListNode list) {
+        ListNode prev = null, curr = list;
+        while (curr != null) {
+            ListNode third = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = third;
+        }
+        return prev;
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(reverseBetween3(l1, 2, 4));  // 1->4->3->2->5->NULL
-//        // 解法1的测试
-//        ListNode reversed = new solution1().reverseBetween(n1, 2, 4);
-//        printLinkedList(reversed);
+        printLinkedList(reverseBetween4(l1, 2, 4));  // expects 1->4->3->2->5->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{3, 5});
-        printLinkedList(reverseBetween3(l2, 1, 2));  // expects 5->3->NULL
+        printLinkedList(reverseBetween4(l2, 1, 2));  // expects 5->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{5});
-        printLinkedList(reverseBetween3(l3, 1, 1));  // expects 5->NULL
+        printLinkedList(reverseBetween4(l3, 1, 1));  // expects 5->NULL
+
+        // 解法1是一个类，因此测试方式与其他解法不同
+//        ListNode reversed = new solution1().reverseBetween(l1, 2, 4);
+//        printLinkedList(reversed);
     }
 }
