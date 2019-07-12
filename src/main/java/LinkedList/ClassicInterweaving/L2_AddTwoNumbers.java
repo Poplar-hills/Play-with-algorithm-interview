@@ -8,13 +8,14 @@ import static Utils.Helpers.*;
 * Add Two Numbers
 *
 * - 给出两个非空链表，代表两个非负整数。其中每个整数的各个位上的数字以逆序存储，返回这两个整数之和的逆序链表。
-*   如 342 + 465 = 807，则给出 2->4->3、5->6->4，返回 7->0->8。
+*   如 342 + 465 = 807，则输入是 2->4->3、5->6->4，输出应为 7->0->8。
 * */
 
 public class L2_AddTwoNumbers {
     /*
-    * 有一点缺陷的解法
-    * - 无法处理超过 long 精度的链表（实际面试中很少有，因此不是个很大的问题）。
+    * 有缺陷的解：
+    * - 思路：先把两个链表逆序转成 long，再相加两个 long，最后再将结果逆序转成链表。
+    * - 这种方法的：优势是不需要手动处理进位问题；劣势是无法处理超过 long 精度的链表（可以使用 BigInteger）（实际面试中很少有，不是个很大的问题）。
     * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)，其中 m, n 分别为 l1, l2 的节点个数。
     * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
@@ -24,11 +25,10 @@ public class L2_AddTwoNumbers {
     }
 
     private static long linkedListToLong(ListNode l) {  // 将 2->4->3->NULL 转成 342
-        ListNode curr = l;
         StringBuilder s = new StringBuilder();
-        while (curr != null) {
-            s.insert(0, curr.val);     // 注意这里要 insert 而不是 append
-            curr = curr.next;
+        while (l != null) {
+            s.insert(0, l.val);     // 将链表上的每个节点添加到字符串的头部（要用 insert 而不是 append）
+            l = l.next;
         }
         return Long.parseLong(s.toString());  // "123" 转换为 123 的两种方法：1. Integer.parseInt 2. Integer.valueOf
     }
@@ -37,7 +37,7 @@ public class L2_AddTwoNumbers {
         ListNode dummyHead = new ListNode();
         ListNode curr = dummyHead;
         while (num >= 1) {
-            curr.next = new ListNode((int) (num % 10));  // 注意类型转换时后面如果是表达式要加上括号提高优先级
+            curr.next = new ListNode((int)(num % 10));  // 注意类型转换时后面如果是表达式要加上括号提高优先级
             curr = curr.next;
             num /= 10;
         }
@@ -46,6 +46,7 @@ public class L2_AddTwoNumbers {
 
     /*
     * 解法1：模拟加法运算
+    * - 思路：
     * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
@@ -101,14 +102,10 @@ public class L2_AddTwoNumbers {
         ListNode l1 = createLinkedListFromArray(new int[]{2, 4, 3});
         ListNode l2 = createLinkedListFromArray(new int[]{5, 6, 4});
         printLinkedList(addTwoNumbers(l1, l2));   // expects 7->0->8->NULL
-        printLinkedList(addTwoNumbers2(l1, l2));  // expects 7->0->8->NULL
-        printLinkedList(addTwoNumbers3(l1, l2));  // expects 7->0->8->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
         ListNode l4 = createLinkedListFromArray(new int[]{7});
         printLinkedList(addTwoNumbers(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
-        printLinkedList(addTwoNumbers2(l3, l4));  // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
-        printLinkedList(addTwoNumbers3(l3, l4));  // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
     }
 }
 
