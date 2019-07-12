@@ -1,6 +1,7 @@
 package LinkedList.ClassicInterweaving;
 
 import Utils.Helpers.ListNode;
+import javafx.util.Pair;
 
 import static Utils.Helpers.*;
 
@@ -8,7 +9,7 @@ import static Utils.Helpers.*;
 * Add Two Numbers
 *
 * - 给出两个非空链表，代表两个非负整数。其中每个整数的各个位上的数字以逆序存储，返回这两个整数之和的逆序链表。
-*   如 342 + 465 = 807，则输入是 2->4->3、5->6->4，输出应为 7->0->8。
+*   如 342 + 1465 = 1807，输入是 2->4->3、5->6->4->1，输出应为 7->0->8->1。
 * */
 
 public class L2_AddTwoNumbers {
@@ -51,23 +52,25 @@ public class L2_AddTwoNumbers {
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         ListNode dummyHead = new ListNode();
-        ListNode curr1 = l1, curr2 = l2, curr = dummyHead;
+        ListNode curr = dummyHead;
         int carry = 0;
 
-        while (curr1 != null || curr2 != null) {
-            int curr1Val = curr1 != null ? curr1.val : 0;
-            int curr2Val = curr2 != null ? curr2.val : 0;
+        while (l1 != null || l2 != null) {
+            int curr1Val = l1 != null ? l1.val : 0;
+            int curr2Val = l2 != null ? l2.val : 0;
             int sum = curr1Val + curr2Val + carry;
 
             carry = sum / 10;
             curr.next = new ListNode(sum % 10);
             curr = curr.next;
 
-            if (curr1 != null) curr1 = curr1.next;
-            if (curr2 != null) curr2 = curr2.next;
+            if (l1 != null) l1 = l1.next;
+            if (l2 != null) l2 = l2.next;
         }
 
-        if (carry != 0) curr.next = new ListNode(carry);  // 注意如果还有进位则需再加一位
+        if (carry != 0)  // 如果还有进位则需再加一位
+            curr.next = new ListNode(carry);
+
         return dummyHead.next;
     }
 
@@ -100,8 +103,8 @@ public class L2_AddTwoNumbers {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{2, 4, 3});
-        ListNode l2 = createLinkedListFromArray(new int[]{5, 6, 4});
-        printLinkedList(addTwoNumbers(l1, l2));   // expects 7->0->8->NULL
+        ListNode l2 = createLinkedListFromArray(new int[]{5, 6, 4, 1});
+        printLinkedList(addTwoNumbers(l1, l2));   // expects 7->0->8->1->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
         ListNode l4 = createLinkedListFromArray(new int[]{7});
