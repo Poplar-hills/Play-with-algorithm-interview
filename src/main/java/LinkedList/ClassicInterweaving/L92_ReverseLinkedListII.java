@@ -20,30 +20,28 @@ public class L92_ReverseLinkedListII {
         ListNode left = head, right = head;
 
         for (int i = 1; i < n; i++) {  // 先让两个指针各自走到 m, n 上
-            right = right.next;
             if (i < m) left = left.next;
+            right = right.next;
         }
-
         while (left != right && right.next != left) {  // 开始指针对撞
-            int temp = left.val;
+            int value = left.val;
             left.val = right.val;
-            right.val = temp;
+            right.val = value;
 
             left = left.next;
 //            right = right.prev;  // 若是双向链表，节点上有 prev 属性，能回到上一个节点，则此解法就可以工作了
         }
-
         return head;
     }
 
     /*
     * 解法1：递归指针对撞 + 交换节点值
-    * - 思路：类似将一个数组倒序的思路 —— 先将两个指针移动到数组 m, n 的位置上，再在他们互相逼近的过程中不断 swap 节点里的值。但是因
-    *   为单向链表没有从后一个节点指向前一个节点的指针，因此若要让右指针左移到上一个节点就需要借助递归来实现，因为在每层递归结束回到上
-    *   一层调用栈时可以获得上一个节点。（过程可视化 SEE: https://leetcode.com/problems/reverse-linked-list-ii/solution/）
-    * - 时间复杂度 O(n)：遍历节点两遍，空间复杂度 O(n)：递归深度最大是链表元素个数
+    * - 思路：类似将数组倒序的思路 —— 先将两个指针移动到数组 m, n 的位置上，再在他们互相逼近的过程中不断 swap 节点里的值。但是因
+    *   为单向链表没有从后一个节点指向前一个节点的指针，若要让右指针左移到上一个节点需要借助递归来实现，因为在每层递归结束回到上一
+    *   层调用栈时可以获得上一个节点。（过程可视化 SEE: https://leetcode.com/problems/reverse-linked-list-ii/solution/）
+    * - 时间复杂度 O(n)，遍历节点两遍；空间复杂度 O(n)，递归深度最大是链表元素个数。
     * */
-    public static class solution1 {
+    public static class Solution1 {
         private ListNode left;
         private boolean stop;
 
@@ -56,7 +54,7 @@ public class L92_ReverseLinkedListII {
 
         private void recurseAndReverse(ListNode right, int m, int n) {
             // 进入下一层递归之前：让两个指针向右移动，直到 left 抵达 m，right 抵达 n
-            if (n == 1) return;  // 此时右指针已抵达 n，停止右移，开始左移（即递归到底，开始返回上层）
+            if (n == 1) return;  // 此时右指针已抵达 n（即递归到底，开始返回上层）
             if (m > 1) this.left = this.left.next;
             right = right.next;  // 只要没递归到底，每层都让右指针右移，这样后面返回上层递归时就能取到右移之前的节点（即上一个节点）
 
@@ -71,10 +69,10 @@ public class L92_ReverseLinkedListII {
             }
         }
 
-        private void swapNodeValue(ListNode left, ListNode right) {
-            int temp = left.val;
-            this.left.val = right.val;
-            right.val = temp;
+        private void swapNodeValue(ListNode n1, ListNode n2) {
+            int value = n1.val;
+            n1.val = n2.val;
+            n2.val = value;
         }
     }
 
@@ -202,7 +200,8 @@ public class L92_ReverseLinkedListII {
         printLinkedList(reverseBetween4(l3, 1, 1));  // expects 5->NULL
 
         // 解法1是一个类，因此测试方式与其他解法不同
-//        ListNode reversed = new solution1().reverseBetween(l1, 2, 4);
-//        printLinkedList(reversed);
+        ListNode l4 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        Solution1 s1 = new Solution1();
+        printLinkedList(s1.reverseBetween(l4, 2, 4));
     }
 }
