@@ -15,12 +15,12 @@ public class L206_ReverseLinkedList {
         if (head == null) return null;
         ListNode prev = null, curr = head;
         while (curr != null) {
-            ListNode third = curr.next;
+            ListNode next = curr.next;
             curr.next = prev;
             prev = curr;
-            curr = third;
+            curr = next;
         }
-        return prev;
+        return prev;  // 注意最后返回的是 prev 而非 curr
     }
 
     /*
@@ -41,7 +41,7 @@ public class L206_ReverseLinkedList {
      * - 时间复杂度 O(n)，空间复杂度 O(n)
      * */
     public static ListNode reverseList2(ListNode head) {
-        if (head == null || head.next == null) return head;
+        if (head.next == null) return head;
         ListNode newHead = reverseList2(head.next);
         head.next.next = head;
         head.next = null;
