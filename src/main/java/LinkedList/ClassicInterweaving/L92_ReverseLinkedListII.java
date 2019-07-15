@@ -39,7 +39,8 @@ public class L92_ReverseLinkedListII {
     * - 思路：类似将数组倒序的思路 —— 先将两个指针移动到数组 m, n 的位置上，再在他们互相逼近的过程中不断 swap 节点里的值。但是因
     *   为单向链表没有从后一个节点指向前一个节点的指针，若要让右指针左移到上一个节点需要借助递归来实现，因为在每层递归结束回到上一
     *   层调用栈时可以获得上一个节点。（过程可视化 SEE: https://leetcode.com/problems/reverse-linked-list-ii/solution/）
-    * - 时间复杂度 O(n)，遍历节点两遍；空间复杂度 O(n)，递归深度最大是链表元素个数。
+    * - 时间复杂度 O(n)，因为只遍历到 n 处的节点；
+    * - 空间复杂度 O(n)，同样因为只遍历到 n 处的节点，因此递归深度为 n。
     * */
     public static class Solution1 {
         private ListNode left;
@@ -128,60 +129,18 @@ public class L92_ReverseLinkedListII {
         }
 
         ListNode conn = prev, tail = curr;
-        while (n > 0) {  // 再开始反向节点间的链接
+        while (n > 0) {  // 开始将有效范围内的节点反向
             ListNode third = curr.next;
             curr.next = prev;
             prev = curr;
             curr = third;
             n--;
         }
-        if (conn != null) conn.next = prev;
+
+        if (conn != null) conn.next = prev;  // 与解法2一样
         else head = prev;
         tail.next = curr;
         return head;
-    }
-
-    /*
-    * 解法4：
-    * - 思路：先找到并标记需要反向的部分，进行反向后将结果链回原链表中。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
-    public static ListNode reverseBetween4(ListNode head, int m, int n) {
-        if (head == null || m == n) return head;
-        ListNode dummyHead = new ListNode();
-        dummyHead.next = head;
-
-        ListNode curr = head;
-        ListNode prev = null, start = null, tail = null;
-        if (m == 1) {          // 从第1个元素开始就要反向属于特例，单独处理
-            prev = dummyHead;
-            start = head;
-        }
-        for (int i = 1; i <= n; i++) {  // 只要遍历到第 n 个元素即可，后面的无需处理
-            if (i == m - 1) {  // 若到达要反向的首节点的前一个节点，标记 prev, start
-                prev = curr;
-                start = curr.next;
-            }
-            if (i == n) {      // 若到达要反向的末节点，标记 tail，并断开与后面节点的链接（∵ 反向过程需要知道结尾在哪）
-                tail = curr.next;
-                curr.next = null;
-            }
-            curr = curr.next;
-        }
-        prev.next = reverseList(start);  // 进行反向，并将反向后的结果链回原链表中
-        start.next = tail;
-        return dummyHead.next;
-    }
-
-    private static ListNode reverseList(ListNode list) {
-        ListNode prev = null, curr = list;
-        while (curr != null) {
-            ListNode third = curr.next;
-            curr.next = prev;
-            prev = curr;
-            curr = third;
-        }
-        return prev;
     }
 
     public static void main(String[] args) {
