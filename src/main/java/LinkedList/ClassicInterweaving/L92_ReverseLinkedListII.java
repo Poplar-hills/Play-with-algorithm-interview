@@ -60,18 +60,14 @@ public class L92_ReverseLinkedListII {
             recurseAndReverse(head.next, m - 1, n - 1);
 
             // 回到上一层递归之后：判断两个指针是否已撞上，若没有则交换节点值，并让两个指针互相接近一步
-            if (left == head || left == head.next)  // 针对 test case 2 需要添加 left == head.next 判断
+            if (left == head || left == head.next)  // 对于只有两个节点的链表（test case 2）需要添加 left == head.next 判断（∵ 两个指针互相接近一步相当于互相调换位置，此时 left 在 head 右侧）
                 stop = true;
             if (!stop) {
-                swapNodeValue(left, head);
+                int value = left.val;
+                left.val = head.val;
+                head.val = value;
                 left = left.next;  // 不需要手动管理右指针，其向左移动到上一节点是由递归返回上层时实现的
             }
-        }
-
-        private void swapNodeValue(ListNode n1, ListNode n2) {
-            int value = n1.val;
-            n1.val = n2.val;
-            n2.val = value;
         }
     }
 
@@ -203,7 +199,7 @@ public class L92_ReverseLinkedListII {
         ListNode l5 = createLinkedListFromArray(new int[]{3, 5});
         ListNode l6 = createLinkedListFromArray(new int[]{5});
         Solution1 s1 = new Solution1();
-        printLinkedList(s1.reverseBetween(l4, 2, 4));
+//        printLinkedList(s1.reverseBetween(l4, 2, 4));
         printLinkedList(s1.reverseBetween(l5, 1, 2));
         printLinkedList(s1.reverseBetween(l6, 1, 1));
     }
