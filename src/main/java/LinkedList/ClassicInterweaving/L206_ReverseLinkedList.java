@@ -1,5 +1,8 @@
 package LinkedList.ClassicInterweaving;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import static Utils.Helpers.*;
 
 /*
@@ -48,8 +51,29 @@ public class L206_ReverseLinkedList {
         return newHead;
     }
 
+    /*
+    * 解法3：Stack
+    * - 思路：说起"反向"就应该能联想到 Stack 这种数据结构。BST 的前序、中序遍历就是同样的思路。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static ListNode reverseList3(ListNode head) {
+        Deque<ListNode> stack = new ArrayDeque<>();
+
+        for (ListNode curr = head; curr != null; curr = curr.next)
+            stack.push(curr);
+
+        ListNode dummyHead = new ListNode(), prev = dummyHead;
+        while (!stack.isEmpty()) {
+            prev.next = stack.pop();
+            prev = prev.next;
+        }
+        prev.next = null;  // 注意要把最后一个节点的 next 置空（否则会与前一个节点形成双向链接）
+
+        return dummyHead.next;
+    }
+
     public static void main(String[] args) {
         ListNode l = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(reverseList2(l));    // expects 5->4->3->2->1->NULL
+        printLinkedList(reverseList3(l));    // expects 5->4->3->2->1->NULL
     }
 }
