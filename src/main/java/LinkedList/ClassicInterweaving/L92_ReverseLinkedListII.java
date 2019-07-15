@@ -72,43 +72,43 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-    * 解法2：不交换节点中的值，而是改变节点间的链接
+    * 解法2：不交换节点值，而是改变节点间的链接
     * - 思路：改变节点间的链接并不意味着要交换两个节点，而是可以：
-    *   1. 先将 [m, n] 范围内的节点之间的链接反向；
+    *   1. 先将 [m, n] 范围内的节点反向；
     *   2. 再 fix 反向后的节点与 m 之前、n 之后的节点的链接。
-    *   具体来说，例如 7 -> 9 -> 2 -> 10 -> 1 -> 8 -> 6, m=2, n=5，则：
-    *   1. 先将9和8之间的链接反向：7 -> 9 <-> 2 <- 10 <- 1 <- 8   6，注意：
-    *     - 因为 8.next 指向了1，因此8于6之间的链接断开了。
-    *     - 对两个节点 a -> b 间的链接进行反向会断开 b 与后面节点间的链接，但因为9是范围内第一个节点，因此9指向2的链接没有断开。
-    *   2. 再 fix 反向后的节点与前后节点的链接：把8链接到7后面、把6链接到9后面。
-    *   - 因为反向两个节点之间的链接这个过程只需这两个节点参与，因此程序的大体结构是在 for 中不断获取前后两个节点，对他们进行反向或不反向。
-    *   - 在进行步骤2时，需要能够在遍历结束后还能获取到 m-1 节点、m 节点、n 节点、n+1 节点，因此需要定义变量维护他们的引用。
-    *   - 注意特殊情况的处理：test case 2、3。
+    *   例如 7->9->2->10->1->8->6, m=2, n=5，则：
+    *   1. 先将9和8之间的节点反向：7->9<->2<-10<-1<-8  6，注意：
+    *     - ∵ 8.next 指向了1 ∴ 8->6 的链接断开了；
+    *     - ∵ 9是范围内第一个节点，不需要修改 9.next ∴ 9->2 的链接没有断开，并最终形成双向链接。
+    *   2. 再 fix 反向后的节点与前后节点的链接：把8链接到7后面、把6链接到9后面：
+    *     - 需要获取到 m-1 节点、m 节点、n 节点、n+1 节点，因此需要定义指针指向他们；
+    *     - ∵ 反向两个节点之间的链接只需这两个节点参与 ∴ 程序的大体结构是在 for 中不断获取前后两个节点，对他们进行反向或不反向；
+    *     - 注意特殊情况的处理：test case 2、3。
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static ListNode reverseBetween2(ListNode head, int m, int n) {
         if (head == null) return null;
-        ListNode prev = null, curr = head;
-        ListNode conn = head, tail = head;  // 用于保存 m-1 节点、m 节点的引用
+        ListNode prev = null, curr = head;   // prev 最后会停在 n 上；curr 最后会停在 n+1 上
+        ListNode conn = head, left = head;   // conn 指向 m-1 上的节点；left 指向 m 上的节点
 
         for (int i = 1; i <= n; i++) {
-            if (i == m) {
+            if (i == m) {                    // 遍历到 m 处的节点时给 conn、left 赋值
                 conn = prev;
-                tail = curr;
+                left = curr;
             }
-            if (i >= m + 1 && i <= n) {      // 在有效范围内对前后两个节点间的链接进行反向
-                ListNode third = curr.next;  // 先保存再后面一个节点的引用
-                curr.next = prev;
+            if (i > m && i <= n) {           // 在有效范围内对前后两个节点进行反向
+                ListNode next = curr.next;
+                curr.next = prev;            // 后一个节点的 next 指向前一个节点
                 prev = curr;
-                curr = third;
-            } else {                         // 在有效范围外只移动指针
+                curr = next;
+            } else {                         // 若 i < m（在有效范围之外）只移动指针，不反向节点
                 prev = curr;
                 curr = curr.next;
             }
         }
-        if (conn != null) conn.next = prev;  // 进行上面说的步骤2（在 test case2中 conn 会是 null，需要特殊处理）
-        else head = prev;
-        tail.next = curr;
+        if (conn != null) conn.next = prev;  // 进行上面说的步骤2，将 n 处的节点链回 m-1 处节点上
+        else head = prev;                    // test case 2、3中 m=1，因此 conn 是 null，需要特殊处理
+        left.next = curr;                    // 将 n-1 处的节点链到 m 处节点上
         return head;
     }
 
@@ -196,11 +196,7 @@ public class L92_ReverseLinkedListII {
 
         // 解法1是一个类，因此测试方式与其他解法不同
         ListNode l4 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        ListNode l5 = createLinkedListFromArray(new int[]{3, 5});
-        ListNode l6 = createLinkedListFromArray(new int[]{5});
         Solution1 s1 = new Solution1();
-//        printLinkedList(s1.reverseBetween(l4, 2, 4));
-        printLinkedList(s1.reverseBetween(l5, 1, 2));
-        printLinkedList(s1.reverseBetween(l6, 1, 1));
+        printLinkedList(s1.reverseBetween(l4, 2, 4));
     }
 }
