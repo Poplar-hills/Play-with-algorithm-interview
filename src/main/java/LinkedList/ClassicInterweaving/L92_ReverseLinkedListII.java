@@ -46,26 +46,25 @@ public class L92_ReverseLinkedListII {
         private boolean stop;
 
         public ListNode reverseBetween(ListNode head, int m, int n) {
-            this.left = head;
-            this.stop = false;
+            left = null;
+            stop = false;
             recurseAndReverse(head, m, n);
             return head;
         }
 
-        private void recurseAndReverse(ListNode right, int m, int n) {
-            // 进入下一层递归之前：让两个指针向右移动，直到 left 抵达 m，right 抵达 n
-            if (n == 1) return;  // 此时右指针已抵达 n（即递归到底，开始返回上层）
-            if (m > 1) this.left = this.left.next;
-            right = right.next;  // 只要没递归到底，每层都让右指针右移，这样后面返回上层递归时就能取到右移之前的节点（即上一个节点）
+        private void recurseAndReverse(ListNode head, int m, int n) {
+            // 进入下一层递归之前：让两个指针向右移动，直到 left 抵达 m，head 抵达 n
+            if (n == 0) return;  // 此时右指针抵达 n+1（该处的节点不需要交换值，因此递归到底，开始返回上层）
+            if (m == 1) left = head;
 
-            recurseAndReverse(right, m - 1, n - 1);
+            recurseAndReverse(head.next, m - 1, n - 1);
 
-            // 归回上一层递归之后：判断两个指针是否已撞上，若没有则交换节点值，并让两个指针互相接近一步
-            if (this.left == right || right.next == this.left)
-                this.stop = true;
-            if (!this.stop) {
-                swapNodeValue(this.left, right);
-                this.left = this.left.next;  // 不需要手动管理右指针，其向左移动到上一节点是由递归返回上层时实现的
+            // 回到上一层递归之后：判断两个指针是否已撞上，若没有则交换节点值，并让两个指针互相接近一步
+            if (left == head || left == head.next)  // 针对 test case 2 需要添加 left == head.next 判断
+                stop = true;
+            if (!stop) {
+                swapNodeValue(left, head);
+                left = left.next;  // 不需要手动管理右指针，其向左移动到上一节点是由递归返回上层时实现的
             }
         }
 
@@ -191,17 +190,21 @@ public class L92_ReverseLinkedListII {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(reverseBetween4(l1, 2, 4));  // expects 1->4->3->2->5->NULL
+        printLinkedList(reverseBetween2(l1, 2, 4));  // expects 1->4->3->2->5->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{3, 5});
-        printLinkedList(reverseBetween4(l2, 1, 2));  // expects 5->3->NULL
+        printLinkedList(reverseBetween2(l2, 1, 2));  // expects 5->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{5});
-        printLinkedList(reverseBetween4(l3, 1, 1));  // expects 5->NULL
+        printLinkedList(reverseBetween2(l3, 1, 1));  // expects 5->NULL
 
         // 解法1是一个类，因此测试方式与其他解法不同
         ListNode l4 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        ListNode l5 = createLinkedListFromArray(new int[]{3, 5});
+        ListNode l6 = createLinkedListFromArray(new int[]{5});
         Solution1 s1 = new Solution1();
         printLinkedList(s1.reverseBetween(l4, 2, 4));
+        printLinkedList(s1.reverseBetween(l5, 1, 2));
+        printLinkedList(s1.reverseBetween(l6, 1, 1));
     }
 }
