@@ -1,7 +1,6 @@
 package LinkedList.ClassicInterweaving;
 
 import Utils.Helpers.ListNode;
-import javafx.util.Pair;
 
 import static Utils.Helpers.*;
 
@@ -47,7 +46,6 @@ public class L2_AddTwoNumbers {
 
     /*
     * 解法1：模拟加法运算
-    * - 思路：
     * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
@@ -84,7 +82,7 @@ public class L2_AddTwoNumbers {
     }
 
     private static ListNode addTwoNumbers3(ListNode l1, ListNode l2, int carry) {
-        if (l1 == null && l2 == null && carry == 0)
+        if (l1 == null && l2 == null && carry == 0)  // 三个条件同时满足才结束递归
             return null;
 
         int l1Val = l1 != null ? l1.val : 0;
