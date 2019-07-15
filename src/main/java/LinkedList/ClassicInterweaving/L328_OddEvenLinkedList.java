@@ -8,13 +8,14 @@ import static Utils.Helpers.*;
 * Odd Even Linked List
 *
 * - Given a singly linked list, group all odd-index nodes together followed by the even-index nodes.
-*   注意索引从1开始（即第一个元素的索引为1）。
+* - 注意：索引从1开始。
 * */
 
 public class L328_OddEvenLinkedList {
     /*
-     * 解法1：思路同 L86 的解法1
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * 解法1：移动节点
+     * - 思路：同 L86 的解法1。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)，不需要开辟额外空间。
      * */
     public static ListNode oddEvenList(ListNode head) {
         ListNode dummyHead = new ListNode();
@@ -22,14 +23,14 @@ public class L328_OddEvenLinkedList {
 
         ListNode joint = dummyHead, curr = head;
         int i = 1;
-        while (curr != null && i % 2 != 0) {
+        while (curr != null && i % 2 != 0) {  // 先找到链表中第一个偶数索引的节点的前一个节点（joint 节点）
             joint = curr;
             curr = curr.next;
             i++;
         }
 
         ListNode prev = joint;
-        while (curr != null) {
+        while (curr != null) {  // 继续向后遍历，每次遇到偶数索引的节点就将它插入到 joint 处，并让 joint 后移
             if (i % 2 != 0) {
                 ListNode temp = curr.next;
                 joint = insertNode(curr, joint);
@@ -53,7 +54,8 @@ public class L328_OddEvenLinkedList {
     }
 
     /*
-    * 解法2：思路同 L86 的解法2
+    * 解法2：双链表拼接
+    * - 思路：同 L86 的解法2。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode oddEvenList2(ListNode head) {
