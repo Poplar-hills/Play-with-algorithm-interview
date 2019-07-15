@@ -46,7 +46,7 @@ public class L328_OddEvenLinkedList {
         return dummyHead.next;
     }
 
-    private static ListNode insertNode(ListNode node, ListNode prev) {
+    private static ListNode insertNode(ListNode node, ListNode prev) {  // 将 node 插到 prev 之后
         ListNode third = prev.next;
         prev.next = node;
         node.next = third;
