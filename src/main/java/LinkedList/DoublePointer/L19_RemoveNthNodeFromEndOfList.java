@@ -54,10 +54,9 @@ public class L19_RemoveNthNodeFromEndOfList {
         ListNode left = dummnyHead, right = dummnyHead;  // 要删除节点就一定需要虚拟头结点
         dummnyHead.next = head;
 
-        while (n + 1 != 0) {     // 先将 right 移动到距离 left 指针 n+1 位置的地方
-            if (right == null) return head;
+        for (int i = 0; i < n + 1; i++) {     // 先将 right 移动到距离 left 指针 n+1 位置的地方
+            if (right == null) return head;   // 处理 n 越界的情况
             right = right.next;
-            n--;
         }
 
         while (right != null) {  // 同时移动两个指针，当 right 到达 null 时，left 就到了待删除节点的前一节点上了
@@ -71,15 +70,15 @@ public class L19_RemoveNthNodeFromEndOfList {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(removeNthFromEnd(l1, 2));  // expects 1->2->3->5->NULL
+        printLinkedList(removeNthFromEnd2(l1, 2));  // expects 1->2->3->5->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 3});
-        printLinkedList(removeNthFromEnd(l2, 3));  // expects 2->3->NULL
+        printLinkedList(removeNthFromEnd2(l2, 3));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1});
-        printLinkedList(removeNthFromEnd(l3, 2));  // expects 1->NULL
+        printLinkedList(removeNthFromEnd2(l3, 2));  // expects 1->NULL
 
         ListNode l4 = createLinkedListFromArray(new int[]{});
-        printLinkedList(removeNthFromEnd(l4, 2));  // expects NULL
+        printLinkedList(removeNthFromEnd2(l4, 2));  // expects NULL
     }
 }
