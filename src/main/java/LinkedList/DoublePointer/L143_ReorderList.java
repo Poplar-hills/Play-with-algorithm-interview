@@ -47,6 +47,7 @@ public class L143_ReorderList {
     *      - 1->2->3->4->5 的中间节点为3，可得反向链表 5->4->3，merge 后得到：1->5->2->4->3；
     *      - 1->2->3->4 的中间节点为3，可得反向链表 4->3，merge 后得到：1->4->2->3->3；
     *      - 注意：反向链表的最后一个节点不需要 merge 到原链表中 ∴ merge 的循环结束条件是到达反向链表的最后一个节点（而非到达 null）。
+    * - 技巧：找链表的中点的最佳方式是采用 slow/fast 技巧。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static void reorderList2(ListNode head) {
