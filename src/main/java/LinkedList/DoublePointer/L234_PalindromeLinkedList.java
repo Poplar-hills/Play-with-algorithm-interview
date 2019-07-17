@@ -106,14 +106,14 @@ public class L234_PalindromeLinkedList {
     }
 
     private static ListNode partition(ListNode head) {  // 对于 1->2->3->4，返回 3->4；对于 1->2->3，返回 2->3
-        ListNode prev = new ListNode(), fast = head;  // ∵ 要截断链表 ∴ 需要获取链表中点的前一个节点 prev
-        prev.next = head;
+        ListNode prevSlow = new ListNode(), fast = head;  // ∵ 要截断链表 ∴ 需获取链表中点的前一个节点 ∵ slow/fast 技巧中 slow 最后到达中点 ∴ 只需找到 slow 的上一节点即可
+        prevSlow.next = head;
         while (fast != null && fast.next != null) {
-            prev = prev.next;
+            prevSlow = prevSlow.next;
             fast = fast.next.next;  // 若有偶数个节点则 fast 最后会停在 null 上，若有奇数个节点则会停在尾节点上
         }
-        ListNode secondHalf = prev.next;
-        prev.next = null;           // 截断链表
+        ListNode secondHalf = prevSlow.next;
+        prevSlow.next = null;           // 截断链表
         return secondHalf;
     }
 
