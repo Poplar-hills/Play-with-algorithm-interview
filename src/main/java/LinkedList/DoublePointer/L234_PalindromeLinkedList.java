@@ -37,6 +37,7 @@ public class L234_PalindromeLinkedList {
     * 解法1：指针对撞 + 使用 Stack 实现反向遍历
     * - 思路：要看一个链表或数组是否是 palindrome，需要同时从前、后两个方向逐个节点对照，若节点值相等则过，不相等则说明不是 palindrome。
     *   因此需要一个能反向遍历链表的方式，因此可以采用 Stack。
+    * - 实现：类似 L143 中的解法1。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static boolean isPalindrome1(ListNode head) {
@@ -48,7 +49,7 @@ public class L234_PalindromeLinkedList {
 
         int len = stack.size();              // 注意该变量不能 inline，∵ 循环中会不断改变 stack.size
         ListNode left = head;
-        for (int i = 0; i < len / 2; i++) {  // 注意在调用 stack.peek() 之前要检查 !stack.isEmpty()，否则会报错
+        for (int i = 0; i < len / 2; i++) {  // 遍历一半的节点，O(n/2)
             ListNode right = stack.pop();
             if (left.val != right.val) return false;
             left = left.next;
@@ -59,13 +60,13 @@ public class L234_PalindromeLinkedList {
 
     /*
     * 解法2：生成反向链表
-    * - 思路：直接生成一个反向链表。
+    * - 思路：直接生成一个反向链表，然后与原链表逐一比较节点。
     * - 注意：反向链表需要重新创建，而不能用 L206_ReverseLinkedList 中原地修改的方式，否则原链表会被修改导致后面无法正确遍历。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static boolean isPalindrome2(ListNode head) {
         ListNode curr1 = head, curr2 = createReversedList(head);
-        while (curr1 != null && curr2 != null && curr1 != curr2) {
+        while (curr1 != null && curr2 != null && curr1 != curr2) {  // 以 curr1 != curr2 作为终止条件的话对于 test case 3 这种偶数个节点的链表来说会遍历整个链表，即 O(n)
             if (curr1.val != curr2.val) return false;
             curr1 = curr1.next;
             curr2 = curr2.next;
@@ -77,7 +78,7 @@ public class L234_PalindromeLinkedList {
         ListNode dummyNode = new ListNode(), curr = head;
         while (curr != null) {
             ListNode temp = dummyNode.next;
-            dummyNode.next = new ListNode(curr.val);  // 这里新建节点而不是直接将 curr 聊到 dummyNode 上
+            dummyNode.next = new ListNode(curr.val);  // 新建节点并插入到 dummyHead 之后，从而实现对原链表的反向
             curr = curr.next;
             dummyNode.next.next = temp;
         }
@@ -85,19 +86,16 @@ public class L234_PalindromeLinkedList {
     }
 
     /*
-     * 解法3：
-     * - 思路：截断链表，逐个比较前一半、后一半中的节点。
-     * - 优势：解法1、2都需要创建反向链表，占用更多空间。而该解法原地变换、比较链表，因此更省空间。
-     * - 时间复杂度 O(n)，空间复杂度 O(1)：
-     *   - 虽然解法1、2、3的复杂度都是 O(n)，但该解法的统计性能最优，因为三次遍历都是遍历 n/2 个节点。
-     *   - 如果 reverse 使用递归实现则空间复杂度是 O(n)。
+     * 解法3：截断链表后比较
+     * - 思路：从链表中点截断链表，之后再逐个比较前一半，以及反向过的后一半。要截断首先需要找到中点 —— 可以采用 slow/fast 技巧（同
+     *   L143 解法2 中的 mid 方法）。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)（该解法原地变换、比较链表，无需开辟辅助空间）。
      * */
     public static boolean isPalindrome3(ListNode head) {
         if (head == null || head.next == null) return true;
 
-        ListNode secondHalf = reverse(partition(head));  // reverse 和 partition 都是 O(n/2)
-        ListNode firstHalf = head;
-        ListNode curr1 = firstHalf, curr2 = secondHalf;
+        ListNode curr1 = head;
+        ListNode curr2 = reverse(partition(head));  // reverse 和 partition 都是 O(n/2)
 
         while (curr1 != null && curr2 != null) {  // 也是 O(n/2)
             if (curr1.val != curr2.val) return false;
@@ -107,16 +105,15 @@ public class L234_PalindromeLinkedList {
         return true;
     }
 
-    private static ListNode partition(ListNode head) {  // 对于 1->2->3->4，返回 3->4；对于 1->2->3->4->5，返回 3->4->5
-        ListNode preSlow = null, slow = head, fast = head, secondHalf;
+    private static ListNode partition(ListNode head) {  // 对于 1->2->3->4，返回 3->4；对于 1->2->3，返回 2->3
+        ListNode prev = new ListNode(), fast = head;  // ∵ 要截断链表 ∴ 需要获取链表中点的前一个节点 prev
+        prev.next = head;
         while (fast != null && fast.next != null) {
-            preSlow = slow;
-            slow = slow.next;
+            prev = prev.next;
             fast = fast.next.next;  // 若有偶数个节点则 fast 最后会停在 null 上，若有奇数个节点则会停在尾节点上
         }
-        if (fast == null) slow = preSlow;  // 若有偶数个节点则让 slow 往左移一位，从而可统一两种情况进行截断
-        secondHalf = slow.next;
-        slow.next = null;
+        ListNode secondHalf = prev.next;
+        prev.next = null;           // 截断链表
         return secondHalf;
     }
 
@@ -134,21 +131,21 @@ public class L234_PalindromeLinkedList {
 
     public static void main(String[] args) {
         ListNode l0 = createLinkedListFromArray(new int[]{1, 2});
-        log(isPalindrome1(l0));  // expects false
+        log(isPalindrome3(l0));  // expects false
 
         ListNode l1 = createLinkedListFromArray(new int[]{1, 1, 2, 1});
-        log(isPalindrome1(l1));  // expects false
+        log(isPalindrome3(l1));  // expects false
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 2, 1});
-        log(isPalindrome1(l2));  // expects true
+        log(isPalindrome3(l2));  // expects true
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 0, 1});
-        log(isPalindrome1(l3));  // expects true
+        log(isPalindrome3(l3));  // expects true
 
         ListNode l4 = createLinkedListFromArray(new int[]{1});
-        log(isPalindrome1(l4));  // expects true
+        log(isPalindrome3(l4));  // expects true
 
         ListNode l5 = createLinkedListFromArray(new int[]{});
-        log(isPalindrome1(l5));  // expects true
+        log(isPalindrome3(l5));  // expects true
     }
 }
