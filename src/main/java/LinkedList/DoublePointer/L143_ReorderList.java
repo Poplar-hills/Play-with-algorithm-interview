@@ -40,7 +40,7 @@ public class L143_ReorderList {
     }
 
     /*
-    * 解法2：生成反向链表
+    * 解法2：生成反向链表后 merge
     * - 思路：如果我们需要的是一个能从后往前移动的指针，那么最直接的方式就是先生成一个反向链表。步骤如下：
     *   1. 生成反向链表 —— 不需包含全部节点，只需要原链表的后一半节点即可，因此需要找到链表的中点，将中点到尾节点这部分链表反向。
     *   2. 至此问题转变成了 merge 两个链表，即将反向后的半截链表中的每个节点插入原链表中：
@@ -52,14 +52,14 @@ public class L143_ReorderList {
     public static void reorderList2(ListNode head) {
         ListNode midNode = mid(head);
         ListNode head2 = reverse(midNode);
-        ListNode prev = head, prev2 = head2;
+        ListNode prev = head;
 
-        while (prev2.next != null) {  // merge 的循环结束条件是到达反向链表的最后一个节点（最后一个节点不 merge 到原链表中）
+        while (head2.next != null) {  // merge 的循环结束条件是到达反向链表的最后一个节点（最后一个节点不 merge 到原链表中）
             ListNode temp = prev.next;
-            prev.next = prev2;
-            prev2 = prev2.next;
-            prev.next.next = temp;
-            prev = temp;
+            prev.next = head2;
+            head2 = head2.next;
+            prev.next.next = temp;    // 至此完成节点的插入
+            prev = temp;              // 将指针移到下一个节点的插入位置之前
         }
     }
 
