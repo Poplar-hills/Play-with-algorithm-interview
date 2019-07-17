@@ -87,8 +87,8 @@ public class L234_PalindromeLinkedList {
 
     /*
      * 解法3：截断链表后比较
-     * - 思路：从链表中点截断链表，之后再逐个比较前一半，以及反向过的后一半。要截断首先需要找到中点 —— 可以采用 slow/fast 技巧（同
-     *   L143 解法2 中的 mid 方法）。
+     * - 思路：从链表中点截断链表，之后再逐个比较前一半，以及反向过的后一半。要截断首先需要找到中点，而找一个链表的中点可
+     *   采用 slow/fast 技巧（同 L143 解法2 中的 mid 方法）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)（该解法原地变换、比较链表，无需开辟辅助空间）。
      * */
     public static boolean isPalindrome3(ListNode head) {
