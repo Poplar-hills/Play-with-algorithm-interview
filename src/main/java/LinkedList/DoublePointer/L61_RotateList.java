@@ -30,18 +30,18 @@ public class L61_RotateList {
     * */
     public static ListNode rotateRight(ListNode head, int k) {
         if (head == null) return null;
-        k %= getLength(head);                // 求余以获取去掉绕圈后的剩余距离（常用技巧）
+        k %= getLength(head);          // 求余以获取去掉绕圈后的剩余距离（常用技巧）
 
         ListNode left = head, right = head;
-        for (int i = 0; i < k; i++)          // 让 right, left 相距 k 步
+        for (int i = 0; i < k; i++)    // 让 right, left 相距 k 步
             right = right.next;
 
-        while (right.next != null) {         // 同时移动双指针，直到 right 抵达尾节点（right.next == null）
+        while (right.next != null) {   // 同时移动双指针，直到 right 抵达尾节点（而非像 L19 中抵达 null）
             right = right.next;
             left = left.next;
         }
 
-        right.next = head;                   // 此时 left 一定停在截断点的上一节点，可以进行截断
+        right.next = head;             // 此时 left 一定停在截断点的上一节点，可以进行截断
         head = left.next;
         left.next = null;
         return head;

@@ -50,7 +50,7 @@ public class L19_RemoveNthNodeFromEndOfList {
     public static ListNode removeNthFromEnd2(ListNode head, int n) {
         if (head == null || n < 0) return head;
 
-        ListNode dummnyHead = new ListNode();
+        ListNode dummnyHead = new ListNode();            // ∵ 待删除的可能是第一个节点 ∴ 需要 dummyHead
         ListNode left = dummnyHead, right = dummnyHead;  // 要删除节点就一定需要虚拟头结点
         dummnyHead.next = head;
 
@@ -76,7 +76,7 @@ public class L19_RemoveNthNodeFromEndOfList {
         printLinkedList(removeNthFromEnd2(l2, 3));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{1});
-        printLinkedList(removeNthFromEnd2(l3, 2));  // expects 1->NULL
+        printLinkedList(removeNthFromEnd2(l3, 2));  // expects 1->NULL (n 越界的 case)
 
         ListNode l4 = createLinkedListFromArray(new int[]{});
         printLinkedList(removeNthFromEnd2(l4, 2));  // expects NULL
