@@ -17,7 +17,7 @@ import static Utils.Helpers.*;
 
 public class L143_ReorderList {
     /*
-    * 解法2：借助 stack 实现反向遍历
+    * 解法1：借助 stack 实现反向遍历
     * - 思路：若要按要求 reorder 链表，则需从后往前逐个移动链表尾部的节点，因此需要一个能从后往前移动的指针，这可以通过 stack 实现。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
@@ -29,7 +29,7 @@ public class L143_ReorderList {
             stack.push(curr);
 
         ListNode curr = head;
-        int len = stack.size();              // stack 的 size 就是链表长度，不需解法1中的手动计算
+        int len = stack.size();  // stack.size 就是链表长度，不需手动计算（注意该变量不能 inline，∵ 循环中会不断改变 stack.size）
         for (int i = 0; i < len / 2; i++) {  // 一共有 stack.size / 2 个节点待插入，因此就遍历这么多遍即可
             ListNode third = curr.next;
             curr.next = stack.pop();

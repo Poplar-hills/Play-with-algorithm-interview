@@ -10,7 +10,7 @@ import static Utils.Helpers.*;
 /*
 * Palindrome Linked List
 *
-* - Given a singly linked list, determine if it is a palindrome.
+* - Given a singly linked list, determine if it is a palindrome (回文).
 * */
 
 public class L234_PalindromeLinkedList {
@@ -46,8 +46,9 @@ public class L234_PalindromeLinkedList {
         for (ListNode curr = head; curr != null; curr = curr.next)
             stack.push(curr);
 
+        int len = stack.size();              // 注意该变量不能 inline，∵ 循环中会不断改变 stack.size
         ListNode left = head;
-        while (!stack.isEmpty() && left != stack.peek()) {  // 注意在调用 stack.peek() 之前要检查 !stack.isEmpty()，否则会报错
+        for (int i = 0; i < len / 2; i++) {  // 注意在调用 stack.peek() 之前要检查 !stack.isEmpty()，否则会报错
             ListNode right = stack.pop();
             if (left.val != right.val) return false;
             left = left.next;
@@ -133,21 +134,21 @@ public class L234_PalindromeLinkedList {
 
     public static void main(String[] args) {
         ListNode l0 = createLinkedListFromArray(new int[]{1, 2});
-        log(isPalindrome3(l0));  // expects false
+        log(isPalindrome1(l0));  // expects false
 
         ListNode l1 = createLinkedListFromArray(new int[]{1, 1, 2, 1});
-        log(isPalindrome3(l1));  // expects false
+        log(isPalindrome1(l1));  // expects false
 
         ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 2, 1});
-        log(isPalindrome3(l2));  // expects true
+        log(isPalindrome1(l2));  // expects true
 
         ListNode l3 = createLinkedListFromArray(new int[]{1, 0, 1});
-        log(isPalindrome3(l3));  // expects true
+        log(isPalindrome1(l3));  // expects true
 
         ListNode l4 = createLinkedListFromArray(new int[]{1});
-        log(isPalindrome3(l4));  // expects true
+        log(isPalindrome1(l4));  // expects true
 
         ListNode l5 = createLinkedListFromArray(new int[]{});
-        log(isPalindrome3(l5));  // expects true
+        log(isPalindrome1(l5));  // expects true
     }
 }
