@@ -105,8 +105,8 @@ public class L21_MergeTwoSortedLists {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 4});
-        ListNode l2 = createLinkedListFromArray(new int[]{1, 3, 4});
-        printLinkedList(mergeTwoLists4(l1, l2));  // expects 1->1->2->3->4->4->NULL
+        ListNode l2 = createLinkedListFromArray(new int[]{3, 4, 5});
+        printLinkedList(mergeTwoLists4(l1, l2));  // expects 1->2->3->4->4->5->NULL
 
         ListNode l3 = createLinkedListFromArray(new int[]{5});
         ListNode l4 = createLinkedListFromArray(new int[]{1, 2, 4});
