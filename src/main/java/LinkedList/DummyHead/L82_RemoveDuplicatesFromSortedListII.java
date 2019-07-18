@@ -112,14 +112,14 @@ public class L82_RemoveDuplicatesFromSortedListII {
         int duplicateVal;  // 记录发现的重复节点的节点值
 
         while (curr != null) {
-            if (curr.next == null || curr.val != curr.next.val) {
+            if (curr.next == null || curr.val != curr.next.val) {  // 当前后节点不重复时
                 conn = curr;
                 curr = curr.next;
-            } else {
+            } else {                                               // 当前后节点重复时
                 duplicateVal = curr.val;
                 while (curr.next != null && curr.next.val == duplicateVal)  // 内部 while 循环
                     curr = curr.next;
-                conn.next = curr = curr.next;
+                conn.next = curr = curr.next;                      // 将 curr.next 链接到 conn 上
             }
         }
 
@@ -141,20 +141,6 @@ public class L82_RemoveDuplicatesFromSortedListII {
             head.next = deleteDuplicates4(head.next);
             return head;
         }
-    }
-
-    public static ListNode deleteDuplicates5(ListNode head) {
-        if (head == null) return null;
-        ListNode newHead = new ListNode(), newCurr = newHead;
-
-        ListNode curr = head;
-        while (curr.next != null) {
-            while (curr.val == curr.next.val)
-                curr = curr.next;
-            newCurr.next = curr;
-        }
-        newCurr.next = null;
-        return newHead.next;
     }
 
     public static void main(String[] args) {
