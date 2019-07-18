@@ -11,7 +11,7 @@ import static Utils.Helpers.*;
 * - Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
 * */
 
-public class L20_Valid_Parentheses {
+public class L20_ValidParentheses {
     /*
     * 解法1：Stack
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
