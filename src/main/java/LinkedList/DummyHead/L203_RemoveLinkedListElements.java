@@ -59,7 +59,7 @@ public class L203_RemoveLinkedListElements {
 
         while (curr.next != null) {
             if (curr.next.val == val)  // ∵ 删除节点需要前一个节点的索引 ∴ curr 不能丢 ∴ 检查的是 curr.next 而不是 curr
-                curr.next = curr.next.next;
+                curr.next = curr.next.next;  // 跳过 curr.next 节点后 curr 不用右移，直接进行下一轮遍历即可
             else
                 curr = curr.next;
         }
@@ -90,9 +90,9 @@ public class L203_RemoveLinkedListElements {
 
     public static void main(String[] args) {
         ListNode l = createLinkedListFromArray(new int[]{1, 2, 6, 3, 4, 5, 6});
-        printLinkedList(removeElements4(l, 6));  // expects 1->2->3->4->5->NULL
+        printLinkedList(removeElements(l, 6));  // expects 1->2->3->4->5->NULL
 
         ListNode l2 = createLinkedListFromArray(new int[]{6, 6});
-        printLinkedList(removeElements4(l2, 6));  // expects NULL
+        printLinkedList(removeElements(l2, 6));  // expects NULL
     }
 }
