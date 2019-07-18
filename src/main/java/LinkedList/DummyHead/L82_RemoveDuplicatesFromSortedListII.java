@@ -87,13 +87,13 @@ public class L82_RemoveDuplicatesFromSortedListII {
         ListNode next = pair.getKey();
         boolean foundDuplicate = pair.getValue();
 
-        if (head.val == next.val)
+        if (head.val == next.val)            // 前后节点相同
             return new Pair<>(next, true);
-        if (foundDuplicate) {
+        if (foundDuplicate) {                // 前后节点不同，但标志位为 true
             head.next = next.next;
             return new Pair<>(head, false);
         }
-        head.next = next;
+        head.next = next;                    // 前后节点不同，标志位为 false
         return new Pair<>(head, false);
     }
 
