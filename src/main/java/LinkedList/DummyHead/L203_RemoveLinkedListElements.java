@@ -12,15 +12,16 @@ import static Utils.Helpers.*;
 
 public class L203_RemoveLinkedListElements {
     /*
-    * 解法1：创建新链表
+    * 解法1：创建新节点和新链表
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode removeElements(ListNode head, int val) {
         ListNode dummyHead = new ListNode();
+        ListNode curr2 = dummyHead;
 
-        for (ListNode curr = head, curr2 = dummyHead; curr != null; curr = curr.next) {
+        for (ListNode curr = head; curr != null; curr = curr.next) {
             if (curr.val == val) continue;
-            curr2.next = new ListNode(curr.val);
+            curr2.next = new ListNode(curr.val);  // 创建新节点
             curr2 = curr2.next;
         }
 
@@ -57,7 +58,7 @@ public class L203_RemoveLinkedListElements {
         ListNode curr = dummyHead;
 
         while (curr.next != null) {
-            if (curr.next.val == val)
+            if (curr.next.val == val)  // ∵ 删除节点需要前一个节点的索引 ∴ curr 不能丢 ∴ 检查的是 curr.next 而不是 curr
                 curr.next = curr.next.next;
             else
                 curr = curr.next;
@@ -72,8 +73,8 @@ public class L203_RemoveLinkedListElements {
     * */
     public static ListNode removeElements4(ListNode head, int val) {
         if (head == null) return null;
-        if (head.val == val) return removeElements4(head.next, val);  // 若当前节点 head 满足条件则直接跳过，处理下一个节点
-        head.next = removeElements4(head.next, val);  // 若不满足条件则不能跳过，链接上处理后的下一个节点后再链接到上一个节点上去
+        if (head.val == val) return removeElements4(head.next, val);  // 若当前节点是待删除节点则直接跳过，处理下一个节点
+        head.next = removeElements4(head.next, val);                  // 若非待删除节点则正常处理
         return head;
     }
 
