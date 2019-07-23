@@ -22,7 +22,7 @@ public class L20_ValidParentheses {
         for (char c : s.toCharArray()) {
             if (openBrackets.contains(c))
                 stack.push(c);
-            else if (stack.isEmpty() || !match(stack.pop(), c))
+            else if (stack.isEmpty() || !match(stack.pop(), c))  // 注意 empty 的情况也要考虑
                 return false;
         }
 
