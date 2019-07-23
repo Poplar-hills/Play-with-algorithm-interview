@@ -7,12 +7,12 @@ import static Utils.Helpers.*;
 /*
 * Valid Parentheses
 *
-* - Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+* - Given a string containing just the characters '(', ')', '{', '}', '[', ']', determine if the input string is valid.
 * */
 
 public class L20_ValidParentheses {
     /*
-    * 解法1：Stack
+    * 解法1：stack
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static boolean isValid(String s) {
