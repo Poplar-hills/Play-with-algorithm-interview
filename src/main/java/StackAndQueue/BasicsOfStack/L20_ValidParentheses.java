@@ -1,7 +1,6 @@
 package StackAndQueue.BasicsOfStack;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 
 import static Utils.Helpers.*;
 
@@ -18,17 +17,16 @@ public class L20_ValidParentheses {
     * */
     public static boolean isValid(String s) {
         Deque<Character> stack = new ArrayDeque<>();
+        Set<Character> openBrackets = new HashSet<>(Arrays.asList('(', '[', '{'));
+
         for (char c : s.toCharArray()) {
-            if (isOpenBracket(c))
+            if (openBrackets.contains(c))
                 stack.push(c);
             else if (stack.isEmpty() || !match(stack.pop(), c))
                 return false;
         }
-        return stack.isEmpty();
-    }
 
-    private static boolean isOpenBracket(char c) {
-        return c == '(' || c == '[' || c == '{';
+        return stack.isEmpty();
     }
 
     private static boolean match(char c1, char c2) {
