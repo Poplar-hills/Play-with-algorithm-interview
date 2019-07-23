@@ -50,14 +50,15 @@ class NestedIterator implements Iterator<Integer> {
 /*
  * 解法2：Lazy approach
  * - 实现：使用迭代而非递归。
- * - 注：Stack 是尾进尾出：               Queue 是尾进头出：
- *      [ | | | | ]  <-- push           poll <--  [ | | | | ]  <-- offer
- *                   --> pop
  *
- *      Deque 实现的 stack 是头进头出；Deque 实现的 queue 是尾进头出：
- *                    poll <--
- *                    push -->  [ | | | | ]  <-- offer
- *                    pop  <--
+ * - 总结：Queue 是尾进头出： poll <-- [1|2|3|4|5] <-- offer
+ *
+ *        Stack 是尾进尾出： [1|2|3|4|5] <-- push
+ *                                     --> pop
+ *
+ *        Deque 实现的 queue 是尾进头出（与 Queue 一致）；而 Deque 实现的 stack 是头进头出（与 Stack 的存储、遍历顺序相反）：
+ *                         poll <-- [1|2|3|4|5] <-- offer         push --> [5|4|3|2|1]
+ *                                                                 pop <--
  * */
 class NestedIterator2 implements Iterator<Integer> {
     private Deque<NestedInteger> dq = new ArrayDeque<>();  // Deque 接口的实现可以是 ArrayDeque 也可以是 LinkedList
