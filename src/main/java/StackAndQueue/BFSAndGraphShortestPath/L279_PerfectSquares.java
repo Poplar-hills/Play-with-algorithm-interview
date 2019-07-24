@@ -59,11 +59,10 @@ public class L279_PerfectSquares {
 
     /*
     * 解法2：DFS（借助 buckets 数组实现）
-    * - 思路：基于解法1中的图论建模思路，在具体实现时采用深度优先遍历（DFS）（SEE: Play-with-algorithms/Graph/Path.java)。
-    *   通过 DFS 能获得两点之间的所有路径，利用该特性我们可以为图中每一个顶点寻找其到达0的所有路径，再从中选取最短的路径，并记录该最
-    *   短路径的步数。该过程通常采用递归实现。
-    * - 本质：该解法实际上也是一种 DP（Dynamic Programming），只不过实现方式是 top-down 的（因为采用了递归），以及其中对于 overlap
-    *   sub-problem 的优化策略采用的是 Memoization，而非 bottom-up 的 DP 中的 Tabulation。SEE: https://zhuanlan.zhihu.com/p/68059061
+    * - 思路：基于解法1中的图论建模思路，在具体实现时采用 DFS（SEE: Play-with-algorithms/Graph/Path.java)。具体来说是通过 DFS
+    *   从0开始往起点方向递归计算每个顶点到达0的最少步数。
+    * - 本质：该解法实际上也是一种 DP，只是实现方式是 top-down 的（因为采用了递归），以及其中对于 overlap sub-problem 的优化策略
+    *   采用的是 Memoization，而非 bottom-up DP 中的 Tabulation。SEE: https://zhuanlan.zhihu.com/p/68059061
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares2(int n) {
@@ -73,11 +72,11 @@ public class L279_PerfectSquares {
     }
 
     private static int numSquares2(int n, int[] steps) {
-        if (n == 0) return 0;                 // 顶点0到达0的步数为0
+        if (n == 0) return 0;                 // 顶点0到达自己的步数为0
         if (steps[n] != -1) return steps[n];  // 计算过的顶点直接返回（以免重复计算）
 
-        int minStep = Integer.MAX_VALUE;      // 保存每个顶点的到0的已知最短路径的步数
-        for (int i = 1; n - i * i >= 0; i++)  // 尝试用当前顶点值 - 每一个完全平方数，得到不同的相邻顶点
+        int minStep = Integer.MAX_VALUE;      // 记录某一顶点到0的最短路径的步数
+        for (int i = 1; n - i * i >= 0; i++)  // 找到当前顶点的相邻顶点
             minStep = Math.min(minStep, numSquares2(n - i * i, steps) + 1);  // 不同的相邻顶点对应了不同的到达0的路径，其中最短路径的步数+1即是当前顶点 n 的 step
 
         return steps[n] = minStep;            // 赋值语句的返回值为所赋的值
@@ -104,12 +103,9 @@ public class L279_PerfectSquares {
     }
 
     public static void main(String[] args) {
-        log(numSquares(12));   // expects 3. (12 = 4 + 4 + 4)
-        log(numSquares2(12));  // expects 3. (12 = 4 + 4 + 4)
-        log(numSquares3(12));  // expects 3. (12 = 4 + 4 + 4)
-
-        log(numSquares(13));   // expects 2. (13 = 4 + 9)
-        log(numSquares2(13));  // expects 2. (13 = 4 + 9)
-        log(numSquares3(13));  // expects 2. (13 = 4 + 9)
+        log(numSquares(5));   // expects 2. (5 = 4 + 1)
+        log(numSquares(6));   // expects 3. (6 = 4 + 1 + 1)
+        log(numSquares(12));  // expects 3. (12 = 4 + 4 + 4)
+        log(numSquares(13));  // expects 2. (13 = 4 + 9)
     }
 }
