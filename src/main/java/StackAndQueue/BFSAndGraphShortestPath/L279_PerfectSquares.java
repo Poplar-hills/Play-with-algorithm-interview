@@ -86,8 +86,8 @@ public class L279_PerfectSquares {
     * 解法3：DP (bottom-up)
     * - 思路：
     *   - 类似 DP/Fibonacci 中解法3的自下而上的求解思路。
-    *   - 与解法2的不同之处在于，bottom-up DP 的过程需要保证在解决 big problem 之前先解决 sub-problems，对应到该解中就是在
-    *     计算较大的 n 之前需要先计算好较小的 n。较大的 n 的解是在较小的 n 的解的基础上得到的。
+    *   - 与解法2的思路相同，都是 DP（基于已解决的子问题去解决高层次的问题），但不同点在于该解法是 bottom-up 的，即直接从子问题开始
+    *     求解，而解法2是从高层次问题入手，递归到最底层问题后再开始逐层解决。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares3(int n) {
@@ -95,8 +95,8 @@ public class L279_PerfectSquares {
         Arrays.fill(steps, Integer.MAX_VALUE);
         steps[0] = 0;
 
-        for (int v = 1; v <= n; v++)  // 用双重循环从小到大为 [1, n] 中的数字计算到达0的最小步数（这段逻辑在解法2中是通过递归实现的）
-            for (int i = 1; v - i * i >= 0; i++)
+        for (int v = 1; v <= n; v++)  // 为 [1, n] 中的所有元素计算到达0的最小步数（计算是从1开始的，体现 bottom-up 的理念）
+            for (int i = 1; v - i * i >= 0; i++)  // 外层循环确定了顶点后，在内层循环中计算该顶点的最小步数
                 steps[v] = Math.min(steps[v], steps[v - i * i] + 1);
 
         return steps[n];              // 最后返回 n 的 step
