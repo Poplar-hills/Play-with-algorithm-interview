@@ -16,7 +16,8 @@ import static Utils.Helpers.*;
 public class L107_BinaryTreeLevelOrderTraversalII {
     /*
     * 基础1：自底向上的层序遍历。
-    * - 思路：使用一个 queue 进行广度优先遍历；再使用一个 stack 反向节点顺序。
+    * - 思路：本题其实就是 L102 的解的倒序，因此只要在 L102 的基础上进行倒序即可。
+    * - 实现：仍然使用一个 queue 进行广度优先遍历；另外再用一个 stack 对结果进行倒序。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<Integer> simpleLevelOrderBottom(TreeNode root) {
@@ -41,7 +42,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
     /*
      * 基础2：自底向上的层序遍历（list 实现）。
-     * - 思路：基础1中的两个需求：即能为元素排队实现广度优先遍历，又能倒序输出 —— 其实可以用 list 一种数据结构满足。
+     * - 思路：基础1中的两个需求：即能为元素排队实现广度优先遍历，又能倒序输出 —— 其实用 ArrayList 一种数据结构就可满足（因为
+     *   ArrayList 可以作为 Queue 和 Stack 的底层实现，因此自然具有它们两者的特性）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)（空间复杂度比基础1更低）。
      * */
     public static List<Integer> simpleLevelOrderBottom2(TreeNode root) {
