@@ -37,6 +37,30 @@ public class L102_BinaryTreeLevelOrderTraversal {
     }
 
     /*
+     * 基础2：基础1的递归版
+     * - 总结：
+     *   - 树的广度优先遍历（BFT）通常使用 queue 作为辅助数据结构（递归或非递归实现都一样）；
+     *   - 树的深度优先遍历（DFT），如前、中、后序遍历的非递归实现，通常使用 stack 作为辅助数据结构（递归实现则不需要辅助结构）。
+     * */
+    public static List<Integer> simpleLevelOrder2(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        Queue<TreeNode> q = new LinkedList<>();  // 同样采用 queue 作为辅助结构
+        q.offer(root);
+        simpleLevelOrder3(q, res);  // 不同于基础1的地方是该版本用递归代替了基础1中的 while 循环
+        return res;
+    }
+
+    private static void simpleLevelOrder3(Queue<TreeNode> q, List<Integer> res) {
+        if (q.isEmpty()) return;
+        TreeNode curr = q.poll();
+        res.add(curr.val);
+        if (curr.left != null) q.offer(curr.left);
+        if (curr.right != null) q.offer(curr.right);
+        simpleLevelOrder3(q, res);
+    }
+
+    /*
     * 解法1：迭代（BFT）
     * - 思路：在基础1的基础上实现，区别在于队列中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -64,34 +88,10 @@ public class L102_BinaryTreeLevelOrderTraversal {
     }
 
     /*
-    * 基础2：基础1的递归版
-    * - 总结：
-    *   - 树的广度优先遍历（BFT）通常使用 queue 作为辅助数据结构（递归或非递归实现都一样）；
-    *   - 树的深度优先遍历（DFT），如前、中、后序遍历的非递归实现，通常使用 stack 作为辅助数据结构（递归实现则不需要辅助结构）。
-    * */
-    public static List<Integer> simpleLevelOrder3(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        if (root == null) return res;
-        Queue<TreeNode> q = new LinkedList<>();  // 同样采用 queue 作为辅助结构
-        q.offer(root);
-        simpleLevelOrder3(q, res);  // 不同于基础1的地方是该版本用递归代替了基础1中的 while 循环
-        return res;
-    }
-
-    private static void simpleLevelOrder3(Queue<TreeNode> q, List<Integer> res) {
-        if (q.isEmpty()) return;
-        TreeNode curr = q.poll();
-        res.add(curr.val);
-        if (curr.left != null) q.offer(curr.left);
-        if (curr.right != null) q.offer(curr.right);
-        simpleLevelOrder3(q, res);
-    }
-
-    /*
      * 解法2：递归（DFT）
      * - 思路：
-     *   - 并没有采用 simpleLevelOrder2 的思路（没有使用 queue），而是在递归中传递 level 信息，并根据该信息判断当前节点值应该放在第几个 list 中。
-     *   - ∵ 采用了递归，∴ 本质上是 DFT，但是达到了 BFT 的效果。
+     *   - 在递归中传递 level 信息，并根据该信息判断当前节点值应该放在第几个 list 中。
+     *   - 本质上是深度优先遍历 DFT，但是因为将不同 level 的节点值放到了不同位置的 list 中，从而达到了 BFT 的效果。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */
     public static List<List<Integer>> levelOrder2(TreeNode root) {
@@ -114,7 +114,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7, 1, 2});
 
         log(simpleLevelOrder(t));   // expects [3, 9, 20, 8, 15, 7, 1, 2]
-        log(simpleLevelOrder3(t));  // expects [3, 9, 20, 8, 15, 7, 1, 2]
+        log(simpleLevelOrder2(t));  // expects [3, 9, 20, 8, 15, 7, 1, 2]
 
         log(levelOrder(t));   // expects [[3], [9,20], [8,15,7], [1,2]]
         log(levelOrder2(t));  // expects [[3], [9,20], [8,15,7], [1,2]]
