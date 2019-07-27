@@ -15,47 +15,49 @@ import static Utils.Helpers.*;
 
 public class L107_BinaryTreeLevelOrderTraversalII {
     /*
-    * 基础1：自底向上的层序遍历。使用一个队列、一个栈实现。
+    * 基础1：自底向上的层序遍历。
+    * - 思路：使用一个 queue 进行广度优先遍历；再使用一个 stack 反向节点顺序。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<Integer> simpleLevelOrderBottom(TreeNode root) {
         List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
         Queue<TreeNode> queue = new LinkedList<>();
         Stack<TreeNode> stack = new Stack<>();
-        if (root == null) return res;
 
         queue.offer(root);
         while (!queue.isEmpty()) {
             TreeNode node = queue.poll();
-            if (node.right != null) queue.offer(node.right);
+            if (node.right != null) queue.offer(node.right);  // 注意要先访问 right 再访问 left，最后倒序输出的结果顺序才正确
             if (node.left != null) queue.offer(node.left);
-            stack.push(node);
+            stack.push(node);     // 将访问完的节点入栈
         }
 
-        while (!stack.isEmpty())
+        while (!stack.isEmpty())  // 倒序输出
             res.add(stack.pop().val);
 
         return res;
     }
 
     /*
-     * 基础2：自底向上的层序遍历。使用一个列表实现（空间复杂度更低）。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * 基础2：自底向上的层序遍历（list 实现）。
+     * - 思路：基础1中的两个需求：即能为元素排队实现广度优先遍历，又能倒序输出 —— 其实可以用 list 一种数据结构满足。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)（空间复杂度比基础1更低）。
      * */
     public static List<Integer> simpleLevelOrderBottom2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        List<TreeNode> arr = new ArrayList<>();
         if (root == null) return res;
+        List<TreeNode> l = new ArrayList<>();
+        l.add(root);
 
-        arr.add(root);
-        for (int i = 0; i < arr.size(); i++) {  // 一遍遍历列表一遍该边列表长度是可以的
-            TreeNode node = arr.get(i);         // 因为需要随机访问能力，因此采用 ArrayList
-            if (node.right != null) arr.add(node.right);
-            if (node.left != null) arr.add(node.left);
+        for (int i = 0; i < l.size(); i++) {  // 一边遍历 lsit 一边往里添加元素（实际上基础1中的 queue 也是一样）
+            TreeNode node = l.get(i);         // 类似 queue 的出队操作
+            if (node.right != null) l.add(node.right);  // 同样要先访问 right 再访问 left，最后倒序输出的结果顺序才正确
+            if (node.left != null) l.add(node.left);
         }
 
-        for (int i = arr.size() - 1; i >= 0; i--)
-            res.add(arr.get(i).val);
+        for (int i = l.size() - 1; i >= 0; i--)  // 倒序输出
+            res.add(l.get(i).val);
 
         return res;
     }
@@ -161,20 +163,14 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7});
+        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7, 1, 2});
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
 
-        log(simpleLevelOrderBottom(t1));   // expects [8, 15, 7, 9, 20, 3]
-        log(simpleLevelOrderBottom2(t1));  // expects [8, 15, 7, 9, 20, 3]
+        log(simpleLevelOrderBottom(t1));   // expects [1, 2, 8, 15, 7, 9, 20, 3]
+        log(simpleLevelOrderBottom2(t1));  // expects [1, 2, 8, 15, 7, 9, 20, 3]
 
-        log(levelOrderBottom(t1));         // expects [[8,15,7], [9,20], [3]]
-        log(levelOrderBottom2(t1));        // expects [[8,15,7], [9,20], [3]]
-        log(levelOrderBottom3(t1));        // expects [[8,15,7], [9,20], [3]]
-        log(levelOrderBottom4(t1));        // expects [[8,15,7], [9,20], [3]]
-
+        log(levelOrderBottom(t1));        // expects [[1,2], [8,15,7], [9,20], [3]]
         log(levelOrderBottom(t2));        // expects [[15,7], [9,20], [3]]
         log(levelOrderBottom2(t2));       // expects [[15,7], [9,20], [3]] (注意不应该是 [[9,15,7], [20], [3]])
-        log(levelOrderBottom3(t2));       // expects [[15,7], [9,20], [3]]
-        log(levelOrderBottom4(t2));       // expects [[15,7], [9,20], [3]]
     }
 }
