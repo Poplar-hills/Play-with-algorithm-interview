@@ -65,32 +65,32 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-    * 解法1：在基础2的基础上实现，区别在于 arr 中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
+    * 解法1：在基础2的基础上实现，区别在于 list 中以 Pair 形式同时存储节点和节点的层级信息（也可以抽象成单独的类）。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> levelOrderBottom(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
-        List<Pair<TreeNode, Integer>> arr = new ArrayList<>();
+        List<Pair<TreeNode, Integer>> l = new ArrayList<>();
         if (root == null) return res;
 
-        arr.add(new Pair<>(root, 0));
-        for (int i = 0; i < arr.size(); i++) {
-            TreeNode node = arr.get(i).getKey();
-            int level = arr.get(i).getValue();
+        l.add(new Pair<>(root, 0));
+        for (int i = 0; i < l.size(); i++) {
+            TreeNode node = l.get(i).getKey();
+            int level = l.get(i).getValue();
 
             if (node.right != null)
-                arr.add(new Pair<>(node.right, level + 1));
+                l.add(new Pair<>(node.right, level + 1));
             if (node.left != null)
-                arr.add(new Pair<>(node.left, level + 1));
+                l.add(new Pair<>(node.left, level + 1));
             if (level == res.size())
                 res.add(new ArrayList<>());
         }
 
-        int maxLevel = arr.get(arr.size() - 1).getValue();
-        for (int i = arr.size() - 1; i >= 0; i--) {
-            TreeNode node = arr.get(i).getKey();
-            int level = arr.get(i).getValue();
-            res.get(maxLevel - level).add(node.val);
+        int levelCount = l.get(l.size() - 1).getValue();
+        for (int i = l.size() - 1; i >= 0; i--) {
+            TreeNode node = l.get(i).getKey();
+            int level = l.get(i).getValue();
+            res.get(levelCount - level).add(node.val);
         }
 
         return res;
