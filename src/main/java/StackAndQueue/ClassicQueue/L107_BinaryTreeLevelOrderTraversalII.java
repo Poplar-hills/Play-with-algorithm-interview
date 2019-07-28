@@ -16,7 +16,7 @@ import static Utils.Helpers.*;
 public class L107_BinaryTreeLevelOrderTraversalII {
     /*
     * 基础1：自底向上的层序遍历。
-    * - 思路：本题其实就是 L102 的解的倒序，因此只要在 L102 的基础上进行倒序即可。
+    * - 思路：本题其实就是 L102 的解的倒序，因此首先要能实现正序的二叉树层序遍历，然后再将结果倒序即可。
     * - 实现：仍然使用一个 queue 进行广度优先遍历；另外再用一个 stack 对结果进行倒序。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
@@ -31,7 +31,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
             TreeNode node = queue.poll();
             if (node.right != null) queue.offer(node.right);  // 注意要先访问 right 再访问 left，最后倒序输出的结果顺序才正确
             if (node.left != null) queue.offer(node.left);
-            stack.push(node);     // 将访问完的节点入栈
+            stack.push(node);     // 将访问完的节点入栈（对比 L102 基础1，不直接将 node.val 推入 res，而是放入 stack 中）
         }
 
         while (!stack.isEmpty())  // 倒序输出
