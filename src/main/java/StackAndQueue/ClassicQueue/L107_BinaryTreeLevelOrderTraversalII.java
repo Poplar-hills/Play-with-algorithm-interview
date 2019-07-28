@@ -99,7 +99,36 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-    * 解法2：递归 DFT
+     * 解法2：迭代2
+     * - 思路：比解法1更聪明简单 —— 让 queue 每次入队一个层级的所有节点，并在一个 while 迭代中全部处理完，并入队下一个层级的所
+     *   有节点（从而能在下个迭代中处理掉）。
+     * - 优势：不再需要根据当前层级来判断是否需要创建新的层级列表，因此也不需要在队列中保存节点的层级信息，队列的 size 就是该层级
+     *   需要处理的节点个数。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> levelOrderBottom3(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+
+        while (!q.isEmpty()) {
+            List<Integer> levelList = new ArrayList<>();
+            int size = q.size();              // 注意 size 不能 inline，否则 q.size() 每次取值会不同（因为循环体中会 offer）
+            for (int i = 0; i < size; i++) {  // size = 该层级的节点个数（∵ 上个迭代出队了所有上个层级的所有节点，并入队了这个层级的所有节点）
+                TreeNode node = q.poll();
+                levelList.add(node.val);
+                if (node.left != null) q.offer(node.left);
+                if (node.right != null) q.offer(node.right);
+            }
+            res.add(0, levelList);      // 最后将该层列表添加到 res 头部（注意是头部）
+        }
+
+        return res;
+    }
+
+    /*
+    * 解法3：递归 DFT
     * - 思路：类似 L102 的解法2，采用 DFT（深度优先遍历），但达到了 BFT 的效果。与 L102 的区别在于：
     *   1. 该解法通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
     *   2. 在向 res 中添加空列表时要插入到 res 的头部，否则对于如 test case 2 的右倾的二叉树会出错。
@@ -122,34 +151,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-    * 解法3：迭代（第2版）
-    * - 思路：与解法1相比，该解法更聪明更精简，不需要再队列中保持节点的层级信息，每次 while 循环都完成一个层级的节点遍历，因此不需要
-    *   根据当前层级来判断是否需要创建新的层级列表，并根据队列的 size 就可以判断该层级有多少个节点需要处理。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
-    public static List<List<Integer>> levelOrderBottom3(TreeNode root) {
-        List<List<Integer>> res = new ArrayList<>();
-        Queue<TreeNode> q = new LinkedList<>();
-        if (root == null) return res;
-
-        q.offer(root);
-        while (!q.isEmpty()) {
-            List<Integer> levelList = new ArrayList<>();
-            int size = q.size();              // 注意 size 不能 inline，否则 q.size() 每次取值会不同（因为循环体中会 offer）
-            for (int i = 0; i < size; i++) {  // size 的大小就是该层的节点个数，因此循环 size 次把所有节点值添加进该层的列表 levelList 中
-                TreeNode node = q.poll();
-                levelList.add(node.val);
-                if (node.left != null) q.offer(node.left);
-                if (node.right != null) q.offer(node.right);
-            }
-            res.add(0, levelList);      // 最后将该层列表添加到 res 头部（注意是头部）
-        }
-
-        return res;
-    }
-
-    /*
-     * 解法3：递归 + 最后 reverse
+     * 解法4：递归 + 最后 reverse
      * - 思路：与解法2大体相同，区别在于递归最后 res.get() 时的索引没有倒置，因此递归结束后需要再 reverse 一下，因此统计性能稍差于解法2。
      * - 时间复杂度 O(n*h)，其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表）；
      * - 空间复杂度 O(h)。
