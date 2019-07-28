@@ -3,17 +3,50 @@ package StackAndQueue.ClassicQueue;
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static Utils.Helpers.*;
 
 /*
 * Binary Tree Zigzag Level Order Traversal
 *
-* - Given a binary tree, return the zigzag level order traversal of its nodes' values. (ie, from left to right,
-*   then right to left for the next level and alternate between).
+* - Given a binary tree, return the zigzag level order traversal of its nodes' values.
+*   (ie, from left to right, then right to left for the next level and alternate between).
 * */
 
 public class L103_BinaryTreeZigzagLevelOrderTraversal {
+    /*
+    * 解法1：迭代（BFT）
+    * - 思路：类似 L102 的解法1，只是加入判断，在不同的层级以不同的顺序入队左/右子节点。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static List<List<Integer>> zigzagLevelOrder0(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(root, 0));
+
+        while (!q.isEmpty()) {
+            Pair<TreeNode, Integer> p = q.poll();
+            TreeNode node = p.getKey();
+            int level = p.getValue();
+
+            if (level == res.size())
+                res.add(new ArrayList<>());
+            res.get(level).add(node.val);
+
+            if (level % 2 == 0) {  // 先右后左
+                if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
+                if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
+            } else {               // 先左后右
+                if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
+                if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
+            }
+        }
+
+        return res;
+    }
+
     /*
     * 解法1：递归 + 最后 reverse
     * - 时间复杂度 O(n*h)，其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表，每个列表最多有 n/2 个元素）；
@@ -104,10 +137,10 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
      * */
     public static List<List<Integer>> zigzagLevelOrder4(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
-        Queue<TreeNode> q = new LinkedList<>();
         if (root == null) return res;
-
+        Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
+
         int levelCount = -1;
         while (!q.isEmpty()) {
             List<Integer> levelList = new ArrayList<>();
@@ -129,7 +162,7 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
 
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(zigzagLevelOrder(t));   // expects [[3], [20,9], [15,7]]
+        log(zigzagLevelOrder0(t));   // expects [[3], [20,9], [15,7]]
         log(zigzagLevelOrder2(t));  // expects [[3], [20,9], [15,7]]
         log(zigzagLevelOrder3(t));  // expects [[3], [20,9], [15,7]]
         log(zigzagLevelOrder4(t));  // expects [[3], [20,9], [15,7]]
