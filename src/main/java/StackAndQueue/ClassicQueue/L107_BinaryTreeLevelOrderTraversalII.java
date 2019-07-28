@@ -151,9 +151,9 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-     * 解法4：递归 + 最后 reverse
-     * - 思路：与解法2大体相同，区别在于递归最后 res.get() 时的索引没有倒置，因此递归结束后需要再 reverse 一下，因此统计性能稍差于解法2。
-     * - 时间复杂度 O(n*h)，其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表）；
+     * 解法4：递归 DFT + 最后 reverse
+     * - 思路：与解法3大体相同，区别在于递归结束后再统一 reverse，而非在每层递归中通过 res.get 找到应加入的列表，因此统计性能稍差于解法3。
+     * - 时间复杂度 O(n*h)：其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表）；
      * - 空间复杂度 O(h)。
      * */
     public static List<List<Integer>> levelOrderBottom4(TreeNode root) {
@@ -165,7 +165,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
     private static void levelOrderBottom4(TreeNode node, List<List<Integer>> res, int level) {
         if (node == null) return;
-        if (level == res.size()) res.add(new LinkedList<>());
+        if (level == res.size())
+            res.add(new LinkedList<>());
         levelOrderBottom4(node.left, res, level + 1);
         levelOrderBottom4(node.right, res, level + 1);
         res.get(level).add(node.val);  // 直接获取第 level 个列表，因此递归结束后得到的 res 是反着的
