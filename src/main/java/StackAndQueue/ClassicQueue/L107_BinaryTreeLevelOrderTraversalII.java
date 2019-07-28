@@ -65,7 +65,9 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-    * 解法1：在基础2的基础上实现，区别在于 list 中以 Pair 形式同时存储节点和节点的层级信息（也可以抽象成单独的类）。
+    * 解法1：在基础2的基础上实现
+    * - 思路：以 Pair 形式同时存储节点和节点的层级信息在 list 中（也可以抽象成单独的类），记录节点的层级的层级信息用于获取树的高度，
+    *   树的高度用于得知该某一节点应该放在 res 的哪个列表里。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static List<List<Integer>> levelOrderBottom(TreeNode root) {
@@ -86,18 +88,21 @@ public class L107_BinaryTreeLevelOrderTraversalII {
                 res.add(new ArrayList<>());
         }
 
-        int levelCount = l.get(l.size() - 1).getValue();
+        int levelCount = l.get(l.size() - 1).getValue();  // 通过节点的 level 信息获得二叉树高度（树的高度就是 res 中应有的列表个数）
         for (int i = l.size() - 1; i >= 0; i--) {
             TreeNode node = l.get(i).getKey();
             int level = l.get(i).getValue();
-            res.get(levelCount - level).add(node.val);
+            res.get(levelCount - level).add(node.val);  // levelCount - level 得到该节点值应放入 res 中的哪个列表里
         }
 
         return res;
     }
 
     /*
-    * 解法2：递归
+    * 解法2：递归 DFT
+    * - 思路：类似 L102 的解法2，采用 DFT（深度优先遍历），但达到了 BFT 的效果。与 L102 的区别在于：
+    *   1. 该解法通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
+    *   2. 在向 res 中添加空列表时要插入到 res 的头部，否则对于如 test case 2 的右倾的二叉树会出错。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
     * */
     public static List<List<Integer>> levelOrderBottom2(TreeNode root) {
@@ -110,10 +115,10 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     private static void levelOrderBottom2(TreeNode node, List<List<Integer>> res, int level) {
         if (node == null) return;
         if (level == res.size())
-            res.add(0, new ArrayList<>());       // 在 res 头部插入空列表（否则 test cast t2 会出错，试一下就知道了）
+            res.add(0, new ArrayList<>());       // 每次将空列表插入 res 头部
         levelOrderBottom2(node.left, res, level + 1);
         levelOrderBottom2(node.right, res, level + 1);
-        res.get(res.size() - 1 - level).add(node.val);  // 递归到底之后再开始将节点值推入 res 中的对应列表
+        res.get(res.size() - 1 - level).add(node.val);  // 递归到底之后再开始将节点值推入 res 中的对应列表（后续遍历）
     }
 
     /*
