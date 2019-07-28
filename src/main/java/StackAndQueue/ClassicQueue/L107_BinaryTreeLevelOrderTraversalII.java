@@ -180,6 +180,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         log(simpleLevelOrderBottom2(t1));  // expects [1, 2, 8, 15, 7, 9, 20, 3]
 
         log(levelOrderBottom(t1));        // expects [[1,2], [8,15,7], [9,20], [3]]
+        log(levelOrderBottom2(t1));       // expects [[1,2], [8,15,7], [9,20], [3]]
         log(levelOrderBottom(t2));        // expects [[15,7], [9,20], [3]]
         log(levelOrderBottom2(t2));       // expects [[15,7], [9,20], [3]] (注意不应该是 [[9,15,7], [20], [3]])
     }
