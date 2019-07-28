@@ -152,7 +152,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
     /*
      * 解法4：递归 DFT + 最后 reverse
-     * - 思路：与解法3大体相同，区别在于递归结束后再统一 reverse，而非在每层递归中通过 res.get 找到应加入的列表，因此统计性能稍差于解法3。
+     * - 思路：与解法3大体相同，仍然是 DFT，区别在于递归结束后再统一 reverse，而非在每层递归中通过 res.get 找到应加入的列表，因此统计性能稍差于解法3。
      * - 时间复杂度 O(n*h)：其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表）；
      * - 空间复杂度 O(h)。
      * */
