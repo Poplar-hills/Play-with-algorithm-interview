@@ -1,7 +1,6 @@
 package StackAndQueue.PriorityQueue;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 import static Utils.Helpers.*;
 
@@ -14,15 +13,15 @@ import static Utils.Helpers.*;
 public class L23_MergeKSortedLists {
     /*
      * 解法1：PriorityQueue 全排序
-     * - 思路：该题的本质是排序，因此容易想到将 lists 中的所有链表的所有节点进行排序，排序方案有：
+     * - 思路：该题的本质是排序，因此容易想到将 lists 中的所有链表的所有节点放到一起进行排序。可行的排序方式有：
      *   1. 借助 PriorityQueue 进行堆排序；
-     *   2. 借助 TreeSet 进行 BST 排序（但不适用该题，∵ BST 不允许重复节点，且该题也不像 L347 解法3那样在 value 相同的情况下可根据 key 排序）；
-     *   3. 直接排序
+     *   2. 借助 TreeSet 进行 BST 排序（但不适用该题 ∵ BST 不允许重复节点，且该题也不像 L347 解法3那样在 value 相同的情况下可根据 key 排序）；
+     *   3. 归并排序（SEE 解法2、解法3）。
      *   - 该解法使用 PriorityQueue 进行堆排序。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。其中 n 为所有节点数。
      * */
     public static ListNode mergeKLists(ListNode[] lists) {
-        PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));  // 创建最小堆
+        PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));  // 创建最小堆（PriorityQueue 默认创建最小堆）
         for (ListNode l : lists)  // 将 lists 中的所有链表的所有节点添加到 pq 中，O(nlogn) 操作
             for (ListNode curr = l; curr != null; curr = curr.next)
                 pq.offer(curr);
@@ -74,9 +73,10 @@ public class L23_MergeKSortedLists {
 
     /*
      * 解法3：merge sort (改进版)
-     * - 思路：解法2中，将多个链表 reduce 成一个的过程不是二分的（即不是将 lists 中的链表两两 merge，而是每个链表都和上一次 merge 的
-     *   结果进行 merge），因此效率较低，该解法中对此进行改进 -- Should pair up lists and merge them without handling any
+     * - 思路：解法2中，将多个链表 reduce 成一个的过程不是二分的（即不是将 lists 中的链表两两 merge，而是每个链表都和上一次 merge
+     *   的结果进行 merge），因此效率较低。该解法中对此进行改进 -- Should pair up lists and merge them without handling any
      *   list more than once。
+     * - 复习：该解法中的 while 循环是经典的两两处理数组中元素的方式，可以跟解法2中的 reduce 方式比较记忆。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。其中 n 为所有节点数。
      * */
     public static ListNode mergeKLists3(ListNode[] lists) {
@@ -85,7 +85,7 @@ public class L23_MergeKSortedLists {
 
         while (len > 1) {         // 当 len = 1 时说明已经 merge 了所有链表
             for (int i = 0; i < len / 2; i++)  // 遍历 lists 中的前一半的链表
-                lists[i] = merge2Lists(lists[i], lists[len - 1 - i]);  // 对第 i 个和倒数第 i 个链表进行 merge，并将结果放回 i 上
+                lists[i] = merge2Lists(lists[i], lists[len - 1 - i]);  // merge 第 i 个链表和倒数第 i 个链表，并将结果写回 i 上
             len = (len + 1) / 2;  // merge 完后将 len 砍半（注意 len 要+1，因为若 len 为奇数，则经过上面的 for 循环后，lists 中间
         }                         // 的链表没有和其他链表进行过 merge，因此需要放到下一轮中继续 merge）
         return lists[0];
