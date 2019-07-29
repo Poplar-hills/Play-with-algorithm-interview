@@ -1,6 +1,7 @@
 package StackAndQueue.PriorityQueue;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static Utils.Helpers.*;
 
@@ -21,7 +22,7 @@ public class L23_MergeKSortedLists {
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。其中 n 为所有节点数。
      * */
     public static ListNode mergeKLists(ListNode[] lists) {
-        PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a  ->  a.val));  // 创建最小堆
+        PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));  // 创建最小堆
         for (ListNode l : lists)  // 将 lists 中的所有链表的所有节点添加到 pq 中，O(nlogn) 操作
             for (ListNode curr = l; curr != null; curr = curr.next)
                 pq.offer(curr);
@@ -38,9 +39,12 @@ public class L23_MergeKSortedLists {
 
     /*
      * 解法2：merge sort
-     * - 思路：另一种 intuitive 的排序方案就是 merge sort。因为 lists 可能有2个以上的链表，因此可采用 reduce 的思路，即将多个链表
-     *   的归并 reduce 成两两链表的归并（或者说是 generalize merge sort to sort k arrays）。
-     * - todo: 时间复杂度怎么分析？？？时间复杂度 O(?)，空间复杂度 O(n)，（其中 n 为 lists 中所有链表的节点数之和）。
+     * - 思路：另一种 intuitive 的排序方案就是 merge sort。因为 lists 可能有2个以上的链表，因此可采用 reduce 的思路，即将多个
+     *   链表的归并 reduce 成两两链表的归并（或者说是 generalize merge sort to sort k arrays）。
+     * - 踩坑：在实现中若使用 Stream.reduce 会在 test case 3 中报错，因为 Java 中 reduce 的 accumulator 不能返回 null，因此
+     *   最好直接使用命令式的 for 循环。
+     * - 时间复杂度 O(k*n)，其中 k 为 lists 长度，n 为 lists 中所有链表的节点数之和（分析过程 SEE: https://coding.imooc.com/learn/questiondetail/133949.html）。
+     * - 空间复杂度 O(n)。
      * */
     public static ListNode mergeKLists2(ListNode[] lists) {
         if (lists.length == 0) return null;
@@ -50,7 +54,7 @@ public class L23_MergeKSortedLists {
         return merged;
     }
 
-    private static ListNode merge2Lists(ListNode l1, ListNode l2) {  // 即 L21_MergeTwoSortedLists 的解法3
+    private static ListNode merge2Lists(ListNode l1, ListNode l2) {  // 即 L21_MergeTwoSortedLists 的解法3，O(m+n)
         ListNode dummyHead = new ListNode(), curr = dummyHead;
 
         while (l1 != null && l2 != null) {
@@ -140,15 +144,20 @@ public class L23_MergeKSortedLists {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{1, 4, 5});
-        ListNode l2 = createLinkedListFromArray(new int[]{1, 3, 4});
-        ListNode l3 = createLinkedListFromArray(new int[]{2, 6});
-        ListNode res = mergeKLists4(new ListNode[]{l1, l2, l3});
-        printLinkedList(res);  // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
+//        ListNode l1 = createLinkedListFromArray(new int[]{1, 4, 5});
+//        ListNode l2 = createLinkedListFromArray(new int[]{1, 3, 4});
+//        ListNode l3 = createLinkedListFromArray(new int[]{2, 6});
+//        ListNode res = mergeKLists(new ListNode[]{l1, l2, l3});
+//        printLinkedList(res);  // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
+//
+//        ListNode l4 = createLinkedListFromArray(new int[]{-2, -1, -1, -1});
+//        ListNode l5 = createLinkedListFromArray(new int[]{});
+//        ListNode res2 = mergeKLists(new ListNode[]{l4, l5});
+//        printLinkedList(res2);  // expects -2 -> -1 -> -1 -> -1
 
-        ListNode l4 = createLinkedListFromArray(new int[]{-2, -1, -1, -1});
-        ListNode l5 = createLinkedListFromArray(new int[]{});
-        ListNode res2 = mergeKLists4(new ListNode[]{l4, l5});
-        printLinkedList(res2);  // expects -2 -> -1 -> -1 -> -1
+        ListNode l6 = createLinkedListFromArray(new int[]{});
+        ListNode l7 = createLinkedListFromArray(new int[]{});
+        ListNode res3 = mergeKLists(new ListNode[]{l6, l7});
+        printLinkedList(res3);  // expects null
     }
 }
