@@ -20,19 +20,20 @@ import static Utils.Helpers.*;
 public class L199_BinaryTreeRightSideView {
     /*
     * 解法1：迭代
+    * - 思路：该题实际上就是取每层的最后一个节点值，因此可以采用 L107 的解法2，只是每层只将最后一个节点值加入 res。
     * - 时间复杂度 O(n)，空间复杂度 O(h)（因为队列中只存 h 个元素），其中 h 为树高。
     * */
     public static List<Integer> rightSideView(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Queue<TreeNode> q = new LinkedList<>();
         if (root == null) return res;
-
+        Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
+
         while (!q.isEmpty()) {
             int size = q.size();
             for (int i = 0; i < size; i++) {
                 TreeNode node = q.poll();
-                if (i == size - 1) res.add(node.val);
+                if (i == size - 1) res.add(node.val);  // 将该层的最后一个节点放入 res 中
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
@@ -64,7 +65,7 @@ public class L199_BinaryTreeRightSideView {
 
     /*
      * 解法3：递归（简化版）
-     * - 思路：在解法2的基础上改进 —— 对于一个节点，若每次先遍历它的右子节点再遍历左子节点，则第一个访问到的节点值就是所需节点值。
+     * - 思路：在解法2的基础上化简 —— 对于一个节点，若每次先遍历它的右子节点再遍历左子节点，则第一个访问到的节点值就是所需节点值。
      *   因此对于每一层来说，只需向 res 中放入第一个访问到的节点值即可。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */

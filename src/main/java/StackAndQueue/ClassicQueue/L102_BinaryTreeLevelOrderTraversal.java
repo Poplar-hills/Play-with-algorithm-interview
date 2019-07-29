@@ -23,10 +23,10 @@ public class L102_BinaryTreeLevelOrderTraversal {
     * */
     public static List<Integer> simpleLevelOrder(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Queue<TreeNode> q = new LinkedList<>();
         if (root == null) return res;
-
+        Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
+
         while (!q.isEmpty()) {
             TreeNode curr = q.poll();
             res.add(curr.val);
@@ -67,10 +67,10 @@ public class L102_BinaryTreeLevelOrderTraversal {
     * */
     public static List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
-        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();  // 因为结果要求同一层的节点放在一个列表中，因此这里队列中除了保存节点之外还需要保存层级信息
         if (root == null) return res;
-
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();  // 因为结果要求同一层的节点放在一个列表中，因此这里队列中除了保存节点之外还需要保存层级信息
         q.offer(new Pair<>(root, 0));  // 层数从0开始
+
         while (!q.isEmpty()) {
             Pair<TreeNode, Integer> pair = q.poll();
             TreeNode node = pair.getKey();
