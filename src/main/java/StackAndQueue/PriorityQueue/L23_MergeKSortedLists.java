@@ -37,13 +37,13 @@ public class L23_MergeKSortedLists {
     }
 
     /*
-     * 解法2：merge sort
+     * 解法2：Merge one by one
      * - 思路：另一种 intuitive 的排序方案就是 merge sort。因为 lists 可能有2个以上的链表，因此可采用 reduce 的思路，即将多个
      *   链表的归并 reduce 成两两链表的归并（或者说是 generalize merge sort to sort k arrays）。
      * - 踩坑：在实现中若使用 Stream.reduce 会在 test case 3 中报错，因为 Java 中 reduce 的 accumulator 不能返回 null，因此
      *   最好直接使用命令式的 for 循环。
-     * - 时间复杂度 O(k*n)，其中 k 为 lists 长度，n 为 lists 中所有链表的节点数之和（分析过程 SEE: https://coding.imooc.com/learn/questiondetail/133949.html）。
-     * - 空间复杂度 O(n)。
+     * - 时间复杂度 O(k*n)，空间复杂度 O(1)。其中 k = len(lists)，n 为所有节点数。
+     *   （分析过程 SEE: https://coding.imooc.com/learn/questiondetail/133949.html）
      * */
     public static ListNode mergeKLists2(ListNode[] lists) {
         if (lists.length == 0) return null;
@@ -72,12 +72,13 @@ public class L23_MergeKSortedLists {
     }
 
     /*
-     * 解法3：merge sort (改进版)
+     * 解法3：Merge with divide and conquer
      * - 思路：解法2中，将多个链表 reduce 成一个的过程不是二分的（即不是将 lists 中的链表两两 merge，而是每个链表都和上一次 merge
      *   的结果进行 merge），因此效率较低。该解法中对此进行改进 -- Should pair up lists and merge them without handling any
      *   list more than once。
      * - 复习：该解法中的 while 循环是经典的两两处理数组中元素的方式，可以跟解法2中的 reduce 方式比较记忆。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。其中 n 为所有节点数。
+     * - 时间复杂度 O(nlogk)，空间复杂度 O(1)。其中 k = len(lists)，n 为所有节点数。
+     *   O(nlogk) 的原因与归并排序的复杂度的原因一致，SEE: play-with-algorithms/MergeSort.java - 归并排序的思想。
      * */
     public static ListNode mergeKLists3(ListNode[] lists) {
         int len = lists.length;
@@ -93,18 +94,21 @@ public class L23_MergeKSortedLists {
 
     /*
      * 解法4：解法3的递归版
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * - 目的：和解法3的目的一样，也是 merge them without handling any list more than once，但实现思路不一样。
+     * - 思路：要让 lists 中的每个链表只被处理一次，可以采用类似归并排序的思路 —— 先对数据不断进行二分，最后两两 merge（而不是排序）。
+     * - 时间复杂度 O(nlogk)，空间复杂度 O(nlogk)。
+     *   空间复杂度是 O(nlogk) 的原因是两个方法都采用了递归，若 merge 用迭代则整体空间复杂度为 O(logk)。
      * */
     public static ListNode mergeKLists4(ListNode[] lists) {
         if (lists == null || lists.length == 0) return null;
         return partition(lists, 0, lists.length - 1);
     }
 
-    private static ListNode partition(ListNode[] lists, int i, int j) {  // 对 lists 中的链表进行二分，然后两两一组进行 merge
-        if (i == j) return lists[i];
-        int mid = (j - i) / 2 + i;
-        ListNode l1 = partition(lists, i, mid);
-        ListNode l2 = partition(lists, mid + 1, j);
+    private static ListNode partition(ListNode[] lists, int l, int r) {  // 对 lists 中的链表进行二分，然后两两一组进行 merge
+        if (l == r) return lists[l];
+        int mid = (r - l) / 2 + l;
+        ListNode l1 = partition(lists, l, mid);
+        ListNode l2 = partition(lists, mid + 1, r);
         return merge(l1, l2);  // 二分到底后开始两两 merge
     }
 
@@ -144,16 +148,16 @@ public class L23_MergeKSortedLists {
     }
 
     public static void main(String[] args) {
-//        ListNode l1 = createLinkedListFromArray(new int[]{1, 4, 5});
-//        ListNode l2 = createLinkedListFromArray(new int[]{1, 3, 4});
-//        ListNode l3 = createLinkedListFromArray(new int[]{2, 6});
-//        ListNode res = mergeKLists(new ListNode[]{l1, l2, l3});
-//        printLinkedList(res);  // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
-//
-//        ListNode l4 = createLinkedListFromArray(new int[]{-2, -1, -1, -1});
-//        ListNode l5 = createLinkedListFromArray(new int[]{});
-//        ListNode res2 = mergeKLists(new ListNode[]{l4, l5});
-//        printLinkedList(res2);  // expects -2 -> -1 -> -1 -> -1
+        ListNode l1 = createLinkedListFromArray(new int[]{1, 4, 5});
+        ListNode l2 = createLinkedListFromArray(new int[]{1, 3, 4});
+        ListNode l3 = createLinkedListFromArray(new int[]{2, 6});
+        ListNode res = mergeKLists(new ListNode[]{l1, l2, l3});
+        printLinkedList(res);  // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
+
+        ListNode l4 = createLinkedListFromArray(new int[]{-2, -1, -1, -1});
+        ListNode l5 = createLinkedListFromArray(new int[]{});
+        ListNode res2 = mergeKLists(new ListNode[]{l4, l5});
+        printLinkedList(res2);  // expects -2 -> -1 -> -1 -> -1
 
         ListNode l6 = createLinkedListFromArray(new int[]{});
         ListNode l7 = createLinkedListFromArray(new int[]{});
