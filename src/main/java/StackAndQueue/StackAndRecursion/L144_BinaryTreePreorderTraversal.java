@@ -15,8 +15,8 @@ import static Utils.Helpers.*;
 
 public class L144_BinaryTreePreorderTraversal {
     /*
-    * 解法1：递归
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * 解法1：intuitive 递归
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     public static List<Integer> preorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -34,14 +34,14 @@ public class L144_BinaryTreePreorderTraversal {
     /*
     * 解法2：迭代
     * - 思路：访问并入栈每个元素，出栈时入栈其左右子节点。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     public static List<Integer> preorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
         if (root == null) return res;
-
+        Deque<TreeNode> stack = new ArrayDeque<>();
         stack.push(root);
+
         while (!stack.isEmpty()) {
             TreeNode curr = stack.pop();
             res.add(curr.val);
@@ -53,30 +53,31 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     /*
-     * 解法3：迭代
-     * - 思路：先向左递归到底，入栈并访问每一个左子节点，到底后出栈并遍历每一个节点的右子节点。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+     * 解法3：迭代2
+     * - 思路：先向左递归到底，一路上访问每一个节点并入栈每一个左子节点，到底后出栈节点并开始从其右子节点重复前面这样的过程。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> preorderTraversal3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
         if (root == null) return res;
-
+        Deque<TreeNode> stack = new ArrayDeque<>();
         TreeNode curr = root;
+
         while (curr != null || !stack.isEmpty()) {
             while (curr != null) {
-                res.add(curr.val);  // 与 L94 的解法2不同，前序遍历在这里访问节点
+                res.add(curr.val);  // 与 L94 的解法2不同，前序遍历在这里先访问节点
                 stack.push(curr);
                 curr = curr.left;
             }
             curr = stack.pop().right;
         }
+
         return res;
     }
 
     /*
      * 解法4：迭代（解法3的变种）
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> preorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -108,7 +109,7 @@ public class L144_BinaryTreePreorderTraversal {
     *   根据这种模拟能写出解法2，但解法2的实现是只在栈中存储节点。若我们在栈中存节点的同时还存入对该节点的操作指令（遍历或访问），
     *   即将节点和操作 pair 起来存储，从而可以得到另一种解法。
     * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L145 的解法4）。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     static class Command {  // 将节点和指令的 pair 抽象成一个 Command
         String type;        // type 的取值只能为 "iterate" or "visit"（遍历或访问）（更好的方式是用枚举）

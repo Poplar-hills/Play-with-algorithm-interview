@@ -15,8 +15,8 @@ import static Utils.Helpers.*;
 
 public class L94_BinaryTreeInorderTraversal {
     /*
-    * 解法1：递归
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * 解法1：intuitive 递归
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     public static List<Integer> inorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -34,7 +34,7 @@ public class L94_BinaryTreeInorderTraversal {
     /*
     * 解法2：迭代
     * - 思路：（与 L144 的解法3思路相同）先向左递归到底，入栈每一个左子节点，到底后出栈并访问每一个节点的右子节点。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -56,7 +56,7 @@ public class L94_BinaryTreeInorderTraversal {
     /*
      * 解法3：迭代（解法2的变种）
      * - 思路：（与 L144 的解法3思路相同）先向左递归到底，入栈每一个左子节点，到底后出栈并访问每一个节点的右子节点。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> inorderTraversal3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -81,7 +81,7 @@ public class L94_BinaryTreeInorderTraversal {
     * 解法4：迭代
     * - 思路：模拟系统栈的指令
     * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法5、L145 的解法4）。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     static class Command {
         String type;

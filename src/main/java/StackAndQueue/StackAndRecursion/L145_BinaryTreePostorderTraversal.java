@@ -12,8 +12,8 @@ import static Utils.Helpers.*;
 
 public class L145_BinaryTreePostorderTraversal {
     /*
-    * 解法1：递归
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * 解法1：intuitive 递归
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     public static List<Integer> postorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -30,7 +30,7 @@ public class L145_BinaryTreePostorderTraversal {
 
     /*
      * 解法2：迭代
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> postorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -60,7 +60,7 @@ public class L145_BinaryTreePostorderTraversal {
     /*
     * 解法3：迭代
     * - 思路：先从右侧开始入栈右子节点，再转而遍历左子节点，使用两个 stack。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * - 注：Java 中 Stack 接口的实现有很多：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated）。
     * */
     public static List<Integer> postorderTraversal3(TreeNode root) {
@@ -89,7 +89,7 @@ public class L145_BinaryTreePostorderTraversal {
     * 解法4：迭代
     * - 思路：模拟系统栈的指令
     * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L144 的解法5）。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     static class Command {
         String type;
@@ -126,7 +126,7 @@ public class L145_BinaryTreePostorderTraversal {
     /*
     * 解法5：迭代
     * - 思路：使用一个标志位表示一个节点（及其子节点）是否已经被遍历过，若没有则遍历它，若已遍历过则再去访问它的值（从而实现后续遍历）。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是二叉树的高度。
+    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     static class TaggedNode {
         boolean hasIterated;
