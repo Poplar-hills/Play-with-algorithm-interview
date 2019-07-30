@@ -14,7 +14,7 @@ import static Utils.Helpers.*;
 
 public class L347_TopKFrequentElements {
     /*
-    * 解法1：map + sort（merge sort）
+    * 解法1：Map + merge sort（全排序）
     * - 思路：要求 most frequent elements，自然想到先用 map 统计所有元素的出现频率。之后问题就是如何从 map 中选出频率
     *   最高的 k 个 key 了，最直接的实现就是排序 —— 对 map 中的 key 根据 value 进行排序，最后拿到前 k 个最大的。
     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
@@ -34,7 +34,7 @@ public class L347_TopKFrequentElements {
     }
 
     /*
-    * 解法2：map + sort (heap sort)
+    * 解法2：Map + heap sort (全排序)
     * - 思路：与解法1相同，但排序方式是堆排序；堆排序的实现可以选择 PriorityQueue，因为底层实现是堆（默认是最小堆，但这里需要最大堆）。
     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
     * */
@@ -56,12 +56,14 @@ public class L347_TopKFrequentElements {
     }
 
     /*
-    * 解法3：map + sort (TreeSet sort)
+    * 解法3：Map + TreeSet sort (全排序)
     * - 思路：与解法1、2相同，但排序方式是利用 TreeSet 插入后会对元素排序的机制完成的。
-    * - 说明：若 TreeSet 接收的 Comparator 参数：
-    *   1. 返回0，则认为两个元素是相同的，这时就不再向 TreeSet 中插入除第一个外的新元素；
-    *   2. 返回1，则认为新插入的元素比上一个元素大，于是插入二叉树时，会存在根的右侧，读取时就是正序排列的；
-    *   3. 返回-1，则认为新插入的元素比上一个元素小，于是插入二叉树时，会存在根的左侧，读取时就是倒序序排列的。
+    * - 说明：Comparator 用法 -- 在构造 TreeSet 或 PriorityQueue 时都可以指定 Comparator：
+    *   1. 若返回正数，表示需要交换 a 和 b，让 b 在前 a 在后 ∴ 是降序排列；
+    *   2. 若返回负数，表示无需交换 a 和 b，让 a 在前 b 在后 ∴ 是升序排列；
+    *   对于 [1, 2, 3] 来说：                           对于 [3, 2, 1] 来说：
+    *   1. 若 (a, b) -> a - b：则结果为 [1, 2, 3]；      1. 若 (a, b) -> a - b：则结果仍为 [1, 2, 3]；
+    *   2. 若 (a, b) -> b - a：则结果为 [3, 2, 1]；      2. 若 (a, b) -> b - a：则结果仍为 [3, 2, 1]；
     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
     * */
     public static List<Integer> topKFrequent3(int[] nums, int k) {
@@ -72,10 +74,10 @@ public class L347_TopKFrequentElements {
         for (int n : nums)
             freq.put(n, freq.getOrDefault(n, 0) + 1);
 
-        TreeSet<Integer> set = new TreeSet<>((a, b) -> freq.get(a) != freq.get(b)
-                ? freq.get(b) - freq.get(a)  // 若 a，b 的频率不等，则先向 TreeSet 中插入频率大的 key
-                : a - b);                    // 若 a，b 的频率相等，此时先插入谁都行，但关键是两者都得插入，因此比较 key 本身，使得 Comparator 结果不为零（除了 a = b 的情况）
-        set.addAll(freq.keySet());           // 向 TreeSet 中插入所有元素，O(nlogn) 操作
+        TreeSet<Integer> set = new TreeSet<>((a, b) -> freq.get(a) != freq.get(b)  // 看 a，b 的频率是否相等
+                ? freq.get(b) - freq.get(a)  // 若不等，则降序排列（频率大的在左子树上，这样遍历时会降序输出）
+                : 1);                        // 若相等，则"欺骗"（∵ TreeSet 不允许重复元素，若比较器返回0，则会丢掉一个元素 ∴ 写死1让比较器结果不为0）
+        set.addAll(freq.keySet());           // 向 TreeSet 中插入所有元素，O(nlogn)
 
         for (int key : set) {  // 遍历 TreeSet 时元素是顺序输出的（元素在 TreeSet 内部也是顺序存储的）（只能用 for (:) 遍历）
             if (res.size() >= k) break;
