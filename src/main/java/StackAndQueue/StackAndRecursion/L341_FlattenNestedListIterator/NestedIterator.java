@@ -10,12 +10,11 @@ import java.util.*;
 *
 * - Your NestedIterator object will be instantiated and called as such:
 *     NestedIterator i = new NestedIterator(nestedList);
-*     while (i.hasNext()) v[f()] = i.next();
+*     while (i.hasNext())
+*         doSomethingWith(i.next());
 *
-* - Example 1: Input: [[0,1],2,[3,4]], Output: [0,1,2,3,4]. By calling next repeatedly until hasNext returns false,
-*   the order of elements returned by next should be: [0,1,2,3,4].
-*
-* - Example 2: Input: [1,[4,[6]]], Output: [1,4,6].
+* - Example 1: Input: [[0,1],2,[3,4]], Output: [0,1,2,3,4].
+*   Example 2: Input: [1,[4,[6]]],     Output: [1,4,6].
 * */
 
 
