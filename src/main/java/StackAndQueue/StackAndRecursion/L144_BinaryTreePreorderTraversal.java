@@ -68,7 +68,8 @@ public class L144_BinaryTreePreorderTraversal {
                 stack.push(curr);
                 curr = curr.left;
             }
-            curr = stack.pop().right;
+            curr = stack.pop();
+            curr = curr.right;
         }
 
         return res;

@@ -33,7 +33,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     /*
     * 解法2：迭代
-    * - 思路：（与 L144 的解法3思路相同）先向左递归到底，入栈每一个左子节点，到底后出栈并访问每一个节点的右子节点。
+    * - 思路：与 L144 的解法3思路类似，唯一的区别在于向左递归到底的路上先不访问节点，等到底之后开始出栈并访问节点。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
@@ -42,13 +42,13 @@ public class L94_BinaryTreeInorderTraversal {
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {
-            while (curr != null) {  // 对一个节点先一直往左递归到底
+            while (curr != null) {
                 stack.push(curr);
                 curr = curr.left;
             }
             curr = stack.pop();
-            res.add(curr.val);     // 到底后访问出栈的节点（与 L144 的解法3不同，中序遍历在这里访问节点）
-            curr = curr.right;      // 对其右子节点重新来过
+            res.add(curr.val);     // 到底后再访问出栈的节点
+            curr = curr.right;     // 对右子节点重复前面的过程
         }
         return res;
     }
@@ -117,12 +117,12 @@ public class L94_BinaryTreeInorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(inorderTraversal4(t1));  // expects [1, 3, 2]
+        log(inorderTraversal0(t1));  // expects [1, 3, 2]
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(inorderTraversal4(t2));  // expects []
+        log(inorderTraversal0(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(inorderTraversal4(t3));  // expects [1, 3, 4, 5, 6, 7]
+        log(inorderTraversal0(t3));  // expects [1, 3, 4, 5, 6, 7]
     }
 }
