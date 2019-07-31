@@ -29,27 +29,91 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     /*
-     * 解法2：迭代
+     * 解法2：迭代（经典）
+     * - 思路：∵ 后序遍历需要先访问两个子节点后再访问父节点，而访问右子节点又必须经过父节点才能拿到，因此：
+     *   1. 经过父节点时，需要知道其右子节点是否被访问过；
+     *   2. 若右子节点未被访问过，则经过父节点拿到右子节点后需要把父节点再放回 stack 中，等右子节点访问完后再回来处理父节点。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> postorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
         if (root == null) return res;
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode prev = null, curr = root;  // 多维护一个 prev 指针，记录上一次访问的节点
 
-        stack.push(root);
-        while (!stack.isEmpty()) {
-            TreeNode temp = stack.peek();
-            if (temp.left != null) {
-                stack.push(temp.left);
-                temp.left = null;
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) {  // 先往左走到底，一路上入栈所有节点
+                stack.push(curr);
+                curr = curr.left;
             }
-            else if (temp.right != null) {
-                stack.push(temp.right);
-                temp.right = null;
+            curr = stack.pop();
+            if (curr.right == null || curr.right == prev) {  // 若父节点没有右子节点，或有右子节点但已经被访问过，则访问父节点
+                res.add(curr.val);
+                prev = curr;
+                curr = null;       // 置空 curr 好跳过 while 循环
+            } else {               // 若父节点有右子节点且还未被访问过，则把父节点放回 stack 中，先处理其右子节点
+                stack.push(curr);
+                curr = curr.right;
+            }
+        }
+
+        return res;
+    }
+
+    /*
+     * 解法3：迭代
+     * - 思路：二叉树的前序遍历的方法之一是先往左遍历，没有左子节点时再右转一步，如此循环。由此可想：对于后序遍历，如果从根节点开始
+     *   先往右遍历，没有右子节点时再左转一步，如此循环。按这个思路遍历得到的结果刚好与后序遍历应有的结果顺序相反，因此可以使用一个
+     *   stack 将该结果倒序输出即可。
+     * - 实现：根据该思路可知需要2个 stack —— 一个用于实现往右遍历，另一个用于倒序输出遍历结果。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
+     * - 注：Java 中 Stack 接口的实现有很多：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated）。
+     * */
+    public static List<Integer> postorderTraversal3(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        Deque<TreeNode> stack1 = new ArrayDeque<>();
+        Deque<TreeNode> stack2 = new ArrayDeque<>();
+        TreeNode curr = root;
+
+        while (curr != null || !stack1.isEmpty()) {
+            while (curr != null) {  // 先往右走到底，一路上入栈（2个栈）所有节点
+                stack1.push(curr);
+                stack2.push(curr);
+                curr = curr.right;
+            }
+            curr = stack1.pop();
+            curr = curr.left;       // 转向左子节点
+        }
+
+        while (!stack2.isEmpty())   // 使用 stack2 倒序输出
+            res.add(stack2.pop().val);
+
+        return res;
+    }
+
+    /*
+     * 解法4：迭代
+     * - 这种方法虽然很简单，但有点取巧，不是非常推荐。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
+     * */
+    public static List<Integer> postorderTraversal4(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.peek();
+            if (node.left != null) {
+                stack.push(node.left);
+                node.left = null;
+            }
+            else if (node.right != null) {
+                stack.push(node.right);
+                node.right = null;
             }
             else {
-                res.add(temp.val);
+                res.add(node.val);
                 stack.pop();
             }
         }
@@ -58,35 +122,7 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     /*
-    * 解法3：迭代
-    * - 思路：先从右侧开始入栈右子节点，再转而遍历左子节点，使用两个 stack。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-    * - 注：Java 中 Stack 接口的实现有很多：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated）。
-    * */
-    public static List<Integer> postorderTraversal3(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack1 = new ArrayDeque<>(), stack2 = new ArrayDeque<>();  // stack1 可入可出，stack2 只入不出
-        TreeNode curr = root;
-
-        while (curr != null || !stack1.isEmpty()) {
-            if (curr != null) {     // 先沿着右侧遍历所有右子节点
-                stack1.push(curr);  // 将右子节点同时入栈到 stack1、stack2 中
-                stack2.push(curr);
-                curr = curr.right;
-            } else {                // 当不再有右子节点，转而开始遍历 stack1 中节点的左子节点
-                curr = stack1.pop();
-                curr = curr.left;
-            }
-        }
-
-        while (!stack2.isEmpty())
-            res.add(stack2.pop().val);
-
-        return res;
-    }
-
-    /*
-    * 解法4：迭代
+    * 解法5：迭代
     * - 思路：模拟系统栈的指令
     * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L144 的解法5）。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
@@ -100,7 +136,7 @@ public class L145_BinaryTreePostorderTraversal {
         }
     }
 
-    public static List<Integer> postorderTraversal4(TreeNode root) {
+    public static List<Integer> postorderTraversal6(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
         if (root == null) return res;
@@ -123,54 +159,14 @@ public class L145_BinaryTreePostorderTraversal {
         return res;
     }
 
-    /*
-    * 解法5：迭代
-    * - 思路：使用一个标志位表示一个节点（及其子节点）是否已经被遍历过，若没有则遍历它，若已遍历过则再去访问它的值（从而实现后续遍历）。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-    * */
-    static class TaggedNode {
-        boolean hasIterated;
-        TreeNode node;
-        TaggedNode(TreeNode node) {
-            this.node = node;
-            hasIterated = false;
-        }
-    }
-
-    public static List<Integer> postorderTraversal5(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        Deque<TaggedNode> stack = new ArrayDeque<>();
-        if (root == null) return res;
-
-        TreeNode curr = root;
-        while (curr != null || !stack.isEmpty()) {
-            while (curr != null) {
-                stack.push(new TaggedNode(curr));
-                curr = curr.left;
-            }
-            TaggedNode tNode = stack.pop();
-            curr = tNode.node;
-            if (!tNode.hasIterated) {
-                tNode.hasIterated = true;
-                stack.push(tNode);        // 将标志位置为 true 后放回 stack 中
-                curr = curr.right;
-            } else {
-                res.add(curr.val);
-                curr = null;              // 访问过值的节点就直接丢弃掉
-            }
-        }
-
-        return res;
-    }
-
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(postorderTraversal5(t1));  // expects [3, 2, 1]
+        log(postorderTraversal3(t1));  // expects [3, 2, 1]
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(postorderTraversal5(t2));  // expects []
+        log(postorderTraversal3(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(postorderTraversal5(t3));  // expects [1, 4, 3, 6, 7, 5]
+        log(postorderTraversal3(t3));  // expects [1, 4, 3, 6, 7, 5]
     }
 }
