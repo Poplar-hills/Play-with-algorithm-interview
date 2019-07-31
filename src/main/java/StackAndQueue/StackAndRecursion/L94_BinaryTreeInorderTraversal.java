@@ -33,7 +33,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     /*
     * 解法2：迭代
-    * - 思路：与 L144 的解法3思路类似，唯一的区别在于向左递归到底的路上先不访问节点，等到底之后开始出栈并访问节点。
+    * - 思路：与 L144 的解法3思路类似，唯一区别在于访问节点的时机 —— 向左递归到底的路上先不访问节点，而是到底之后开始出栈时再访问节点。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
@@ -55,7 +55,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     /*
      * 解法3：迭代（解法2的变种）
-     * - 思路：（与 L144 的解法3思路相同）先向左递归到底，入栈每一个左子节点，到底后出栈并访问每一个节点的右子节点。
+     * - 思路：类似 L144 的解法3思路。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> inorderTraversal3(TreeNode root) {
@@ -78,8 +78,14 @@ public class L94_BinaryTreeInorderTraversal {
     }
 
     /*
-    * 解法4：迭代
-    * - 思路：模拟系统栈的指令
+    * 解法4：迭代（模拟指令）
+    * - 思路：在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问）：
+    *               5       |      |     |      |     |_i__1_|     |_v__1_|     |______|     |      |
+    *            /    \     |      |     |______|     |_v__3_|     |_v__3_|     |_v__3_|     |______|
+    *          3       8    |      | --> |_i__3_| --> |_i__4_| --> |_i__4_| --> |_i__4_| --> |_i__4_| ...
+    *        /  \     /     |______|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|
+    *       1    4   6      |_i__5_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|
+    *                          []           []           []           []          [1]         [1,3]
     * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法5、L145 的解法4）。
     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
     * */
@@ -100,15 +106,15 @@ public class L94_BinaryTreeInorderTraversal {
         stack.push(new Command("iterate", root));
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
-            TreeNode curr = cmd.node;
+            TreeNode node = cmd.node;
             if (cmd.type.equals("visit"))
-                res.add(cmd.node.val);
+                res.add(node.val);
             else {
-                if (curr.right != null)
-                    stack.push(new Command("iterate", curr.right));
-                stack.push(new Command("visit", curr));  // visit 指令在 iterate 两个子节点之间执行
-                if (curr.left != null)
-                    stack.push(new Command("iterate", curr.left));
+                if (node.right != null)
+                    stack.push(new Command("iterate", node.right));
+                stack.push(new Command("visit", node));  // visit 指令在 iterate 两个子节点之间执行
+                if (node.left != null)
+                    stack.push(new Command("iterate", node.left));
             }
         }
 
@@ -117,12 +123,12 @@ public class L94_BinaryTreeInorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(inorderTraversal0(t1));  // expects [1, 3, 2]
+        log(inorderTraversal(t1));  // expects [1, 3, 2]
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(inorderTraversal0(t2));  // expects []
+        log(inorderTraversal(t2));  // expects []
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(inorderTraversal0(t3));  // expects [1, 3, 4, 5, 6, 7]
+        log(inorderTraversal(t3));  // expects [1, 3, 4, 5, 6, 7]
     }
 }
