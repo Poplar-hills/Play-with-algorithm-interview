@@ -35,7 +35,7 @@ public class L94_BinaryTreeInorderTraversal {
     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
+        Stack<TreeNode> stack = new Stack<>();
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {
@@ -57,7 +57,7 @@ public class L94_BinaryTreeInorderTraversal {
      * */
     public static List<Integer> inorderTraversal3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
+        Stack<TreeNode> stack = new Stack<>();
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {

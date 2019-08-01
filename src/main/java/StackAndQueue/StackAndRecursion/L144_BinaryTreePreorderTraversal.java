@@ -36,7 +36,7 @@ public class L144_BinaryTreePreorderTraversal {
     public static List<Integer> preorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        Deque<TreeNode> stack = new ArrayDeque<>();
+        Stack<TreeNode> stack = new Stack<>();
         stack.push(root);
 
         while (!stack.isEmpty()) {
@@ -56,7 +56,7 @@ public class L144_BinaryTreePreorderTraversal {
      * */
     public static List<Integer> preorderTraversal3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
+        Stack<TreeNode> stack = new Stack<>();
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {
@@ -78,7 +78,7 @@ public class L144_BinaryTreePreorderTraversal {
      * */
     public static List<Integer> preorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
+        Stack<TreeNode> stack = new Stack<>();
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {

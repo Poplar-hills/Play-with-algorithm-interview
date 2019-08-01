@@ -38,7 +38,7 @@ public class L145_BinaryTreePostorderTraversal {
     public static List<Integer> postorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        Deque<TreeNode> stack = new ArrayDeque<>();
+        Stack<TreeNode> stack = new Stack<>();
         TreeNode prev = null, curr = root;  // 多维护一个 prev 指针，记录上一次访问的节点
 
         while (curr != null || !stack.isEmpty()) {
@@ -71,8 +71,8 @@ public class L145_BinaryTreePostorderTraversal {
      * */
     public static List<Integer> postorderTraversal3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<TreeNode> stack1 = new ArrayDeque<>();
-        Deque<TreeNode> stack2 = new ArrayDeque<>();
+        Stack<TreeNode> stack1 = new Stack<>();
+        Stack<TreeNode> stack2 = new Stack<>();
         TreeNode curr = root;
 
         while (curr != null || !stack1.isEmpty()) {
@@ -99,7 +99,7 @@ public class L145_BinaryTreePostorderTraversal {
     public static List<Integer> postorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        Deque<TreeNode> stack = new ArrayDeque<>();
+        Stack<TreeNode> stack = new Stack<>();
         stack.push(root);
 
         while (!stack.isEmpty()) {
