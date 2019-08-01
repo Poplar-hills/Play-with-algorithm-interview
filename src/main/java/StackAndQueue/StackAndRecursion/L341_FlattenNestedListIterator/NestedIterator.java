@@ -55,12 +55,13 @@ class NestedIterator implements Iterator<Integer> {
 /*
  * 解法2：Eager + iterative
  * - 思路：解法1的迭代版
+ * - 总结：将解法1的递归式改写为迭代式的关键在于用 stack + while 循环模拟系统调用栈（很好的练习）。
  * */
 class NestedIterator2 implements Iterator<Integer> {
     private Queue<Integer> queue = new LinkedList<>();
 
     public NestedIterator2(List<NestedInteger> nestedList) {
-        Stack<NestedInteger> stack = new Stack<>();  // 模拟解法1中的递归栈
+        Stack<NestedInteger> stack = new Stack<>();  // 模拟解法1中的调用栈
         pushInReverseOrder(nestedList, stack);
 
         while (!stack.isEmpty()) {
@@ -86,8 +87,7 @@ class NestedIterator2 implements Iterator<Integer> {
 
 /*
  * 解法3：Lazy approach
- * - 思路：Lazy 的 iterator 会弱化实例化时的处理逻辑，只拿到 nestedList 的引用即可。主要逻辑放在 hasNext/next 方法中，
- *   在调用时再开始从 nestedList 中解析出下一个 integer。
+ * - 思路：Lazy 的 iterator 弱化实例化时的计算逻辑，只做数据加载，而主要逻辑放在 hasNext/next 方法中。
  *
  * - 总结：Queue 是尾进头出： poll <-- [1|2|3|4|5] <-- offer
  *
@@ -99,25 +99,28 @@ class NestedIterator2 implements Iterator<Integer> {
  *                                                                 pop <--
  * */
 class NestedIterator3 implements Iterator<Integer> {
-    private Deque<NestedInteger> dq = new ArrayDeque<>();  // Deque 接口的实现可以是 ArrayDeque 也可以是 LinkedList
+    private Stack<NestedInteger> stack = new Stack<>();  // Deque 接口的实现可以是 ArrayDeque 也可以是 LinkedList
 
     public NestedIterator3(List<NestedInteger> nestedList) {
-        for (NestedInteger n : nestedList)
-            dq.offer(n);    // 从尾部添加第一层的所有 NestedInteger
+        pushInReverseOrder(nestedList, stack);
+    }
+
+    private void pushInReverseOrder(List<NestedInteger> list, Stack<NestedInteger> stack) {
+        for (int i = list.size() - 1; i >= 0; i--)
+            stack.push(list.get(i));
     }
 
     @Override
     public boolean hasNext() {
-        while (!dq.isEmpty() && !dq.peek().isInteger()) {
-            List<NestedInteger> nestedList = dq.pop().getList();
-            for (int i = nestedList.size() - 1; i >= 0; i--)  // 让 nestedList 倒序入栈，因此其第一个元素会先被访问
-                dq.push(nestedList.get(i));
+        while (!stack.isEmpty()) {
+            if (stack.peek().isInteger()) return true;
+            pushInReverseOrder(stack.pop().getList(), stack);  // 若栈顶元素不是 integer 的情况
         }
-        return !dq.isEmpty();
+        return false;
     }
 
     @Override
     public Integer next() {
-        return hasNext() ? dq.pop().getInteger() : null;
+        return hasNext() ? stack.pop().getInteger() : null;
     }
 }
