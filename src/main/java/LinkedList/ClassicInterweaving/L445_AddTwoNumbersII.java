@@ -2,8 +2,7 @@ package LinkedList.ClassicInterweaving;
 
 import Utils.Helpers.ListNode;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Stack;
 
 import static Utils.Helpers.*;
 
@@ -65,7 +64,7 @@ public class L445_AddTwoNumbersII {
     * - 时间复杂度 O(max(m,n))，空间复杂度 O(m+n)。
     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
-        Deque<Integer> s1 = new ArrayDeque<>(), s2 = new ArrayDeque<>();
+        Stack<Integer> s1 = new Stack<>(), s2 = new Stack<>();
         ListNode curr1 = l1, curr2 = l2;
 
         while (curr1 != null || curr2 != null) {  // 先将两个链表反向存储在 stack 中。O(max(m,n))

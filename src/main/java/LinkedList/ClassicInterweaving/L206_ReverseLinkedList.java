@@ -1,7 +1,6 @@
 package LinkedList.ClassicInterweaving;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Stack;
 
 import static Utils.Helpers.*;
 
@@ -57,7 +56,7 @@ public class L206_ReverseLinkedList {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static ListNode reverseList3(ListNode head) {
-        Deque<ListNode> stack = new ArrayDeque<>();
+        Stack<ListNode> stack = new Stack<>();
 
         for (ListNode curr = head; curr != null; curr = curr.next)
             stack.push(curr);

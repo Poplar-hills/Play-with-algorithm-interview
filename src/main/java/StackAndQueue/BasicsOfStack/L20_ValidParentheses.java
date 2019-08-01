@@ -16,7 +16,7 @@ public class L20_ValidParentheses {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static boolean isValid(String s) {
-        Deque<Character> stack = new ArrayDeque<>();
+        Stack<Character> stack = new Stack<>();
         Set<Character> openBrackets = new HashSet<>(Arrays.asList('(', '[', '{'));
 
         for (char c : s.toCharArray()) {

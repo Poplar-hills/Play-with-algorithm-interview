@@ -21,7 +21,7 @@ public class L150_EvaluateReversePolishNotation {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int evalRPN(String[] tokens) {
-        Deque<String> stack = new ArrayDeque<>();
+        Stack<String> stack = new Stack<>();
         Set<String> operators = new HashSet<>(Arrays.asList("+", "-", "*", "/"));
 
         for (String s : tokens) {
@@ -55,7 +55,7 @@ public class L150_EvaluateReversePolishNotation {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int evalRPN2(String[] tokens) {
-        Deque<Integer> stack = new ArrayDeque<>();
+        Stack<Integer> stack = new Stack<>();
 
         for (String s : tokens) {
             BiFunction<Integer, Integer, Integer> f = getFunction(s);  // 接受2个参数的 function，更多函数式接口 SEE: http://ocpj8.javastudyguide.com/ch10.html
