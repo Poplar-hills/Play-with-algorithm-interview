@@ -67,7 +67,9 @@ public class L145_BinaryTreePostorderTraversal {
      *   stack 将该结果倒序输出即可。
      * - 实现：根据该思路可知需要2个 stack —— 一个用于实现往右遍历，另一个用于倒序输出遍历结果。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-     * - 注：Java 中 Stack 接口的实现有很多：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated）。
+     * - 注：Java 中
+     *   - Stack 接口的实现有：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated，推荐用 Deque 代替）；
+     *   - Deque 接口的实现有：ArrayDeque, LinkedList；
      * */
     public static List<Integer> postorderTraversal3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
