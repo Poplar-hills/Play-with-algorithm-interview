@@ -144,7 +144,7 @@ public class L145_BinaryTreePostorderTraversal {
 
     public static List<Integer> postorderTraversal6(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
+        Stack<Command> stack = new Stack<>();   // 栈中存的是 Command（将节点和指令的 pair）
         if (root == null) return res;
 
         stack.push(new Command("iterate", root));

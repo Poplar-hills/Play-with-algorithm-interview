@@ -1,9 +1,6 @@
 package StackAndQueue.StackAndRecursion;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 import static Utils.Helpers.*;
 
@@ -127,7 +124,7 @@ public class L144_BinaryTreePreorderTraversal {
     public static List<Integer> preorderTraversal5(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command
+        Stack<Command> stack = new Stack<>();   // 栈中存的是 Command
         stack.push(new Command("iterate", root));
 
         while (!stack.isEmpty()) {

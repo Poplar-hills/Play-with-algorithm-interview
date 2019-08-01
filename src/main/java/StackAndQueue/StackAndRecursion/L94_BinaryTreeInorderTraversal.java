@@ -1,9 +1,6 @@
 package StackAndQueue.StackAndRecursion;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 import static Utils.Helpers.*;
 
@@ -100,7 +97,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     public static List<Integer> inorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Deque<Command> stack = new ArrayDeque<>();   // 栈中存的是 Command（将节点和指令的 pair）
+        Stack<Command> stack = new Stack<>();   // 栈中存的是 Command（将节点和指令的 pair）
         if (root == null) return res;
 
         stack.push(new Command("iterate", root));

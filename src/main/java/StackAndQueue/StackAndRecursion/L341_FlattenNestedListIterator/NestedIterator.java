@@ -99,7 +99,7 @@ class NestedIterator2 implements Iterator<Integer> {
  *                                                                 pop <--
  * */
 class NestedIterator3 implements Iterator<Integer> {
-    private Stack<NestedInteger> stack = new Stack<>();  // Deque 接口的实现可以是 ArrayDeque 也可以是 LinkedList
+    private Stack<NestedInteger> stack = new Stack<>();
 
     public NestedIterator3(List<NestedInteger> nestedList) {
         pushInReverseOrder(nestedList, stack);
