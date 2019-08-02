@@ -33,7 +33,6 @@ public class L127_WordLadder {
     * */
     public static int ladderLength(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
-
         Queue<Pair<String, Integer>> q = new LinkedList<>();
         q.offer(new Pair<>(beginWord, 1));
 
@@ -65,17 +64,16 @@ public class L127_WordLadder {
 
     /*
     * 解法1：在超时解的基础上对 BFS 进行优化
-    * - 思路：在 BFS 过程中记录访问过的顶点，当再次碰到时不再重复访问：
-    *   1. "顶点"即该题中 wordList 里的每一个 word，因此要记录 wordList 里的每一个 word 是否已被访问过。
-    *   2. 首先会想到可使用 Map<String, Boolean> 的方式记录，但所有 value 为 boolean 的 map 都可以使用 set 化简 —— 一个元素
-    *      "在/不在" set 中即可表达是否访问过，因此无需再为其设置 true/false。因此只需创建一个 set 并放入 wordList 中的元素即可。
-    *   3. 需要注意的是，当需要一边遍历 set，一边增/删其中元素（动态增删）时，不能使用 for, while 或者 forEach，需要使用 iterator。
+    * - 问题：在超时解中，很可能出现这种情况：顶点 A、B 都与 C 相邻，当分别为 A 和 B 寻找相邻节点时 C 都会出现，因此也会被入队2次，
+    *   从而造成不必要的重复访问。
+    * - 思路：记录哪些顶点还未被访问过，当寻找相邻顶点时只在这些未被访问过的顶点中寻找，找到后只要不是 endWord 就让它们入队待访问，
+    *   并将它们从未被访问的记录中删除。
+    * - 注意：当需要一边遍历 set，一边增/删其中元素（动态增删）时，不能使用 for, while 或者 forEach，需要使用 iterator。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int ladderLength1(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
-
-        Set<String> wordSet = new HashSet<>(wordList);  // 可以用构造器直接从 Collection 创建 Set
+        Set<String> unvisited = new HashSet<>(wordList);  // 通过 Collection 构造 Set
         Queue<Pair<String, Integer>> q = new LinkedList<>();
         q.offer(new Pair<>(beginWord, 1));
 
@@ -84,12 +82,12 @@ public class L127_WordLadder {
             String word = pair.getKey();
             int step = pair.getValue();
 
-            for (Iterator<String> it = wordSet.iterator(); it.hasNext(); ) {  // 遍历 wordSet 而非 wordList，时间复杂度 O(n)
+            for (Iterator<String> it = unvisited.iterator(); it.hasNext(); ) {  // 遍历 unvisited 而非 wordList，时间复杂度 O(n)
                 String w = it.next();
                 if (isSimilar(w, word)) {
                     if (w.equals(endWord)) return step + 1;
-                    q.offer(new Pair<>(w, step + 1));
-                    it.remove();  // 动态删减 wordSet 中的元素
+                    q.offer(new Pair<>(w, step + 1));  // 将相邻节点入队待访问
+                    it.remove();                       // 从 unvisited 中删除（动态删除 unvisited 中的元素）
                 }
             }
         }
