@@ -27,8 +27,8 @@ public class L279_PerfectSquares {
     *          4 ------- 3               |    |    |                 |    |      |
     *      n = 4 时最短路径为1步           +--- 4 -- 3                 +--- 4 ---- 3
     *                                n = 5 时最短路径为2步          n = 6 时最短路径为3步
-    * - 实现过程：求无权图中两点的最短路径可使用广度优先遍历（BFS）实现（有权图不适用）：
-    *   - 使用队列作为辅助数据结构，即从起点开始，入队相邻顶点、访问出队的顶点，再将其相邻顶点入队，直到到达终点为止。
+    * - 实现：求无权图中两点的最短路径可使用 BFS 实现（但有权图不适用）：
+    *   - 使用 queue 作为辅助数据结构，即从起点开始，入队相邻顶点、访问出队的顶点，再将其相邻顶点入队，直到到达终点为止。
     *   - ∵ 最终要返回找到的最短路径的步数，因此队列中除了保存顶点之外还要保存步数信息。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
@@ -45,7 +45,7 @@ public class L279_PerfectSquares {
             int num = pair.getKey();
             int step = pair.getValue();
 
-            for (int i = 1; num - i * i >= 0; i++) {  // 尝试用当前顶点值 - 每一个完全平方数，得到不同的下一步顶点（相当于 BFS 中找到所有相邻顶点）
+            for (int i = 1; num - i * i >= 0; i++) {  // 当前顶点值 - 每一个完全平方数，得到每一个相邻顶点
                 int next = num - i * i;
                 if (next == 0) return step + 1;       // 若下一步就是终点则返回该路径的步数（第一条到达终点的路径就是最短路径，直接 return）
                 if (!visited[next]) {                 // 已访问过顶点不入队
@@ -58,7 +58,7 @@ public class L279_PerfectSquares {
     }
 
     /*
-    * 解法2：DFS（top-down DP）
+    * 解法2：DFS（top-down DP，即递归）
     * - 思路：基于解法1中的图论建模思路，在具体实现时采用 DFS（SEE: Play-with-algorithms/Graph/Path.java)。具体来说是通过 DFS
     *   从 n 开始往0方向递归，计算每个顶点到达0的最少步数，从而得到前一个节点的到0的最少步数。
     * - 本质：该解法实际上也是一种 DP，只是实现方式是 top-down 的（因为采用了递归），以及其中对于 overlap sub-problem 的优化策略
@@ -71,15 +71,15 @@ public class L279_PerfectSquares {
         return numSquares2(n, steps);
     }
 
-    private static int numSquares2(int n, int[] steps) {
-        if (n == 0) return 0;                 // 顶点0到达自己的步数为0
-        if (steps[n] != -1) return steps[n];  // 计算过的顶点直接返回（以免重复计算）
+    private static int numSquares2(int num, int[] steps) {
+        if (num == 0) return 0;                   // 顶点0到达自己的步数为0
+        if (steps[num] != -1) return steps[num];  // 计算过的顶点直接返回（以免重复计算）
 
-        int minStep = Integer.MAX_VALUE;      // 记录某一顶点到0的最短路径的步数
-        for (int i = 1; n - i * i >= 0; i++)  // 找到当前顶点的相邻顶点
-            minStep = Math.min(minStep, numSquares2(n - i * i, steps) + 1);  // 计算所有相邻顶点到0的最小步数，其中最小值+1即是当前顶点到0的最小步数
+        int minStep = Integer.MAX_VALUE;          // 用于记录当前顶点到0的最小步数
+        for (int i = 1; num - i * i >= 0; i++)    // 找到当前顶点的相邻顶点
+            minStep = Math.min(minStep, numSquares2(num - i * i, steps) + 1);  // 计算所有相邻顶点到0的最小步数，从中选出最小的，再+1即是当前顶点到0的最小步数
 
-        return steps[n] = minStep;            // 赋值语句的返回值为所赋的值
+        return steps[num] = minStep;              // 赋值语句的返回值为所赋的值
     }
 
     /*
