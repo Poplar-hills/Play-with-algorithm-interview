@@ -26,15 +26,14 @@ import static Utils.Helpers.log;
 public class L127_WordLadder {
     /*
     * 超时解（但结果正确）：BFS
-    * - 思路：该题是个典型的可以用图论建模，求最短路径的题目：
-    *   1. 求图上两点的最短路径应采用广度优先遍历（BFS）。
-    *   2. BFS 需要队列作为辅助数据结构。
-    *   3. 因为题中要求返回最短路径的步数，因此队列中除了存储路径上的每一个顶点之外，还要存储从起点开始到该顶点的步数信息。
+    * - 思路：
+    *   1. 该题是个典型求最短路径的题，而求图上两点的最短路径可采用 BFS。
+    *   2. 题中要求返回最短路径的步数，因此队列中除了存储路径上的每一个顶点之外，还要存储从起点开始到该顶点的步数信息。
     * */
     public static int ladderLength(String beginWord, String endWord, List<String> wordList) {
-        if (!wordList.contains(endWord)) return 0;
-        Queue<Pair<String, Integer>> q = new LinkedList<>();
-        q.offer(new Pair<>(beginWord, 1));
+        if (!wordList.contains(endWord)) return 0;            // 无解的情况
+        Queue<Pair<String, Integer>> q = new LinkedList<>();  // BFS 需要使用 queue 作为辅助数据结构
+        q.offer(new Pair<>(beginWord, 1));                    // ∵ beginWord 不在 wordList 中 ∴ 要从1开始计数（不同于 L279 解法1）
 
         while (!q.isEmpty()) {
             Pair<String, Integer> pair = q.poll();
@@ -52,7 +51,7 @@ public class L127_WordLadder {
         return 0;
     }
 
-    private static boolean isSimilar(String w1, String w2) {
+    private static boolean isSimilar(String w1, String w2) {  // 复杂度 O(len(word))
         if (w1.length() != w2.length() || w1.equals(w2)) return false;
         int diffCount = 0;
         for (int i = 0; i < w1.length(); i++) {
@@ -96,18 +95,17 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法2：解法1的性能改进版
-    * - 思路：改进点在于寻找相邻顶点的过程 —— 解法1中该过程是通过 isSimilar 方法比较 wordSet 中每个单词是否与待比较单词 word
-    *   相邻来完成的；而本解法中采用另一种策略 —— 尝试对 word 中的每个字母用 a-z 中的字母进行替换，看替换后的单词 tWord 是否
-    *   存在于 wordSet 中，若存在则说明确实与 word 相邻。这种方法复杂度更低 ∵ 只有26个字母（a-z），∴ 复杂度为 len(word) * 26；
-    *   而解法1中的复杂度为 wordSet.size() * len(word)，因此在 wordSet 中元素数较多时，性能会差于解法2。
+    * 解法2：解法2的性能改进版
+    * - 思路：改进点在于寻找相邻顶点的过程 —— 解法2中该过程是通过 isSimilar 方法比较 wordSet 中每个单词是否与待比较单词 word
+    *   相似来完成的；而本解法中采用另一种策略 —— 尝试对 word 中的每个字母用 a-z 中的字母进行替换，看替换后的单词 tWord 是否
+    *   存在于 wordSet 中，若存在则说明确实与 word 相邻。这种方法复杂度更低 ∵ 只有26个字母 ∴ 复杂度为 len(word) * 26；而解法1
+    *   中的复杂度为 wordSet.size() * len(word)，因此在 wordSet 中元素数较多时，性能会差于解法2。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     private static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
-
         Queue<Pair<String, Integer>> q = new LinkedList<>();
-        Set<String> wordSet = new HashSet<>(wordList);
+        Set<String> unvisitied = new HashSet<>(wordList);
         q.offer(new Pair<>(beginWord, 1));
 
         while (!q.isEmpty()) {
@@ -115,16 +113,16 @@ public class L127_WordLadder {
             String word = p.getKey();
             int step = p.getValue();
 
-            for (int i = 0; i < word.length(); i++) {
+            for (int i = 0; i < word.length(); i++) {  // 替换 word 中的每个字母，查看替换后的单词 tWord 是否与 word 相邻
                 StringBuilder transformed = new StringBuilder(word);
-                for (char c = 'a'; c <= 'z'; c++) {  // 替换 word 中的每个字母，查看替换后的单词 tWord 是否与 word 相邻
+                for (char c = 'a'; c <= 'z'; c++) {
                     if (c == word.charAt(i)) continue;
-                    transformed.setCharAt(i, c);     // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
+                    transformed.setCharAt(i, c);       // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
                     String tWord = transformed.toString();
-                    if (wordSet.contains(tWord)) {
+                    if (unvisitied.contains(tWord)) {  // 若 tWord 在 unvisitied 中，则说明找到了一个相邻节点
                         if (tWord.equals(endWord)) return step + 1;
                         q.offer(new Pair<>(tWord, step + 1));
-                        wordSet.remove(tWord);
+                        unvisitied.remove(tWord);
                     }
                 }
             }
