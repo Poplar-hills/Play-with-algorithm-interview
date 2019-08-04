@@ -139,13 +139,14 @@ public class L127_WordLadder {
     *   - 使用条件：1. 已知头尾两个顶点  2. 两个方向的 branching factor 相同。
     *
     * - 思路：虽然代码不少，但思路并不复杂：
-    *   1. startQ 放入起点，endQ 放入终点；
-    *   2. 从 startQ 开始，遍历其中每一个顶点，为每一个顶点寻找其所有相邻顶点：
-    *      a. 若其中任一相邻顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回路径上的顶点数即可；
+    *   1. 使用2个队列 startQ 和 endQ，分别用于辅助正/反向查找；
+    *   2. startQ 放入起始顶点 beginWord，endQ 放入终结顶点 endWord；
+    *   3. 从 startQ 开始，遍历其中每一个顶点，为每一个顶点寻找相邻顶点：
+    *      a. 若其中任一相邻顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回顶点数即可；
     *      b. 若没有相邻顶点出现在 endQ 中，则说明正反向查找还未相遇，此时：
     *        1). 经过的顶点数+1；
     *        2). 从所有相邻顶点中筛出所有之前未访问过的，加入 neighbours 集合（同时也加入 visited 集合）；
-    *        2). 调换方向开始下一轮查找（刚才是正向查找一步，下一轮是反向查找一步），将 endQ 作为 startQ 开始遍历，并将 neighbours
+    *        3). 调换方向开始下一轮查找（刚才是正向查找一步，下一轮是反向查找一步），将 endQ 作为 startQ 开始遍历，并将 neighbours
     *            作为 endQ 用于查看下一轮中的相邻顶点是否出现在对面方向最外层顶点中。
     *
     * - 优化：在最后要调换方向时，可以加一步判断 —— Choose the shortest between the startQ and endQ in hopes to alternate
@@ -157,9 +158,8 @@ public class L127_WordLadder {
     public static int ladderLength3(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
 
-        Set<String> wordSet = new HashSet<>(wordList);
-        Set<String> visited = new HashSet<>();
-        Set<String> startQ = new HashSet<>();  // 辅助正向 BFS 的结合
+        Set<String> unvisited = new HashSet<>(wordList);
+        Set<String> startQ = new HashSet<>();  // 辅助正向 BFS 的集合
         Set<String> endQ = new HashSet<>();    // 辅助反向 BFS 的集合
         startQ.add(beginWord);
         endQ.add(endWord);
@@ -175,8 +175,10 @@ public class L127_WordLadder {
                         transformed.setCharAt(i, c);
                         String tWord = transformed.toString();
                         if (endQ.contains(tWord)) return stepCount;  // 本侧的相邻顶点出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
-                        if (wordSet.contains(tWord) && visited.add(tWord))  // 如果是有效的、未访问过的顶点（注意 add 返回值的技巧，或不用
-                            neighbours.add(tWord);                          // visited 变量，直接从 wordSet 中 remove(tWord) 也是一样的效果）
+                        if (unvisited.contains(tWord)) {
+                            neighbours.add(tWord);
+                            unvisited.remove(tWord);
+                        }
                     }
                 }
             }
@@ -330,31 +332,31 @@ public class L127_WordLadder {
 
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(ladderLength4("hit", "cog", wordList));
+        log(ladderLength3("hit", "cog", wordList));
         // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
         List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(ladderLength4("a", "c", wordList2));
+        log(ladderLength3("a", "c", wordList2));
         // expects 2. ("a" -> "c")
 
         List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(ladderLength4("red", "tax", wordList3));
+        log(ladderLength3("red", "tax", wordList3));
         // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
 
         List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(ladderLength4("hit", "cog", wordList4));
+        log(ladderLength3("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
         List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(ladderLength4("hot", "dog", wordList5));
+        log(ladderLength3("hot", "dog", wordList5));
         // expects 0. (No solution)
 
         List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(ladderLength4("leet", "code", wordList6));
+        log(ladderLength3("leet", "code", wordList6));
         // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
         List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(ladderLength4("kiss", "tusk", wordList7));
+        log(ladderLength3("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
 }
