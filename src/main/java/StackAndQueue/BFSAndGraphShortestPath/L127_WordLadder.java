@@ -166,7 +166,7 @@ public class L127_WordLadder {
 
         int stepCount = 2;                     // stepCount 为最终所求的最短路径顶点数，从2开始是已包含头尾的顶点
         while (!startQ.isEmpty()) {
-            Set<String> neighbours = new HashSet<>();
+            Set<String> neighbours = new HashSet<>();  // 多个单词很有可能有重复的相邻单词，因此使用 set 去重
             for (String word: startQ) {        // 不同于解法1，这里要遍历 startQ 中的所有单词，为每一个单词寻找相邻单词（neighbouring words）
                 for (int i = 0; i < word.length(); i++) {
                     StringBuilder transformed = new StringBuilder(word);
@@ -201,11 +201,11 @@ public class L127_WordLadder {
     * */
     public static int ladderLength4(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
-        Set<String> wordSet = new HashSet<>(wordList);
-        return ladderLength4(Collections.singleton(beginWord), Collections.singleton(endWord), wordSet, 2);
+        Set<String> unvisited = new HashSet<>(wordList);
+        return ladderLength4(Collections.singleton(beginWord), Collections.singleton(endWord), unvisited, 2);
     }
 
-    private static int ladderLength4(Set<String> startQ, Set<String> endQ, Set<String> wordSet, int stepCount) {
+    private static int ladderLength4(Set<String> startQ, Set<String> endQ, Set<String> unvisited, int stepCount) {
         if (startQ.isEmpty()) return 0;
         Set<String> neighbours = new HashSet<>();
         for (String word : startQ) {
@@ -215,17 +215,17 @@ public class L127_WordLadder {
                     if (c == word.charAt(i)) continue;
                     transformed.setCharAt(i, c);
                     String tWord = transformed.toString();
-                    if (endQ.contains(tWord)) return stepCount;  // 当正反向查找找到交点时，wordSet 也为空了（∵ 正反向查找时都会从中 remove 元素）
-                    if (wordSet.contains(tWord)) {  // 不再像解法2中使用 visited 变量，而是将访问过的顶点从 wordSet 中移除，效果一样
+                    if (endQ.contains(tWord)) return stepCount;  // 当正反向查找找到交点时，unvisited 也为空了（∵ 正反向查找时都会从中 remove 元素）
+                    if (unvisited.contains(tWord)) {  // 不再像解法2中使用 visited 变量，而是将访问过的顶点从 unvisited 中移除，效果一样
                         neighbours.add(tWord);
-                        wordSet.remove(tWord);
+                        unvisited.remove(tWord);
                     }
                 }
             }
         }
         return endQ.size() < neighbours.size()
-                ? ladderLength4(endQ, neighbours, wordSet, stepCount + 1)
-                : ladderLength4(neighbours, endQ, wordSet, stepCount + 1);
+                ? ladderLength4(endQ, neighbours, unvisited, stepCount + 1)
+                : ladderLength4(neighbours, endQ, unvisited, stepCount + 1);
     }
 
     /*
