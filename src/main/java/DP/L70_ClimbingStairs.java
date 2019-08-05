@@ -36,16 +36,17 @@ public class L70_ClimbingStairs {
 
     /*
      * 解法2：DFS
-     * - 思路：解法1中对该题使用图论建模后，题目就转化成了：求图上两点之间的路径条数，若采用正统一些的解法就是 BFS 或 DFS。该解法
-     *   采用 DFS，因为逻辑比较 intuitive —— 任意顶点到终点的路径条数 = 该顶点的所有相邻顶点的路径条数之和。使用递归求解非常自然。
-     * - 实现：不管是 BFS 或 DFS，过执行程中都需要能取到任一顶点的所有相邻顶点，有两种方式：1.提前创建好 graph  2.需要的时候再计算。
-     *     该解中采用提前创建好 graph 的方式。
+     * - 思路：解法1中对该题使用图论建模后，题目就转化成了：求图上两点之间的路径条数，若采用正统一些的解法就是 BFS 或 DFS。本解法
+     *   采用 DFS，思路为：任一顶点到终点的路径条数 = sum(其所有下游相邻顶点到终点的路径条数)。按该思路使用递归求解非常自然。
+     * - 实现：不管是 BFS 或 DFS，过执行程中都需要能找到任一顶点的所有相邻顶点，大体有2种方式：
+     *   1. 提前创建好 graph（本解法采用这种方式）；
+     *   2. 需要的时候再计算。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs2(int n) {
         if (n <= 0) return 0;
 
-        // 提前创建好 graph
+        // 提前创建好 graph（邻接表，如解法1思路中的图）
         List<List<Integer>> graph = new ArrayList<>(n);
         for (int i = 0; i < n; i++)
             graph.add(new ArrayList<>());
@@ -61,15 +62,15 @@ public class L70_ClimbingStairs {
         return dfs(graph, 0, n, pathNums);
     }
 
-    private static int dfs(List<List<Integer>> graph, int curr, int target, int[] pathNums) {
-        if (curr == target) return 1;
-        if (pathNums[curr] != -1) return pathNums[curr];
+    private static int dfs(List<List<Integer>> graph, int currStep, int targetStep, int[] pathNums) {
+        if (currStep == targetStep) return 1;  // 终点前的顶点需要1步到达终点
+        if (pathNums[currStep] != -1) return pathNums[currStep];
 
         int pathNum = 0;
-        for (int adj : graph.get(curr))  // 获取顶点的所有相邻顶点
-            pathNum += dfs(graph, adj, target, pathNums);
+        for (int adj : graph.get(currStep))    // 获取所有相邻顶点
+            pathNum += dfs(graph, adj, targetStep, pathNums);
 
-        return pathNums[curr] = pathNum;
+        return pathNums[currStep] = pathNum;
     }
 
     /*
@@ -99,6 +100,7 @@ public class L70_ClimbingStairs {
     /*
      * 超时解：BFS 全搜索（虽然超时，但是结果正确）
      * - 思路：先用 BFS 找出图上从 0 到 n 之间的所有路径，再取个数。解释 SEE: play-with-algorithms/Graph/Path 中的 allPaths 方法。
+     * - TODO: 时间复杂度？？？
      * */
     public static int climbStairs4(int n) {
         List<List<Integer>> res = new ArrayList<>();
@@ -128,8 +130,8 @@ public class L70_ClimbingStairs {
     }
 
     public static void main(String[] args) {
-        log(climbStairs1(2));  // expects 2 (1+1, 2 in one go)
-        log(climbStairs1(3));  // expects 3 (1+1, 1+2, 2+1)
-        log(climbStairs1(5));  // expects 8
+        // log(climbStairs2(2));  // expects 2 (1+1, 2 in one go)
+        // log(climbStairs2(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs2(5));  // expects 8
     }
 }
