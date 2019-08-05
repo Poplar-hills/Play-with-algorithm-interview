@@ -284,7 +284,7 @@ public class L127_WordLadder {
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
         int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];  // 创建邻接矩阵
+        boolean[][] graph = new boolean[n][n];
         for (int i = 0; i < n; i++)
             for (int j = 0; j < i; j++)
                 graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));
@@ -293,7 +293,7 @@ public class L127_WordLadder {
     }
 
     private static int biDirectionalBfs(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
-        Queue<Integer> beginQ = new LinkedList<>();  // 队列中存储的是顶点在 wordList 中的 index
+        Queue<Integer> beginQ = new LinkedList<>();    // 队列中存储的是顶点在 wordList 中的 index
         Queue<Integer> endQ = new LinkedList<>();
         int beginIndex = wordList.indexOf(beginWord);  // 首先入队的是起点和终点的 index，因此要先获取他们
         int endIndex = wordList.indexOf(endWord);
@@ -301,26 +301,26 @@ public class L127_WordLadder {
         endQ.offer(endIndex);
 
         int n = wordList.size();
-        int[] beginSteps = new int[n], endSteps = new int[n];  // 为正向和反向 BFS 各设置一个 steps 数组，这样会不干扰
+        int[] beginSteps = new int[n], endSteps = new int[n];  // 为正向和反向 BFS 各设置一个 steps 数组，这样会不互相干扰
         beginSteps[beginIndex] = endSteps[endIndex] = 1;
 
         while (!beginQ.isEmpty() && !endQ.isEmpty()) {  // 若其中一个方向的查找完成时还没有从起点到终点的路径出现则说明无解，程序结束
-            int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();  // 正向、反向队列分别吐出一个顶点
+            int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();  // 正、反向队列分别出队一个顶点的 index
 
-            for (int i = 0; i < n; i++) {  // 查找吐出的这两个顶点的所有相邻顶点，并计算从起/终点开始到到这些顶点的步数
-                if (graph[currBeginIndex][i] && beginSteps[i] == 0) {
-                    beginSteps[i] = beginSteps[currBeginIndex] + 1;
-                    beginQ.offer(i);
+            for (int i = 0; i < n; i++) {                              // 从所有顶点的 index 中...
+                if (graph[currBeginIndex][i] && beginSteps[i] == 0) {  // 1. 找到 currBeginIndex 的相邻顶点的 index
+                    beginSteps[i] = beginSteps[currBeginIndex] + 1;    // 2. 计算起点到该相邻顶点的步数
+                    beginQ.offer(i);                                   // 3. 将该相邻顶点的 index 入队
                 }
-                if (graph[currEndIndex][i] && endSteps[i] == 0) {
-                    endSteps[i] = endSteps[currEndIndex] + 1;
-                    endQ.offer(i);
+                if (graph[currEndIndex][i] && endSteps[i] == 0) {      // 4. 找到 currEndIndex 的相邻顶点的 index
+                    endSteps[i] = endSteps[currEndIndex] + 1;          // 5. 计算终点到该相邻顶点的步数
+                    endQ.offer(i);                                     // 6. 将该相邻顶点的 index 入队
                 }
             }
             // check intersection
             int minStep = Integer.MAX_VALUE;
             for (int i = 0; i < n; i++)
-                if (beginSteps[i] != 0 && endSteps[i] != 0)  // 若 beginSteps、endSteps 在位置 i 上同时有值则说明从起点、终点都能到达 i 上的顶点，即存在一条联通起终点的路径
+                if (beginSteps[i] != 0 && endSteps[i] != 0)  // 若 beginSteps、endSteps 在 i 位置上同时有值说明从起、终点都能到达 i 上的顶点，即找到一条联通起终点的路径
                     minStep = Integer.min(minStep, beginSteps[i] + endSteps[i] - 1);  // 求所有联通路径中最短的那条
 
             if (minStep != Integer.MAX_VALUE)
