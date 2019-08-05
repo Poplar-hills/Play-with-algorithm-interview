@@ -49,20 +49,16 @@ public class L120_Triangle {
 
     /*
     * 解法1：
-    * -
+    * - 思路：该题也可用图论建模：
+    *          -1
+    *         ↙  ↘
+    *        2    3
+    *      ↙  ↘  ↙  ↘
+    *     1    -1   -3
+    *   至此该题转化为求图上哪条路径的节点值之和最小。而要求路径的节点值之和，需先求得路径。
     * */
     public static int minimumTotal1(List<List<Integer>> triangle) {
-        int n = triangle.size();
-        int[] results = new int[n];
-
-        for (int i = 0; i < n; i++)
-            results[i] = triangle.get(n - 1).get(i);  // 将 results 初始化为 triangle 的最后一行（triangle 的行数与列数相等）
-
-        for (int i = n - 2; i >= 0; i--)              // 从倒数第2行开始向上遍历
-            for (int j = 0; j <= i; j++)              // 遍历每行中的所有元素（行数 i 同时也是一行中的元素个数）
-                results[j] = Math.min(results[j], results[j + 1]) + triangle.get(i).get(j);
-
-        return results[0];
+        return 0;
     }
 
     public static void main(String[] args) {
