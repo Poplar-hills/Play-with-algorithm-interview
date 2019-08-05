@@ -141,11 +141,11 @@ public class L127_WordLadder {
     * - 思路：虽然代码不少，但思路并不复杂：
     *   1. 使用2个队列 startQ 和 endQ，分别用于辅助正/反向查找；
     *   2. startQ 放入起始顶点 beginWord，endQ 放入终结顶点 endWord；
-    *   3. 从 startQ 开始，遍历其中每一个顶点，为每一个顶点寻找相邻顶点：
+    *   3. 从 startQ 开始，遍历其中所有顶点，为每一个顶点寻找相邻顶点：
     *      a. 若其中任一相邻顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回顶点数即可；
     *      b. 若没有相邻顶点出现在 endQ 中，则说明正反向查找还未相遇，此时：
     *        1). 经过的顶点数+1；
-    *        2). 从所有相邻顶点中筛出所有之前未访问过的，加入 neighbours 集合（同时也加入 visited 集合）；
+    *        2). 将所有未访问过的相邻顶点加入 neighbours 集合；
     *        3). 调换方向开始下一轮查找（刚才是正向查找一步，下一轮是反向查找一步），将 endQ 作为 startQ 开始遍历，并将 neighbours
     *            作为 endQ 用于查看下一轮中的相邻顶点是否出现在对面方向最外层顶点中。
     *
@@ -164,17 +164,17 @@ public class L127_WordLadder {
         startQ.add(beginWord);
         endQ.add(endWord);
 
-        int stepCount = 2;                     // stepCount 为该题所求的最短路径顶点数，从2开始是已包含头尾的顶点
+        int stepCount = 2;                     // stepCount 为最终所求的最短路径顶点数，从2开始是已包含头尾的顶点
         while (!startQ.isEmpty()) {
             Set<String> neighbours = new HashSet<>();
-            for (String word: startQ) {                    // 遍历 startQ 中的每一个单词
-                for (int i = 0; i < word.length(); i++) {  // 寻找每一个单词的相邻单词（neighbouring words）
+            for (String word: startQ) {        // 不同于解法1，这里要遍历 startQ 中的所有单词，为每一个单词寻找相邻单词（neighbouring words）
+                for (int i = 0; i < word.length(); i++) {
                     StringBuilder transformed = new StringBuilder(word);
                     for (char c = 'a'; c <= 'z'; c++) {
                         if (c == word.charAt(i)) continue;
                         transformed.setCharAt(i, c);
                         String tWord = transformed.toString();
-                        if (endQ.contains(tWord)) return stepCount;  // 本侧的相邻顶点出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
+                        if (endQ.contains(tWord)) return stepCount;  // 本侧的相邻顶点也出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
                         if (unvisited.contains(tWord)) {
                             neighbours.add(tWord);
                             unvisited.remove(tWord);
@@ -182,11 +182,10 @@ public class L127_WordLadder {
                     }
                 }
             }
-
-            stepCount++;                            // 路径上的顶点数+1
+            stepCount++;                            // 上面循环过程中没有 return 说明正反向查找还未相遇，因此让路径上的顶点数+1
 
             if (endQ.size() < neighbours.size()) {  // 若 endQ 中的顶点数少，则调换方向，下一轮从反向查找，遍历 endQ 中的顶点
-                startQ = endQ;
+                startQ = endQ;                      // 下一轮要遍历谁就把谁赋给 startQ
                 endQ = neighbours;                  // 本轮中找到的相邻顶点（本侧最外层顶点）作为下一轮中的 endQ，用于检测是否正反向相遇
             }
             else startQ = neighbours;               // 若 endQ 中顶点多，则下一轮继续正向查找（即将本轮中正向的最外层顶点作为 startQ）
