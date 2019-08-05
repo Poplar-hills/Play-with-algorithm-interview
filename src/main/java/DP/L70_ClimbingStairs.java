@@ -86,15 +86,15 @@ public class L70_ClimbingStairs {
         return dfs(0, n, pathNums);
     }
 
-    private static int dfs(int curr, int target, int[] pathNums) {
-        if (curr == target) return 1;
-        if (pathNums[curr] != -1) return pathNums[curr];
+    private static int dfs(int currStep, int targetStep, int[] pathNums) {
+        if (currStep == targetStep) return 1;
+        if (pathNums[currStep] != -1) return pathNums[currStep];
 
         int pathNum = 0;
-        for (int i = 1; i <= 2 && curr + i <= target; i++)  // 相邻的两个顶点的值不能相差超过2，且顶点值不能超过 n
-            pathNum += dfs(curr + i, target, pathNums);
+        for (int i = 1; i <= 2 && currStep + i <= targetStep; i++)  // 相邻的两个顶点的值不能相差超过2，且顶点值不能超过 n
+            pathNum += dfs(currStep + i, targetStep, pathNums);
 
-        return pathNums[curr] = pathNum;
+        return pathNums[currStep] = pathNum;
     }
 
     /*
@@ -104,23 +104,23 @@ public class L70_ClimbingStairs {
      * */
     public static int climbStairs4(int n) {
         List<List<Integer>> res = new ArrayList<>();
+        Queue<List<Integer>> q = new LinkedList<>();  // 队列存储所有从 source 出发的路径，每个分支都是一条新路径
 
-        Queue<List<Integer>> q = new LinkedList<>();
         List<Integer> initialPath = new ArrayList<>();
         initialPath.add(0);
         q.offer(initialPath);
 
         while (!q.isEmpty()) {
-            List<Integer> path = q.poll();
-            int lastVertex = path.get(path.size() - 1);
-            if (lastVertex == n) {
-                res.add(path);
+            List<Integer> path = q.poll();               // 每次拿出一条路径
+            int lastVertex = path.get(path.size() - 1);  // 获取路径中的最后一个顶点
+            if (lastVertex == n) {  // 若该顶点就是 targetStep 顶点则说明该是一条有效路径，放入 res 中；而那些走不到
+                res.add(path);      // targetStep 上的路径（比如成环的路径）会被丢弃（poll 出来后不会再 offer 进去）
                 continue;
             }
-            for (int i = 1; i <= 2 && lastVertex + i <= n; i++) {
+            for (int i = 1; i <= 2 && lastVertex + i <= n; i++) {  // 获取所有相邻顶点
                 int adj = lastVertex + i;
-                if (path.contains(adj)) continue;
-                List<Integer> newPath = new ArrayList<>(path);
+                if (path.contains(adj)) continue;               // 若顶点已存在于该路径中，则说明已经访问过，不再继续（否则会成环）
+                List<Integer> newPath = new ArrayList<>(path);  // 复制该路径并 add 这个 adj 顶点，形成一条新路径，放入 q 中
                 newPath.add(adj);
                 q.offer(newPath);
             }
