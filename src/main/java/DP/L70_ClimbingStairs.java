@@ -10,28 +10,28 @@ import static Utils.Helpers.log;
 * Climbing Stairs
 *
 * - You are climbing a stair case. It takes n steps to reach to the top. Each time you can either climb 1 or 2 steps.
-*   In how many distinct ways can you climb to the top? Note: Given n will be a positive integer.
+*   In how many distinct ways can you climb to the top? Note: n > 0.
 * */
 
 public class L70_ClimbingStairs {
     /*
     * 解法1：找规律 -> Fibonacci
-    * - 思路：该问题非常类似 L279_PerfectSquares，同样可用图论建模：从顶点0开始，两顶点值之间相差不超过2，求有几条到达顶点 n 的路径：
-    *            1 ----> 3 ----> 5
+    * - 思路：该问题非常类似 L279_PerfectSquares，同样可图论建模：从顶点0开始，两顶点值之间相差不超过2，求有几条到达顶点 n 的路径：
+    *            1 ----> 3 ----> 5 ...
     *          ↗   ↘   ↗   ↘   ↗
-    *        0 ----> 2 ----> 4
-    *   当可视化之后发现每个顶点 n（除了0和1之外）都与 n-1 和 n-2 直接相连，因此可知：顶点 n 到达0的路径数 = 顶点 n-1 到达0的路径数
-    *   + 顶点 n-2 到达0的路径数，即 f(n) = f(n-1) + f(n-2)，即 Fibonacci sequence。因此该题目转化为求第 n 个 Fibonacci 数。
-    * - 实现：采用 DP/Fibonacci 中的解法3（bottom-up 方式的 DP）。
+    *        0 ----> 2 ----> 4 ...
+    *   ∵ n > 0，可知：当 n=1 时有1条路径；n=2 时有2条路径；n=3 时有3条路径；n=4 时有5条路径... 当有n级台阶时的路径数：
+    *   num(n) = num(n-1) + num(n-2)。该规律对应从第2项开始的 Fibonacci 数列（1, 2, 3, 5, 8... 而完整的 Fibonacci
+    *   数列是 1, 1, 2, 3, 5, 8...）。至此此该题目转化为求第 n 个 Fibonacci 数。
+    * - 实现：采用 bottom-up DP（即 Fibonacci.java 中的解法3）。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int climbStairs1(int n) {
-        int[] cache = new int[n + 2];
-        cache[0] = 0;
-        cache[1] = 1;
-        for (int i = 2; i <= n + 1; i++)
+        int[] cache = new int[n + 1];   // 或者使用 map 也可以
+        cache[0] = cache[1] = 1;        // 题中说了 n > 0，但仍要给 cache[0] 赋值用以生成 Fibonacci 数列
+        for (int i = 2; i <= n; i++)    // cache 中放入 fib(0), fib(1) 后再从小到大逐个计算更大的 n 值
             cache[i] = cache[i - 1] + cache[i - 2];
-        return cache[n + 1];
+        return cache[n];
     }
 
     /*
@@ -128,8 +128,8 @@ public class L70_ClimbingStairs {
     }
 
     public static void main(String[] args) {
-        log(climbStairs3(2));  // expects 2 (1+1, 2 in one go)
-        log(climbStairs3(3));  // expects 3 (1+1, 1+2, 2+1)
-        log(climbStairs3(5));  // expects 8
+        log(climbStairs1(2));  // expects 2 (1+1, 2 in one go)
+        log(climbStairs1(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs1(5));  // expects 8
     }
 }
