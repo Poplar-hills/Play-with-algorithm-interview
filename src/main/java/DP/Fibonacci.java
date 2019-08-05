@@ -18,7 +18,7 @@ import static Utils.Helpers.timeIt;
 
 public class Fibonacci {
     /*
-     * 解法1：自上而下（top-down）的 naive recursion 方式
+     * 解法1：top-down naive recursion 方式
      * - 时间复杂度 O(2^n)，因为每次调用方法都会产生2个分支再调用该方法，一共递归 n 次，所以总调用次数是 2^n；
      * - 空间复杂度 O(n)。
      * */
@@ -28,8 +28,8 @@ public class Fibonacci {
     }
 
     /*
-     * 解法1：自上而下（top-down）的 recursion + memoization（记忆化搜索，或叫缓存）
-     * - 时间复杂度 O(n)，因为每次调用该方法时 fib(n-1) 和 fib(n-2) 已经被计算过了，不需要重复计算，因此该方法总调用次数为 n 次；
+     * 解法2：top-down recursion + memoization（记忆化搜索，或叫缓存）
+     * - 时间复杂度 O(n)，每次调用该方法时 fib(n-1)、fib(n-2) 已经被计算过了，无需重复计算，因此总调用次数为 n 次；
      * - 空间复杂度 O(n)。
      * */
     public static int fib2(int n) {
@@ -44,8 +44,8 @@ public class Fibonacci {
     }
 
     /*
-     * 解法3：自下而上（bottom-up）方式
-     * - 思路：先找到 n 为最小值时的解，再层层递推出 n 为大值时的解（这个过程就是 DP）。
+     * 解法3：bottom-up iterative 方式
+     * - 思路：解法2的自下而上版 —— 先找到 n 为最小值时的解，再层层递推出 n 为更大值时的解（这个过程就是 DP）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。相比解法2，该解法在时间、空间效率上的统计效率都更高，因为：
      *   1. 没有递归，所以没有系统栈空间的消耗；
      *   2. 自下而上求解，使得 cache 中的每一项都只被访问1次（解法2中会被访问多次）。
@@ -54,7 +54,7 @@ public class Fibonacci {
         Map<Integer, Integer> cache = new HashMap<>();
         cache.put(0, 0);
         cache.put(1, 1);
-        for (int i = 2; i <= n; i++)
+        for (int i = 2; i <= n; i++)  // cache 中放入 fib(0), fib(1) 后再从小到大逐个计算更大的 n 值
             cache.put(i, cache.get(i - 1) + cache.get(i - 2));
         return cache.get(n);
     }
