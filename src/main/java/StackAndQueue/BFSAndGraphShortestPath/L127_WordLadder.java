@@ -230,36 +230,37 @@ public class L127_WordLadder {
 
     /*
     * 解法5：生成 Graph + BFS
-    * - 思路：不同于解法1-4，该解法先通过生成邻接矩阵更直接地将问题建模为图论问题，再通过 BFS 进行求解。
+    * - 思路：不同于解法1-4，该解法先构建邻接矩阵更直接地将问题建模为图论问题，再通过 BFS 求解。而构建邻接矩阵的过程实际上就是确定
+    *   顶点直接的链接关系，即每个顶点相邻顶点都有哪些。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int ladderLength5(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
-        if (!wordList.contains(beginWord)) wordList.add(beginWord);
+        if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 需要把 beginWord 加入 wordList 才能开始建立图
 
         int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];  // 创建基于 wordList 的邻接矩阵（邻接表也可以，SEE L127）
+        boolean[][] graph = new boolean[n][n];  // 创建基于 wordList index 的邻接矩阵（邻接表也可以，SEE: L126 方法1）
         for (int i = 0; i < n; i++)
-            for (int j = 0; j < i; j++)  // 是 i < j（不是 i < n），即只遍历左下部分，而通过下面的 graph[i][j] = graph[j][i] = .. 使得右上也被遍历到
+            for (int j = 0; j < i; j++)         // 注意是 i < j，即只遍历矩阵的左下部分，而通过下面的 graph[i][j] = graph[j][i] = .. 使得右上部分也被填充
                 graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));  // 矩阵中存储的是两两 word 是否相邻的关系
 
         return bsf(graph, wordList, beginWord, endWord);  // 在邻接矩阵上进行 BFS
     }
 
     private static int bsf(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
-        Queue<Integer> q = new LinkedList<>();   // 队列中存储的是顶点在 wordList 中的 index
-        int[] steps = new int[wordList.size()];  // steps 中每个位置存储从 beginWord 出发到 wordList 中对应位置上的单词的步数（这是不同于 Queue<String, Integer> 的另一种计数方式）
+        Queue<Integer> q = new LinkedList<>();    // 队列中存储的是顶点在 wordList 中的 index（而非具体单词），因为构建的邻接矩阵也是使用顶点的 index 构建的
+        int[] steps = new int[wordList.size()];   // steps 中每个位置存储从 beginWord 出发到 wordList 中对应位置上的单词的步数（这是不同于 Queue<String, Integer> 的另一种计数方式）
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
 
         q.offer(beginIndex);
-        steps[beginIndex] = 1;  // 因为题中要求最终结果里 beginWord 也算一步，因此这里初始化为1
+        steps[beginIndex] = 1;                    // 因为题中要求最终结果里 beginWord 也算一步，因此这里初始化为1
 
         while (!q.isEmpty()) {
             int currIndex = q.poll();             // poll 出来的是 index，而非具体单词
             boolean[] edges = graph[currIndex];   // 在邻接矩阵中找到当前顶点与其他顶点的链接关系
             for (int i = 0; i < edges.length; i++) {
-                if (steps[i] == 0 && edges[i]) {  // 如果是 currIndex 所指单词的相邻单词，且还未被访问过
+                if (edges[i] && steps[i] == 0) {  // 如果与 currIndex 所指单词相邻，且还未被访问过
                     if (i == endIndex) return steps[currIndex] + 1;
                     steps[i] = steps[currIndex] + 1;
                     q.offer(i);
@@ -271,9 +272,9 @@ public class L127_WordLadder {
 
     /*
     * 解法6：生成 Graph + Bi-directional BFS
-    * - 思路：在解法5（生成邻接矩阵）的基础上使用 Bi-directional BFS。但该解法中 Bi-directional BFS 的实现（即 biDirectionalBfs
-    *   方法）不同于解法3、4中两个方向交替进行查找的方式，而是
-    *   1. 同时从起点和终点开始对整个图进行广度优先遍历。
+    * - 思路：在解法5的邻接矩阵的基础上使用 Bi-directional BFS。但该解法中 Bi-directional BFS 的实现（即 biDirectionalBfs
+    *   方法）不同于解法3、4中两个方向交替进行查找的方式，而是：
+    *   1. 同时从起点和终点开始对整个图进行 BFS。
     *   2. 每次正向和反向都向前查找一个顶点的所有相邻顶点，计算从起/终点到这些顶点的步数，并分别记录在 beginSteps 和 endSteps 中。
     *   3. 检测 beginSteps、endSteps 中是否存在能同时从起、终点到达的顶点，并从所有这样的路径中求出最短的来。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
