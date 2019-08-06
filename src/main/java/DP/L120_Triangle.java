@@ -50,14 +50,55 @@ public class L120_Triangle {
     /*
     * 解法1：
     * - 思路：该题也可用图论建模：
-    *          -1
-    *         ↙  ↘
-    *        2    3
-    *      ↙  ↘  ↙  ↘
-    *     1    -1   -3
-    *   至此该题转化为求图上哪条路径的节点值之和最小。而要求路径的节点值之和，需先求得路径。
+    *            -1
+    *           ↙  ↘
+    *          2    3
+    *        ↙  ↘  ↙  ↘
+    *       1    -1   -3
+    *   建模后该题转化为，求从顶层到底层顶点的路径中节点值之和最小的那条路径。
+    * - 采用 BFS，
+    * - 时间复杂度 O()，空间复杂度 O()。
     * */
+    static class RouteSum {
+        int level, index, sum;
+        public RouteSum(int level, int index, int sum) {
+            this.level = level;
+            this.index = index;
+            this.sum = sum;
+        }
+    }
+
     public static int minimumTotal1(List<List<Integer>> triangle) {
+        int res = Integer.MAX_VALUE;
+        if (triangle == null) return res;
+
+        Queue<RouteSum> q = new LinkedList<>();
+        q.offer(new RouteSum(0, 0, triangle.get(0).get(0)));  // q 中保存 <level, index, sum> 信息
+
+        while (!q.isEmpty()) {
+            RouteSum routeSum = q.poll();
+            
+            for (int i = 0; i < 2; i++) {
+                int newLevel = routeSum.level + 1;
+                int newIndex = routeSum.index + i;
+                int newSum = routeSum.sum + triangle.get(newLevel).get(newIndex);  // 到下一层中取相邻顶点
+
+                if (newLevel == triangle.size() - 1)  // 若已抵达 bottom level
+                    res = Math.min(res, newSum);
+                else
+                    q.offer(new RouteSum(newLevel, newIndex, newSum));
+            }
+        }
+
+        return res;
+    }
+
+    /*
+     * 解法2：
+     * - 思路：bottom-up DP
+     * - 时间复杂度 O()，空间复杂度 O()。
+    */
+    public static int minimumTotal2(List<List<Integer>> triangle) {
         return 0;
     }
 
