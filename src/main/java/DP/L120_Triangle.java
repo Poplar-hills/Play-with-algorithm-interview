@@ -15,31 +15,40 @@ import static Utils.Helpers.log;
 
 public class L120_Triangle {
     /*
-    * 超时解：找到所有 path 后再计算最小的 sum。
-    * - 思路：与 L70_ClimbingStairs 中的超时解一致。
+    * 超时解1：
+    * - 思路：与 L70_ClimbingStairs 中的超时解一致，用图论建模：
+    *            -1
+    *           ↙  ↘
+    *          2    3
+    *        ↙  ↘  ↙  ↘
+    *       1    -1   -3
+    *   建模后该题转化为求从顶层到底层顶点的路径中最小的顶点值之和，因此要用 BFS 找到每一条路径，同时求其中最小的顶点值之和。
+    * - 时间复杂度 O(2^n)：∵ 每个顶点都会产生2个分支 ∴ 复杂度与 Fibonacci.java 的解法1一致。
+    * - 空间复杂度 O(nlogn)：queue 中同一时间最多存储 n/2 条路径（完美二叉树最底层节点个数为 n/2），而每条路径中有 logn（树高）个顶点。
     * */
     public static int minimumTotal(List<List<Integer>> triangle) {
         int res = Integer.MAX_VALUE;
 
-        Queue<List<Integer>> q = new LinkedList<>();  // 队列中存放 index path，每条 path 中存放元素的 index 而非元素值本身
-        List<Integer> initialIndexPath = new ArrayList<>();
-        initialIndexPath.add(0);
-        q.offer(initialIndexPath);
+        Queue<List<Integer>> q = new LinkedList<>();  // 队列中存放 path，每条 path 中存放每个顶点在其 level 上的 index
+        List<Integer> initialPath = new ArrayList<>();
+        initialPath.add(0);
+        q.offer(initialPath);
 
         while (!q.isEmpty()) {
-            List<Integer> indexPath = q.poll();
-            if (indexPath.size() == triangle.size()) {
-                int sum = 0;
-                for (int i = 0; i < indexPath.size(); i++)
-                    sum += triangle.get(i).get(indexPath.get(i));    // 求该 path 的所有元素值之和    public static int minimumTotal(List<List<Integer>> triangle) {
+            List<Integer> path = q.poll();
 
+            if (path.size() == triangle.size()) {     // 若一个 path 中的顶点个数 == triangle 的高度，则说明已经到底
+                int sum = 0;                          // 开始求该 path 的所有顶点值之和
+                for (int i = 0; i < path.size(); i++)
+                    sum += triangle.get(i).get(path.get(i));
                 res = Math.min(res, sum);
-                continue;
+                continue;                             // 退出循环
             }
-            int currIndex = indexPath.get(indexPath.size() - 1);     // 获取当前元素在其 level 上的 index
-            for (int i = 0; i < 2; i++) {                            // 遍历所有可能的下一步节点
-                List<Integer> newPath = new ArrayList<>(indexPath);  // 复制当前的 path
-                newPath.add(currIndex + i);                          // 将下一步节点的 index 放入 newPath 中
+
+            int currIndex = path.get(path.size() - 1);  // 若该 path 还未到底，则获取其最新经过的顶点在其 level 上的 index
+            for (int i = 0; i < 2; i++) {               // 寻找相邻顶点
+                List<Integer> newPath = new ArrayList<>(path);   // 复制当前的 path（这个技巧很有用）
+                newPath.add(currIndex + i);                      // 将下一步节点的 index 放入 newPath 中
                 q.offer(newPath);
             }
         }
@@ -48,20 +57,15 @@ public class L120_Triangle {
     }
 
     /*
-    * 解法1：
-    * - 思路：该题也可用图论建模：
-    *            -1
-    *           ↙  ↘
-    *          2    3
-    *        ↙  ↘  ↙  ↘
-    *       1    -1   -3
-    *   建模后该题转化为，求从顶层到底层顶点的路径中节点值之和最小的那条路径。
-    * - 采用 BFS，
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * 超时解2：
+    * - 思路：本解法本质上和超时解1的思路是一样的，同样也是采用 BFS 遍历每一条路径。区别在于本解法中 queue 里存的不是代表路径的顶点列表，
+    *   而是由 level, index, sum 三者确定的一条路径的最新状态，level, index 记录路径经过的最新顶点，sum 记录路径当前的节点值之和。
+    * - 时间复杂度 O(2^n)：解释同超时解1。
+    * - 空间复杂度 O(n)：queue 中每个元素只是 Path 对象，而非如超时解1中的整个顶点列表，因此不需要乘以 logn。
     * */
-    static class RouteSum {
-        final int level, index, sum;  // immutable
-        public RouteSum(int level, int index, int sum) {
+    static class Path {
+        final int level, index, sum;  // immutable memebers
+        public Path(int level, int index, int sum) {
             this.level = level;
             this.index = index;
             this.sum = sum;
@@ -72,21 +76,23 @@ public class L120_Triangle {
         int res = Integer.MAX_VALUE;
         if (triangle == null) return res;
 
-        Queue<RouteSum> q = new LinkedList<>();
-        q.offer(new RouteSum(0, 0, triangle.get(0).get(0)));  // q 中保存 <level, index, sum> 信息
+        Queue<Path> q = new LinkedList<>();
+        q.offer(new Path(0, 0, triangle.get(0).get(0)));  // 队列中保存 <level, index, sum> 信息，sum 初始化为根顶点值
 
         while (!q.isEmpty()) {
-            RouteSum routeSum = q.poll();
+            Path path = q.poll();
+            int level = path.level;
+            int index = path.index;
+            int sum = path.sum;
+
+            if (level == triangle.size() - 1) {  // 若已抵达 bottom level 则不再入队，只比较 sum
+                res = Math.min(res, sum);
+                continue;
+            }
 
             for (int i = 0; i < 2; i++) {
-                int newLevel = routeSum.level + 1;
-                int newIndex = routeSum.index + i;
-                int newSum = routeSum.sum + triangle.get(newLevel).get(newIndex);  // 到下一层中取相邻顶点
-
-                if (newLevel == triangle.size() - 1)  // 若已抵达 bottom level
-                    res = Math.min(res, newSum);
-                else
-                    q.offer(new RouteSum(newLevel, newIndex, newSum));
+                int adj = triangle.get(level + 1).get(index + i);    // 到下一层中取相邻顶点
+                q.offer(new Path(level + 1, index + i, sum + adj));  // 每个相邻顶点都是一个分支，即产生一条新的路径
             }
         }
 
@@ -103,17 +109,21 @@ public class L120_Triangle {
     }
 
     public static void main(String[] args) {
-        log(minimumTotal1(Arrays.asList(
+        log(minimumTotal(Arrays.asList(
                 Arrays.asList(2),
                 Arrays.asList(3, 4),
                 Arrays.asList(6, 5, 7),
                 Arrays.asList(4, 1, 8, 3)
         )));  // expects 11 (2 + 3 + 5 + 1)
 
-        log(minimumTotal1(Arrays.asList(
+        log(minimumTotal(Arrays.asList(
                 Arrays.asList(-1),
                 Arrays.asList(2, 3),
                 Arrays.asList(1, -1, -3)
         )));  // expects -1 (-1 + 3 + -3) 注意不是从每行中找到最小值就行，如：(-1 + 2 + -3)
+
+        log(minimumTotal(Arrays.asList(
+                Arrays.asList(-10)
+        )));  // expects -10
     }
 }

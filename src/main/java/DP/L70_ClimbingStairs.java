@@ -100,7 +100,7 @@ public class L70_ClimbingStairs {
     /*
      * 超时解：BFS 全搜索（虽然超时，但是结果正确）
      * - 思路：先用 BFS 找出图上从 0 到 n 之间的所有路径，再取个数。解释 SEE: play-with-algorithms/Graph/Path 中的 allPaths 方法。
-     * - TODO: 时间复杂度？？？
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)（解释 SEE: L120 超时解1）
      * */
     public static int climbStairs4(int n) {
         List<List<Integer>> res = new ArrayList<>();
