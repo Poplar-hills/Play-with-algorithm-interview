@@ -126,7 +126,7 @@ public class L120_Triangle {
 
     /*
     * 解法2：bottom-up DP
-    * - 思路：与解法1一样，只是写法不同。
+    * - 思路：与解法1一样，只是写法不同，另外操作数组比操作 List 更快，因此该解法统计性能更优。
     * - 时间复杂度 O(h^2)，空间复杂度 O(n)，其中 h 为三角形高度。
     * */
     public static int minimumTotal2(List<List<Integer>> triangle) {
