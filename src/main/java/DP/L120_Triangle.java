@@ -28,7 +28,6 @@ public class L120_Triangle {
     * */
     public static int minimumTotal(List<List<Integer>> triangle) {
         int res = Integer.MAX_VALUE;
-
         Queue<List<Integer>> q = new LinkedList<>();  // 队列中存放 path，每条 path 中存放每个顶点在其 level 上的 index
         List<Integer> initialPath = new ArrayList<>();
         initialPath.add(0);
@@ -74,8 +73,6 @@ public class L120_Triangle {
 
     public static int minimumTotal1(List<List<Integer>> triangle) {
         int res = Integer.MAX_VALUE;
-        if (triangle == null) return res;
-
         Queue<Path> q = new LinkedList<>();
         q.offer(new Path(0, 0, triangle.get(0).get(0)));  // 队列中保存 <level, index, sum> 信息，sum 初始化为根顶点值
 
@@ -100,29 +97,46 @@ public class L120_Triangle {
     }
 
     /*
-     * 解法2：
-     * - 思路：bottom-up DP
-     * - 时间复杂度 O()，空间复杂度 O()。
-    */
+    * 解法2：bottom-up DP
+    * - 思路：横向顶点直接进行比较，纵向层与层之间进行 reduce：
+    *            -1                -1              -1
+    *           /  \              /  \
+    *          2    3     --->   1    0    --->
+    *        /  \  /  \
+    *       1    -1   -3
+    *   在第三层中从 (1, -1) 中选出-1加到第二层的2上；(-1, -3) 中选出-3加到第二层的3上。在第二层中从 (1, 0) 中选出0加到
+    *   第一层的-1上，得到最终结果-1。
+    * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+    * */
     public static int minimumTotal2(List<List<Integer>> triangle) {
-        return 0;
+        for (int i = triangle.size() - 1; i > 0; i--) {    // 从下到上遍历 triangle 中除了顶层以外的每一层。O(logn)（树高）
+            List<Integer> upperLevel = triangle.get(i - 1);
+            List<Integer> currLevel = triangle.get(i);
+
+            for (int j = 0; j < upperLevel.size(); j++) {  // 合并 upperLevel 和 currLevel。O(n)（每层最多有 n/2 个节点）
+                int min = Math.min(currLevel.get(j), currLevel.get(j + 1));
+                upperLevel.set(j, upperLevel.get(j) + min);
+            }
+        }
+
+        return triangle.get(0).get(0);
     }
 
     public static void main(String[] args) {
-        log(minimumTotal(Arrays.asList(
+        log(minimumTotal2(Arrays.asList(
                 Arrays.asList(2),
                 Arrays.asList(3, 4),
                 Arrays.asList(6, 5, 7),
                 Arrays.asList(4, 1, 8, 3)
         )));  // expects 11 (2 + 3 + 5 + 1)
 
-        log(minimumTotal(Arrays.asList(
+        log(minimumTotal2(Arrays.asList(
                 Arrays.asList(-1),
                 Arrays.asList(2, 3),
                 Arrays.asList(1, -1, -3)
         )));  // expects -1 (-1 + 3 + -3) 注意不是从每行中找到最小值就行，如：(-1 + 2 + -3)
 
-        log(minimumTotal(Arrays.asList(
+        log(minimumTotal2(Arrays.asList(
                 Arrays.asList(-10)
         )));  // expects -10
     }
