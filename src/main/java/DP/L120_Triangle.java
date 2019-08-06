@@ -71,7 +71,7 @@ public class L120_Triangle {
         }
     }
 
-    public static int minimumTotal1(List<List<Integer>> triangle) {
+    public static int minimumTotal0(List<List<Integer>> triangle) {
         int res = Integer.MAX_VALUE;
         Queue<Path> q = new LinkedList<>();
         q.offer(new Path(0, 0, triangle.get(0).get(0)));  // 队列中保存 <level, index, sum> 信息，sum 初始化为根顶点值
@@ -97,7 +97,7 @@ public class L120_Triangle {
     }
 
     /*
-    * 解法2：bottom-up DP
+    * 解法1：bottom-up DP
     * - 思路：横向顶点直接进行比较，纵向层与层之间进行 reduce：
     *            -1                -1              -1
     *           /  \              /  \
@@ -108,7 +108,7 @@ public class L120_Triangle {
     *   第一层的-1上，得到最终结果-1。
     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
     * */
-    public static int minimumTotal2(List<List<Integer>> triangle) {
+    public static int minimumTotal1(List<List<Integer>> triangle) {
         for (int i = triangle.size() - 1; i > 0; i--) {    // 从下到上遍历 triangle 中除了顶层以外的每一层。O(logn)（树高）
             List<Integer> upperLevel = triangle.get(i - 1);
             List<Integer> currLevel = triangle.get(i);
@@ -122,6 +122,24 @@ public class L120_Triangle {
         return triangle.get(0).get(0);
     }
 
+    /*
+    * 解法2：bottom-up DP
+    * - 思路：与解法1一样。
+    * - 时间复杂度 O(TODO: ????)，空间复杂度 O(n)。
+    * */
+    public static int minimumTotal2(List<List<Integer>> triangle) {
+        int n = triangle.size();
+
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++)
+            arr[i] = triangle.get(n - 1).get(i);  // 用 bottom level 初始化 arr
+
+        for (int i = n - 2; i >= 0; i--)          // 从倒数第2层开始往上遍历
+            for (int j = 0; j <= i; j++)          // 遍历每一层（第 i 层共有 i 个元素）
+                arr[j] = Math.min(arr[j], arr[j + 1]) + triangle.get(i).get(j);
+
+        return arr[0];
+    }
     public static void main(String[] args) {
         log(minimumTotal2(Arrays.asList(
                 Arrays.asList(2),
