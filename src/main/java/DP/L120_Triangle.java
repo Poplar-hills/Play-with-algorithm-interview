@@ -60,7 +60,7 @@ public class L120_Triangle {
     * - 时间复杂度 O()，空间复杂度 O()。
     * */
     static class RouteSum {
-        int level, index, sum;
+        final int level, index, sum;  // immutable
         public RouteSum(int level, int index, int sum) {
             this.level = level;
             this.index = index;
@@ -77,7 +77,7 @@ public class L120_Triangle {
 
         while (!q.isEmpty()) {
             RouteSum routeSum = q.poll();
-            
+
             for (int i = 0; i < 2; i++) {
                 int newLevel = routeSum.level + 1;
                 int newIndex = routeSum.index + i;
