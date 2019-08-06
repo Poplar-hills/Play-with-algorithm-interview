@@ -106,16 +106,18 @@ public class L120_Triangle {
     *       1    -1   -3
     *   在第三层中从 (1, -1) 中选出-1加到第二层的2上；(-1, -3) 中选出-3加到第二层的3上。在第二层中从 (1, 0) 中选出0加到
     *   第一层的-1上，得到最终结果-1。
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+    * - 时间复杂度 O(h^2)，空间复杂度 O(1)，其中 h 为三角形高度。
     * */
     public static int minimumTotal1(List<List<Integer>> triangle) {
-        for (int i = triangle.size() - 1; i > 0; i--) {    // 从下到上遍历 triangle 中除了顶层以外的每一层。O(logn)（树高）
+        int h = triangle.size();
+
+        for (int i = h - 1; i > 0; i--) {    // 从下到上遍历 triangle 中除了顶层以外的每一层
             List<Integer> upperLevel = triangle.get(i - 1);
             List<Integer> currLevel = triangle.get(i);
 
-            for (int j = 0; j < upperLevel.size(); j++) {  // 合并 upperLevel 和 currLevel。O(n)（每层最多有 n/2 个节点）
+            for (int j = 0; j < h; j++) {    // 合并 upperLevel 和 currLevel
                 int min = Math.min(currLevel.get(j), currLevel.get(j + 1));
-                upperLevel.set(j, upperLevel.get(j) + min);
+                upperLevel.set(j, upperLevel.get(j) + min);  // 直接更高上一层中的元素
             }
         }
 
@@ -124,17 +126,17 @@ public class L120_Triangle {
 
     /*
     * 解法2：bottom-up DP
-    * - 思路：与解法1一样。
-    * - 时间复杂度 O(TODO: ????)，空间复杂度 O(n)。
+    * - 思路：与解法1一样，只是写法不同。
+    * - 时间复杂度 O(h^2)，空间复杂度 O(n)，其中 h 为三角形高度。
     * */
     public static int minimumTotal2(List<List<Integer>> triangle) {
-        int n = triangle.size();
+        int h = triangle.size();
 
-        int[] arr = new int[n];
-        for (int i = 0; i < n; i++)
-            arr[i] = triangle.get(n - 1).get(i);  // 用 bottom level 初始化 arr
+        int[] arr = new int[h];                   // 开辟额外空间，不改变 triangle 中的值
+        for (int i = 0; i < h; i++)
+            arr[i] = triangle.get(h - 1).get(i);  // 用 bottom level 初始化 arr
 
-        for (int i = n - 2; i >= 0; i--)          // 从倒数第2层开始往上遍历
+        for (int i = h - 2; i >= 0; i--)          // 从倒数第2层开始往上遍历
             for (int j = 0; j <= i; j++)          // 遍历每一层（第 i 层共有 i 个元素）
                 arr[j] = Math.min(arr[j], arr[j + 1]) + triangle.get(i).get(j);
 
