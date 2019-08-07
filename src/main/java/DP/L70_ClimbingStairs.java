@@ -37,10 +37,13 @@ public class L70_ClimbingStairs {
     /*
      * 解法2：DFS
      * - 思路：解法1中对该题使用图论建模后，题目就转化成了：求图上两点之间的路径条数，若采用正统一些的解法就是 BFS 或 DFS。本解法
-     *   采用 DFS，即任一顶点到终点的路径条数 = sum(其所有下游相邻顶点到终点的路径条数)。按该思路使用递归求解非常自然。
-     * - 实现：不管是 BFS 或 DFS，过执行程中都需要能找到任一顶点的所有相邻顶点，大体有2种方式：
-     *   1. 提前创建好 graph（本解法采用这种方式）；
-     *   2. 需要的时候再计算。
+     *   采用 DFS，即任一顶点到终点的路径条数 = sum(其所有下游相邻顶点到终点的路径条数)，比如上图中，2到5的路径数 = 3到5的路径数
+     *   + 4到5的路径数。
+     * - 实现：
+     *   - 按该思路使用递归求解非常自然；
+     *   - 不管是 BFS 或 DFS，过执行程中都需要能找到任一顶点的所有相邻顶点，大体有2种方式：
+     *     1. 提前创建好 graph（本解法采用这种方式）；
+     *     2. 需要的时候再计算。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs2(int n) {
@@ -130,8 +133,8 @@ public class L70_ClimbingStairs {
     }
 
     public static void main(String[] args) {
-        // log(climbStairs2(2));  // expects 2 (1+1, 2 in one go)
-        // log(climbStairs2(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs2(2));  // expects 2 (1+1, 2 in one go)
+        log(climbStairs2(3));  // expects 3 (1+1, 1+2, 2+1)
         log(climbStairs2(5));  // expects 8
     }
 }
