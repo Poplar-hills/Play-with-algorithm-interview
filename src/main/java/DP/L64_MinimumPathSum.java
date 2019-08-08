@@ -93,33 +93,34 @@ public class L64_MinimumPathSum {
 
     /*
     * 解法2：DFS
-    * - 思路：
+    * - 思路：从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum。
     *
     *
     * */
     public static int minPathSum2(int[][] grid) {
         int[][] cache = new int[grid.length][grid[0].length];
-        return minPathSum2(grid, 0, 0, cache);
+        return calcNodeMinPathSum(grid, 0, 0, cache);
     }
 
-    private static int minPathSum2(int[][] grid, int row, int col, int[][] cache) {
+    private static int calcNodeMinPathSum(int[][] grid, int row, int col, int[][] cache) {
         int rowCount = grid.length;
         int colCount = grid[0].length;
 
-        if (row == rowCount - 1 && col == colCount - 1)  // 若到达右下角则返回最终结果
+        if (row == rowCount - 1 && col == colCount - 1)  // 递归终止条件：到达右下角，此时返回右下角节点的值
             return grid[row][col];
-        if (cache[row][col] != 0)                // 若该坐标之前已经计算过则使用缓存（Q: 是否应在初始化时将 cache 填充-1？？？）
+
+        if (cache[row][col] != 0)  // 有缓存就用缓存（Q: 是否应在初始化时将 cache 填充-1？？？）
             return cache[row][col];
 
-        int rowInc = Integer.MAX_VALUE;
-        int colInc = Integer.MAX_VALUE;
+        int sumFromBelow = Integer.MAX_VALUE;  // 下方节点的 path sum
+        int sumFromRight = Integer.MAX_VALUE;  // 右侧节点的 path sum
 
         if (row < rowCount - 1)
-            rowInc = minPathSum2(grid, row + 1, col, cache);
+            sumFromBelow = calcNodeMinPathSum(grid, row + 1, col, cache);  // 若还未到达最底层 row 则计算当前节点下方的节点
         if (col < colCount - 1)
-            colInc = minPathSum2(grid, row, col + 1, cache);
+            sumFromRight = calcNodeMinPathSum(grid, row, col + 1, cache);  // 若还未到达最右侧 column 则计算当前节点右侧的节点
 
-        cache[row][col] = Math.min(rowInc, colInc) + grid[row][col];
+        cache[row][col] = Math.min(sumFromBelow, sumFromRight) + grid[row][col]; // 递归到底（右下角节点）后在回来的路上开始真正计算
 
         return cache[row][col];
     }
