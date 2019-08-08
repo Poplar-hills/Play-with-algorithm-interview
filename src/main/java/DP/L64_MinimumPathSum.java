@@ -67,24 +67,24 @@ public class L64_MinimumPathSum {
     /*
     * 解法1：bottom-up DP
     * - 思路：
-    *       1 → 3 → 1       1 → 4 → 5       1 → 4 → 5
-    *       ↓   ↓   ↓       ↓   ↓   ↓       ↓   ↓   ↓
-    *       1 → 5 → 1  -->  2 → 5 → 1  -->  2 → 7 → 6
-    *       ↓   ↓   ↓       ↓   ↓   ↓       ↓   ↓   ↓
-    *       4 → 2 → 1       6 → 2 → 1       6 → 8 → 7
-    * - 时间复杂度 O(2^n)，空间复杂度 O(1)。
+    *       1 → 3 → 1           1 → 3 → 1           1 → 4 → 5           1 → 4 → 5
+    *       ↓   ↓   ↓   step1   ↓   ↓   ↓   step2   ↓   ↓   ↓   step3   ↓   ↓   ↓
+    *       1 → 5 → 1  ------>  2 → 5 → 1  ------>  2 → 5 → 1  ------>  2 → 7 → 6
+    *       ↓   ↓   ↓           ↓   ↓   ↓           ↓   ↓   ↓           ↓   ↓   ↓
+    *       4 → 2 → 1           6 → 2 → 1           6 → 2 → 1           6 → 8 → 7
+    * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
     * */
     public static int minPathSum1(int[][] grid) {
         int rowCount = grid.length;
         int colCount = grid[0].length;
 
-        for (int i = 1; i < rowCount; i++)  // 遍历除第1行之外的每一行，让每行第0个元素加上上一行的第0个元素
+        for (int i = 1; i < rowCount; i++)  // step1: 遍历除第1行之外的每一行，让每行第0个元素加上上一行的第0个元素
             grid[i][0] += grid[i - 1][0];
 
-        for (int j = 1; j < colCount; j++)  // 遍历除第1列之外的每一列，让每列第0个元素加上左边一列的第0个元素
+        for (int j = 1; j < colCount; j++)  // step2: 遍历除第1列之外的每一列，让每列第0个元素加上左边一列的第0个元素
             grid[0][j] += grid[0][j - 1];
 
-        for (int i = 1; i < rowCount; i++)  // 一边比较一边往右下角 reduce
+        for (int i = 1; i < rowCount; i++)  // step3: 计算除第一行和第一列外的所有节点，一边比较一边往右下角 reduce
             for (int j = 1; j < colCount; j++)
                 grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
 
@@ -92,10 +92,12 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法2：DFS
-    * - 思路：从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum。
-    *
-    *
+    * 解法2：top-down DP（即 DFS，即递归）
+    * - 思路：
+    *   1. 从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum；
+    *   2. ∵ 中间节点会被重复计算 ∴ 使用 memoization（cache）进行优化；
+    *   3. 思路上很类似 L279_PerfectSquares 中的解法2。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
     public static int minPathSum2(int[][] grid) {
         int[][] cache = new int[grid.length][grid[0].length];
