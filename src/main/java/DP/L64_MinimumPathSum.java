@@ -25,7 +25,7 @@ public class L64_MinimumPathSum {
     *        ↓   ↓   ↓
     *        4 → 2 → 1
     *   这样该问题就转化为了求左上到右下的所有路径中最小的节点值之和，因此可以用 BFS 找到每一条路径，同时求其中最小的顶点值之和。
-    * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(2^n)，空间复杂度 O(n)，其中 n 为节点个数。
     * */
     static class Path {
         final int row, col, sum;
