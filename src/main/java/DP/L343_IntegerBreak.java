@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 public class L343_IntegerBreak {
     /*
-    * 解法1：
+    * 解法1：top-down DP
     * - 思路：
     *   1. 因为需要将 n 分割成几份是未知的，因此很难使用循环解决（不知道需要几重循环），需要使用递归解决（只要设置好终止条件，
     *      其余的就交给递归即可）。
@@ -34,6 +34,7 @@ public class L343_IntegerBreak {
     *
     * - 原理：之所以可以使用这样的递归结构解决问题，是因为该题是一个求最优解的问题，而求最优解的问题只要可以分解，它就符合
     *   “最优子结构”性质，即“通过求子问题的最优解，可以获得原问题的最优解”。
+    * - 时间复杂度 O()，空间复杂度 O()。
     * */
     public static int integerBreak(int n) {
         assert n >= 2;               // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >= 2
@@ -43,13 +44,13 @@ public class L343_IntegerBreak {
     }
 
     private static int integerBreak(int n, int[] cache) {
-        if (n == 1) return 1;
+        if (n == 1) return 1;        // 递归终止条件
         if (cache[n] != -1) return cache[n];
 
         int res = -1;
-        for (int i = 1; i < n; i++)  // 每次将 n 分割成 i 和 n-i 两部分
-            res = Math.max(res, Math.max(i * (n - i), i * integerBreak(n - i)));  // 求三者中的最大值
-
+        for (int i = 1; i < n; i++)  // 将 n 按照 1+?、2+?、3+?...几种方案进行分割，并对子问题（n-i 部分）进行进一步分割
+            res = Math.max(res, Math.max(i*(n-i), i*integerBreak(n-i)));  // 求几种分割方案中的最优解（即各整数乘积最大者）
+                                     // i*(n-i) 是将 n 分成2部分的解；i*integerBreak(n-i) 是将 n 分成更多份的解中的最优解
         return cache[n] = res;
     }
     public static void main(String[] args) {
