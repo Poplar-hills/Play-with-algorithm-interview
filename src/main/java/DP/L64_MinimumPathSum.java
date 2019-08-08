@@ -38,11 +38,11 @@ public class L64_MinimumPathSum {
 
     public static int minPathSum(int[][] grid) {
         int res = Integer.MAX_VALUE;
+        int rowCount = grid.length;
+        int colCount = grid[0].length;
+
         Queue<Path> q = new LinkedList<>();
         q.offer(new Path(0, 0, grid[0][0]));
-
-        int rowNum = grid.length;
-        int columnNum = grid[0].length;
 
         while (!q.isEmpty()) {
             Path path = q.poll();
@@ -50,14 +50,14 @@ public class L64_MinimumPathSum {
             int column = path.column;
             int sum = path.sum;
 
-            if (row == rowNum - 1 && column == columnNum - 1) {  // 若已抵达右下角
+            if (row == rowCount - 1 && column == colCount - 1) {  // 若已抵达右下角
                 res = Math.min(res, sum);
                 continue;
             }
 
-            if (column < columnNum - 1)  // 若还没到最右侧一列，则入队右侧节点
+            if (column < colCount - 1)  // 若还没到最右侧一列，则入队右侧节点
                 q.offer(new Path(row, column + 1, sum + grid[row][column + 1]));
-            if (row < rowNum - 1)        // 若还没到最下面一行，则入队下方节点
+            if (row < rowCount - 1)        // 若还没到最下面一行，则入队下方节点
                 q.offer(new Path(row + 1, column, sum + grid[row + 1][column]));
         }
 
@@ -75,39 +75,39 @@ public class L64_MinimumPathSum {
     * - 时间复杂度 O(2^n)，空间复杂度 O(1)。
     * */
     public static int minPathSum1(int[][] grid) {
-        int m = grid.length;
-        int n = grid[0].length; 
+        int rowCount = grid.length;
+        int colCount = grid[0].length;
 
-        for (int i = 1; i < m; i++)  // 遍历除第1行之外的每一行，让每行第0个元素加上上一行的第0个元素
+        for (int i = 1; i < rowCount; i++)  // 遍历除第1行之外的每一行，让每行第0个元素加上上一行的第0个元素
             grid[i][0] += grid[i - 1][0];
 
-        for (int j = 1; j < n; j++)  // 遍历除第1列之外的每一列，让每列第0个元素加上左边一列的第0个元素
+        for (int j = 1; j < colCount; j++)  // 遍历除第1列之外的每一列，让每列第0个元素加上左边一列的第0个元素
             grid[0][j] += grid[0][j - 1];
 
-        for (int i = 1; i < m; i++)  // 一边比较一边往右下角 reduce
-            for (int j = 1; j < n; j++)
+        for (int i = 1; i < rowCount; i++)  // 一边比较一边往右下角 reduce
+            for (int j = 1; j < colCount; j++)
                 grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
 
-        return grid[m - 1][n - 1];    // 返回右下角的元素值
+        return grid[rowCount - 1][colCount - 1];   // 返回右下角的元素值
     }
 
     public static void main(String[] args) {
-        log(minPathSum1(new int[][]{
+        log(minPathSum2(new int[][]{
             new int[]{1, 3, 1},
             new int[]{1, 5, 1},
             new int[]{4, 2, 1}
         }));  // expects 7. (1->3->1->1->1)
 
-        log(minPathSum1(new int[][]{
+        log(minPathSum2(new int[][]{
             new int[]{1, 3, 4},
             new int[]{1, 2, 1},
         }));  // expects 5. (1->1->2->1)
 
-        log(minPathSum1(new int[][]{
+        log(minPathSum2(new int[][]{
             new int[]{1, 2, 3}
         }));  // expects 6.
 
-        log(minPathSum1(new int[][]{
+        log(minPathSum2(new int[][]{
             new int[]{0}
         }));  // expects 0.
     }
