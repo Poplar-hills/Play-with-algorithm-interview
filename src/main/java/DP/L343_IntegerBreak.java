@@ -56,20 +56,19 @@ public class L343_IntegerBreak {
 
     /*
     * 解法2：bottom-up DP
-    * - 思路：
-    *
-    *
+    * - 思路：与 L279_PerfectSquares 解法3极其类似。
+    * - 时间复杂度 O()，空间复杂度 O()。
     * */
     public static int integerBreak2(int n) {
         assert n >= 2;
         int[] cache = new int[n + 1];
-        cache[1] = 1;                  // 先解答最小问题
+        cache[1] = 1;                    // 先解答最小问题
 
-        for (int i = 2; i <= n; i++)
-            for (int j = 1; j < i; j++)
-                cache[i] = Math.max(cache[i], Math.max(j*(i-j), j*cache[i-j]));
+        for (int i = 2; i <= n; i++)     // 从小到大一个一个解决更大的问题
+            for (int j = 1; j < i; j++)  // 将 i 分割成 j 和 i-j
+                cache[i] = Math.max(cache[i], Math.max(j*(i-j), j*cache[i-j]));  // 此时 cache[i-j] 已经被计算过了
 
-        return cache[n];
+        return cache[n];                 // 最后返回最大问题的解
     }
 
     public static void main(String[] args) {
