@@ -72,23 +72,23 @@ public class L64_MinimumPathSum {
     *       1 → 5 → 1  ------>  2 → 5 → 1  ------>  2 → 5 → 1  ------>  2 → 7 → 6
     *       ↓   ↓   ↓           ↓   ↓   ↓           ↓   ↓   ↓           ↓   ↓   ↓
     *       4 → 2 → 1           6 → 2 → 1           6 → 2 → 1           6 → 8 → 7
-    * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(1)，其中 m 为行数，n 为列数。
     * */
     public static int minPathSum1(int[][] grid) {
-        int rowCount = grid.length;
-        int colCount = grid[0].length;
+        int m = grid.length;
+        int n = grid[0].length;
 
-        for (int i = 1; i < rowCount; i++)  // step1: 遍历除第1行之外的每一行，让每行第0个元素加上上一行的第0个元素
+        for (int i = 1; i < m; i++)  // step1: 遍历除第1行之外的每一行，让每行第0个元素加上上一行的第0个元素
             grid[i][0] += grid[i - 1][0];
 
-        for (int j = 1; j < colCount; j++)  // step2: 遍历除第1列之外的每一列，让每列第0个元素加上左边一列的第0个元素
+        for (int j = 1; j < n; j++)  // step2: 遍历除第1列之外的每一列，让每列第0个元素加上左边一列的第0个元素
             grid[0][j] += grid[0][j - 1];
 
-        for (int i = 1; i < rowCount; i++)  // step3: 计算除第一行和第一列外的所有节点，一边比较一边往右下角 reduce
-            for (int j = 1; j < colCount; j++)
+        for (int i = 1; i < m; i++)  // step3: 计算除第一行和第一列外的所有节点，一边比较一边往右下角 reduce
+            for (int j = 1; j < n; j++)
                 grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
 
-        return grid[rowCount - 1][colCount - 1];   // 返回右下角的元素值
+        return grid[m - 1][n - 1];   // 返回右下角的元素值
     }
 
     /*
@@ -97,7 +97,7 @@ public class L64_MinimumPathSum {
     *   1. 从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum；
     *   2. ∵ 中间节点会被重复计算 ∴ 使用 memoization（cache）进行优化；
     *   3. 思路上很类似 L279_PerfectSquares 中的解法2。
-    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)，其中 m 为行数，n 为列数。
     * */
     public static int minPathSum2(int[][] grid) {
         int[][] cache = new int[grid.length][grid[0].length];
@@ -105,10 +105,10 @@ public class L64_MinimumPathSum {
     }
 
     private static int calcNodeMinPathSum(int[][] grid, int row, int col, int[][] cache) {
-        int rowCount = grid.length;
-        int colCount = grid[0].length;
+        int m = grid.length;
+        int n = grid[0].length;
 
-        if (row == rowCount - 1 && col == colCount - 1)  // 递归终止条件：到达右下角，此时返回右下角节点的值
+        if (row == m - 1 && col == n - 1)      // 递归终止条件：到达右下角，此时返回右下角节点的值
             return grid[row][col];
 
         if (cache[row][col] != 0)              // 有缓存就用缓存（Q: 是否应在初始化时将 cache 填充-1？？？）
@@ -117,9 +117,9 @@ public class L64_MinimumPathSum {
         int sumFromBelow = Integer.MAX_VALUE;  // 下方节点的 path sum
         int sumFromRight = Integer.MAX_VALUE;  // 右侧节点的 path sum
 
-        if (row < rowCount - 1)
+        if (row < m - 1)
             sumFromBelow = calcNodeMinPathSum(grid, row + 1, col, cache);  // 若还未到达最底层 row 则计算当前节点下方的节点
-        if (col < colCount - 1)
+        if (col < n - 1)
             sumFromRight = calcNodeMinPathSum(grid, row, col + 1, cache);  // 若还未到达最右侧 column 则计算当前节点右侧的节点
 
         cache[row][col] = Math.min(sumFromBelow, sumFromRight) + grid[row][col]; // 递归到底（右下角节点）后在回来的路上开始真正计算
