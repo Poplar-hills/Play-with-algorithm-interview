@@ -111,7 +111,7 @@ public class L64_MinimumPathSum {
         if (row == rowCount - 1 && col == colCount - 1)  // 递归终止条件：到达右下角，此时返回右下角节点的值
             return grid[row][col];
 
-        if (cache[row][col] != 0)  // 有缓存就用缓存（Q: 是否应在初始化时将 cache 填充-1？？？）
+        if (cache[row][col] != 0)              // 有缓存就用缓存（Q: 是否应在初始化时将 cache 填充-1？？？）
             return cache[row][col];
 
         int sumFromBelow = Integer.MAX_VALUE;  // 下方节点的 path sum
