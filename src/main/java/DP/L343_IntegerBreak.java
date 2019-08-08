@@ -49,13 +49,32 @@ public class L343_IntegerBreak {
 
         int res = -1;
         for (int i = 1; i < n; i++)  // 将 n 按照 1+?、2+?、3+?...几种方案进行分割，并对子问题（n-i 部分）进行进一步分割
-            res = Math.max(res, Math.max(i*(n-i), i*integerBreak(n-i)));  // 求几种分割方案中的最优解（即各整数乘积最大者）
+            res = Math.max(res, Math.max(i*(n-i), i*integerBreak(n-i, cache)));  // 求几种分割方案中的最优解（即各整数乘积最大者）
                                      // i*(n-i) 是将 n 分成2部分的解；i*integerBreak(n-i) 是将 n 分成更多份的解中的最优解
         return cache[n] = res;
     }
+
+    /*
+    * 解法2：bottom-up DP
+    * - 思路：
+    *
+    *
+    * */
+    public static int integerBreak2(int n) {
+        assert n >= 2;
+        int[] cache = new int[n + 1];
+        cache[1] = 1;                  // 先解答最小问题
+
+        for (int i = 2; i <= n; i++)
+            for (int j = 1; j < i; j++)
+                cache[i] = Math.max(cache[i], Math.max(j*(i-j), j*cache[i-j]));
+
+        return cache[n];
+    }
+
     public static void main(String[] args) {
-        log(integerBreak(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
-        log(integerBreak(2));   // expects 1.  (2 = 1 + 1, 1 × 1 = 1)
-        log(integerBreak(10));  // expects 36. (10 = 3 + 3 + 4, 3 × 3 × 4 = 36)
+        log(integerBreak2(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
+        log(integerBreak2(2));   // expects 1.  (2 = 1 + 1, 1 × 1 = 1)
+        log(integerBreak2(10));  // expects 36. (10 = 3 + 3 + 4, 3 × 3 × 4 = 36)
     }
 }
