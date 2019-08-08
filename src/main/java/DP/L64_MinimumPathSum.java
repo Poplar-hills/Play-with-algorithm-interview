@@ -10,7 +10,7 @@ import java.util.Queue;
 *
 * - Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes
 *   the sum of all numbers along its path. Returns the sum at the end.
-* - Note: You can only move either down or right at any point in time.
+* - Rule: You can only move either down or right at any point in time.
 *
 * - 注意：本题与 L120 不同，L120 是由一个顶点出发到多个顶点结束，而本题中是由一个顶点出发到一个顶点结束。
 * */
@@ -114,15 +114,15 @@ public class L64_MinimumPathSum {
         if (cache[row][col] != 0)              // 有缓存就用缓存（Q: 是否应在初始化时将 cache 填充-1？？？）
             return cache[row][col];
 
-        int sumFromBelow = Integer.MAX_VALUE;  // 下方节点的 path sum
-        int sumFromRight = Integer.MAX_VALUE;  // 右侧节点的 path sum
+        int downSum = Integer.MAX_VALUE;  // 下方节点的 path sum
+        int rightSum = Integer.MAX_VALUE;  // 右侧节点的 path sum
 
         if (row < m - 1)
-            sumFromBelow = calcNodeMinPathSum(grid, row + 1, col, cache);  // 若还未到达最底层 row 则计算当前节点下方的节点
+            downSum = calcNodeMinPathSum(grid, row + 1, col, cache);  // 若还未到达最底层 row 则计算当前节点下方的节点
         if (col < n - 1)
-            sumFromRight = calcNodeMinPathSum(grid, row, col + 1, cache);  // 若还未到达最右侧 column 则计算当前节点右侧的节点
+            rightSum = calcNodeMinPathSum(grid, row, col + 1, cache);  // 若还未到达最右侧 column 则计算当前节点右侧的节点
 
-        cache[row][col] = Math.min(sumFromBelow, sumFromRight) + grid[row][col]; // 递归到底（右下角节点）后在回来的路上开始真正计算
+        cache[row][col] = Math.min(downSum, rightSum) + grid[row][col]; // 递归到底（右下角节点）后在回来的路上开始真正计算
 
         return cache[row][col];
     }
