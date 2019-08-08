@@ -28,10 +28,10 @@ public class L64_MinimumPathSum {
     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
     * */
     static class Path {
-        final int row, column, sum;
-        public Path(int row, int column, int sum) {
+        final int row, col, sum;
+        public Path(int row, int col, int sum) {
             this.row = row;
-            this.column = column;
+            this.col = col;
             this.sum = sum;
         }
     }
@@ -47,18 +47,18 @@ public class L64_MinimumPathSum {
         while (!q.isEmpty()) {
             Path path = q.poll();
             int row = path.row;
-            int column = path.column;
+            int col = path.col;
             int sum = path.sum;
 
-            if (row == rowCount - 1 && column == colCount - 1) {  // 若已抵达右下角
+            if (row == rowCount - 1 && col == colCount - 1) {  // 若已抵达右下角
                 res = Math.min(res, sum);
                 continue;
             }
 
-            if (column < colCount - 1)  // 若还没到最右侧一列，则入队右侧节点
-                q.offer(new Path(row, column + 1, sum + grid[row][column + 1]));
+            if (col < colCount - 1)  // 若还没到最右侧一列，则入队右侧节点
+                q.offer(new Path(row, col + 1, sum + grid[row][col + 1]));
             if (row < rowCount - 1)        // 若还没到最下面一行，则入队下方节点
-                q.offer(new Path(row + 1, column, sum + grid[row + 1][column]));
+                q.offer(new Path(row + 1, col, sum + grid[row + 1][col]));
         }
 
         return res;
@@ -89,6 +89,39 @@ public class L64_MinimumPathSum {
                 grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
 
         return grid[rowCount - 1][colCount - 1];   // 返回右下角的元素值
+    }
+
+    /*
+    * 解法2：DFS
+    * - 思路：
+    *
+    *
+    * */
+    public static int minPathSum2(int[][] grid) {
+        int[][] cache = new int[grid.length][grid[0].length];
+        return minPathSum2(grid, 0, 0, cache);
+    }
+
+    private static int minPathSum2(int[][] grid, int row, int col, int[][] cache) {
+        int rowCount = grid.length;
+        int colCount = grid[0].length;
+
+        if (row == rowCount - 1 && col == colCount - 1)  // 若到达右下角则返回最终结果
+            return grid[row][col];
+        if (cache[row][col] != 0)                // 若该坐标之前已经计算过则使用缓存（Q: 是否应在初始化时将 cache 填充-1？？？）
+            return cache[row][col];
+
+        int rowInc = Integer.MAX_VALUE;
+        int colInc = Integer.MAX_VALUE;
+
+        if (row < rowCount - 1)
+            rowInc = minPathSum2(grid, row + 1, col, cache);
+        if (col < colCount - 1)
+            colInc = minPathSum2(grid, row, col + 1, cache);
+
+        cache[row][col] = Math.min(rowInc, colInc) + grid[row][col];
+
+        return cache[row][col];
     }
 
     public static void main(String[] args) {
