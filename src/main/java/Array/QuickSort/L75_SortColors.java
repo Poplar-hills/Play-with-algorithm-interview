@@ -57,7 +57,12 @@ public class L75_SortColors {
 
     public static void main(String[] args) {
         int[] arr1 = new int[] {2, 0, 2, 1, 1, 0};
+        int[] arr2 = arr1.clone();
+
         sortColors1(arr1);
         log(arr1);  // expects [0, 0, 1, 1, 2, 2]
+
+        sortColors2(arr2);
+        log(arr2);  // expects [0, 0, 1, 1, 2, 2]
     }
 }
