@@ -59,12 +59,11 @@ public class L279_PerfectSquares {
     }
 
     /*
-    * 解法2：DFS（top-down DP，即递归）
+    * 解法2：Recursion + Memoization（也可以理解为 DFS）
     * - 思路：基于解法1中的图论建模思路，在具体实现时采用 DFS（SEE: Play-with-algorithms/Graph/Path.java)。具体来说是通过 DFS
     *   从 n 开始往0方向递归，计算每个顶点到达0的最少步数，从而得到前一个节点的到0的最少步数。
-    * - 本质：该解法实际上也是一种 DP，只是实现方式是 top-down 的（因为采用了递归），以及其中对于 overlap sub-problem 的优化策略
-    *   采用的是 Memoization，而非 bottom-up DP 中的 Tabulation。SEE: https://zhuanlan.zhihu.com/p/68059061。更具体的分析
-    *   SEE: L343_IntegerBreak。
+    * - 本质：该解法可以理解为是 top-down 版的 DP，以及其中对于 overlap sub-problem 的优化策略采用的是 Memoization，而非 DP
+    *   中的 Tabulation。SEE: https://zhuanlan.zhihu.com/p/68059061。更具体的分析 SEE: L343_IntegerBreak。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares2(int n) {
@@ -85,11 +84,11 @@ public class L279_PerfectSquares {
     }
 
     /*
-    * 解法3：DP (bottom-up)
+    * 解法3：DP (bottom-up iteration)
     * - 思路：
     *   - 类似 DP/Fibonacci 中解法3的自下而上的求解思路。
-    *   - 与解法2的思路相同，都是 DP（基于已解决的子问题去解决高层次的问题），但不同点在于该解法是 bottom-up 的，即直接从子问题开始
-    *     求解，而解法2是从高层次问题入手，递归到最底层问题后再开始逐层解决。
+    *   - 与解法2都是基于已解决的子问题去解决高层次的问题，但不同点在于该解法是 bottom-up 的，即直接从子问题开始求解，而解法2是
+    *     从高层次问题入手，递归到最底层问题后再开始逐层解决。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares3(int n) {

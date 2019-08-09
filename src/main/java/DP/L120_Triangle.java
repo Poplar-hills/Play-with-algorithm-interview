@@ -97,7 +97,7 @@ public class L120_Triangle {
     }
 
     /*
-    * 解法1：bottom-up DP
+    * 解法1：DP (bottom-up iteration)
     * - 思路：横向顶点直接进行比较，纵向层与层之间进行 reduce：
     *            -1                -1              -1
     *           /  \              /  \
@@ -125,7 +125,7 @@ public class L120_Triangle {
     }
 
     /*
-    * 解法2：bottom-up DP
+    * 解法2：DP (bottom-up iteration)
     * - 思路：与解法1一样，只是写法不同，另外操作数组比操作 List 更快，因此该解法统计性能更优。
     * - 时间复杂度 O(h^2)，空间复杂度 O(n)，其中 h 为三角形高度。
     * */

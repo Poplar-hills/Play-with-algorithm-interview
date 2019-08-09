@@ -65,7 +65,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法1：bottom-up DP
+    * 解法1：DP (bottom-up iteration)
     * - 思路：
     *       1 → 3 → 1           1 → 3 → 1           1 → 4 → 5           1 → 4 → 5
     *       ↓   ↓   ↓   step1   ↓   ↓   ↓   step2   ↓   ↓   ↓   step3   ↓   ↓   ↓
@@ -92,7 +92,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法2：top-down DP（即 DFS，即递归）
+    * 解法2：Recursion + Memoization（也可以理解为 DFS）
     * - 思路：
     *   1. 从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum；
     *   2. ∵ 中间节点会被重复计算 ∴ 使用 memoization（cache）进行优化；

@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 public class L343_IntegerBreak {
     /*
-    * 解法1：top-down DP
+    * 解法1：Recursion + Memoization (也是一种 DFS)
     * - 思路：与 L279_PerfectSquares 解法2极其类似，这里进行更具体的分析：
     *   1. 因为需要将 n 分割成几份是未知的，因此很难使用循环解决（不知道需要几重循环），需要使用递归解决（只要设置好终止条件，
     *      其余的就交给递归即可）。
@@ -55,7 +55,7 @@ public class L343_IntegerBreak {
     }
 
     /*
-    * 解法2：bottom-up DP
+    * 解法2：DP (bottom-up iteration)
     * - 思路：与 L279_PerfectSquares 解法3极其类似。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
