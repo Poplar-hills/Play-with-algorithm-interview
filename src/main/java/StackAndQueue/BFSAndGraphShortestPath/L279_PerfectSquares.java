@@ -11,7 +11,8 @@ import static Utils.Helpers.log;
 /*
 * Perfect Squares
 *
-* - Given a positive integer n, find the least number of perfect square numbers (for example, 1, 4, 9, 16, ...) which sum to n.
+* - Given a positive integer n, find the least number of perfect square numbers (for example, 1, 4, 9, 16, ...)
+*   which sum to n.
 * */
 
 public class L279_PerfectSquares {
@@ -62,7 +63,8 @@ public class L279_PerfectSquares {
     * - 思路：基于解法1中的图论建模思路，在具体实现时采用 DFS（SEE: Play-with-algorithms/Graph/Path.java)。具体来说是通过 DFS
     *   从 n 开始往0方向递归，计算每个顶点到达0的最少步数，从而得到前一个节点的到0的最少步数。
     * - 本质：该解法实际上也是一种 DP，只是实现方式是 top-down 的（因为采用了递归），以及其中对于 overlap sub-problem 的优化策略
-    *   采用的是 Memoization，而非 bottom-up DP 中的 Tabulation。SEE: https://zhuanlan.zhihu.com/p/68059061
+    *   采用的是 Memoization，而非 bottom-up DP 中的 Tabulation。SEE: https://zhuanlan.zhihu.com/p/68059061。更具体的分析
+    *   SEE: L343_IntegerBreak。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares2(int n) {
@@ -71,15 +73,15 @@ public class L279_PerfectSquares {
         return numSquares2(n, steps);
     }
 
-    private static int numSquares2(int num, int[] steps) {
-        if (num == 0) return 0;                   // 顶点0到达自己的步数为0
-        if (steps[num] != -1) return steps[num];  // 计算过的顶点直接返回（以免重复计算）
+    private static int numSquares2(int n, int[] steps) {
+        if (n == 0) return 0;                   // 顶点0到达自己的步数为0
+        if (steps[n] != -1) return steps[n];    // 计算过的顶点直接返回（以免重复计算）
 
-        int minStep = Integer.MAX_VALUE;          // 用于记录当前顶点到0的最小步数
-        for (int i = 1; num - i * i >= 0; i++)    // 找到当前顶点的相邻顶点
-            minStep = Math.min(minStep, numSquares2(num - i * i, steps) + 1);  // 计算所有相邻顶点到0的最小步数，从中选出最小的，再+1即是当前顶点到0的最小步数
+        int minStep = Integer.MAX_VALUE;        // 用于记录当前顶点到0的最小步数
+        for (int i = 1; n - i * i >= 0; i++)    // 找到当前顶点的相邻顶点
+            minStep = Math.min(minStep, numSquares2(n - i * i, steps) + 1);  // 计算所有相邻顶点到0的最小步数，从中选出最小的，再+1即是当前顶点到0的最小步数
 
-        return steps[num] = minStep;              // 赋值语句的返回值为所赋的值
+        return steps[n] = minStep;              // 赋值语句的返回值为所赋的值
     }
 
     /*

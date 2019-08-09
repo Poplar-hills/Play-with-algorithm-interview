@@ -14,7 +14,7 @@ import java.util.Arrays;
 public class L343_IntegerBreak {
     /*
     * 解法1：top-down DP
-    * - 思路：
+    * - 思路：与 L279_PerfectSquares 解法2极其类似，这里进行更具体的分析：
     *   1. 因为需要将 n 分割成几份是未知的，因此很难使用循环解决（不知道需要几重循环），需要使用递归解决（只要设置好终止条件，
     *      其余的就交给递归即可）。
     *   2. 因此可以对 n 进行递归分割（动画讲解 SEE: https://coding.imooc.com/lesson/82.html#mid=2953，2'38''）：
@@ -32,9 +32,9 @@ public class L343_IntegerBreak {
     *      - 递归分解问题 + memoization 其实就是 top-down DP；
     *      - 从小到大解决问题（即 tabulation）其实就是 bottom-up DP。
     *
-    * - 原理：之所以可以使用这样的递归结构解决问题，是因为该题是一个求最优解的问题，而求最优解的问题只要可以分解，它就符合
+    * ⭐ 原理：之所以可以使用这样的递归结构解决问题，是因为该题是一个求最优解的问题，而求最优解的问题只要可以分解，它就符合
     *   “最优子结构”性质，即“通过求子问题的最优解，可以获得原问题的最优解”。
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int integerBreak(int n) {
         assert n >= 2;               // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >= 2
@@ -57,7 +57,7 @@ public class L343_IntegerBreak {
     /*
     * 解法2：bottom-up DP
     * - 思路：与 L279_PerfectSquares 解法3极其类似。
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int integerBreak2(int n) {
         assert n >= 2;
