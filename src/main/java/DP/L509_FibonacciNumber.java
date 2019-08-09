@@ -7,18 +7,20 @@ import static Utils.Helpers.log;
 import static Utils.Helpers.timeIt;
 
 /*
-* 通过求第 n 个 Fibonacci 数来理解 DP 的理念。
+* Fibonacci Number
 *
-* - （看完解法1、2、3之后再看这个）总结：
+* - 通过求第 n 个 Fibonacci 数来理解 DP 的理念。
+*
+* - 看完解法1、2、3之后再看这个总结：
 *   - DP 定义: Dynamic programming is a method for solving a complex problem by breaking it down into simpler
 *     subproblems, solving each of those subproblems just once, and storing their solutions – ideally, in an
 *     memory-based data structure.
 *   - DP vs. 递归问题，
 *
-* - ️➡️ 看完本题后看 L279_PerfectSquares，L279 采用了2种 DP 解法，是非常好的例子。
+* - ️➡️ 看完本题后再看 L279_PerfectSquares、L64_MinimumPathSum，它们都采用了2种 DP 解法，是非常好的例子。
 * */
 
-public class Fibonacci {
+public class L509_FibonacciNumber {
     /*
      * 解法1：top-down naive recursion 方式
      * - 时间复杂度 O(2^n)，因为每次调用方法都会产生2个分支再调用该方法，一共递归 n 次，所以总调用次数是 2^n；
@@ -66,8 +68,8 @@ public class Fibonacci {
         log(fib2(40));
         log(fib3(40));
 
-        timeIt(40, Fibonacci::fib1);
-        timeIt(40, Fibonacci::fib2);
-        timeIt(40, Fibonacci::fib3);
+        timeIt(40, L509_FibonacciNumber::fib1);
+        timeIt(40, L509_FibonacciNumber::fib2);
+        timeIt(40, L509_FibonacciNumber::fib3);
     }
 }
