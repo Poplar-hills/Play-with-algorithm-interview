@@ -42,7 +42,7 @@ public class L91_DecodeWays {
         if (map.containsKey(i)) return map.get(i);
 
         int res = dfs(s, i + 1, map);
-        if (i + 1 < s.length() && Integer.parseInt(s.substring(0, 2)) < 27)
+        if (i + 1 < s.length() && Integer.parseInt(s.substring(i, i + 2)) < 27)
             res += dfs(s, i + 2, map);
 
         map.put(i, res);       // 全局解 = 局部解之和: num(s, i) = num(s, i+1) + num(s, i+2)
@@ -74,6 +74,7 @@ public class L91_DecodeWays {
 
     public static void main(String[] args) {
         log(numDecodings("12"));     // expects 2. "AB" (1 2) or "L" (12)
+        log(numDecodings("227"));    // expects 2. "VG" (22 7), or "BBG" (2 2 7)
         log(numDecodings("226"));    // expects 3. "BZ" (2 26), "VF" (22 6), or "BBF" (2 2 6)
         log(numDecodings("102213")); // expects 5. ...
     }
