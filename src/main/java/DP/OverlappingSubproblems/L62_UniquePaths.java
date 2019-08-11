@@ -9,16 +9,16 @@ import javafx.util.Pair;
 /*
 * Unique Paths
 *
-* - A robot is located at the top-left corner of a m x n grid. The robot can only move either down or right
-*   at any point in time. The robot is trying to reach the bottom-right corner of the grid. How many possible
-*   unique paths are there?
+* - A robot is located at the top-left corner of a m x n grid (m 行 n 列). The robot can only move either down
+*   or right at any point in time. The robot is trying to reach the bottom-right corner of the grid. How many
+*   possible unique paths are there?
 * - Note: m and n will be at most 100.
 * */
 
 public class L62_UniquePaths {
     /*
     * 超时解：BFS 全搜索
-    * - 思路：类似 L 图论建模
+    * - 思路：类似 L64 解法1，图论建模：
     *        ■ → ■ → ■
     *        ↓   ↓   ↓
     *        ■ → ■ → ■
@@ -101,7 +101,7 @@ public class L62_UniquePaths {
     }
 
     public static void main(String[] args) {
-        log(uniquePaths2(3, 2));  // expects 3.  (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths2(2, 3));  // expects 3.  (R->R->D, R->D->R, D->R->R)
         log(uniquePaths2(7, 3));  // expects 28. ...
     }
 }
