@@ -23,7 +23,7 @@ public class L70_ClimbingStairs {
     *   ∵ n > 0，可知：当 n=1 时有1条路径；n=2 时有2条路径；n=3 时有3条路径；n=4 时有5条路径... 当有n级台阶时的路径数：
     *   num(n) = num(n-1) + num(n-2)。该规律对应从第2项开始的 Fibonacci 数列（1, 2, 3, 5, 8... 而完整的 Fibonacci
     *   数列是 1, 1, 2, 3, 5, 8...）。至此此该题目转化为求第 n 个 Fibonacci 数。
-    * - 实现：采用 DP（即 Fibonacci.java 中的解法3）。
+    * - 实现：采用 DP（即 L509 中的解法3；类似 L91 中的解法2）。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int climbStairs1(int n) {
@@ -77,7 +77,7 @@ public class L70_ClimbingStairs {
     }
 
     /*
-    * 解法3：解法2的优化版
+    * 解法3：解法2的优化版，也是 Recursion + Memoization（类似 L91 的解法1）
     * - 思路：解法2的通用性较强，但创建 graph 的过程会增加时间复杂度，因此这里采用解法2的"实现"描述中的第2种思路：到需要的时候再计算
     *   顶点的所有相邻顶点。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
