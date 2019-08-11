@@ -80,7 +80,8 @@ public class L62_UniquePaths {
 
     /*
     * 解法2：DP
-    * - 思路：类似 L64 解法3，
+    * - 思路：类似 L64 解法3，从后往前求解。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
     public static int uniquePaths3(int m, int n) {
         if (m == 0 || n == 0) return 0;
