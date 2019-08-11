@@ -51,12 +51,27 @@ public class L62_UniquePaths {
     }
 
     /*
-    * 解1：
-    * - 思路：
+    * 解法1：Recursion + Memoization (DFS)
+    * - 思路：全局解 = 局部解之和
     * - 时间复杂度 O()，空间复杂度 O()。
     * */
     public static int uniquePaths2(int m, int n) {
-        return 0;
+        if (m == 0 || n == 0) return 0;
+        int[][] cache = new int[m][n];
+        return uniquePaths2(m, n, 0, 0, cache);
+    }
+
+    private static int uniquePaths2(int m, int n, int x, int y, int[][] cache) {
+        if (x == m - 1 && y == n - 1) return 1;
+        if (cache[x][y] != 0) return cache[x][y];
+
+        int res = 0;
+        if (x + 1 < m)
+            res += uniquePaths2(m, n, x + 1, y, cache);
+        if (y + 1 < n)
+            res += uniquePaths2(m, n, x, y + 1, cache);
+
+        return cache[x][y] = res;
     }
 
     public static void main(String[] args) {
