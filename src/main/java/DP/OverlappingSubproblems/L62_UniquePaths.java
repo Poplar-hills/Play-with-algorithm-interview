@@ -59,7 +59,7 @@ public class L62_UniquePaths {
     *        ■ → ■ → ■         1 ← 1 ← 0
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
-    public static int uniquePaths2(int m, int n) {
+    public static int uniquePaths1(int m, int n) {
         if (m == 0 || n == 0) return 0;
         int[][] cache = new int[m][n];
         return uniquePaths2(m, n, 0, 0, cache);
@@ -83,7 +83,7 @@ public class L62_UniquePaths {
     * - 思路：类似 L64 解法3，从后往前求解。
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
-    public static int uniquePaths3(int m, int n) {
+    public static int uniquePaths2(int m, int n) {
         if (m == 0 || n == 0) return 0;
         int[][] cache = new int[m][n];
         cache[m - 1][n - 1] = 1;
@@ -101,7 +101,7 @@ public class L62_UniquePaths {
     }
 
     public static void main(String[] args) {
-        log(uniquePaths3(3, 2));  // expects 3.  (R->R->D, R->D->R, D->R->R)
-        log(uniquePaths3(7, 3));  // expects 28. ...
+        log(uniquePaths2(3, 2));  // expects 3.  (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths2(7, 3));  // expects 28. ...
     }
 }
