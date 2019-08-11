@@ -65,17 +65,17 @@ public class L62_UniquePaths {
         return uniquePaths2(m, n, 0, 0, cache);
     }
 
-    private static int uniquePaths2(int m, int n, int x, int y, int[][] cache) {
-        if (x == m - 1 && y == n - 1) return 1;
-        if (cache[x][y] != 0) return cache[x][y];
+    private static int uniquePaths2(int m, int n, int i, int j, int[][] cache) {
+        if (i == m - 1 && j == n - 1) return 1;
+        if (cache[i][j] != 0) return cache[i][j];
 
         int res = 0;
-        if (x + 1 < m)
-            res += uniquePaths2(m, n, x + 1, y, cache);
-        if (y + 1 < n)
-            res += uniquePaths2(m, n, x, y + 1, cache);
+        if (i + 1 < m)
+            res += uniquePaths2(m, n, i + 1, j, cache);
+        if (j + 1 < n)
+            res += uniquePaths2(m, n, i, j + 1, cache);
 
-        return cache[x][y] = res;
+        return cache[i][j] = res;
     }
 
     /*
@@ -88,12 +88,12 @@ public class L62_UniquePaths {
         int[][] cache = new int[m][n];
         cache[m - 1][n - 1] = 1;
 
-        for (int x = m - 1; x >= 0; x--) {
-            for (int y = n - 1; y >= 0; y--) {
-                if (x + 1 < m)
-                    cache[x][y] += cache[x + 1][y];
-                if (y + 1 < n)
-                    cache[x][y] += cache[x][y + 1];
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (i + 1 < m)
+                    cache[i][j] += cache[i + 1][j];
+                if (j + 1 < n)
+                    cache[i][j] += cache[i][j + 1];
             }
         }
 
