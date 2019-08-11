@@ -18,10 +18,10 @@ import javafx.util.Pair;
 public class L62_UniquePaths {
     /*
     * 超时解：BFS 全搜索
-    * - 思路：图论建模
-    *   ■ → ■ → ■
-    *   ↓   ↓   ↓
-    *   ■ → ■ → ■
+    * - 思路：类似 L 图论建模
+    *        ■ → ■ → ■
+    *        ↓   ↓   ↓
+    *        ■ → ■ → ■
     * - 时间复杂度 O(2^n)，空间复杂度 O(n)，n 为节点个数。
     * */
     public static int uniquePaths(int m, int n) {
@@ -52,8 +52,12 @@ public class L62_UniquePaths {
 
     /*
     * 解法1：Recursion + Memoization (DFS)
-    * - 思路：全局解 = 局部解之和
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 思路：类似 L64 解法2，该题符合“全局解 = 局部解之和”，即前一个问题的解是基于后两个问题的解，因此可采用 top-down 的
+    *   recursion 方式求解 + memoization 的方式优化：
+    *        ■ → ■ → ■         3 ← 2 ← 1
+    *        ↓   ↓   ↓   -->   ↑   ↑   ↑
+    *        ■ → ■ → ■         1 ← 1 ← 0
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
     public static int uniquePaths2(int m, int n) {
         if (m == 0 || n == 0) return 0;
