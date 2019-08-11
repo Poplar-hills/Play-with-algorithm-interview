@@ -78,8 +78,33 @@ public class L62_UniquePaths {
         return cache[x][y] = res;
     }
 
+    /*
+    * 解法2：DP
+    * - 思路：类似 L64 解法3，
+    * */
+    public static int uniquePaths3(int m, int n) {
+        int res = 0;
+        if (m == 0 || n == 0) return res;
+        int[][] cache = new int[m][n];
+
+        for (int x = m - 1; x >= 0; x--) {
+            for (int y = n - 1; y >= 0; y--) {
+                if (x == m - 1 && y == n - 1) {
+                    cache[x][y] = 1;
+                    continue;
+                }
+                if (x + 1 < m)
+                    cache[x][y] += cache[x + 1][y];
+                if (y + 1 < n)
+                    cache[x][y] += cache[x][y + 1];
+            }
+        }
+
+        return cache[0][0];
+    }
+
     public static void main(String[] args) {
-        log(uniquePaths2(3, 2));  // expects 3.  (R->R->D, R->D->R, D->R->R)
-        log(uniquePaths2(7, 3));  // expects 28. ...
+        log(uniquePaths3(3, 2));  // expects 3.  (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths3(7, 3));  // expects 28. ...
     }
 }
