@@ -1,4 +1,4 @@
-package DP;
+package DP.OverlappingSubproblems;
 
 import static Utils.Helpers.log;
 

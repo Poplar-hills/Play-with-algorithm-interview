@@ -1,4 +1,4 @@
-package DP;
+package DP.DPBasics;
 
 import javafx.util.Pair;
 
