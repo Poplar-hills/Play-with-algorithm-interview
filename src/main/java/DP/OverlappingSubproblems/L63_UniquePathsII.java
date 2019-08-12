@@ -12,11 +12,11 @@ public class L63_UniquePathsII {
     /*
     * 超时解：Recursion + Memoizaiton
     * - 思路：在 L62 解法1的基础上加上对障碍物的判断条件即可。
-    *       ■ → ■ → ■         2 ← 1 ← 1
-    *       ↓       ↓         ↑       ↑
-    *       ■   □   ■   -->   1   0   1
-    *       ↓       ↓         ↑       ↑
-    *       ■ → ■ → ■         1 ← 1 ← 1
+    *        ■ → ■ → ■         2 ← 1 ← 1
+    *        ↓       ↓         ↑       ↑
+    *        ■   □   ■   -->   1   0   1
+    *        ↓       ↓         ↑       ↑
+    *        ■ → ■ → ■         1 ← 1 ← 1
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
     public static int uniquePathsWithObstacles(int[][] obstacleGrid) {
