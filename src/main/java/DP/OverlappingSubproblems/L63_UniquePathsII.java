@@ -1,6 +1,7 @@
 package DP.OverlappingSubproblems;
 
 import static Utils.Helpers.log;
+import static Utils.Helpers.timeIt;
 
 /*
 * Unique Paths II
@@ -17,7 +18,7 @@ public class L63_UniquePathsII {
     *        ■   □   ■   -->   1   0   1
     *        ↓       ↓         ↑       ↑
     *        ■ → ■ → ■         1 ← 1 ← 1
-    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。∵ Recursion 是自顶向下递归到底后再自底向上返回顶部 ∴ 用时会比只自底向上遍历的解法2慢。
     * */
     public static int uniquePathsWithObstacles(int[][] obstacleGrid) {
         if (obstacleGrid == null || obstacleGrid[0] == null)
@@ -30,14 +31,14 @@ public class L63_UniquePathsII {
         int m = grid.length;
         int n = grid[0].length;
 
-        if (grid[i][j] == 1) return 0;       // 若是障碍物节点则直接返回0
+        if (grid[i][j] == 1) return 0;         // 若是障碍物节点则直接返回0
         if (i == m - 1 && j == n - 1) return 1;
         if (cache[i][j] != 0) return cache[i][j];
 
         int res = 0;
-        if (i + 1 < m && grid[i+1][j] != 1)  // 若下方是障碍物，则不计算
+        if (i + 1 < m && grid[i+1][j] != 1)    // 若下方是障碍物，则不计算
             res += uniquePathsWithObstacles(grid, i + 1, j, cache);
-        if (j + 1 < n && grid[i][j+1] != 1)  // 若右侧是障碍物，则不计算
+        if (j + 1 < n && grid[i][j+1] != 1)    // 若右侧是障碍物，则不计算
             res += uniquePathsWithObstacles(grid, i, j + 1, cache);
 
         return cache[i][j] = res;
@@ -79,6 +80,13 @@ public class L63_UniquePathsII {
             new int[]{0, 1, 0},
             new int[]{0, 0, 0},
         }));  // expects 2. (R->R->D->D, D->D->R->R)
+
+        log(uniquePathsWithObstacles1(new int[][]{
+            new int[]{0, 0, 1, 0},
+            new int[]{0, 0, 0, 0},
+            new int[]{1, 1, 1, 0},
+            new int[]{0, 0, 0, 0},
+        }));  // expects 2.
 
         log(uniquePathsWithObstacles1(new int[][]{
             new int[]{1},
