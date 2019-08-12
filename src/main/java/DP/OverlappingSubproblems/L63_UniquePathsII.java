@@ -10,14 +10,14 @@ import static Utils.Helpers.log;
 
 public class L63_UniquePathsII {
     /*
-    * 解法1：
-    * - 思路：
+    * 超时解：Recursion + Memoizaiton
+    * - 思路：在 L62 解法1的基础上加上对障碍物的判断条件即可。
     *       ■ → ■ → ■         2 ← 1 ← 1
     *       ↓       ↓         ↑       ↑
     *       ■   □   ■   -->   1   0   1
     *       ↓       ↓         ↑       ↑
     *       ■ → ■ → ■         1 ← 1 ← 1
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
     public static int uniquePathsWithObstacles(int[][] obstacleGrid) {
         if (obstacleGrid == null || obstacleGrid[0] == null)
@@ -30,35 +30,25 @@ public class L63_UniquePathsII {
         int m = grid.length;
         int n = grid[0].length;
 
-        if (grid[i][j] == 1) return 0;
+        if (grid[i][j] == 1) return 0;       // 若是障碍物节点则直接返回0
         if (i == m - 1 && j == n - 1) return 1;
         if (cache[i][j] != 0) return cache[i][j];
 
         int res = 0;
-
-        if (i + 1 < m && j + 1 < n) {
-            if (grid[i+1][j] == 1) {
-                log("found i+1, j");
-            }
-            if (grid[i][j+1] == 1) {
-                log("found i, j+1");
-            }
-        }
-
-        if (i + 1 < m && grid[i+1][j] != 1)
+        if (i + 1 < m && grid[i+1][j] != 1)  // 若下方是障碍物，则不计算
             res += uniquePathsWithObstacles(grid, i + 1, j, cache);
-        if (j + 1 < n && grid[i][j+1] != 1)
+        if (j + 1 < n && grid[i][j+1] != 1)  // 若右侧是障碍物，则不计算
             res += uniquePathsWithObstacles(grid, i, j + 1, cache);
 
         return cache[i][j] = res;
     }
 
     /*
-    * 解法2：
-    * - 思路：
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * 解法1：DP
+    * - 思路：在 L62 解法2的基础上加上对障碍物的判断即可。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
-    public static int uniquePathsWithObstacles2(int[][] obstacleGrid) {
+    public static int uniquePathsWithObstacles1(int[][] obstacleGrid) {
         if (obstacleGrid == null || obstacleGrid[0] == null)
             return 0;
 
@@ -84,13 +74,13 @@ public class L63_UniquePathsII {
     }
 
     public static void main(String[] args) {
-        log(uniquePathsWithObstacles2(new int[][]{
+        log(uniquePathsWithObstacles1(new int[][]{
             new int[]{0, 0, 0},
             new int[]{0, 1, 0},
             new int[]{0, 0, 0},
         }));  // expects 2. (R->R->D->D, D->D->R->R)
 
-        log(uniquePathsWithObstacles2(new int[][]{
+        log(uniquePathsWithObstacles1(new int[][]{
             new int[]{1},
         }));  // expects 0.
     }
