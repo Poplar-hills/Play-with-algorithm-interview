@@ -26,12 +26,12 @@ public class L198_HouseRobber {
     /*
     * 解法1：Recursion + Memoization (DFS)
     * - 思路：∵ 该题的本质是一个组合优化问题 ∴ 并不需要求出所有的组合，只需要像 L91_DecodeWays 那样对问题进行分解：
-    *                                          尝试偷[0..n-1]内的房子
-    *                       偷0号/                   偷1号|            ...   偷n-1号\
-    *                   尝试偷[2..n-1]             尝试偷[3..n-1]                  尝试偷[]
-    *             偷2号/   偷3号|     \         偷3号/     |     \
-    *        尝试偷[4..n-1]    ...    ...  尝试偷[5..n-1]  ...    ...
-    *   这样的分解的含义：[0..n-1]中的最多所得 = Max((偷0号所得 + [2..n-1]中的最多所得), (偷1号所得 + [3..n-1]中的最多所得), ..., 偷n-1号所得)
+    *                                            [0..n-1]内的最大所得
+    *                       偷0号/                    偷1号|            ...   偷n-1号\
+    *                  [2..n-1]内的最大所得        [3..n-1]内的最大所得            []内的最大所得
+    *             偷2号/   偷3号|     \           偷3号/         \
+    *     [4..n-1]内的最大所得   ...    ...  [5..n-1]内的最大所得   ...
+    *   这样的分解的含义：[0..n-1]内的最多所得 = Max((偷0号所得 + [2..n-1]内的最多所得), (偷1号所得 + [3..n-1]内的最多所得), ..., 偷n-1号所得)
     *   这样的分解可以很自然的使用递归实现，而又因为分解过程中存在重叠子问题，可以使用 memoization 进行优化。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
@@ -42,13 +42,13 @@ public class L198_HouseRobber {
         return tryToRob(nums, 0, cache);
     }
 
-    private static int tryToRob(int[] nums, int start, int[] cache) {
+    private static int tryToRob(int[] nums, int start, int[] cache) {     // 计算 [start..n-1] 内的最大所得
         if (start >= nums.length) return 0;
         if (cache[start] != -1) return cache[start];
 
         int res = 0;
         for (int i = start; i < nums.length; i++)
-            res = Math.max(res, nums[i] + tryToRob(nums, i + 2, cache));  // 例：res = 偷1号所得的钱 + 从 [2..n-1] 中可能偷得的最多的钱
+            res = Math.max(res, nums[i] + tryToRob(nums, i + 2, cache));  // 例：res = 1号所得 + [2..n-1]内的最大所得
                                                                           // 这里不用管 i+2 越界问题 ∵ 上面 start >= nums.length 已经覆盖过了
         return cache[start] = res;
     }
@@ -64,11 +64,11 @@ public class L198_HouseRobber {
         int n = nums.length;
         int[] cache = new int[n];
         Arrays.fill(cache, -1);
-        cache[n - 1] = nums[n - 1];
+        cache[n - 1] = nums[n - 1];  // 先解答最后一个问题，即偷 n-1 号的所得
 
-        for (int i = n - 2; i >= 0; i--)
-            for (int j = i; j < n; j++)
-                cache[i] = Math.max(cache[i], nums[j] + (j + 2 < n ? cache[j + 2] : 0));
+        for (int start = n - 2; start >= 0; start--)  // 计算 [start..n-1] 内的最大所得
+            for (int i = start; i < n; i++)           // 范围固定的情况下，看哪种方案所得最多，例：求[2..5]内的最大所得，是偷2、4所得多还是偷4、5所得多
+                cache[start] = Math.max(cache[start], nums[i] + (i + 2 < n ? cache[i + 2] : 0));
 
         return cache[0];
     }
