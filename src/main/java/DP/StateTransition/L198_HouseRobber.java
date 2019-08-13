@@ -25,7 +25,7 @@ public class L198_HouseRobber {
 
     /*
     * 解法1：Recursion + Memoization (DFS)
-    * - 思路：∵ 该题的本质是一个组合优化问题 ∴ 并不需要求出所有的组合，只需要像 L91_DecodeWays 那样对问题进行分解：
+    * - 思路：∵ 该题的本质是一个组合优化问题 ∴ 并不需要求出所有的组合，只需要像 L91_DecodeWays 解法1那样对问题进行分解：
     *                                            [0..n-1]内的最大所得
     *                       偷0号/                    偷1号|            ...   偷n-1号\
     *                  [2..n-1]内的最大所得        [3..n-1]内的最大所得            []内的最大所得
@@ -55,7 +55,7 @@ public class L198_HouseRobber {
 
     /*
     * 解法2：DP
-    * - 思路：recursion 是从前往后递归，而 DP 是从后往前递推，前一个问题的解是建立在后面问题的解的基础上。
+    * - 思路：类似 L91_DecodeWays 解法2。recursion 是从前往后递归，DP 是从后往前递推，前一个问题的解是建立在后面问题的解的基础上。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int rob2(int[] nums) {
