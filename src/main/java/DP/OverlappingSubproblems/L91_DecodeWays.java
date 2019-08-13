@@ -52,7 +52,7 @@ public class L91_DecodeWays {
     /*
     * 解法2：DP
     * - 思路：DP 与解法1中 recursion 的思路一致 —— 每个以指针 i 为起点的字符串的解码方法数 num(s, i) = num(s, i+1) + num(s, i+2)；
-    *   只是实现方式相反 —— recursion 是从前往后递归，而 DP 从后往前遍历，前一个的解是建立在后两个的解的基础上。
+    *   只是实现方式相反 —— recursion 是从前往后递归，而 DP 是从后往前递推，前一个问题的解是建立在后面问题的解的基础上。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numDecodings2(String s) {

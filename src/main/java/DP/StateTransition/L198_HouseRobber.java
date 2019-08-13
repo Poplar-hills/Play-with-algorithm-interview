@@ -53,10 +53,30 @@ public class L198_HouseRobber {
         return cache[start] = res;
     }
 
+    /*
+    * 解法2：DP
+    * - 思路：recursion 是从前往后递归，而 DP 是从后往前递推，前一个问题的解是建立在后面问题的解的基础上。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static int rob2(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int n = nums.length;
+        int[] cache = new int[n];
+        Arrays.fill(cache, -1);
+        cache[n - 1] = nums[n - 1];
+
+        for (int i = n - 2; i >= 0; i--)
+            for (int j = i; j < n; j++)
+                cache[i] = Math.max(cache[i], nums[j] + (j + 2 < n ? cache[j + 2] : 0));
+
+        return cache[0];
+    }
+
     public static void main(String[] args) {
-        log(rob1(new int[]{3, 4, 1, 2}));     // expects 6. [3, (4), 1, (2)]
-        log(rob1(new int[]{4, 3, 1, 2}));     // expects 6. [(4), 3, 1, (2)]
-        log(rob1(new int[]{1, 2, 3, 1}));     // expects 4. [(1), 2, (3), 1].
-        log(rob1(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
+        log(rob2(new int[]{3, 4, 1, 2}));     // expects 6. [3, (4), 1, (2)]
+        log(rob2(new int[]{4, 3, 1, 2}));     // expects 6. [(4), 3, 1, (2)]
+        log(rob2(new int[]{1, 2, 3, 1}));     // expects 4. [(1), 2, (3), 1].
+        log(rob2(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
     }
 }
