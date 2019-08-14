@@ -5,9 +5,10 @@ import static Utils.Helpers.log;
 /*
 * House Robber II
 *
-* - 基本与 L198_HouseRobber 中的条件一样，只是该题中的街道为环形，即给定的数组 nums 中的最后一个元素和第一个元素相邻。问在该
+* - 基本与 L198_HouseRobber 中的条件一样，只是本题中的街道为环形，即给定的数组 nums 中的最后一个元素和第一个元素相邻。问在该
 *   街道中，在不触发警报的情况下，最多能盗取多少财产。
 * */
+
 public class L213_HouseRobberII {
     /*
     * 解法1：
