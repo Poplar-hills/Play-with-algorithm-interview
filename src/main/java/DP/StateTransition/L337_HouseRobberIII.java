@@ -2,6 +2,12 @@ package DP.StateTransition;
 
 import static Utils.Helpers.*;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import javafx.util.Pair;
+
 /*
 * House Robber III
 *
@@ -16,7 +22,44 @@ public class L337_HouseRobberIII {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int rob(TreeNode root) {
-        return 0;
+        if (root == null) return 0;
+        List<Integer> rowSums = calcRowSums(root);
+        return calcMaxRobbedMoney(rowSums);
+    }
+
+    public static List<Integer> calcRowSums(TreeNode root) {
+        List<Integer> res = new ArrayList<>();   // list 中保存每行节点的节点值之和
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(root, 0));
+
+        while (!q.isEmpty()) {
+            Pair<TreeNode, Integer> p = q.poll();
+            TreeNode node = p.getKey();
+            int level = p.getValue();
+
+            if (level == res.size()) res.add(0);
+            res.set(level, res.get(level) + node.val);
+
+            if (node.left != null)
+                q.offer(new Pair<>(node.left, level + 1));
+            if (node.right != null)
+                q.offer(new Pair<>(node.right, level + 1));
+        }
+
+        return res;
+    }
+
+    private static int calcMaxRobbedMoney(List<Integer> rowSums) {
+        if (rowSums == null || rowSums.size() == 0) return 0;
+        int n = rowSums.size();
+        if (n == 1) return rowSums.get(0);
+        if (n == 2) return Math.max(rowSums.get(0), rowSums.get(1));
+
+        int[] dp = new int[n];
+        for (int i = 2; i < dp.length; i++)
+            dp[i] = Math.max(dp[i], rowSums.get(i) + dp[i - 2]);
+
+        return dp[n - 1];
     }
 
     public static void main(String[] args) {
@@ -39,5 +82,27 @@ public class L337_HouseRobberIII {
         * */
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 4, 5, 1, 3, null, 1});
         log(rob(t2));  // expects 9. (4 + 5)
+
+        /*
+        *        1
+        *       / \
+        *      4   5
+        *     / \   \
+        *    6   3   1
+        * */
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 4, 5, 6, 3, null, 1});
+        log(rob(t3));  // expects 14. (6 + 3 + 5)
+
+        /*
+        *          4
+        *         /
+        *        1
+        *       /
+        *      2
+        *     /
+        *    3
+        * */
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{4, 1, null, 2, null, 3});
+        log(rob(t4));  // expects 7. (4 + 3)
     }
 }
