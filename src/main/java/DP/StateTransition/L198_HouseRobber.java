@@ -16,8 +16,8 @@ import java.util.Arrays;
 * - ⭐ 总结：函数定义、状态、状态转移：
 *   1. 解法1采用了递归，其 tryToRob 方法用于“计算从某个范围内的房子中能偷得的最大所得”，这就是递归中的“函数定义”。明确合理的函数
 *      定义对于写出正确的递归逻辑至关重要。
-*   2. 解法2采用了 DP，而“函数定义”在 DP 中的对应概念是“状态”，例如“[0..n-1]内的最大所得”就是该问题的顶层状态，由于在该状态下
-*      采取了不同的行动（偷0号、偷1号……），该问题的状态发生了转移，产生了其他3个可能的状态。而描述清楚这些状态直接的转移方式（即
+*   2. 解法2、3采用了 DP，而“函数定义”在 DP 中的对应概念是“状态”，例如“[0..n-1]内的最大所得”就是该问题的顶层状态，由于在该状态
+*      下采取了不同的行动（偷0号、偷1号……），该问题的状态发生了转移，产生了其他3个可能的状态。而描述清楚这些状态直接的转移方式（即
 *      明确的“状态转移方程”）对于写出正确的 DP 逻辑至关重要。例如，该问题的状态转移方程：
 *      f(0..n-1) = max(v(0)+f(1..n-1), v(1)+f(3..n-1), v(3)+f(5..n-1), ..., v(n-1))，其中 f 为“某区间内的最大所得”，
 *      v 为某房子的所得。
@@ -76,7 +76,7 @@ public class L198_HouseRobber {
         cache[n - 1] = nums[n - 1];  // 先解答最后一个问题，即偷 n-1 号的所得
 
         for (int start = n - 2; start >= 0; start--)  // 计算 [start..n-1] 内的最大所得
-            for (int i = start; i < n; i++)           // 范围固定的情况下，看哪种方案所得最多，例：求[2..5]内的最大所得，是偷2、4所得多还是偷4、5所得多
+            for (int i = start; i < n; i++)           // 范围固定的情况下，看哪种方案所得最多，例：求[2..5]内的最大所得，是偷2、4所得多还是偷3、5所得多
                 cache[start] = Math.max(cache[start], nums[i] + (i + 2 < n ? cache[i + 2] : 0));
 
         return cache[0];
@@ -92,23 +92,42 @@ public class L198_HouseRobber {
         if (nums == null || nums.length == 0) return 0;
 
         int n = nums.length;
-        if (n == 1) return nums[0];                     // 先解决小问题
-        if (n == 2) return Math.max(nums[0], nums[1]);  // n==1/2 的情况体现的是自然的思考过程，最终代码里可以不要（在后面的通用逻辑里已覆盖）
+        if (n == 1) return nums[0];                     // 只有1个房子的情况
+        if (n == 2) return Math.max(nums[0], nums[1]);  // 只有2个房子的情况（这两种情况体现的是自然的思考过程，最终代码里可以不要，因为在后面的通用逻辑中已覆盖）
 
-        int[] dp = new int[n];
+        int[] dp = new int[n];                          // 有多于2个房子的情况
         dp[0] = nums[0];
         dp[1] = Math.max(nums[0], nums[1]);
 
         for (int i = 2; i < dp.length; i++)
-            dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1]);
+            dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1]);  // nums[i] + dp[i-2] 是偷房子 i 的最大所得；而 dp[i-1] 是不偷房子 i 的最大所得
 
         return dp[n - 1];
     }
 
+    /*
+    * 解法4：
+    * - 思路：∵ 每个房子有2种可能（偷或不偷）
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * */
+    public static int rob4(int[] nums) {
+        int prevNo = 0;   // 偷了前一间的最大所得
+        int prevYes = 0;  // 没偷前一间的最大所得
+
+        for (int n : nums) {
+            int currYes = prevNo + n;                // 偷当前这间的最大所得 = 没偷前一间的最大所得 + 当前房子里的钱
+            int currNo = Math.max(prevNo, prevYes);  // 不偷当前这间的最大所得 = max(没偷前一间的最大所得, 偷了前一间的最大所得)
+            prevNo = currNo;
+            prevYes = currYes;
+        }
+
+        return Math.max(prevNo, prevYes);
+    }
+
     public static void main(String[] args) {
-        log(rob3(new int[]{3, 4, 1, 2}));     // expects 6. [3, (4), 1, (2)]
-        log(rob3(new int[]{4, 3, 1, 2}));     // expects 6. [(4), 3, 1, (2)]
-        log(rob3(new int[]{1, 2, 3, 1}));     // expects 4. [(1), 2, (3), 1].
-        log(rob3(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
+        log(rob4(new int[]{3, 4, 1, 2}));     // expects 6. [3, (4), 1, (2)]
+        log(rob4(new int[]{4, 3, 1, 2}));     // expects 6. [(4), 3, 1, (2)]
+        log(rob4(new int[]{1, 2, 3, 1}));     // expects 4. [(1), 2, (3), 1].
+        log(rob4(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
     }
 }
