@@ -13,7 +13,7 @@ import java.util.Arrays;
 * - Given a list of non-negative integers representing the amount of money of each house, determine the maximum
 *   amount of money you can rob tonight without alerting the police.
 *
-* - 解法1、2的形式化分析 —— 函数定义、状态、状态转移：
+* - ⭐总结：函数定义、状态、状态转移：
 *   1. 解法1采用了递归，其 tryToRob 方法用于“计算从某个范围内的房子中能偷得的最大所得”，这就是递归中的“函数定义”。明确合理的函数
 *      定义对于写出正确的递归逻辑至关重要。
 *   2. 解法2采用了 DP，而“函数定义”在 DP 中的对应概念是“状态”，例如“[0..n-1]内的最大所得”就是该问题的顶层状态，由于在该状态下
