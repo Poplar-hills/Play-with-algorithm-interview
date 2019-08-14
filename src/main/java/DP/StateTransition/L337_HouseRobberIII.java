@@ -16,7 +16,7 @@ public class L337_HouseRobberIII {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int rob(TreeNode root) {
-      return 0;
+        return 0;
     }
 
     public static void main(String[] args) {
