@@ -86,7 +86,7 @@ public class L198_HouseRobber {
     * 解法3：更自然的 DP
     * - 思路：解法2的 DP 思路是先经过解法1的递归然后再反向思考后得到的。另一种思考方式是直接采用 DP 思路 —— 先解决小问题后，然后
     *   推导出通用逻辑。5分钟视频讲解 SEE: https://www.youtube.com/watch?v=xlvhyfcoQa4。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int rob3(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
@@ -106,7 +106,7 @@ public class L198_HouseRobber {
     }
 
     /*
-    * 解法4：
+    * 解法4：更简洁的 DP
     * - 思路：∵ 每个房子都有2种可能（偷或不偷），且这2种可能会有不同的最终所得。若想计算这2种所得，又需要知道前一间房子在偷或没偷
     *   2种可能情况下的最大所得……这个过程类似链表上的累计操作。
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
