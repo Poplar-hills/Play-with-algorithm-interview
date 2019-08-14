@@ -93,7 +93,7 @@ public class L198_HouseRobber {
 
         int n = nums.length;
         if (n == 1) return nums[0];                     // 只有1个房子的情况
-        if (n == 2) return Math.max(nums[0], nums[1]);  // 只有2个房子的情况（这两种情况体现的是自然的思考过程，最终代码里可以不要，因为在后面的通用逻辑中已覆盖）
+        if (n == 2) return Math.max(nums[0], nums[1]);  // 只有2个房子的情况
 
         int[] dp = new int[n];                          // 有多于2个房子的情况
         dp[0] = nums[0];

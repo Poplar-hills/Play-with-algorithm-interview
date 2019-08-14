@@ -26,6 +26,10 @@ public class L213_HouseRobberII {
 
     private static int rob(int[] nums, int l, int r) {
         int n = r - l + 1;
+        if (n == 0) return 0;
+        if (n == 1) return nums[l];
+        if (n == 2) return Math.max(nums[l], nums[l + 1]);
+
         int[] dp = new int[n];
         dp[0] = nums[l];
         dp[1] = Math.max(nums[l], nums[l + 1]);
@@ -63,5 +67,6 @@ public class L213_HouseRobberII {
     public static void main(String[] args) {
         log(rob(new int[]{2, 3, 2}));     // expects 3. (Cannot rob house 1 and 3 as they are adjacent)
         log(rob(new int[]{1, 2, 3, 1}));  // expects 4. [(1), 2, (3), 1]
+        log(rob(new int[]{0, 0}));        // expects 0.
     }
 }
