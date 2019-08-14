@@ -82,10 +82,33 @@ public class L198_HouseRobber {
         return cache[0];
     }
 
+    /*
+    * 解法3：更自然的 DP
+    * - 思路：解法2的 DP 思路是先经过解法1的递归然后再反向思考后得到的。另一种思考方式是直接采用 DP 思路 —— 先解决小问题后，然后
+    *   推导出通用逻辑。5分钟视频讲解 SEE: https://www.youtube.com/watch?v=xlvhyfcoQa4。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * */
+    public static int rob3(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int n = nums.length;
+        if (n == 1) return nums[0];                     // 先解决小问题
+        if (n == 2) return Math.max(nums[0], nums[1]);  // n==1/2 的情况体现的是自然的思考过程，最终代码里可以不要（在后面的通用逻辑里已覆盖）
+
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+
+        for (int i = 2; i < dp.length; i++)
+            dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1]);
+
+        return dp[n - 1];
+    }
+
     public static void main(String[] args) {
-        log(rob2(new int[]{3, 4, 1, 2}));     // expects 6. [3, (4), 1, (2)]
-        log(rob2(new int[]{4, 3, 1, 2}));     // expects 6. [(4), 3, 1, (2)]
-        log(rob2(new int[]{1, 2, 3, 1}));     // expects 4. [(1), 2, (3), 1].
-        log(rob2(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
+        log(rob3(new int[]{3, 4, 1, 2}));     // expects 6. [3, (4), 1, (2)]
+        log(rob3(new int[]{4, 3, 1, 2}));     // expects 6. [(4), 3, 1, (2)]
+        log(rob3(new int[]{1, 2, 3, 1}));     // expects 4. [(1), 2, (3), 1].
+        log(rob3(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
     }
 }
