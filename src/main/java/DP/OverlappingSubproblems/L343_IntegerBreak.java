@@ -1,6 +1,7 @@
 package DP.OverlappingSubproblems;
 
 import static Utils.Helpers.log;
+import static Utils.Helpers.maxOfN;
 
 import java.util.Arrays;
 
@@ -49,7 +50,7 @@ public class L343_IntegerBreak {
 
         int res = -1;
         for (int i = 1; i < n; i++)  // 将 n 按照 1+?、2+?、3+?...几种方案进行分割，并对子问题（n-i 部分）进行进一步分割
-            res = Math.max(res, Math.max(i*(n-i), i*integerBreak(n-i, cache)));  // 求几种分割方案中的最优解（即各整数乘积最大者）
+            res = maxOfN(res, i*(n-i), i*integerBreak(n-i, cache));  // 求几种分割方案中的最优解（即各整数乘积最大者）
                                      // i*(n-i) 是将 n 分成2部分的解；i*integerBreak(n-i) 是将 n 分成更多份的解中的最优解
         return cache[n] = res;
     }
@@ -66,7 +67,7 @@ public class L343_IntegerBreak {
 
         for (int i = 2; i <= n; i++)     // 从小到大一个一个解决更大的问题
             for (int j = 1; j < i; j++)  // 将 i 分割成 j 和 i-j
-                cache[i] = Math.max(cache[i], Math.max(j*(i-j), j*cache[i-j]));  // 此时 cache[i-j] 已经被计算过了
+                cache[i] = maxOfN(cache[i], j*(i-j), j*cache[i-j]);  // 此时 cache[i-j] 已经被计算过了
 
         return cache[n];                 // 最后返回最大问题的解
     }
