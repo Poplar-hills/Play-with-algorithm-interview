@@ -66,43 +66,43 @@ public class L337_HouseRobberIII {
         /*
         *      3
         *     / \
-        *    2   3
+        *    2   2
         *     \   \
         *      3   1
         * */
-        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 2, 3, null, 3, null, 1});
+        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 2, 2, null, 3, null, 1});
         log(rob(t1));  // expects 7. (3 + 3 + 1)
-
-        /*
-        *        3
-        *       / \
-        *      4   5
-        *     / \   \
-        *    1   3   1
-        * */
-        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 4, 5, 1, 3, null, 1});
-        log(rob(t2));  // expects 9. (4 + 5)
 
         /*
         *        1
         *       / \
-        *      4   5
+        *      5   5
         *     / \   \
-        *    6   3   1
+        *    1   1   1
         * */
-        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 4, 5, 6, 3, null, 1});
-        log(rob(t3));  // expects 14. (6 + 3 + 5)
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 5, 5, 1, 1, null, 1});
+        log(rob(t2));  // expects 10. (5 + 5)
+
+        /*
+        *        1
+        *       / \
+        *      1   5
+        *     / \   \
+        *    5   5   1
+        * */
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
+        log(rob(t3));  // expects 15. (5 + 5 + 5)
 
         /*
         *          4
         *         /
         *        1
         *       /
-        *      2
+        *      1
         *     /
-        *    3
+        *    4
         * */
-        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{4, 1, null, 2, null, 3});
-        log(rob(t4));  // expects 7. (4 + 3)
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{4, 1, null, 1, null, 4});
+        log(rob(t4));  // expects 8. (4 + 4)
     }
 }
