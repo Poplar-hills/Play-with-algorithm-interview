@@ -2,6 +2,8 @@ package DP.StateTransition;
 
 import static Utils.Helpers.*;
 
+import Utils.Helpers.TreeNode;
+
 /*
 * House Robber III
 *
@@ -55,11 +57,28 @@ public class L337_HouseRobberIII {
     }
 
     /*
-    * 解法2：非常聪明的解法
-    * - 思路：同样是基于每个节点可以偷或不偷进行递归。
+    * 解法2：Memoization
+    * - 思路：TODO: 没有完全理解
     * - 时间复杂度 O(n)，空间复杂度 O(logn)。
     * */
     public static int rob2(TreeNode root) {
+        return rob2(root, true);
+    }
+
+    private static int rob2(TreeNode node, boolean included) {
+        if (node == null) return 0;
+        int res = rob2(node.left, true) + rob2(node.right, true);
+        if (included)
+            res = Math.max(res, node.val + rob2(node.left, false) + rob2(node.right, false));
+        return res;
+    }
+
+	/*
+    * 解法3：非常聪明的解法
+    * - 思路：同样是基于每个节点可以偷或不偷进行递归。
+    * - 时间复杂度 O(n)，空间复杂度 O(logn)。
+    * */
+    public static int rob3(TreeNode root) {
         if (root == null) return 0;
         return Math.max(robInclude(root), robExclude(root));
     }
@@ -83,7 +102,7 @@ public class L337_HouseRobberIII {
         *      3   1
         * */
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 2, 2, null, 3, null, 1});
-        log(rob(t1));  // expects 7. (3 + 3 + 1)
+        log(rob2(t1));  // expects 7. (3 + 3 + 1)
 
         /*
         *        1
@@ -93,7 +112,7 @@ public class L337_HouseRobberIII {
         *    1   1   1
         * */
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 5, 5, 1, 1, null, 1});
-        log(rob(t2));  // expects 10. (5 + 5)
+        log(rob2(t2));  // expects 10. (5 + 5)
 
         /*
         *        1
@@ -103,7 +122,7 @@ public class L337_HouseRobberIII {
         *    5   5   1
         * */
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
-        log(rob(t3));  // expects 15. (5 + 5 + 5)
+        log(rob2(t3));  // expects 15. (5 + 5 + 5)
 
         /*
         *          5
@@ -115,6 +134,6 @@ public class L337_HouseRobberIII {
         *    5
         * */
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, null, 1, null, 5});
-        log(rob(t4));  // expects 10. (5 + 5)
+        log(rob2(t4));  // expects 10. (5 + 5)
     }
 }
