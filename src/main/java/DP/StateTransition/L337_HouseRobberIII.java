@@ -34,7 +34,7 @@ public class L337_HouseRobberIII {
     *       5   5   1                    5/0   5/0   1/0
     *   对左下角的5来说：若偷则所得为5，否则为0；对其父节点1来说：若偷则最大所得1，否则为10；对根节点1来说：若偷则最大所得为
     *   1+10+1 = 12，若不偷则最大所得为 max(1,10) + max(5,1) = 15，因此最终解为15。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n)，空间复杂度 O(logn)，n 为节点个数。
     * */
     public static int rob(TreeNode root) {
         int[] res = tryToRob(root);
@@ -52,6 +52,26 @@ public class L337_HouseRobberIII {
         res[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);  // res[1] 记录若不偷该节点得到的最大收益
 
         return res;
+    }
+
+    /*
+    * 解法2：非常聪明的解法
+    * - 思路：同样是基于每个节点可以偷或不偷进行递归。
+    * - 时间复杂度 O(n)，空间复杂度 O(logn)。
+    * */
+    public static int rob2(TreeNode root) {
+        if (root == null) return 0;
+        return Math.max(robInclude(root), robExclude(root));
+    }
+
+    public static int robInclude(TreeNode node) {
+        if (node == null) return 0;
+        return node.val + robExclude(node.left) + robExclude(node.right);
+    }
+
+    public static int robExclude(TreeNode node) {
+        if (node == null) return 0;
+        return rob2(node.left) + rob2(node.right);
     }
 
     public static void main(String[] args) {
