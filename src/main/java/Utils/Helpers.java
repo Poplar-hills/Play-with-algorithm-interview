@@ -164,23 +164,20 @@ public class Helpers {
         if (arr == null || arr.length == 0 || arr[0] == null)
             return null;
 
-        int i = 0;  // i 指向 arr 中下一个待访问的元素
         Queue<TreeNode> q = new LinkedList<>();
-        TreeNode tree = new TreeNode(arr[i++]);
+        TreeNode tree = new TreeNode(arr[0]);
         q.offer(tree);
 
-        while (i < arr.length && !q.isEmpty()) {
+        for (int i = 1; i < arr.length && !q.isEmpty(); i += 2) {
             TreeNode curr = q.poll();
-            if (arr[i] != null) {
+            if (arr[i] != null) {                            // 添加左节点
                 curr.left = new TreeNode(arr[i]);
                 q.offer(curr.left);
             }
-            i++;
-            if (arr[i] != null) {
-                curr.right = new TreeNode(arr[i]);
+            if (i + 1 < arr.length && arr[i + 1] != null) {  // 添加右节点
+                curr.right = new TreeNode(arr[i + 1]);
                 q.offer(curr.right);
             }
-            i++;
         }
         return tree;
     }
