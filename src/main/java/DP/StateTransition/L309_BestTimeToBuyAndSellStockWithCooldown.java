@@ -37,5 +37,8 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
 
     public static void main(String[] args) {
         log(maxProfit(new int[]{1, 2, 3, 0, 2}));  // expects 3. [buy, sell, cooldown, buy, sell]
+        log(maxProfit(new int[]{1, 2}));           // expects 1. [buy, sell]
+        log(maxProfit(new int[]{2, 1}));           // expects 0. [cooldown, cooldown]
+        log(maxProfit(new int[]{3, 3}));           // expects 0. [cooldown, cooldown] or [buy, sell]
     }
 }
