@@ -23,43 +23,24 @@ public class L337_HouseRobberIII {
     * */
     public static int rob(TreeNode root) {
         if (root == null) return 0;
-        List<Integer> rowSums = calcRowSums(root);
-        return calcMaxRobbedMoney(rowSums);
+        int[] res = tryToRob(root);
+        return Math.max(res[0], res[1]);
     }
 
-    public static List<Integer> calcRowSums(TreeNode root) {
-        List<Integer> res = new ArrayList<>();   // list 中保存每行节点的节点值之和
-        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
-        q.offer(new Pair<>(root, 0));
+    private static int[] tryToRob(TreeNode node) {
+        int[] res = new int[2];
+        int[] leftRes = new int[2];
+        int[] rightRes = new int[2];
 
-        while (!q.isEmpty()) {
-            Pair<TreeNode, Integer> p = q.poll();
-            TreeNode node = p.getKey();
-            int level = p.getValue();
+        if (node.left != null)
+            leftRes = tryToRob(node.left);
+        if (node.right != null)
+            rightRes = tryToRob(node.right);
 
-            if (level == res.size()) res.add(0);
-            res.set(level, res.get(level) + node.val);
-
-            if (node.left != null)
-                q.offer(new Pair<>(node.left, level + 1));
-            if (node.right != null)
-                q.offer(new Pair<>(node.right, level + 1));
-        }
+        res[0] = node.val + leftRes[1] + rightRes[1];
+        res[1] = maxOfN(leftRes[0] + rightRes[0], leftRes[1] + rightRes[0], leftRes[0] + rightRes[1], leftRes[1] + rightRes[1]);
 
         return res;
-    }
-
-    private static int calcMaxRobbedMoney(List<Integer> rowSums) {
-        if (rowSums == null || rowSums.size() == 0) return 0;
-        int n = rowSums.size();
-        if (n == 1) return rowSums.get(0);
-        if (n == 2) return Math.max(rowSums.get(0), rowSums.get(1));
-
-        int[] dp = new int[n];
-        for (int i = 2; i < dp.length; i++)
-            dp[i] = Math.max(dp[i], rowSums.get(i) + dp[i - 2]);
-
-        return dp[n - 1];
     }
 
     public static void main(String[] args) {
@@ -94,15 +75,15 @@ public class L337_HouseRobberIII {
         log(rob(t3));  // expects 15. (5 + 5 + 5)
 
         /*
-        *          4
+        *          5
         *         /
         *        1
         *       /
         *      1
         *     /
-        *    4
+        *    5
         * */
-        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{4, 1, null, 1, null, 4});
-        log(rob(t4));  // expects 8. (4 + 4)
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, null, 1, null, 5});
+        log(rob(t4));  // expects 10. (5 + 5)
     }
 }
