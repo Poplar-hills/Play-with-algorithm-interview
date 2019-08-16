@@ -2,6 +2,8 @@ package DP.StateTransition;
 
 import static Utils.Helpers.*;
 
+import java.util.Arrays;
+
 /*
 * Best Time to Buy and Sell Stock with Cooldown
 *
@@ -57,6 +59,38 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
         }
 
         return Math.max(sell, hold0);
+    }
+
+    /*
+    * 解法2：Recursion + Memoization
+    * - 思路：
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static int maxProfit2(int[] prices) {
+        int n = prices.length;
+        if (n < 2) return 0;
+
+        int[] buys = new int[n], sells = new int[n];
+        Arrays.fill(buys, -1);
+        Arrays.fill(sells, -1);
+
+        return sell(prices, n - 1, buys, sells);
+    }
+
+    private static int sell(int[] prices, int i, int[] buys, int[] sells) {
+        if (i == 0) return 0;
+        if (i == 1) return Math.max(0, prices[1] - prices[0]);
+        if (sells[i] != -1) return sells[i];
+        
+        return 0;
+    }
+
+    private static int buy(int[] prices, int i, int[] buys, int[] sells) {
+        if (i == 0) return -prices[0];
+        if (i == 1) return Math.max(-prices[0], -prices[1]);
+        if (buys[i] != -1) return buys[i];
+
+        return 0;
     }
 
     public static void main(String[] args) {
