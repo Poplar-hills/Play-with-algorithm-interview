@@ -34,10 +34,7 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     *       hold1[i] = max(hold1[i-1], buy[i-1])
     *       hold0[i] = max(hold0[i-1], sell[i-1])
     *
-    *   - 有了递推过程还需要初始状态：实际当中不可能一上来就 sell 和 hold1（因为初始没有股票），但为了统一计算逻辑可以给
-    *     这两种情况设置
-    *
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static int maxProfit(int[] prices) {
         if (prices.length < 2) return 0;
