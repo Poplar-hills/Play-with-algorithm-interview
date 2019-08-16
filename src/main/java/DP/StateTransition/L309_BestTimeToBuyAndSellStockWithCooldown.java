@@ -44,7 +44,7 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
         int hold1 = -prices[0];    // 第0天持有1股后的收益（∵ 不可能第0天就持有股票 ∴ 设为负的第0天的股价）
         int hold0 = 0;             // 第0天什么都不做的收益
 
-        for (int i = 1; i < prices.length; i++) {
+        for (int i = 1; i < prices.length; i++) {  // 每天都尝试4种 action 所能获得的最大收益
             int lastBuy = buy;
             int lastSell = sell;
             int lastHold1 = hold1;
