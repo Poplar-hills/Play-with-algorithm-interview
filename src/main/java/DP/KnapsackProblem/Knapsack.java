@@ -2,6 +2,8 @@ package DP.KnapsackProblem;
 
 import static Utils.Helpers.*;
 
+import java.util.Arrays;
+
 /*
 * Knapsack Problem
 *
@@ -48,6 +50,8 @@ public class Knapsack {
     public static int knapsack(int[] weights, int[] values, int capacity) {
         int n = weights.length;
         int[][] cache = new int[n][capacity + 1];
+        for (int[] arr : cache)
+            Arrays.fill(arr, -1);
         return largestValue(n - 1, weights, values, capacity, cache);
     }
 
