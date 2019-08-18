@@ -47,15 +47,18 @@ public class Knapsack {
     * */
     public static int knapsack(int[] weights, int[] values, int capacity) {
         int n = weights.length;
-        return largestValue(n - 1, weights, values, capacity);
+        int[][] cache = new int[n][capacity + 1];
+        return largestValue(n - 1, weights, values, capacity, cache);
     }
 
-    private static int largestValue(int i, int[] weights, int[] values, int capacity) {
+    private static int largestValue(int i, int[] weights, int[] values, int capacity, int[][] cache) {
         if (i < 0 || capacity == 0) return 0;
-        int res = largestValue(i - 1, weights, values, capacity);
+        if (cache[i][capacity] != -1) return cache[i][capacity];
+
+        int res = largestValue(i - 1, weights, values, capacity, cache);
         if (capacity >= weights[i])
-            res = Math.max(res, values[i] + largestValue(i - 1, weights, values, capacity - weights[i]));
-        return res;
+            res = Math.max(res, values[i] + largestValue(i - 1, weights, values, capacity - weights[i], cache));
+        return cache[i][capacity] = res;
     }
 
     /*
