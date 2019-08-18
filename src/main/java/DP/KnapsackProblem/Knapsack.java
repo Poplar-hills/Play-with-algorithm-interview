@@ -29,40 +29,43 @@ import java.util.Arrays;
 *
 *   - DP：
 *     若采用 DP 则需要认清该问题中的状态有哪些，以及它们之间是如何转移的，即写出状态转移方程：
-*     1. 首先状态可以通过题中的限制条件来识别 —— 1. 选择第 i 个物品处理； 2. 背包的剩余容量 c；这两个限制条件是该问题中的变量，
-*        不同的变量组合就意味着该问题的不同状态，因此这两个变量也就是状态转移方程的输入参数。
-*     2. 确定状态转移方程中的函数定义 —— f(i, c) 表示“在背包剩余容量为 c 的情况下处理第 i 个物品所能得到的最大价值”（注意“处理”
-*        意味着可能放入也可能不放入）。
+*     1. 首先状态可以通过题中的限制条件来识别：
+*        1. 每次从 i 个物品中找出最佳价值组合（每次放/不放一个物品后 i 就会-1）；
+*        2. 背包的剩余容量 c（每次放入一个物品后 c 都会减小）；
+*        这两个限制条件是该问题中的变量，不同的变量组合就意味着该问题的不同状态，因此这两个变量也就是状态转移方程的输入参数。
+*     2. 确定状态转移方程中的函数定义 —— f(i, c) 表示“当背包剩余容量为 c 时，前 i 个物品的最佳组合所对应的价值”。
 *     3. 推导状态转移方程：
-*        - 因为对每种物品都有放入/不放入两种选择，因此 f 所求的“最大价值”一定来自于对这两种选择的结果求最大值；
-*        - 其中，不放入 i 物品后的价值为 f(i-1, c)，即等于上一次处理完物品 i-1 后的价值；
-*        - 其中，放入 i 物品后的价值为 v(i) + f(i-1, c-w(i))，即等于；
-*        - 完整方程为 f(i, c) = max(f(i-1, c), v(i) + f(i-1, c-w(i)))
+*        - ∵ 对每种物品都有放/不放两种选择 ∴ f 所求的“最大价值”一定来自于其中价值更大的那个选择；
+*          - 若不放物品 i，则最大价值为 f(i-1, c)，即放/不放下一个物品的最大价值；
+*          - 若放入物品 i，则最大价值为 v(i) + f(i-1, c-w(i))，即当前物品价值 + 在剩余容量中放/不放下一个物品的最大价值；
+*        - 完整方程为 f(i, c) = max(f(i-1, c), v(i) + f(i-1, c-w(i)))。
+*     4. 在状态转移过程中会出现重叠子问题，因此可以用 Memoization 或直接 DP 的方式进行优化。
 *
+* - 详解 SEE: 微信搜“【动态规划】一次搞定三种背包问题”。
 * */
 
 public class Knapsack {
     /*
     * 解法1：Recursion + Memoization
-    * - 思路：
     * - 时间复杂度 O()，空间复杂度 O()。
     * */
-    public static int knapsack(int[] weights, int[] values, int capacity) {
-        int n = weights.length;
-        int[][] cache = new int[n][capacity + 1];
+    public static int knapsack(int[] w, int[] v, int c) {
+        int n = w.length;
+        int[][] cache = new int[n][c + 1];  // ∵ 状态转移方程有两个输入变量 ∴ 缓存也是二维的（n 行 c+1 列，+1是为了后面 cache[..][c] 取值方便）
         for (int[] arr : cache)
-            Arrays.fill(arr, -1);
-        return largestValue(n - 1, weights, values, capacity, cache);
+            Arrays.fill(arr, -1);           // ∵ 要缓存的值可能有0 ∴ 都初始化为-1
+        return largestValue(n - 1, w, v, c, cache);
     }
 
-    private static int largestValue(int i, int[] weights, int[] values, int capacity, int[][] cache) {
-        if (i < 0 || capacity == 0) return 0;
-        if (cache[i][capacity] != -1) return cache[i][capacity];
+    private static int largestValue(int i, int[] w, int[] v, int c, int[][] cache) {
+        if (i < 0 || c == 0) return 0;
+        if (cache[i][c] != -1) return cache[i][c];
 
-        int res = largestValue(i - 1, weights, values, capacity, cache);
-        if (capacity >= weights[i])
-            res = Math.max(res, values[i] + largestValue(i - 1, weights, values, capacity - weights[i], cache));
-        return cache[i][capacity] = res;
+        int res = largestValue(i - 1, w, v, c, cache);
+        if (c >= w[i])                      // 若剩余容量充足则可以尝试放入
+            res = Math.max(res, v[i] + largestValue(i - 1, w, v, c - w[i], cache));
+
+        return cache[i][c] = res;
     }
 
     /*
