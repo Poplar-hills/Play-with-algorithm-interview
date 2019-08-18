@@ -39,7 +39,7 @@ import java.util.Arrays;
 *          - 若不放物品 i，则最大价值为 f(i-1, c)，即放/不放下一个物品的最大价值；
 *          - 若放入物品 i，则最大价值为 v(i) + f(i-1, c-w(i))，即当前物品价值 + 在剩余容量中放/不放下一个物品的最大价值；
 *        - 完整方程为 f(i, c) = max(f(i-1, c), v(i) + f(i-1, c-w(i)))。
-*     4. 在状态转移过程中会出现重叠子问题，因此可以用 Memoization 或直接 DP 的方式进行优化。
+*     4. 在分别计算两种选择的过程中会有重叠子问题，因此可以用 Memoization、DP 的方式进行优化。
 *
 * - 详解 SEE: 微信搜“【动态规划】一次搞定三种背包问题”。
 * */
@@ -47,7 +47,7 @@ import java.util.Arrays;
 public class Knapsack {
     /*
     * 解法1：Recursion + Memoization
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 时间复杂度 O(n*c)，即填表的耗时；空间复杂度 O(n*c)。
     * */
     public static int knapsack(int[] w, int[] v, int c) {
         int n = w.length;
