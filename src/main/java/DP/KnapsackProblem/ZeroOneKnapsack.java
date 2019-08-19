@@ -5,7 +5,7 @@ import static Utils.Helpers.*;
 import java.util.Arrays;
 
 /*
-* Knapsack Problem
+* 0/1 Knapsack Problem
 *
 * - 有个背包，容量为 C, 现有 n 个不同种物品，编号为 0..n-1，其中每件物品的重量为 w(i)，价值为 v(i)。求可以像这个背包中放入哪些
 *   物品，使得在不超过容量的基础上，背包中的物品价值最大。
@@ -46,7 +46,7 @@ import java.util.Arrays;
 * - 详解 SEE: 微信搜“【动态规划】一次搞定三种背包问题”。
 * */
 
-public class Knapsack {
+public class ZeroOneKnapsack {
     /*
     * 解法1：Recursion + Memoization
     * - 思路：top-down 方式。
