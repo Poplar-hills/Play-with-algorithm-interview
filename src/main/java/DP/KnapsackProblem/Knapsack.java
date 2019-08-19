@@ -47,13 +47,14 @@ import java.util.Arrays;
 public class Knapsack {
     /*
     * 解法1：Recursion + Memoization
+    * - 思路：top-down 方式。
     * - 时间复杂度 O(n*c)，即填表的耗时；空间复杂度 O(n*c)。
     * */
     public static int knapsack(int[] w, int[] v, int c) {
         int n = w.length;
-        int[][] cache = new int[n][c + 1];  // ∵ 状态转移方程有两个输入变量 ∴ 缓存也是二维的（n 行 c+1 列，+1是为了后面 cache[..][c] 取值方便）
-        for (int[] arr : cache)
-            Arrays.fill(arr, -1);           // ∵ 要缓存的值可能有0 ∴ 都初始化为-1
+        int[][] cache = new int[n][c + 1];  // ∵ 状态转移方程有两个输入变量 ∴ 缓存也是二维的（n 行 c+1 列；c 的取值范围是 [0,c]）
+        for (int[] row : cache)
+            Arrays.fill(row, -1);           // ∵ 要缓存的值可能有0 ∴ 都初始化为-1
         return largestValue(n - 1, w, v, c, cache);
     }
 
@@ -70,15 +71,33 @@ public class Knapsack {
 
     /*
     * 解法2：DP
-    * - 思路：
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 思路：bottom-up 方式直接 DP。
+    * - 时间复杂度 O(n*c)，空间复杂度 O(n*c)。
     * */
-    public static int knapsack2(int[] weights, int[] values, int capacity) {
-        return 0;
+    public static int knapsack2(int[] w, int[] v, int c) {
+        int n = w.length;
+        if (n == 0) return 0;
+
+        int[][] cache = new int[n][c + 1];
+        for (int[] row : cache)
+            Arrays.fill(row, -1);
+
+        for (int j = 0; j <= c; j++)  // 先解决最基础的问题（第0行，只考虑0号物品时在不同容量下能得到的最大价值）
+            cache[0][j] = w[0] <= j ? v[0] : 0;
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j <= c; j++) {
+                cache[i][j] = cache[i - 1][j];  // cache[i][j] 表示在 [0,i] 号物品中、剩余容量为 j 的情况下所能得到的最大价值
+                if (j >= w[i])
+                    cache[i][j] = Math.max(cache[i][j], v[i] + cache[i - 1][j - w[i]]);
+            }
+        }
+
+        return cache[n - 1][c];
     }
 
     public static void main(String[] args) {
-        log(knapsack(new int[]{1, 2, 3}, new int[]{6, 10, 12}, 5));       // expects 22.
-        log(knapsack(new int[]{1, 3, 4, 2}, new int[]{3, 9, 12, 8}, 5));  // expects 17.
+        log(knapsack2(new int[]{1, 2, 3}, new int[]{6, 10, 12}, 5));       // expects 22.
+        log(knapsack2(new int[]{1, 3, 4, 2}, new int[]{3, 9, 12, 8}, 5));  // expects 17.
     }
 }

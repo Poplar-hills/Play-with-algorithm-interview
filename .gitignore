@@ -6,3 +6,5 @@ target/
 .settings/
 AlgorithmInterview.iml
 .vscode
+bin/
+
