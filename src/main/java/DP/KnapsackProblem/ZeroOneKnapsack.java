@@ -102,8 +102,40 @@ public class ZeroOneKnapsack {
         return cache[n - 1][c];
     }
 
+    /*
+    * 解法3：解法2的空间优化版
+    * - 思路：观察解法2中的状态转移方程：f(i, c) = max(f(i-1, c), v(i) + f(i-1, c-w(i)))，可发现 f(i,..) 只与 f(i-1,..)
+    *   有关，即填表法中除第0行之外的每一行中的值都能通过上一行中的值求得，而与其他行无关。因此：
+    *   1. 不需要缓存整个二维表，只需缓存第 i 行和第 i-1 行这2行即可；
+    *   2. 在从上到下逐行计算时，交替使用这2行缓存，例如：当缓存了第0、1两行，需要计算第2行时，已经不再需要第0行的值，因此可用第2行
+    *      的计算结果覆盖第0行值；当需要计算第3行时，不再需要第1行的值，因此可用第3行的计算结果覆盖第1行的值…… 这个过程中的规律是：
+    *      若需要计算的是偶数行则覆盖缓存第0行；若是奇数行则覆盖缓存第1行。
+    *   这样优化之后，空间复杂度从 O(n*c) 降低到了 O(2c)，从而能计算的背包容量大大增加。
+    * - 时间复杂度 O(n*c)，空间复杂度 O(c)。
+    * */
+    public static int knapsack3(int[] w, int[] v, int c) {
+        int n = w.length;
+        if (n == 0) return 0;
+
+        int[][] cache = new int[2][c + 1];
+        Arrays.fill(cache[1], -1);    // 第0行在后面初始化了
+
+        for (int j = 0; j <= c; j++)
+            cache[0][j] = w[0] <= j ? v[0] : 0;
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j <= c; j++) {
+                cache[i % 2][j] = cache[(i-1) % 2][j];  // i 为偶则写第0行，读第1行；i 为奇则写第1行，读第0行
+                if (j >= w[i])
+                    cache[i % 2][j] = Math.max(cache[i % 2][j], v[i] + cache[(i-1) % 2][j - w[i]]);
+            }
+        }
+
+        return cache[(n-1) % 2][c];
+    }
+
     public static void main(String[] args) {
-        log(knapsack2(new int[]{1, 2, 3}, new int[]{6, 10, 12}, 5));       // expects 22.
-        log(knapsack2(new int[]{1, 3, 4, 2}, new int[]{3, 9, 12, 8}, 5));  // expects 17.
+        log(knapsack3(new int[]{1, 2, 3}, new int[]{6, 10, 12}, 5));       // expects 22.
+        log(knapsack3(new int[]{1, 3, 4, 2}, new int[]{3, 9, 12, 8}, 5));  // expects 17.
     }
 }
