@@ -72,7 +72,7 @@ public class Knapsack {
     /*
     * 解法2：DP
     * - 思路：bottom-up 方式直接 DP。∵ 该问题中有两个变量 ∴ 状态转移过程实际上就是填表（tabulation）的过程。
-    *   动画演示 SEE: https://coding.imooc.com/lesson/82.html#mid=2955。
+    *   动画演示 SEE: https://coding.imooc.com/lesson/82.html#mid=2955 (18'15'')。
     * - 时间复杂度 O(n*c)，空间复杂度 O(n*c)。
     * */
     public static int knapsack2(int[] w, int[] v, int c) {
