@@ -73,8 +73,11 @@ public class Knapsack {
 
     /*
     * 解法2：DP
-    * - 思路：bottom-up 方式直接 DP。∵ 该问题中有两个变量 ∴ 状态转移过程可以通过填表发（tabulation）来可视化。
-    *   动画演示 SEE: https://coding.imooc.com/lesson/82.html#mid=2955 (18'15'')。
+    * - 思路：bottom-up 方式直接 DP：
+    *   1. ∵ 该问题中有两个变量 ∴ 状态转移过程可以通过填表发（tabulation）来可视化。动画演示 SEE:
+    *      https://coding.imooc.com/lesson/82.html#mid=2955 (18'15'')。
+    *   2. ∵ 解法1中要解决问题 f(i, ..)，需要先解决问题 f(i-1, ..)，需要先解决 f(i-2, ..)，... 直到 f(0, ..)，因此 i=0
+    *      的情况是该题的最基本问题。
     * - 时间复杂度 O(n*c)，空间复杂度 O(n*c)。
     * */
     public static int knapsack2(int[] w, int[] v, int c) {
@@ -85,7 +88,7 @@ public class Knapsack {
         for (int[] row : cache)
             Arrays.fill(row, -1);
 
-        for (int j = 0; j <= c; j++)  // 先解决最基础的问题（第0行，只考虑0号物品时在不同容量下能得到的最大价值）
+        for (int j = 0; j <= c; j++)  // 先解决最基础的问题（即表的第0行 —— 只考虑0号物品时在不同容量下能得到的最大价值）
             cache[0][j] = w[0] <= j ? v[0] : 0;
 
         for (int i = 1; i < n; i++) {
