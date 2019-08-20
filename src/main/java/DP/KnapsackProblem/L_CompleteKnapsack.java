@@ -28,7 +28,7 @@ import java.util.Arrays;
 *       方程为：f(i, j) = max(v[i]*k + f(i-1, j-w[i]*k))，其中 0 <= w[i]*k <= j。
 * */
 
-public class CompleteKnapsack {
+public class L_CompleteKnapsack {
     /*
     * 解法1：Recursion + Memoization
     * - 思路：top-down 方式。
