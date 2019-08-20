@@ -55,6 +55,6 @@ public class CompleteKnapsack {
     }
 
     public static void main(String[] args) {
-        log(knapsack(new int[]{0, 5, 7}, new int[]{0, 5, 8}, 10));  // expects 10. (5 + 5)
+        log(knapsack(new int[]{5, 7}, new int[]{5, 8}, 10));  // expects 10. (5 + 5)
     }
 }
