@@ -12,12 +12,13 @@ import static Utils.Helpers.*;
 *
 *
 * */
+
 public class CompleteKnapsack {
     public static int knapsack(int[] w, int[] v, int c) {
         return 0;
     }
 
     public static void main(String[] args) {
-        log(knapsack(new int[]{0, 5, 7}, new int[]{0, 5, 8}, 10));  // expects 10.
+      log(knapsack(new int[]{0, 5, 7}, new int[]{0, 5, 8}, 10));  // expects 10. (5 + 5)
     }
 }
