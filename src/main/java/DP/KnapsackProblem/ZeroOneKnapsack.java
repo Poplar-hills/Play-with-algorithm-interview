@@ -146,8 +146,7 @@ public class ZeroOneKnapsack {
         int n = w.length;
         if (n <= 0) return 0;
 
-        int[] cache = new int[c + 1];
-        Arrays.fill(cache, -1);
+        int[] cache = new int[c + 1];        // 下面解决最基础问题时就顺便初始化了
 
         for (int j = 0; j < c; j++)
             cache[j] = w[0] <= j ? v[0] : 0;

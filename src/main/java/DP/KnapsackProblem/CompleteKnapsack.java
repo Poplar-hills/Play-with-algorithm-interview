@@ -70,7 +70,7 @@ public class CompleteKnapsack {
             Arrays.fill(row, -1);
 
         for (int j = 0; j <= c; j++)
-            cache[0][j] = (j / w[0]) * v[0];
+            cache[0][j] = (j / w[0]) * v[0];  // 解决最基本问题（填充第一行）
 
         for (int i = 1; i < n; i++) {
             for (int j = 0; j <= c; j++) {
@@ -83,7 +83,29 @@ public class CompleteKnapsack {
         return cache[n - 1][c];
     }
 
+    /*
+    * 解法3：解法2的空间优化版
+    * - 思路：类似 ZeroOneKnapsack 中的解法4）。
+    * - 时间复杂度 O(TODO:???)，空间复杂度 O(c)。
+    * */
+    public static int knapsack3(int[] w, int[] v, int c) {
+        int n = w.length;
+        if (n <= 0) return 0;
+
+        int[] cache = new int[c + 1];
+
+        for (int j = 0; j <= c; j++)
+            cache[j] = (j / w[0]) * v[0];
+
+        for (int i = 0; i < n; i++)
+            for (int j = c; j >= w[i]; j--)
+                for (int k = 0; w[i] * k <= j; k++)
+                    cache[j] = Math.max(cache[j], v[i] * k + cache[j - w[i] * k]);
+
+        return cache[c];
+    }
+
     public static void main(String[] args) {
-        log(knapsack2(new int[]{5, 7}, new int[]{5, 8}, 10));  // expects 10. (5 + 5)
+        log(knapsack3(new int[]{5, 7}, new int[]{5, 8}, 10));  // expects 10. (5 + 5)
     }
 }
