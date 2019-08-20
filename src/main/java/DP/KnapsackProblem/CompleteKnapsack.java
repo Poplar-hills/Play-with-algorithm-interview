@@ -32,6 +32,8 @@ public class CompleteKnapsack {
     /*
     * 解法1：Recursion + Memoization
     * - 思路：top-down 方式。
+    * - 对比：在0/1背包中，对于第 i 个物品只有放/不放2种情况，只需从这2种选择中选出最优的即可；而完全背包问题则需在 k 种选择中选
+    *   出最优解，这就需要多一层循环来求最大值。
     * - 时间复杂度 O(n*c)，空间复杂度 O(n*c)。
     * */
     public static int knapsack(int[] w, int[] v, int c) {
@@ -48,7 +50,7 @@ public class CompleteKnapsack {
 
         int res = largestValue(i - 1, j, w, v, cache);
         if (j >= w[i])
-            for (int k = 1; w[i] * k <= j; k++)
+            for (int k = 1; w[i] * k <= j; k++)  // 从放入0, 1, 2, ... k 件物品 i 中选出价值最大的方案（这里也是与0/1背包问题的唯一区别）
                 res = Math.max(res, v[i] * k + largestValue(i - 1, j - w[i] * k, w, v, cache));
 
         return cache[i][j] = res;
