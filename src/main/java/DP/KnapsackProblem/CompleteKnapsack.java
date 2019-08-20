@@ -34,7 +34,7 @@ public class CompleteKnapsack {
     * - 思路：top-down 方式。
     * - 对比：在0/1背包中，对于第 i 个物品只有放/不放2种情况，只需从这2种选择中选出最优的即可；而完全背包问题则需在 k 种选择中选
     *   出最优解，这就需要多一层循环来求最大值。
-    * - 时间复杂度 O(n*c)，空间复杂度 O(n*c)。
+    * - 时间复杂度 O(TODO:???)，空间复杂度 O(n*c)。
     * */
     public static int knapsack(int[] w, int[] v, int c) {
         int n = w.length;
@@ -56,7 +56,34 @@ public class CompleteKnapsack {
         return cache[i][j] = res;
     }
 
+    /*
+    * 解法2：DP
+    * - 思路：bottom-up 方式。
+    * - 时间复杂度 O(TODO:???)，空间复杂度 O(n*c)。
+    * */
+    public static int knapsack2(int[] w, int[] v, int c) {
+        int n = w.length;
+        if (n <= 0) return 0;
+
+        int[][] cache = new int[n][c + 1];
+        for (int[] row : cache)
+            Arrays.fill(row, -1);
+
+        for (int j = 0; j <= c; j++)
+            cache[0][j] = (j / w[0]) * v[0];
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j <= c; j++) {
+                cache[i][j] = cache[i - 1][j];
+                for (int k = 0; w[i] * k <= j; k++)
+                    cache[i][j] = Math.max(cache[i][j], v[i] * k + cache[i - 1][j - w[i] * k]);
+            }
+        }
+
+        return cache[n - 1][c];
+    }
+
     public static void main(String[] args) {
-        log(knapsack(new int[]{5, 7}, new int[]{5, 8}, 10));  // expects 10. (5 + 5)
+        log(knapsack2(new int[]{5, 7}, new int[]{5, 8}, 10));  // expects 10. (5 + 5)
     }
 }
