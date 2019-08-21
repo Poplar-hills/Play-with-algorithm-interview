@@ -40,7 +40,7 @@ public class L416_PartitionEqualSubsetSum {
     }
 
     private static boolean canPartition(int i, int s, int[] nums, int[][] cache) {
-        if (s == 0) return true;
+        if (s == 0) return true;   // 只有完全填满时才是有效解（见分析中的第2条）
         if (s < 0 || i < 0) return false;
         if (cache[i][s] != -1) return cache[i][s] == 1;
 
