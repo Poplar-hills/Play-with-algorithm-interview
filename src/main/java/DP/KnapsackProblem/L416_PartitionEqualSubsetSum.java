@@ -3,7 +3,6 @@ package DP.KnapsackProblem;
 import static Utils.Helpers.*;
 
 import java.util.Arrays;
-import java.util.function.IntBinaryOperator;
 
 /*
 * Partition Equal Subset Sum
@@ -29,7 +28,7 @@ public class L416_PartitionEqualSubsetSum {
     * */
     public static boolean canPartition(int[] nums) {
         int sum = Arrays.stream(nums).reduce(0, Integer::sum);  // 相当于背包容量
-        if (sum % 2 == 1) return false;
+        if (sum % 2 == 1) return false;   // 若总和为奇数则一定无解
 
         int n = nums.length;
         int halfSum = sum / 2;
@@ -45,9 +44,7 @@ public class L416_PartitionEqualSubsetSum {
         if (s < 0 || i < 0) return false;
         if (cache[i][s] != -1) return cache[i][s] == 1;
 
-        boolean res1 = canPartition(i - 1, s, nums, cache);
-        boolean res2 = canPartition(i - 1, s - nums[i], nums, cache);
-        boolean res = res1 || res2;
+        boolean res = canPartition(i - 1, s, nums, cache) || canPartition(i - 1, s - nums[i], nums, cache);
         cache[i][s] = res ? 1 : 0;
         return res;
     }
