@@ -44,19 +44,34 @@ public class L_MultiKnapsack {
 
     /*
     * 解法2：DP
-    * - 思路：bottom-up 方式，类似 CompleteKnapsack 中的解法3。
+    * - 思路：bottom-up 方式，类似 L_CompleteKnapsack 中的解法3。
     * -
     * */
     public static int knapsack2(int[] w, int[] v, int[] q, int c) {
-        return 0;
+        int n = w.length;
+        if (n == 0) return 0;
+
+        int[] cache = new int[c + 1];
+
+        for (int j = 0; j <= c; j++) {
+            int maxNum = j / w[0];                               // 容量为 j 时最多能装下物品0的件数
+            cache[j] = (maxNum <= q[0] ? maxNum : q[0]) * v[0];  // 增加物品件数的约束
+        }
+
+        for (int i = 1; i < n; i++)
+            for (int j = c; j >= 0; j--)
+                for (int k = 0; k <= q[i] && w[i] * k <= j; k++)  // 增加物品件数的约束
+                    cache[j] = Math.max(cache[j], v[i] * k + cache[j - w[i] * k]);
+
+        return cache[c];
     }
 
     public static void main(String[] args) {
         log(knapsack(
-          new int[]{0, 3, 4, 5},  // weight
-          new int[]{0, 2, 3, 4},  // value
-          new int[]{0, 4, 3, 2},  // quantity
+          new int[]{3, 4, 5},  // weight
+          new int[]{2, 3, 4},  // value
+          new int[]{4, 3, 2},  // quantity
           15                      // knapsack capacity
-        ));                       // expects 11. ()
+        ));                       // expects 11.
     }
 }

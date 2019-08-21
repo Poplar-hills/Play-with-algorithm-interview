@@ -85,7 +85,7 @@ public class L_CompleteKnapsack {
 
     /*
     * 解法3：解法2的空间优化版
-    * - 思路：类似 ZeroOneKnapsack 中的解法4）。
+    * - 思路：类似 L_ZeroOneKnapsack 中的解法4）。
     * - 时间复杂度 O(TODO:???)，空间复杂度 O(c)。
     * */
     public static int knapsack3(int[] w, int[] v, int c) {
@@ -97,7 +97,7 @@ public class L_CompleteKnapsack {
         for (int j = 0; j <= c; j++)
             cache[j] = (j / w[0]) * v[0];
 
-        for (int i = 0; i < n; i++)
+        for (int i = 1; i < n; i++)
             for (int j = c; j >= w[i]; j--)
                 for (int k = 0; w[i] * k <= j; k++)
                     cache[j] = Math.max(cache[j], v[i] * k + cache[j - w[i] * k]);
