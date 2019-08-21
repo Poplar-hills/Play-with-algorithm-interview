@@ -23,16 +23,16 @@ import java.util.function.IntBinaryOperator;
 
 public class L416_PartitionEqualSubsetSum {
     /*
-    * 解法1：
-    * - 思路：
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * 解法1：Recursion + Memoization
+    * - 思路：top-down。
+    * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
     * */
     public static boolean canPartition(int[] nums) {
-        if (nums == null || nums.length < 2) return false;
+        int sum = Arrays.stream(nums).reduce(0, Integer::sum);  // 相当于背包容量
+        if (sum % 2 == 1) return false;
 
-        int halfSum = Arrays.stream(nums).reduce(0, Integer::sum) / 2;  // 相当于背包容量
         int n = nums.length;
-
+        int halfSum = sum / 2;
         int[][] cache = new int[n][halfSum + 1];
         for (int[] row : cache)
             Arrays.fill(row, -1);  // cache 中 -1表示未计算；0表示 false；1表示 true
@@ -45,7 +45,9 @@ public class L416_PartitionEqualSubsetSum {
         if (s < 0 || i < 0) return false;
         if (cache[i][s] != -1) return cache[i][s] == 1;
 
-        boolean res = canPartition(i - 1, s, nums, cache) || canPartition(i - 1, s - nums[i], nums, cache);
+        boolean res1 = canPartition(i - 1, s, nums, cache);
+        boolean res2 = canPartition(i - 1, s - nums[i], nums, cache);
+        boolean res = res1 || res2;
         cache[i][s] = res ? 1 : 0;
         return res;
     }
@@ -56,11 +58,11 @@ public class L416_PartitionEqualSubsetSum {
     * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
     * */
     public static boolean canPartition2(int[] nums) {
-        if (nums == null || nums.length < 2) return false;
+        int sum = Arrays.stream(nums).reduce(0, Integer::sum);
+        if (sum % 2 == 1) return false;
 
-        int halfSum = Arrays.stream(nums).reduce(0, Integer::sum) / 2;
         int n = nums.length;
-
+        int halfSum = sum / 2;
         int[][] cache = new int[n][halfSum + 1];
         for (int[] row : cache)
             Arrays.fill(row, -1);
@@ -72,7 +74,7 @@ public class L416_PartitionEqualSubsetSum {
             for (int j = 0; j <= halfSum; j++) {
                 cache[i][j] = cache[i - 1][j];
                 if (j >= nums[i])
-                    cache[i][j] = cache[i][j] | cache[i - 1][j - nums[i]];
+                    cache[i][j] = cache[i][j] | cache[i - 1][j - nums[i]];  // bitwise operation: 1 | 0 = 1; 1 & 0 = 0
             }
         }
 
@@ -80,9 +82,11 @@ public class L416_PartitionEqualSubsetSum {
     }
 
     public static void main(String[] args) {
-        log(canPartition2(new int[]{1, 5, 11, 5}));  // expects true. ([1, 5, 5] and [11])
-        log(canPartition2(new int[]{1, 2, 3, 4}));   // expects true. ([1, 4] and [2, 3])
-        log(canPartition2(new int[]{1, 2, 3, 5}));   // expects false
-        log(canPartition2(new int[]{1}));            // expects false
+        log(canPartition(new int[]{1, 5, 11, 5}));    // expects true. ([1, 5, 5] and [11])
+        log(canPartition(new int[]{1, 2, 3, 4}));     // expects true. ([1, 4] and [2, 3])
+        log(canPartition(new int[]{1, 2, 3, 5}));     // expects false
+        log(canPartition(new int[]{1, 5, 3}));        // expects false
+        log(canPartition(new int[]{1, 100, 5, 3}));   // expects false
+        log(canPartition(new int[]{1}));              // expects false
     }
 }
