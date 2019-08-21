@@ -45,7 +45,7 @@ public class L_MultiKnapsack {
     /*
     * 解法2：DP
     * - 思路：bottom-up 方式，类似 L_CompleteKnapsack 中的解法3。
-    * -
+    * - 时间复杂度 O(n*c*k)，空间复杂度 O(c)，其中 k 为每种物品的最多件数。
     * */
     public static int knapsack2(int[] w, int[] v, int[] q, int c) {
         int n = w.length;
@@ -71,7 +71,7 @@ public class L_MultiKnapsack {
           new int[]{3, 4, 5},  // weight
           new int[]{2, 3, 4},  // value
           new int[]{4, 3, 2},  // quantity
-          15                      // knapsack capacity
-        ));                       // expects 11.
+          15                   // knapsack capacity
+        ));                    // expects 11.
     }
 }
