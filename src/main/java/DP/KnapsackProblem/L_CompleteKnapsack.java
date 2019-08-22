@@ -57,8 +57,8 @@ public class L_CompleteKnapsack {
     }
 
     /*
-    * 解法2：DP
-    * - 思路：bottom-up 方式。
+    * 解法2：DP + 二维数组
+    * - 思路：bottom-up 方式，类似 L_ZeroOneKnapsack 的解法2。
     * - 时间复杂度 O(TODO:???)，空间复杂度 O(n*c)。
     * */
     public static int knapsack2(int[] w, int[] v, int c) {
@@ -84,8 +84,8 @@ public class L_CompleteKnapsack {
     }
 
     /*
-    * 解法3：解法2的空间优化版
-    * - 思路：类似 L_ZeroOneKnapsack 中的解法4）。
+    * 解法3：解法2的空间优化版（DP + 一维数组）
+    * - 思路：类似 L_ZeroOneKnapsack 中的解法4。
     * - 时间复杂度 O(TODO:???)，空间复杂度 O(c)。
     * */
     public static int knapsack3(int[] w, int[] v, int c) {

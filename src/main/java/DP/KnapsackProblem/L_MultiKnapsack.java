@@ -43,7 +43,7 @@ public class L_MultiKnapsack {
     }
 
     /*
-    * 解法2：DP
+    * 解法2：DP + 一维数组
     * - 思路：bottom-up 方式，类似 L_CompleteKnapsack 中的解法3。
     * - 时间复杂度 O(n*c*k)，空间复杂度 O(c)，其中 k 为每种物品的最多件数。
     * */
