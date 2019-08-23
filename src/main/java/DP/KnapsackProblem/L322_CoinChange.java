@@ -31,7 +31,6 @@ public class L322_CoinChange {
     * - 时间复杂度 O(n*a)，空间复杂度 O(a)。
     * */
     public static int coinChange(int[] coins, int amount) {
-        int n = coins.length;
         int[] cache = new int[amount + 1];
         Arrays.fill(cache, Integer.MAX_VALUE);    // ∵ 要求的是最小值 ∴ 初值设为正最大
         cache[0] = 0;                             // 解决最基本问题
