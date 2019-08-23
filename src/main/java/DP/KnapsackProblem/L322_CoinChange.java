@@ -33,13 +33,13 @@ public class L322_CoinChange {
     public static int coinChange(int[] coins, int amount) {
         int n = coins.length;
         int[] cache = new int[amount + 1];
-        Arrays.fill(cache, Integer.MAX_VALUE);  // ∵ 要求的是最小值 ∴ 初值设为正最大
-        cache[0] = 0;                           // 解决最基本问题
+        Arrays.fill(cache, Integer.MAX_VALUE);    // ∵ 要求的是最小值 ∴ 初值设为正最大
+        cache[0] = 0;                             // 解决最基本问题
 
         for (int coin : coins)
             for (int a = coin; a <= amount; a++)  // 从左到右进行遍历和覆盖
-                if (cache[a - coin] != Integer.MAX_VALUE)  // cache[a - coin] 有值说明至少能
-                    cache[a] = Math.min(cache[a], cache[a - coin] + 1);  //
+                if (cache[a - coin] != Integer.MAX_VALUE)
+                    cache[a] = Math.min(cache[a], cache[a - coin] + 1);
 
         return cache[amount] == Integer.MAX_VALUE ? -1 : cache[amount];
     }
