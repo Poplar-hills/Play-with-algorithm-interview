@@ -121,10 +121,10 @@ public class L_CompleteKnapsack {
         int n = w.length;
         if (n <= 0) return 0;
 
-        int[] cache = new int[c + 1];
+        int[] cache = new int[c + 1];        // 不再需要初始化，下面对 i 的遍历从0开始
 
         for (int i = 0; i < n; i++)
-            for (int j = w[i]; j <= c; j++)  // 从左到右 [w[i], c] 进行覆盖（这里是与 L_ZeroOneKnapsack 解法4的唯一区别）
+            for (int j = w[i]; j <= c; j++)  // 从左到右 [w[i], c] 进行覆盖（这里是与 L_ZeroOneKnapsack 解法4的最大区别）
                 cache[j] = Math.max(cache[j], v[i] + cache[j - w[i]]);
 
         return cache[c];

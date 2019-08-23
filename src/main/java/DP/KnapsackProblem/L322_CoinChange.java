@@ -24,27 +24,21 @@ import java.util.Arrays;
 public class L322_CoinChange {
     public static int coinChange(int[] coins, int amount) {
         int n = coins.length;
-        int[][] cache = new int[n][amount + 1];
-        for (int[] row : cache)
-            Arrays.fill(row, -1);
+        int[] cache = new int[amount + 1];
+        Arrays.fill(cache, Integer.MAX_VALUE);
+        cache[0] = 0;
 
-        for (int a = 1; a <= amount; a++)
-            cache[0][a] = (a % coins[0] == 0) ? (a / coins[0]) : -1;
+        for (int i = 0; i < n; i++)
+            for (int a = coins[i]; a <= amount; a++)
+                if (cache[a - coins[i]] != Integer.MAX_VALUE)
+                    cache[a] = Math.min(cache[a], cache[a - coins[i]] + 1);
 
-        for (int i = 1; i < n; i++) {
-            for (int a = 0; a <= amount; a++) {
-                cache[i][a] = cache[i - 1][a];
-                for (int k = 0; k * coins[i] <= a; k++)
-                    cache[i][a] = Math.min(cache[i][a], k + cache[i - 1][a - k * coins[i]]);
-            }
-        }
-
-        return cache[n - 1][amount] == Integer.MAX_VALUE ? -1 : cache[n - 1][amount];
+        return cache[amount] == Integer.MAX_VALUE ? -1 : cache[amount];
     }
 
     public static void main(String[] args) {
-        // log(coinChange(new int[]{1, 2, 5}, 11));      // expects 3. (5 + 5 + 1)
-        // log(coinChange(new int[]{2}, 3));             // expects -1.
+        log(coinChange(new int[]{1, 2, 5}, 11));      // expects 3. (5 + 5 + 1)
+        log(coinChange(new int[]{2}, 3));             // expects -1.
         log(coinChange(new int[]{2, 5, 10, 1}, 27));  // expects 4.
     }
 }
