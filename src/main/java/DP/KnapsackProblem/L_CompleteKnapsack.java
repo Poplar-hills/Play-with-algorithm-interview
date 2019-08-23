@@ -22,7 +22,7 @@ import java.util.Arrays;
 *
 *   - DP：
 *     DP 的关键是寻找原问题的子问题，并写出状态转移方程：
-*     - 子问题与0/1背包一样，仍然是：f(i, j) 表示“当背包剩余容量为 j 时，从前 i 个物品中能得到的最大价值”。
+*     - 子问题与0/1背包一样，仍然是：f(i, j) 表示“用前 i 个物品填充剩余容量为 j 的背包所能得到的最大价值”。
 *     - 状态转移方程：∵ 每件物品可以放入无数个 ∴ 对每件物品来说，策略已经不再是放或不放的问题了，而是放入多少件的问题。设能放入的
 *       物品 i 的件数为 k，则约束条件为：0 <= w[i]*k <= j，即在剩余容量 j 内可以放入0, 1, 2, ... k 件物品 i。因此状态转移
 *       方程为：f(i, j) = max(v[i]*k + f(i-1, j-w[i]*k))，其中 0 <= w[i]*k <= j。
@@ -34,7 +34,7 @@ public class L_CompleteKnapsack {
     * - 思路：top-down 方式。
     * - 对比：在0/1背包中，对于第 i 个物品只有放/不放2种情况，只需从这2种选择中选出最优的即可；而完全背包问题则需在 k 种选择中选
     *   出最优解，这就需要多一层循环来求最大值。
-    * - 时间复杂度 O(TODO:???)，空间复杂度 O(n*c)。
+    * - 时间复杂度 O(n*c^2)，空间复杂度 O(n*c)。
     * */
     public static int knapsack(int[] w, int[] v, int c) {
         int n = w.length;
@@ -59,7 +59,7 @@ public class L_CompleteKnapsack {
     /*
     * 解法2：DP + 二维数组
     * - 思路：bottom-up 方式，类似 L_ZeroOneKnapsack 的解法2。
-    * - 时间复杂度 O(TODO:???)，空间复杂度 O(n*c)。
+    * - 时间复杂度 O(n*c^2)，空间复杂度 O(n*c)。
     * */
     public static int knapsack2(int[] w, int[] v, int c) {
         int n = w.length;
@@ -85,8 +85,8 @@ public class L_CompleteKnapsack {
 
     /*
     * 解法3：解法2的空间优化版（DP + 一维数组）
-    * - 思路：类似 L_ZeroOneKnapsack 中的解法4。
-    * - 时间复杂度 O(TODO:???)，空间复杂度 O(c)。
+    * - 思路：类似 L_ZeroOneKnapsack 中的解法4，状态转移方程简化为：f(i, j) = max(f(j), v[i]*k + f(j - w[j]*k))。
+    * - 时间复杂度 O(n*c^2)，空间复杂度 O(c)。
     * */
     public static int knapsack3(int[] w, int[] v, int c) {
         int n = w.length;
@@ -105,7 +105,42 @@ public class L_CompleteKnapsack {
         return cache[c];
     }
 
+    /*
+    * 解法4：解法3的优化版
+    * - 思路：前3种解法相比 L_ZeroOneKnapsack 中的解法来说多了一层对 k 的循环，用于确定“同样的物品应放几个最优”，但也因此提高
+    *   了时间复杂度（n*c*c）。优化方法是将对 j 的循环改为从左往右覆盖，即从第一个放得下物品 i 的容量（w[i]）开始到最大容量（c）。
+    *   这样不再需要对每个物品尝试放 0-k 件，而是只需在左侧的计算结果之上尝试再加一个 v[i] 即可。例如：
+    *        w  v | i\c  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14
+    *        5  5 |  0   0  0  0  0  0  5  5  5  5  5  10  10  10  10  10
+    *        7  8 |  1   0  0  0  0  0  5  5  8  8  8  10  10  13  13  16
+    *   当 i=1，c=14 时，j-w[i]=7，即左边 cache[7] 中已经存储了之刨除一件物品 i 的重量之后的最大价值，因此只要再加上一件 i
+    *   的价值（v[i]）后再与原有的 cache[j] 比较取最大即可。
+    * - 时间复杂度 O(n*c)，空间复杂度 O(c)。
+    * */
+    public static int knapsack4(int[] w, int[] v, int c) {
+        int n = w.length;
+        if (n <= 0) return 0;
+
+        int[] cache = new int[c + 1];
+
+        for (int i = 0; i < n; i++)
+            for (int j = w[i]; j <= c; j++)  // 从左到右 [w[i], c] 进行覆盖（这里是与 L_ZeroOneKnapsack 解法4的唯一区别）
+                cache[j] = Math.max(cache[j], v[i] + cache[j - w[i]]);
+
+        return cache[c];
+    }
+
     public static void main(String[] args) {
-        log(knapsack3(new int[]{5, 7}, new int[]{5, 8}, 10));  // expects 10. (5 + 5)
+        log(knapsack4(
+            new int[]{5, 7},  // weight
+            new int[]{5, 8},  // value
+            10                // capacity
+        ));                   // expects 10. (5 + 5)
+
+        log(knapsack4(
+            new int[]{5, 7},
+            new int[]{5, 8},
+            14
+        ));                   // expects 16. (5 + 5)
     }
 }
