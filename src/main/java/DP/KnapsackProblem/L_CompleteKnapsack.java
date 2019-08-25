@@ -114,7 +114,7 @@ public class L_CompleteKnapsack {
     *        5  5 |  0   0  0  0  0  0  5  5  5  5  5  10  10  10  10  10
     *        7  8 |  1   0  0  0  0  0  5  5  8  8  8  10  10  13  13  16
     *   当 i=1，c=14 时，j-w[i]=7，即左边 cache[7] 中已经存储了之刨除一件物品 i 的重量之后的最大价值，因此只要再加上一件 i
-    *   的价值（v[i]）后再与原有的 cache[j] 比较取最大即可。
+    *   的价值（v[i]）后再与原有的 cache[j] 比较取最大即可。状态转移方程为：f(i, j) = max(f(j), v[i] + f(j - w[j]))。
     * - 时间复杂度 O(n*c)，空间复杂度 O(c)。
     * */
     public static int knapsack4(int[] w, int[] v, int c) {
