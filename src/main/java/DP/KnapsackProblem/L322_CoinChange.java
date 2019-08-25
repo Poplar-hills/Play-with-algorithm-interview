@@ -10,17 +10,14 @@ import java.util.Arrays;
 * - You are given coins of different denominations and a total amount of money amount. Write a function to
 *   compute the fewest number of coins that you need to make up that amount. If that amount of money cannot
 *   be made up by any combination of the coins, return -1. （注：同一面额的硬币可以使用无数次）
-*
-* - 分析：这是个典型的完全背包问题，参考 L_CompleteKnapsack。
-*   - 子问题定义：f(i, a) 表示“用前 i 个硬币填满容量 a 所需的最少硬币个数”。
-*   - 状态转移方程：f(i, a) = min(k + f(i-1, s-coins[i] * k))，其中 0 <= coins[i]*k <= a。
-*
 * */
 
 public class L322_CoinChange {
     /*
     * 解法1：DP + 一维数组
-    * - 思路：与 L_CompleteKnapsack 的解法4相同。
+    * - 思路：这是个典型的完全背包问题，参考 L_CompleteKnapsack 解法4。
+    *   - 子问题定义：f(i, a) 表示“用前 i 个硬币填满容量 a 所需的最少硬币个数”。
+    *   - 状态转移方程：f(i, a) = min(f(a), 1 + f(a - v[i]))。
     *        c\a| 0  1  2  3  4  5  6  7  8  9  10  11
     *         2 | 0  M  1  M  2  M  3  M  4  M   5   M  - 只考虑硬币2时，a 的遍历范围是 [2, 11] ∴ a=0,1 处的值不变
     *             ↓  ↓  ↓  ↓  ↓
