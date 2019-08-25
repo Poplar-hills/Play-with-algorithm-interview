@@ -31,16 +31,61 @@ public class L322_CoinChange {
     * - 时间复杂度 O(n*a)，空间复杂度 O(a)。
     * */
     public static int coinChange(int[] coins, int amount) {
-        int[] cache = new int[amount + 1];
-        Arrays.fill(cache, Integer.MAX_VALUE);    // ∵ 要求的是最小值 ∴ 初值设为正最大
-        cache[0] = 0;                             // 解决最基本问题
+        if (amount < 1) return 0;
+        int[] dp = new int[amount + 1];
+
+        for (int a = 0; a <= amount; a++)
+            dp[a] = (a % coins[0] == 0) ? a / coins[0] : Integer.MAX_VALUE;  // 解决最基本问题（∵ 要求的是最小值 ∴ 初值设为正最大）
 
         for (int coin : coins)
             for (int a = coin; a <= amount; a++)  // 从左到右进行遍历和覆盖
+                if (dp[a - coin] != Integer.MAX_VALUE)
+                    dp[a] = Math.min(dp[a], dp[a - coin] + 1);
+
+        return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
+    }
+
+    /*
+    * 解法2：解法1的简化版
+    * - 思路：本解法与解法1的不同之处在于对最基本问题的设定不同。
+    * - 时间复杂度 O(n*a)，空间复杂度 O(a)。
+    * */
+    public static int coinChange2(int[] coins, int amount) {
+        if (amount < 1) return 0;
+        int[] cache = new int[amount + 1];
+        Arrays.fill(cache, Integer.MAX_VALUE);  // 全初始化为正最大
+        cache[0] = 0;                           // 解决最基本问题只有 cache[0] 而已
+
+        for (int coin : coins)
+            for (int a = coin; a <= amount; a++)
                 if (cache[a - coin] != Integer.MAX_VALUE)
                     cache[a] = Math.min(cache[a], cache[a - coin] + 1);
 
         return cache[amount] == Integer.MAX_VALUE ? -1 : cache[amount];
+    }
+
+    /*
+    * 解法3：Recursion + Memoization
+    * - 时间复杂度 O(n*a)，空间复杂度 O(a)。
+    * */
+    public static int coinChange3(int[] coins, int amount) {
+        if (amount < 1) return 0;
+        return minCoinNum(coins, amount, new int[amount + 1]);
+    }
+
+    private static int minCoinNum(int[] coins, int a, int[] cache) {
+        if (a == 0) return 0;
+        if (a < 0) return -1;
+        if (cache[a] != 0) return cache[a];
+
+        int min = Integer.MAX_VALUE;
+        for (int coin : coins) {
+            int res = minCoinNum(coins, a - coin, cache);
+            if (res >= 0 && res < min)
+                min = res + 1;
+        }
+
+        return cache[a] = (min == Integer.MAX_VALUE) ? -1 : min;
     }
 
     public static void main(String[] args) {
