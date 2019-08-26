@@ -13,8 +13,10 @@ import java.util.Comparator;
 * */
 
 public class L474_OnesAndZeroes {
+    /*
+    * 错误解：采用贪心算法无法做到全局最优，例如 test case 4。
+    * */
     public static int findMaxForm(String[] strs, int m, int n) {
-        // Arrays.sort(strs, (a, b) -> a.length() - b.length());
         Arrays.sort(strs, Comparator.comparingInt(String::length));
         int res = 0;
         for (String str : strs) {
@@ -31,10 +33,18 @@ public class L474_OnesAndZeroes {
         return res;
     }
 
+    /*
+    *
+    * */
+    public static int findMaxForm1(String[] strs, int m, int n) {
+
+        return 0;
+    }
+
     public static void main(String[] args) {
-        log(findMaxForm(new String[]{"10", "0001", "111001", "1", "0"}, 5, 3));  // expects 4. ("10", "0001", "1", "0")
-        log(findMaxForm(new String[]{"10", "0001", "111001", "1", "0"}, 4, 3));  // expects 3. ("10", "1", "0")
-        log(findMaxForm(new String[]{"10", "0", "1"}, 1, 1));                    // expects 2. ("0", "1")
-        log(findMaxForm(new String[]{"111", "1000", "1000", "1000"}, 9, 3));     // expects 3. ("1000", "1000", "1000")
+        log(findMaxForm1(new String[]{"10", "0001", "111001", "1", "0"}, 5, 3));  // expects 4. ("10", "0001", "1", "0")
+        log(findMaxForm1(new String[]{"10", "0001", "111001", "1", "0"}, 4, 3));  // expects 3. ("10", "1", "0")
+        log(findMaxForm1(new String[]{"10", "0", "1"}, 1, 1));                    // expects 2. ("0", "1")
+        log(findMaxForm1(new String[]{"111", "1000", "1000", "1000"}, 9, 3));     // expects 3. ("1000", "1000", "1000")
     }
 }
