@@ -45,15 +45,14 @@ public class L377_CombinationSumIV {
     * - 时间复杂度 O(n*target)，空间复杂度 O(target)。
     * */
     public static int combinationSum1(int[] nums, int target) {
-        if (target < 0 || nums == null || nums.length == 0) return 0;
+        if (target <= 0 || nums == null || nums.length == 0) return 0;
         int[] cache = new int[target + 1];
         Arrays.fill(cache, -1);
-        cache[0] = 1;
         return combinationSum1(nums, target, cache);
     }
 
     public static int combinationSum1(int[] nums, int t, int[] cache) {
-        if (t == 0) return 1;
+        if (t == 0) return 1;    // The base case 最基本问题，即上面的 f(0) = 1
         if (cache[t] != -1) return cache[t];
 
         int res = 0;
@@ -64,7 +63,26 @@ public class L377_CombinationSumIV {
         return cache[t] = res;
     }
 
+    /*
+    * 解法2：DP
+    * - 思路：bottom-up
+    * - 时间复杂度 O(n*target)，空间复杂度 O(target)。
+    * */
+    public static int combinationSum2(int[] nums, int target) {
+        if (target <= 0 || nums == null || nums.length == 0) return 0;
+
+        int[] cache = new int[target + 1];
+        cache[0] = 1;   // The base case
+
+        for (int t = 1; t <= target; t++)
+            for (int num : nums)
+                if (t >= num)
+                    cache[t] += cache[t - num];
+
+        return cache[target];
+    }
+
     public static void main(String[] args) {
-        log(combinationSum1(new int[]{1, 2, 3}, 4));  // expects 7. (1111, 112, 211, 121, 13, 31, 22)
+        log(combinationSum2(new int[]{1, 2, 3}, 4));  // expects 7. (1111, 112, 211, 121, 13, 31, 22)
     }
 }
