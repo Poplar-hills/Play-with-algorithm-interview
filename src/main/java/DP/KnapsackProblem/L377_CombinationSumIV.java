@@ -65,14 +65,14 @@ public class L377_CombinationSumIV {
 
     /*
     * 解法2：DP
-    * - 思路：bottom-up
+    * - 思路：bottom-up。
     * - 时间复杂度 O(n*target)，空间复杂度 O(target)。
     * */
     public static int combinationSum2(int[] nums, int target) {
         if (target <= 0 || nums == null || nums.length == 0) return 0;
 
         int[] cache = new int[target + 1];
-        cache[0] = 1;   // The base case
+        cache[0] = 1;   // base case 在这里解决 ∴ 下面的循环不需要处理 t=0 的情况
 
         for (int t = 1; t <= target; t++)
             for (int num : nums)
