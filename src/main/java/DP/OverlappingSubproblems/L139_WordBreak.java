@@ -1,4 +1,4 @@
-package DP.KnapsackProblem;
+package DP.OverlappingSubproblems;
 
 import static Utils.Helpers.*;
 
