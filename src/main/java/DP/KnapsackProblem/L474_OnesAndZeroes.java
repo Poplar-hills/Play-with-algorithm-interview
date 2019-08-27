@@ -14,10 +14,10 @@ import java.util.Comparator;
 
 public class L474_OnesAndZeroes {
     /*
-    * 错误解：采用贪心算法无法做到全局最优，例如 test case 4。
+    * 错误解：第一直觉是用贪心算法，但贪心算法无法做到全局最优，例如 test case 4。
     * */
     public static int findMaxForm(String[] strs, int m, int n) {
-        Arrays.sort(strs, Comparator.comparingInt(String::length));
+        Arrays.sort(strs, Comparator.comparingInt(String::length));  // 让字符串从短到长排列
         int res = 0;
         for (String str : strs) {
             int i = 0;
@@ -34,11 +34,45 @@ public class L474_OnesAndZeroes {
     }
 
     /*
-    *
+    * 解法1：DP
+    * - 思路：该题实际上是一道多维的0/1背包问题 —— 用数组中的字符串（相当于物品）同时填充0、1两个背包。每个字符串都有放/不放两种
+    *   选择，因此：
+    *   - 子问题定义：f(i, z, o) 表示“用前 i 个字符串填充0容量为 z 和1容量为 o 的背包，最多能填充的物品数量”；
+    *   - 状态转移方程：f(i, z, o) = max(f(i-1, z, o), f(i-1, z-zeros[i], o-ones[i]) + 1)。
+    * - 时间复杂度 O()，空间复杂度 O()。
     * */
     public static int findMaxForm1(String[] strs, int m, int n) {
+        if (m == 0 || n == 0 || strs == null || strs.length == 0) return 0;
 
-        return 0;
+        int l = strs.length;
+        int[][][] dp = new int[l][m + 1][n + 1];
+
+        for (int i = 0; i < l; i++) {
+            int[] count = count01(strs[i]);
+            for (int z = 0; z <= m; z++) {
+                for (int o = 0; o <= n; o++) {
+                    if (i == 0) {
+                        if (z >= count[0] && o >= count[1])
+                            dp[i][z][o] = 1;
+                    } else {
+                        dp[i][z][o] = dp[i-1][z][o];
+                        if (z >= count[0] && o >= count[1])
+                            dp[i][z][o] = Math.max(dp[i][z][o], dp[i-1][z-count[0]][o-count[1]] + 1);
+                    }
+                }
+            }
+        }
+
+        return dp[l - 1][m][n];
+    }
+
+    private static int[] count01(String s) {
+        int zeros = 0, ones = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '0') zeros++;
+            if (c == '1') ones++;
+        }
+        return new int[]{zeros, ones};
     }
 
     public static void main(String[] args) {
