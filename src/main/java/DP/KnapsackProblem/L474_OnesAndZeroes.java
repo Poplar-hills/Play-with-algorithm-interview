@@ -14,7 +14,7 @@ import java.util.Comparator;
 
 public class L474_OnesAndZeroes {
     /*
-    * 错误解：第一直觉是用贪心算法，但贪心算法无法做到全局最优，例如 test case 4。
+    * 错误解：第一直觉是用贪心算法，但贪心算法无法做到全局最优，例如 test case 3。
     * */
     public static int findMaxForm(String[] strs, int m, int n) {
         Arrays.sort(strs, Comparator.comparingInt(String::length));  // 让字符串从短到长排列
@@ -42,13 +42,13 @@ public class L474_OnesAndZeroes {
     * - 时间复杂度 O(l*m*n)，空间复杂度 O(l*m*n)。
     * */
     public static int findMaxForm1(String[] strs, int m, int n) {
-        if (m == 0 || n == 0 || strs == null || strs.length == 0) return 0;
+        if (strs == null || strs.length == 0) return 0;
 
         int l = strs.length;
         int[][][] dp = new int[l][m + 1][n + 1];
 
         for (int i = 0; i < l; i++) {
-            int[] cnt = count01(strs[i]);
+            int[] cnt = count1(strs[i]);
 
             for (int z = 0; z <= m; z++) {
                 for (int o = 0; o <= n; o++) {
@@ -67,7 +67,7 @@ public class L474_OnesAndZeroes {
         return dp[l - 1][m][n];
     }
 
-    private static int[] count01(String s) {
+    private static int[] count1(String s) {
         int zeros = 0, ones = 0;
         for (char c : s.toCharArray()) {
             if (c == '0') zeros++;
@@ -83,27 +83,32 @@ public class L474_OnesAndZeroes {
     * - 时间复杂度 O(l*m*n)，空间复杂度 O(m*n)。
     * */
     public static int findMaxForm2(String[] strs, int m, int n) {
-        if (m == 0 || n == 0 || strs == null || strs.length == 0) return 0;
+        if (strs == null || strs.length == 0) return 0;
 
-        int l = strs.length;
         int[][] dp = new int[m + 1][n + 1];
 
-        for (int i = 0; i < l; i++) {
-            int[] cnt = count01(strs[i]);
-            for (int z = m; z >= cnt[0]; z--) {  // 内层两个循环都是从右向左遍历 & 覆盖
-                for (int o = n; o >= cnt[1]; o--) {
+        for (String s : strs) {
+            int[] cnt = count2(s);
+            for (int z = m; z >= cnt[0]; z--)  // 内层两个循环都是从右向左遍历 & 覆盖
+                for (int o = n; o >= cnt[1]; o--)
                     dp[z][o] = Math.max(dp[z][o], 1 + dp[z - cnt[0]][o - cnt[1]]);
-                }
-            }
         }
 
         return dp[m][n];
     }
 
+    private static int[] count2(String s) {
+        int[] res = new int[2];
+        for (int i = 0; i < s.length(); i++)
+            res[s.charAt(i) - '0']++;   // 0和1的 ASCII 值之差1
+        return res;
+     }
+
     public static void main(String[] args) {
         log(findMaxForm2(new String[]{"10", "0001", "111001", "1", "0"}, 5, 3));  // expects 4. ("10", "0001", "1", "0")
         log(findMaxForm2(new String[]{"10", "0001", "111001", "1", "0"}, 4, 3));  // expects 3. ("10", "1", "0")
-        log(findMaxForm2(new String[]{"10", "0", "1"}, 1, 1));                    // expects 2. ("0", "1")
         log(findMaxForm2(new String[]{"111", "1000", "1000", "1000"}, 9, 3));     // expects 3. ("1000", "1000", "1000")
+        log(findMaxForm2(new String[]{"10", "0", "1"}, 1, 1));                    // expects 2. ("0", "1")
+        log(findMaxForm2(new String[]{"0", "00", "1"}, 1, 0));                    // expects 1. ("0")
     }
 }
