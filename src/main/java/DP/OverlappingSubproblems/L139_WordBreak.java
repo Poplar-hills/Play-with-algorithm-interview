@@ -16,9 +16,21 @@ import java.util.Set;
 public class L139_WordBreak {
     /*
     * 超时解：Recursion
-    * - 思路：类似 L343_IntegerBreak 的思路不断将字符串分段，然后递归，直到找到解或无解。例如对 test case 1 来说：
-    *   第1次递归："l" + f("eetcode")；第2次递归："le" + f("etcode")；第3次递归："lee" + f("tcode")；... 直到找到字符串的前半段
-    *   "leet"、后半段"code"同时存在于 wordDict 中，说明原问题有解。
+    * - 思路：类似 L343_IntegerBreak 的思路，将字符串递归地分成两段，直到找到解或无解。例如对 test case 1 来说：
+    *     - "l" + f("eetcode")；
+    *             - "e" + f("etcode")
+    *                     - "e" + f("tcode")
+    *                     - "et" + f("code")
+    *                     - ...
+    *             - "ee" + f("tcode")
+    *             - "eet" + f("code")
+    *             - ...
+    *     - "le" + f("etcode")；
+    *              - ...
+    *     - "lee" + f("tcode")；
+    *              - ...
+    *     - "leet" + f("code")    → 此时前后两端同时存在于 wordDict 中，说明原问题有解
+    *
     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
     * */
     public static boolean wordBreak(String s, List<String> wordDict) {
