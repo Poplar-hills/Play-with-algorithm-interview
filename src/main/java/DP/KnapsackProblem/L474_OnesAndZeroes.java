@@ -38,7 +38,7 @@ public class L474_OnesAndZeroes {
     * - 思路：该题实际上是一道多维的0/1背包问题 —— 用数组中的字符串（相当于物品）同时填充0、1两个背包。每个字符串都有放/不放两种
     *   选择，因此：
     *   - 子问题定义：f(i, z, o) 表示“用前 i 个字符串填充0容量为 z 和1容量为 o 的背包，最多能填充的物品数量”；
-    *   - 状态转移方程：f(i, z, o) = max(f(i-1, z, o), f(i-1, z-zeros[i], o-ones[i]) + 1)。
+    *   - 状态转移方程：f(i, z, o) = max(f(i-1, z, o), 1 + f(i-1, z-zeros[i], o-ones[i]))。
     * - 时间复杂度 O()，空间复杂度 O()。
     * */
     public static int findMaxForm1(String[] strs, int m, int n) {
@@ -48,16 +48,17 @@ public class L474_OnesAndZeroes {
         int[][][] dp = new int[l][m + 1][n + 1];
 
         for (int i = 0; i < l; i++) {
-            int[] count = count01(strs[i]);
+            int[] cnt = count01(strs[i]);
+
             for (int z = 0; z <= m; z++) {
                 for (int o = 0; o <= n; o++) {
-                    if (i == 0) {
-                        if (z >= count[0] && o >= count[1])
+                    if (i == 0) {               // 解决 base case
+                        if (z >= cnt[0] && o >= cnt[1])
                             dp[i][z][o] = 1;
                     } else {
                         dp[i][z][o] = dp[i-1][z][o];
-                        if (z >= count[0] && o >= count[1])
-                            dp[i][z][o] = Math.max(dp[i][z][o], dp[i-1][z-count[0]][o-count[1]] + 1);
+                        if (z >= cnt[0] && o >= cnt[1])
+                            dp[i][z][o] = Math.max(dp[i][z][o], 1 + dp[i-1][z-cnt[0]][o-cnt[1]]);
                     }
                 }
             }
