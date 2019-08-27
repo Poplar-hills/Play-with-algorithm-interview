@@ -39,7 +39,7 @@ public class L474_OnesAndZeroes {
     *   选择，因此：
     *   - 子问题定义：f(i, z, o) 表示“用前 i 个字符串填充0容量为 z 和1容量为 o 的背包，最多能填充的物品数量”；
     *   - 状态转移方程：f(i, z, o) = max(f(i-1, z, o), 1 + f(i-1, z-zeros[i], o-ones[i]))。
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 时间复杂度 O(l*m*n)，空间复杂度 O(l*m*n)。
     * */
     public static int findMaxForm1(String[] strs, int m, int n) {
         if (m == 0 || n == 0 || strs == null || strs.length == 0) return 0;
@@ -76,10 +76,33 @@ public class L474_OnesAndZeroes {
         return new int[]{zeros, ones};
     }
 
+    /*
+    * 解法2：DP + 二维表（解法1的化简版）
+    * - 思路：按照 L_ZeroOneKnapsack 解法4的思路，状态转移方程化简为：f(z, o) = max(f(z, o), 1 + f(z-zeros[i], o-ones[i]))。
+    * - 时间复杂度 O(l*m*n)，空间复杂度 O(m*n)。
+    * */
+    public static int findMaxForm2(String[] strs, int m, int n) {
+        if (m == 0 || n == 0 || strs == null || strs.length == 0) return 0;
+
+        int l = strs.length;
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 0; i < l; i++) {
+            int[] cnt = count01(strs[i]);
+            for (int z = m; z >= cnt[0]; z--) {
+                for (int o = n; o >= cnt[1]; o--) {
+                    dp[z][o] = Math.max(dp[z][o], 1 + dp[z-cnt[0]][o-cnt[1]]);
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+
     public static void main(String[] args) {
-        log(findMaxForm1(new String[]{"10", "0001", "111001", "1", "0"}, 5, 3));  // expects 4. ("10", "0001", "1", "0")
-        log(findMaxForm1(new String[]{"10", "0001", "111001", "1", "0"}, 4, 3));  // expects 3. ("10", "1", "0")
-        log(findMaxForm1(new String[]{"10", "0", "1"}, 1, 1));                    // expects 2. ("0", "1")
-        log(findMaxForm1(new String[]{"111", "1000", "1000", "1000"}, 9, 3));     // expects 3. ("1000", "1000", "1000")
+        log(findMaxForm2(new String[]{"10", "0001", "111001", "1", "0"}, 5, 3));  // expects 4. ("10", "0001", "1", "0")
+        log(findMaxForm2(new String[]{"10", "0001", "111001", "1", "0"}, 4, 3));  // expects 3. ("10", "1", "0")
+        log(findMaxForm2(new String[]{"10", "0", "1"}, 1, 1));                    // expects 2. ("0", "1")
+        log(findMaxForm2(new String[]{"111", "1000", "1000", "1000"}, 9, 3));     // expects 3. ("1000", "1000", "1000")
     }
 }
