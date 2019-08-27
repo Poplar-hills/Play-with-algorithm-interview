@@ -58,7 +58,7 @@ public class L474_OnesAndZeroes {
                     } else {
                         dp[i][z][o] = dp[i-1][z][o];
                         if (z >= cnt[0] && o >= cnt[1])
-                            dp[i][z][o] = Math.max(dp[i][z][o], 1 + dp[i-1][z-cnt[0]][o-cnt[1]]);
+                            dp[i][z][o] = Math.max(dp[i][z][o], 1 + dp[i-1][z - cnt[0]][o - cnt[1]]);
                     }
                 }
             }
@@ -89,9 +89,9 @@ public class L474_OnesAndZeroes {
 
         for (int i = 0; i < l; i++) {
             int[] cnt = count01(strs[i]);
-            for (int z = m; z >= cnt[0]; z--) {
+            for (int z = m; z >= cnt[0]; z--) {  // 内层两个循环都是从右向左遍历 & 覆盖
                 for (int o = n; o >= cnt[1]; o--) {
-                    dp[z][o] = Math.max(dp[z][o], 1 + dp[z-cnt[0]][o-cnt[1]]);
+                    dp[z][o] = Math.max(dp[z][o], 1 + dp[z - cnt[0]][o - cnt[1]]);
                 }
             }
         }
