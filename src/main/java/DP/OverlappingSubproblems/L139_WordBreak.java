@@ -34,7 +34,7 @@ public class L139_WordBreak {
     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
     * */
     public static boolean wordBreak(String s, List<String> wordDict) {
-        if (s == null) return false;
+        if (s == null || s.length() == 0) return false;
         return search(s, 0, new HashSet<>(wordDict));  // 为了高效查询 wordDict 是否包含某个字符串，将 wordDict 转为 set
     }
 
@@ -52,7 +52,7 @@ public class L139_WordBreak {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean wordBreak1(String s, List<String> wordDict) {
-        if (s == null) return false;
+        if (s == null || s.length() == 0) return false;
         Boolean[] cache = new Boolean[s.length()];  // 此处使用 Boolean 而非 boolean，从而下面可以判断是否为 null
         return search1(s, 0, new HashSet<>(wordDict), cache);
     }
@@ -66,9 +66,36 @@ public class L139_WordBreak {
         return cache[l] = false;
     }
 
+    /*
+     * 解法2：DP
+     * - 思路：
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean wordBreak2(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0) return false;
+
+        int n = s.length();
+        Set<String> set = new HashSet<>(wordDict);
+
+        Boolean[] dp = new Boolean[n];
+//        dp[0] = true;
+
+        for (int r = 0; r < n; r++) {
+            for (int l = 0; l <= r; l++) {
+                String sub = s.substring(l, r + 1);
+                if (set.contains(sub) && (l == 0 || dp[l - 1])) {
+                    dp[r] = true;
+                    break;
+                }
+            }
+        }
+
+        return dp[n - 1];
+    }
+
     public static void main(String[] args) {
-        log(wordBreak1("leetcode", Arrays.asList("leet", "code")));       // true
-        log(wordBreak1("applepenapple", Arrays.asList("apple", "pen")));  // true
-        log(wordBreak1("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // false
+        log(wordBreak2("leetcode", Arrays.asList("leet", "code")));       // true
+        log(wordBreak2("applepenapple", Arrays.asList("apple", "pen")));  // true
+        log(wordBreak2("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // false
     }
 }
