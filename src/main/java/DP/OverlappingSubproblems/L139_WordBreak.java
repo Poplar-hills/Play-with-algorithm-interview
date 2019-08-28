@@ -69,7 +69,7 @@ public class L139_WordBreak {
     /*
      * 解法2：DP
      * - 思路：
-     *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成；
+     *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 wordDict 中的单词组成；
      *   - 状态转移方程：对于任意 j ∈ [0,i) 有 dp[i] = dp[j] && wordDict.contains(s[j+1, i])，即前后两段都是 wordDict 中的单词。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
@@ -94,32 +94,31 @@ public class L139_WordBreak {
 
     /*
      * 解法3：DFS
-     * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段，而是采用头部单词匹配。
+     * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段，而是采用头部单词匹配（s.startWith(word, start)）。理由是若 s 能
+     *   由 wordDict 中的词组成，则一定是由其中某一个词开头的，因此。
+     * - 注意：s.startWith() 方法的第二个参数指定匹配的起始索引，很好用。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
      * */
     public static boolean wordBreak3(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
-        boolean[] cache = new boolean[s.length()];
+        Boolean[] cache = new Boolean[s.length()];
         return dfs(s, 0, wordDict, cache);
     }
 
-    public static boolean dfs(String s, int start, List<String> wordDict, boolean[] cache) {
-        if (start >= s.length()) return true;  // 注意这里 start 可能 > s.length()
-        if (cache[start]) return false;
+    private static boolean dfs(String s, int start, List<String> wordDict, Boolean[] cache) {
+        if (start == s.length()) return true;  // 只有找到解（s 完全有 wordDict 中的词组成）时才会递归到底
+        if (cache[start] != null) return cache[start];
 
-        for (String word: wordDict) {
-            if (s.startsWith(word, start)) {  // 若 s 能由 wordDict 中的词组成，则一定是由其中某一个开头的
-                if (dfs(s, start + word.length(), wordDict, cache))  // 若后半段也是由 wordDict 中的词组成，则说明有解
-                    return true;
-                cache[start] = true;
-            }
-        }
-        return false;
+        for (String word : wordDict)
+            if (s.startsWith(word, start) && dfs(s, start + word.length(), wordDict, cache))  // 若前、后两段都存在于 wordDict 中则说明有解
+                return cache[start] = true;
+        return cache[start] = false;
     }
 
     public static void main(String[] args) {
-        log(wordBreak3("leetcode", Arrays.asList("leet", "code")));       // true
-        log(wordBreak3("applepenapple", Arrays.asList("apple", "pen")));  // true
-        log(wordBreak3("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // false
+        log(wordBreak3("leetcode", Arrays.asList("leet", "code")));       // expects true
+        log(wordBreak3("applepenapple", Arrays.asList("apple", "pen")));  // expects true
+        log(wordBreak3("cars", Arrays.asList("car", "ca", "rs")));        // expects true
+        log(wordBreak3("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // expects false
     }
 }
