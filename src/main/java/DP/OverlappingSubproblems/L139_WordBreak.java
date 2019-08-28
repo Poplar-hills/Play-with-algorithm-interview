@@ -67,38 +67,13 @@ public class L139_WordBreak {
     }
 
     /*
-     * 解法2：解法1的另一种实现
-     * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符遍历，而是采用头部单词匹配。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
-     * */
-    public boolean wordBreak2(String s, List<String> wordDict) {
-        if (s == null || s.length() == 0) return false;
-        boolean[] cache = new boolean[s.length()];
-        return search2(s, 0, wordDict, cache);
-    }
-
-    public boolean search2(String s, int start, List<String> wordDict, boolean[] cache) {
-        if (start >= s.length()) return true;  // 注意这里 start 可能 > s.length()
-        if (cache[start]) return false;
-
-        for (String word: wordDict) {
-            if (s.startsWith(word, start)) {  // 若 s 能由 wordDict 中的词组成，则一定是由其中某一个开头的
-                if (search2(s, start + word.length(), wordDict, cache))  // 若后半段也是由 wordDict 中的词组成，则说明有解
-                    return true;
-                cache[start] = true;
-            }
-        }
-        return false;
-    }
-
-    /*
-     * 解法3：DP
+     * 解法2：DP
      * - 思路：
      *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成；
      *   - 状态转移方程：对于任意 j ∈ [0,i) 有 dp[i] = dp[j] && wordDict.contains(s[j+1, i])，即前后两段都是 wordDict 中的单词。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static boolean wordBreak3(String s, List<String> wordDict) {
+    public static boolean wordBreak2(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
 
         int n = s.length();
@@ -118,12 +93,28 @@ public class L139_WordBreak {
     }
 
     /*
-     * 解法4：DFS
-     * - 思路：
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * 解法3：DFS
+     * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段，而是采用头部单词匹配。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
      * */
-    public static boolean wordBreak4(String s, List<String> wordDict) {
+    public boolean wordBreak3(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0) return false;
+        boolean[] cache = new boolean[s.length()];
+        return dfs(s, 0, wordDict, cache);
+    }
 
+    public boolean dfs(String s, int start, List<String> wordDict, boolean[] cache) {
+        if (start >= s.length()) return true;  // 注意这里 start 可能 > s.length()
+        if (cache[start]) return false;
+
+        for (String word: wordDict) {
+            if (s.startsWith(word, start)) {  // 若 s 能由 wordDict 中的词组成，则一定是由其中某一个开头的
+                if (dfs(s, start + word.length(), wordDict, cache))  // 若后半段也是由 wordDict 中的词组成，则说明有解
+                    return true;
+                cache[start] = true;
+            }
+        }
+        return false;
     }
 
     public static void main(String[] args) {
