@@ -97,13 +97,13 @@ public class L139_WordBreak {
      * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段，而是采用头部单词匹配。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
      * */
-    public boolean wordBreak3(String s, List<String> wordDict) {
+    public static boolean wordBreak3(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
         boolean[] cache = new boolean[s.length()];
         return dfs(s, 0, wordDict, cache);
     }
 
-    public boolean dfs(String s, int start, List<String> wordDict, boolean[] cache) {
+    public static boolean dfs(String s, int start, List<String> wordDict, boolean[] cache) {
         if (start >= s.length()) return true;  // 注意这里 start 可能 > s.length()
         if (cache[start]) return false;
 
@@ -118,8 +118,8 @@ public class L139_WordBreak {
     }
 
     public static void main(String[] args) {
-        log(wordBreak2("leetcode", Arrays.asList("leet", "code")));       // true
-        log(wordBreak2("applepenapple", Arrays.asList("apple", "pen")));  // true
-        log(wordBreak2("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // false
+        log(wordBreak3("leetcode", Arrays.asList("leet", "code")));       // true
+        log(wordBreak3("applepenapple", Arrays.asList("apple", "pen")));  // true
+        log(wordBreak3("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // false
     }
 }
