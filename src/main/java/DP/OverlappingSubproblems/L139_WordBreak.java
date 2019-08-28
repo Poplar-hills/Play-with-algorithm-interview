@@ -69,28 +69,26 @@ public class L139_WordBreak {
     /*
      * 解法2：DP
      * - 思路：
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static boolean wordBreak2(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
 
         int n = s.length();
         Set<String> set = new HashSet<>(wordDict);
+        boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成（也因此要开辟 n+1 的空间）
+        dp[0] = true;                       // dp[0]，即 s[0,0)，即空字符串。空字符串不需要任何单词即可组成，因此设为 true
 
-        Boolean[] dp = new Boolean[n];
-//        dp[0] = true;
-
-        for (int r = 0; r < n; r++) {
-            for (int l = 0; l <= r; l++) {
-                String sub = s.substring(l, r + 1);
-                if (set.contains(sub) && (l == 0 || dp[l - 1])) {
+        for (int r = 1; r <= n; r++) {      // r ∈ [1..n]
+            for (int l = 0; l < r; l++) {   // l ∈ [0..r)
+                if (dp[l] && set.contains(s.substring(l, r))) {  // 若前、后两段字符串都在 set 中
                     dp[r] = true;
                     break;
                 }
             }
         }
 
-        return dp[n - 1];
+        return dp[n];
     }
 
     public static void main(String[] args) {
