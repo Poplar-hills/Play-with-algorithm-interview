@@ -94,6 +94,8 @@ public class L139_WordBreak {
     /*
      * 解法3：DP
      * - 思路：
+     *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成；
+     *   - 状态转移方程：对于任意 j ∈ [0,i) 有 dp[i] = dp[j] && wordDict.contains(s[j+1, i])，即前后两段都是 wordDict 中的单词。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static boolean wordBreak3(String s, List<String> wordDict) {
@@ -101,13 +103,13 @@ public class L139_WordBreak {
 
         int n = s.length();
         Set<String> set = new HashSet<>(wordDict);
-        boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成（也因此要开辟 n+1 的空间）
+        boolean[] dp = new boolean[n + 1];  // ∵ dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成 ∴ 要开辟 n+1 的空间
         dp[0] = true;                       // dp[0]，即 s[0,0)，即空字符串。空字符串不需要任何单词即可组成，因此设为 true
 
-        for (int r = 1; r <= n; r++) {      // r ∈ [1..n]
-            for (int l = 0; l < r; l++) {   // l ∈ [0..r)
-                if (dp[l] && set.contains(s.substring(l, r))) {  // 若前、后两段字符串都在 set 中
-                    dp[r] = true;
+        for (int i = 1; i <= n; i++) {      // i ∈ [1..n]
+            for (int j = 0; j < i; j++) {   // j ∈ [0..i)
+                if (dp[j] && set.contains(s.substring(j, i))) {  // 若前、后两段字符串都在 set 中
+                    dp[i] = true;
                     break;
                 }
             }
