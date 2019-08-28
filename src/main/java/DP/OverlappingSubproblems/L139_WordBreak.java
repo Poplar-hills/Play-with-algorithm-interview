@@ -16,7 +16,7 @@ import java.util.Set;
 public class L139_WordBreak {
     /*
     * 超时解：Recursion
-    * - 思路：类似 L343_IntegerBreak 的思路，将字符串递归地分成两段，直到找到解或无解。例如对 test case 1 来说：
+    * - 思路：类似 L343_IntegerBreak 或 L91_DecodeWays 的思路，将字符串递归地分成两段，直到找到解或无解。例如对 test case 1 来说：
     *     - "l" + f("eetcode")；
     *             - "e" + f("etcode")
     *                     - "e" + f("tcode")
@@ -33,7 +33,7 @@ public class L139_WordBreak {
     *
     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
     * */
-    public static boolean wordBreak(String s, List<String> wordDict) {
+    public static boolean search2(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
         return search(s, 0, new HashSet<>(wordDict));  // 为了高效查询 wordDict 是否包含某个字符串，将 wordDict 转为 set
     }
@@ -49,7 +49,7 @@ public class L139_WordBreak {
     /*
      * 解法1：Recursion + Memoization
      * - 思路：用缓存记录重叠子问题的计算结果。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static boolean wordBreak1(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
@@ -67,11 +67,36 @@ public class L139_WordBreak {
     }
 
     /*
-     * 解法2：DP
+     * 解法2：解法1的另一种实现
+     * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符遍历，而是采用头部单词匹配。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
+     * */
+    public boolean wordBreak2(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0) return false;
+        boolean[] cache = new boolean[s.length()];
+        return search2(s, 0, wordDict, cache);
+    }
+
+    public boolean search2(String s, int start, List<String> wordDict, boolean[] cache) {
+        if (start >= s.length()) return true;  // 注意这里 start 可能 > s.length()
+        if (cache[start]) return false;
+
+        for (String word: wordDict) {
+            if (s.startsWith(word, start)) {  // 若 s 能由 wordDict 中的词组成，则一定是由其中某一个开头的
+                if (search2(s, start + word.length(), wordDict, cache))  // 若后半段也是由 wordDict 中的词组成，则说明有解
+                    return true;
+                cache[start] = true;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * 解法3：DP
      * - 思路：
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static boolean wordBreak2(String s, List<String> wordDict) {
+    public static boolean wordBreak3(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
 
         int n = s.length();
@@ -87,8 +112,16 @@ public class L139_WordBreak {
                 }
             }
         }
-
         return dp[n];
+    }
+
+    /*
+     * 解法4：DFS
+     * - 思路：
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
+    public static boolean wordBreak4(String s, List<String> wordDict) {
+
     }
 
     public static void main(String[] args) {
