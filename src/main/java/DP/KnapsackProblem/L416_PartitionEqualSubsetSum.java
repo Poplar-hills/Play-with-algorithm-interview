@@ -80,7 +80,7 @@ public class L416_PartitionEqualSubsetSum {
 
     /*
     * 解法3：解法2的空间优化版
-    * - 思路：类似 L_ZeroOneKnapsack 的解法4。
+    * - 思路：类似 _ZeroOneKnapsack 的解法4。
     * - 时间复杂度 O(n*sum)，空间复杂度 O(sum)。
     * */
     public static boolean canPartition3(int[] nums) {

@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class L322_CoinChange {
     /*
     * 解法1：DP + 一维数组
-    * - 思路：这是个典型的完全背包问题，参考 L_CompleteKnapsack 解法4。
+    * - 思路：这是个典型的完全背包问题，参考 _CompleteKnapsack 解法4。
     *       c\a| 0  1  2  3  4  5  6  7  8  9  10  11
     *        2 | 0  M  1  M  2  M  3  M  4  M   5   M  - 只考虑硬币2时，a 的遍历范围是 [2, 11] ∴ a=0,1 处的值不变
     *            ↓  ↓  ↓  ↓  ↓

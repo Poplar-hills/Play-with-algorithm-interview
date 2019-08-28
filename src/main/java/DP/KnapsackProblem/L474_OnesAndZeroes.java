@@ -77,7 +77,7 @@ public class L474_OnesAndZeroes {
 
     /*
     * 解法2：DP + 二维表（解法1的空间优化版）
-    * - 思路：按照 L_ZeroOneKnapsack 解法4的思路复用内层的二维表，从而不再需要为每个 i 的结算结果进行缓存，因此状态转移方程化
+    * - 思路：按照 _ZeroOneKnapsack 解法4的思路复用内层的二维表，从而不再需要为每个 i 的结算结果进行缓存，因此状态转移方程化
     *   简为：f(z, o) = max(f(z, o), 1 + f(z-zeros[i], o-ones[i]))。
     * - 时间复杂度 O(l*m*n)，空间复杂度 O(m*n)。
     * */

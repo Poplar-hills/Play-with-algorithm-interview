@@ -62,7 +62,7 @@ import java.util.Arrays;
 * - 详解 SEE: 微信搜“【动态规划】一次搞定三种背包问题”。
 * */
 
-public class L_ZeroOneKnapsack {
+public class _ZeroOneKnapsack {
     /*
     * 解法1：Recursion + Memoization
     * - 思路：top-down 方式。

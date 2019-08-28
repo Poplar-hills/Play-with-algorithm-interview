@@ -16,7 +16,7 @@ import java.util.Arrays;
 *     f(i, j) = max(v[i]*k + f(i-1, j-w[i]*k))，其中 0 <= k <= q[i] 且 0 <= w[i]*k <= j。
 * */
 
-public class L_MultiKnapsack {
+public class _MultiKnapsack {
     /*
     * 解法1：Recursion + Memoization
     * - 思路：top-down 方式。
@@ -44,7 +44,7 @@ public class L_MultiKnapsack {
 
     /*
     * 解法2：DP + 一维数组
-    * - 思路：bottom-up 方式，类似 L_CompleteKnapsack 中的解法3。
+    * - 思路：bottom-up 方式，类似 _CompleteKnapsack 中的解法3。
     * - 时间复杂度 O(n*c*k)，空间复杂度 O(c)，其中 k 为每种物品的最多件数。
     * */
     public static int knapsack2(int[] w, int[] v, int[] q, int c) {

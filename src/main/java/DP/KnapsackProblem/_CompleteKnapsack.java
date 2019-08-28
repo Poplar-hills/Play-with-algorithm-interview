@@ -28,7 +28,7 @@ import java.util.Arrays;
 *       方程为：f(i, j) = max(v[i]*k + f(i-1, j-w[i]*k))，其中 0 <= w[i]*k <= j。
 * */
 
-public class L_CompleteKnapsack {
+public class _CompleteKnapsack {
     /*
     * 解法1：Recursion + Memoization
     * - 思路：top-down 方式。
@@ -58,7 +58,7 @@ public class L_CompleteKnapsack {
 
     /*
     * 解法2：DP + 二维数组
-    * - 思路：bottom-up 方式，类似 L_ZeroOneKnapsack 的解法2。
+    * - 思路：bottom-up 方式，类似 _ZeroOneKnapsack 的解法2。
     * - 时间复杂度 O(n*c^2)，空间复杂度 O(n*c)。
     * */
     public static int knapsack2(int[] w, int[] v, int c) {
@@ -85,7 +85,7 @@ public class L_CompleteKnapsack {
 
     /*
     * 解法3：解法2的空间优化版（DP + 一维数组）
-    * - 思路：类似 L_ZeroOneKnapsack 中的解法4，状态转移方程简化为：f(i, j) = max(f(j), v[i]*k + f(j - w[j]*k))。
+    * - 思路：类似 _ZeroOneKnapsack 中的解法4，状态转移方程简化为：f(i, j) = max(f(j), v[i]*k + f(j - w[j]*k))。
     * - 时间复杂度 O(n*c^2)，空间复杂度 O(c)。
     * */
     public static int knapsack3(int[] w, int[] v, int c) {
@@ -107,7 +107,7 @@ public class L_CompleteKnapsack {
 
     /*
     * 解法4：解法3的优化版
-    * - 思路：前3种解法相比 L_ZeroOneKnapsack 中的解法来说多了一层对 k 的循环，用于确定“同样的物品应放几个最优”，但也因此提高
+    * - 思路：前3种解法相比 _ZeroOneKnapsack 中的解法来说多了一层对 k 的循环，用于确定“同样的物品应放几个最优”，但也因此提高
     *   了时间复杂度（n*c*c）。优化方法是将对 j 的循环改为从左往右覆盖，即从第一个放得下物品 i 的容量（w[i]）开始到最大容量（c）。
     *   这样不再需要对每个物品尝试放 0-k 件，而是只需在左侧的计算结果之上尝试再加一个 v[i] 即可。例如：
     *        w  v | i\c  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14
@@ -124,7 +124,7 @@ public class L_CompleteKnapsack {
         int[] cache = new int[c + 1];        // 不再需要初始化，下面对 i 的遍历从0开始
 
         for (int i = 0; i < n; i++)
-            for (int j = w[i]; j <= c; j++)  // 从左到右 [w[i], c] 进行覆盖（这里是与 L_ZeroOneKnapsack 解法4的最大区别）
+            for (int j = w[i]; j <= c; j++)  // 从左到右 [w[i], c] 进行覆盖（这里是与 _ZeroOneKnapsack 解法4的最大区别）
                 cache[j] = Math.max(cache[j], v[i] + cache[j - w[i]]);
 
         return cache[c];
