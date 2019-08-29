@@ -44,7 +44,7 @@ public class L494_TargetSum {
 
     private static int dfs(int[] nums, int s, int i, int sum) {
         if (i == nums.length) return s == 0 ? 1 : 0;  // i = nums.length 时递归到底，若此时 s 为0则说明找到一个解
-        if (s > sum || s < -sum) return 0;            // 注意 edge cases
+        if (s > sum || s < -sum) return 0;            // 若 s 越过 [-sum, sum] 范围时一定无解，可直接返回0
 
         return dfs(nums, s - nums[i], i + 1, sum - nums[i])   // 给 nums[i] 负号的情况
              + dfs(nums, s + nums[i], i + 1, sum - nums[i]);  // 给 nums[i] 正号的情况
@@ -60,12 +60,12 @@ public class L494_TargetSum {
      *            4        2        2        0
      *        +1/ -1\  +1/ -1\  +1/ -1\  +1/ -1\
      *        5     3  3     1   3    1   1    -1
-     *   当剩余容量经过加/减 nums 中的第二个1后得到两个3，他们的计算结果一致，因此应该被缓存。而说到建立缓存就需要回答4个问题：
+     *   💎 当剩余容量经过加/减 nums 中的第二个1后得到两个3，他们的计算结果一致，因此应该被缓存。而说到建立缓存就需要回答4个问题：
      *   1. 内容：缓存的内容就应该是递归函数的返回结果，即"将 s 填满有多少种方式"；
      *   2. 维度：缓存的维度数 = 递归函数入参中的变量个数，即 ∵ 2个条件（索引 i、剩余容量 s）确定一个计算结果 ∴ 该缓存应是一个二维数组；
      *   3. 大小：∵ i ∈ [0, nums.length), s ∈ [-sum, sum] ∴ 缓存空间大小应是 cache[nums.length][2 * sum + 1]；
      *   4. 初值：∵ 缓存的内容是"多少种方式"，一定是 ≥ 0 的 ∴ 初值可设为-1。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
      * */
     public static int findTargetSumWays2(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
@@ -90,8 +90,17 @@ public class L494_TargetSum {
         return cache[i][s + sum];
     }
 
+    /*
+    * 解法3：
+    * - 思路：
+    * -
+    * */
+    public static int findTargetSumWays3(int[] nums, int S) {
+
+    }
+
     public static void main(String[] args) {
-        log(findTargetSumWays2(new int[]{1, 1, 1, 1, 1}, 3));
+        log(findTargetSumWays3(new int[]{1, 1, 1, 1, 1}, 3));
         /*
         * expects 5:
         *   -1+1+1+1+1 = 3
@@ -101,7 +110,7 @@ public class L494_TargetSum {
         *   +1+1+1+1-1 = 3
         * */
 
-//        log(findTargetSumWays2(new int[]{2, 1, 1, 2}, 0));
+        log(findTargetSumWays3(new int[]{2, 1, 1, 2}, 0));
         /*
         *  expects 4:
         *    +2-1+1-2 = 0
