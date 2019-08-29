@@ -23,7 +23,7 @@ import static Utils.Helpers.*;
 
 public class L494_TargetSum {
     /*
-    * 解法1：Back-tracking（即 DFS，也是 Brute force)
+    * 解法1：Back-tracking（即 DFS，而没有 memoization 的 DFS 就是 Brute force)
     * - TODO: Brute force 与 Back-tracking 与 DFS 的关系？？？
     * - 思路：∵ nums 中的每个元素都有 + 或 - 两种选择 ∴ 每个选择都会产生两条路径。比如对 nums=[1,2,3], S=0 来说：
     *                       0
@@ -39,20 +39,14 @@ public class L494_TargetSum {
     public static int findTargetSumWays(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
         int sum = Arrays.stream(nums).reduce(0, Integer::sum);
-        if (S > sum || S < -sum) return 0;  // 注意 edge cases
-        return dfs(nums, S, 0);
+        return dfs(nums, S, 0, sum);
     }
 
-    private static int dfs(int[] nums, int s, int i) {
+    private static int dfs(int[] nums, int s, int i, int sum) {
         if (i == nums.length) return s == 0 ? 1 : 0;  // i = nums.length 时递归到底，若此时 s 为0则说明找到一个解
-        return dfs(nums, s - nums[i], i + 1) + dfs(nums, s + nums[i], i + 1);
-    }
-
-    /*
-    * 解法1：
-    * */
-    public static int findTargetSumWays1(int[] nums, int S) {
-        return 0;
+        if (s > sum || s < -sum) return 0;            // 注意 edge cases
+        int num = nums[i];
+        return dfs(nums, s - num, i + 1, sum - num) + dfs(nums, s + num, i + 1, sum - num);
     }
 
     public static void main(String[] args) {
