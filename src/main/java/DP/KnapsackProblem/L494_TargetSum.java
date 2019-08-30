@@ -131,17 +131,17 @@ public class L494_TargetSum {
     *       plusSum - minusSum = S
     *   两边相加得到：2 * plusSum = S + sum，最终得到：plusSum = (S + sum) / 2，于是问题转化为：
     *   “用 nums 中的元素填充 (S+sum)/2，共有几种选择方式能填满？”，这就是个典型的0/1背包问题了 —— 每个元素有放/不放两种选择。
-    * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
+    * - 时间复杂度 O(n*(S+sum))，空间复杂度 O(S+sum)。
     * */
     public static int findTargetSumWays5(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
 
         int sum = Arrays.stream(nums).reduce(0, Integer::sum);
-        if (S > sum || S < -sum) return 0;
+        if ((S + sum) % 2 == 1 || S > sum) return 0;  // 若 S+sum 为奇数，则 ÷2 后不是整数，说明无解
 
         int[] dp = new int[(S + sum) / 2 + 1];  // 从这往下就是标准的 _ZeroOneKnapsack 解法4的实现
         for (int s = 0; s < dp.length; s++) {
-            if (s == 0) dp[s] += 1;             // 若容量为0，则结果至少为1（nums[0]=0 时为2，nums[0]!=0 时再看下面的条件是否满足）
+            if (s == 0) dp[s] += 1;             // 若容量 s=0，则结果至少为1（nums[0]=0 时为2，nums[0]!=0 时再看下面的条件是否满足）
             if (nums[0] == s) dp[s] += 1;
         }
 
@@ -152,32 +152,36 @@ public class L494_TargetSum {
         return dp[dp.length - 1];
     }
 
+    /*
+    * 解法5：解法4的精简版（复杂度一致）
+    * */
+    public static int findTargetSumWays6(int[] nums, int S) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int sum = Arrays.stream(nums).reduce(0, Integer::sum);
+        if ((S + sum) % 2 == 1 || S > sum) return 0;
+
+        int[] dp = new int[(S + sum) / 2 + 1];
+        dp[0] = 1;            // 若容量 s=0，则结果至少为1，下面再次覆盖后才是 dp[0] 的最终结果
+
+        for (int num : nums)  // 这里从第0个元素开始遍历、覆盖
+            for (int s = dp.length - 1; s >= num; s--)
+                dp[s] += dp[s - num];
+
+        return dp[dp.length - 1];
+    }
+
     public static void main(String[] args) {
         log(findTargetSumWays5(new int[]{1, 1, 1, 1}, 2));
-        /*
-        * expects 4:
-        *   -1+1+1+1 = 2
-        *   +1-1+1+1 = 2
-        *   +1+1-1+1 = 2
-        *   +1+1+1-1 = 2
-        * */
+        // expects 4. -1+1+1+1、+1-1+1+1、+1+1-1+1、+1+1+1-1
 
         log(findTargetSumWays5(new int[]{2, 1, 1, 2}, 0));
-        /*
-        *  expects 4:
-        *    +2-1+1-2 = 0
-        *    -2+1-1+2 = 0
-        *    +2+1-1-2 = 0
-        *    -2-1+1+2 = 0
-        * */
+        // expects 4. +2-1+1-2、-2+1-1+2、+2+1-1-2、-2-1+1+2
 
         log(findTargetSumWays5(new int[]{0, 0, 1}, 1));
-        /*
-        *  expects 4:
-        *    +0+0+1 = 1
-        *    -0-0+1 = 1
-        *    +0-0+1 = 1
-        *    -0+0+1 = 1
-        * */
+        // expects 4. +0+0+1、-0-0+1、+0-0+1、-0+0+1
+
+        log(findTargetSumWays5(new int[]{7, 9, 3, 8, 0, 2, 4, 8, 3, 9}, 0));
+        // expects 0.
     }
 }
