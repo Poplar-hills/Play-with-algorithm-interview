@@ -1,6 +1,8 @@
 package DP.KnapsackProblem;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static Utils.Helpers.*;
 
@@ -78,16 +80,31 @@ public class L494_TargetSum {
 
         return cache[i][s + sum];
     }
-
+    
     /*
-    * 解法3：解法2的空间优化版
-    * - 思路：
+    * 解法3：解法2的 Map 版
+    * - 思路：使用 Map 实现缓存，key 为 "s->i" 的形式，value 为计算结果。时间、空间复杂度与解法2一致。
     * */
     public static int findTargetSumWays3(int[] nums, int S) {
-        return 0;
+        if (nums == null || nums.length == 0) return 0;
+        int sum = Arrays.stream(nums).reduce(0, Integer::sum);
+        return dfs3(nums, S, 0, sum, new HashMap<>());
     }
 
-    /*
+    private static int dfs3(int[] nums, int s, int i, int sum, Map<String, Integer> map) {
+        if (i == nums.length) return s == 0 ? 1 : 0;
+        if (s > sum || s < -sum) return 0;
+
+        String key = s + "->" + i;
+        if (!map.containsKey(key)) {
+            map.put(key, dfs3(nums, s - nums[i], i + 1, sum - nums[i], map)
+                       + dfs3(nums, s + nums[i], i + 1, sum - nums[i], map));
+        }
+
+        return map.get(key);
+    }
+
+	/*
     * 解法4：DP
     * - 思路：容量为 S，nums 中的每个元素都有 + 或 - 两种选择
     *   - 定义子问题：f(i, s) 表示"用前 i 个元素填充剩余容量 s 共有几种方式"；
@@ -131,7 +148,7 @@ public class L494_TargetSum {
     *       plusSum - minusSum = S
     *   两边相加得到：2 * plusSum = S + sum，最终得到：plusSum = (S + sum) / 2，于是问题转化为：
     *   “用 nums 中的元素填充 (S+sum)/2，共有几种选择方式能填满？”，这就是个典型的0/1背包问题了 —— 每个元素有放/不放两种选择。
-    * - 时间复杂度 O(n*(S+sum))，空间复杂度 O(S+sum)。
+    * - 时间复杂度 O(n*(sum+S))，空间复杂度 O(S+sum)。
     * */
     public static int findTargetSumWays5(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
