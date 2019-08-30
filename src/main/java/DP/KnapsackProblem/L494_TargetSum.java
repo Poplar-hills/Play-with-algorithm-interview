@@ -111,9 +111,11 @@ public class L494_TargetSum {
         int[][] dp = new int[n][sum * 2 + 1];    // ∵ s ∈ [-sum, sum] ∴ 开辟 sum*2+1 的空间
 
         for (int s = -sum; s <= sum; s++)
-            dp[0][s + sum] = Math.abs(s) == nums[0] ? 1 : 0;  // 解决最基本问题（即只考虑 nums 中第0个元素的情况）
+            dp[0][s + sum] = (s == 0 && nums[0] == 0)
+                ? 2                              // s = nums[i] = 0 是特殊情况（+0 = -0 = 0）
+                : Math.abs(s) == nums[0] ? 1 : 0;
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 1; i < n; i++) {
             for (int s = -sum; s <= sum; s++) {
                 if (s - nums[i] >= -sum)         // 注意越界情况（比如上面填表中 s=-5 时）
                     dp[i][s + sum] += dp[i - 1][s + sum - nums[i]];
@@ -143,6 +145,15 @@ public class L494_TargetSum {
         *    -2+1-1+2 = 0
         *    +2+1-1-2 = 0
         *    -2-1+1+2 = 0
+        * */
+
+        log(findTargetSumWays4(new int[]{0, 0, 1}, 1));
+        /*
+        *  expects 4:
+        *    +0+0+1 = 1
+        *    -0-0+1 = 1
+        *    +0-0+1 = 1
+        *    -0+0+1 = 1
         * */
     }
 }
