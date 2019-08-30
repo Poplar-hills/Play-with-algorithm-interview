@@ -92,13 +92,12 @@ public class L494_TargetSum {
     * - 思路：容量为 S，nums 中的每个元素都有 + 或 - 两种选择
     *   - 定义子问题：f(i, s) 表示"用前 i 个元素填充剩余容量 s 共有几种方式"；
     *   - 状态转移方程：f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i])。
-    *   - 填表：
-    *     i\s  -5 -4 -3 -2 -1  0  1  2  3  4  5   (其中 s ∈ [-sum, sum])
-    *      0    0  0  0  0  1  0  1  0  0  0  0
-    *      1    0  0  0  1  0  2  0  1  0  0  0
-    *      2    0  0  1  0  3  0  3  0  1  0  0
-    *      3    0  1  0  4  0  6  0  4  0  1  0
-    *      4    1  0  4  0  10 0  10 0  5  0  1
+    *   - 填表：对于 nums=[1,1,1,1], S=2 有：
+    *          v | i\s -3 -2 -1  0  1  2  3   (其中 s ∈ [-sum, sum])
+    *          1 |  0   0  0  1  0  1  0  0
+    *          1 |  1   0  1  0  2  0  1  0
+    *          1 |  2   1  0  3  0  3  0  1
+    *          1 |  3   0  4  0  6  0  4  0
     * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
     * */
     public static int findTargetSumWays4(int[] nums, int S) {
@@ -110,10 +109,8 @@ public class L494_TargetSum {
         int n = nums.length;
         int[][] dp = new int[n][sum * 2 + 1];    // ∵ s ∈ [-sum, sum] ∴ 开辟 sum*2+1 的空间
 
-        for (int s = -sum; s <= sum; s++)
-            dp[0][s + sum] = (s == 0 && nums[0] == 0)
-                ? 2                              // s = nums[i] = 0 是特殊情况（+0 = -0 = 0）
-                : Math.abs(s) == nums[0] ? 1 : 0;
+        for (int s = -sum; s <= sum; s++)        // base case（注意 s=nums[i]=0 是特殊情况 ∵ -0 = +0 = 0）
+            dp[0][s + sum] = (s == 0 && nums[0] == 0) ? 2 : (Math.abs(s) == nums[0] ? 1 : 0);
 
         for (int i = 1; i < n; i++) {
             for (int s = -sum; s <= sum; s++) {
@@ -128,14 +125,13 @@ public class L494_TargetSum {
     }
 
     public static void main(String[] args) {
-        log(findTargetSumWays4(new int[]{1, 1, 1, 1, 1}, 3));
+        log(findTargetSumWays4(new int[]{1, 1, 1, 1}, 2));
         /*
-        * expects 5:
-        *   -1+1+1+1+1 = 3
-        *   +1-1+1+1+1 = 3
-        *   +1+1-1+1+1 = 3
-        *   +1+1+1-1+1 = 3
-        *   +1+1+1+1-1 = 3
+        * expects 4:
+        *   -1+1+1+1 = 2
+        *   +1-1+1+1 = 2
+        *   +1+1-1+1 = 2
+        *   +1+1+1-1 = 2
         * */
 
         log(findTargetSumWays4(new int[]{2, 1, 1, 2}, 0));
