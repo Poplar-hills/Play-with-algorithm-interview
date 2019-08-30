@@ -8,17 +8,6 @@ import static Utils.Helpers.*;
 * Target Sum
 *
 * - 给定一个非零数字序列，在这些数字前面加上 + 或 - 号，求一共有多少种方式使其计算结果为给定的整数 S。
-*
-* - 分析：容量为 S，nums 中的每个元素都有 + 或 - 两种选择
-*   - 定义子问题：f(i, s) 表示"用前 i 个元素填充 s 共有几种方式"；
-*   - 状态转移方程：f(i, s) = sum(f(i-1, s-nums[i]), f(i-1, s+nums[i]))。
-*   - 填表：
-*     i\s  0  1  2  3
-*      0   0  1  0  0
-*      1   2  0  1  0
-*      2   0  3  0  1
-*      3   6  0  4  0
-*      4   0  10 0  5
 * */
 
 public class L494_TargetSum {
@@ -91,16 +80,53 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法3：
+    * 解法3：解法2的空间优化版
     * - 思路：
-    * -
     * */
     public static int findTargetSumWays3(int[] nums, int S) {
+        return 0;
+    }
 
+    /*
+    * 解法4：DP
+    * - 思路：容量为 S，nums 中的每个元素都有 + 或 - 两种选择
+    *   - 定义子问题：f(i, s) 表示"用前 i 个元素填充剩余容量 s 共有几种方式"；
+    *   - 状态转移方程：f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i])。
+    *   - 填表：
+    *     i\s  -5 -4 -3 -2 -1  0  1  2  3  4  5   (其中 s ∈ [-sum, sum])
+    *      0    0  0  0  0  1  0  1  0  0  0  0
+    *      1    0  0  0  1  0  2  0  1  0  0  0
+    *      2    0  0  1  0  3  0  3  0  1  0  0
+    *      3    0  1  0  4  0  6  0  4  0  1  0
+    *      4    1  0  4  0  10 0  10 0  5  0  1
+    * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
+    * */
+    public static int findTargetSumWays4(int[] nums, int S) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int sum = Arrays.stream(nums).reduce(0, Integer::sum);
+        if (S > sum || S < -sum) return 0;
+
+        int n = nums.length;
+        int[][] dp = new int[n][sum * 2 + 1];    // ∵ s ∈ [-sum, sum] ∴ 开辟 sum*2+1 的空间
+
+        for (int s = -sum; s <= sum; s++)
+            dp[0][s + sum] = Math.abs(s) == nums[0] ? 1 : 0;  // 解决最基本问题（即只考虑 nums 中第0个元素的情况）
+
+        for (int i = 0; i < n; i++) {
+            for (int s = -sum; s <= sum; s++) {
+                if (s - nums[i] >= -sum)         // 注意越界情况（比如上面填表中 s=-5 时）
+                    dp[i][s + sum] += dp[i - 1][s + sum - nums[i]];
+                if (s + nums[i] <= sum)          // 注意越界情况（比如上面填表中 s=5 时）
+                    dp[i][s + sum] += dp[i - 1][s + sum + nums[i]];
+            }
+        }
+
+        return dp[n - 1][S + sum];  // 注意最终要返回的是经过加/减 i 个元素得到 S 的结果 ∴ 应取第 S + sum 个元素，而非最后一个元素
     }
 
     public static void main(String[] args) {
-        log(findTargetSumWays3(new int[]{1, 1, 1, 1, 1}, 3));
+        log(findTargetSumWays4(new int[]{1, 1, 1, 1, 1}, 3));
         /*
         * expects 5:
         *   -1+1+1+1+1 = 3
@@ -110,7 +136,7 @@ public class L494_TargetSum {
         *   +1+1+1+1-1 = 3
         * */
 
-        log(findTargetSumWays3(new int[]{2, 1, 1, 2}, 0));
+        log(findTargetSumWays4(new int[]{2, 1, 1, 2}, 0));
         /*
         *  expects 4:
         *    +2-1+1-2 = 0
