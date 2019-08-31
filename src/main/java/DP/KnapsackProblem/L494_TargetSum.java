@@ -80,7 +80,7 @@ public class L494_TargetSum {
 
         return cache[i][s + sum];
     }
-    
+
     /*
     * 解法3：解法2的 Map 版
     * - 思路：使用 Map 实现缓存，key 为 "s->i" 的形式，value 为计算结果。时间、空间复杂度与解法2一致。
@@ -126,8 +126,10 @@ public class L494_TargetSum {
         int n = nums.length;
         int[][] dp = new int[n][sum * 2 + 1];    // ∵ s ∈ [-sum, sum] ∴ 开辟 sum*2+1 的空间
 
-        for (int s = -sum; s <= sum; s++)        // base case（注意 s=nums[i]=0 是特殊情况 ∵ -0 = +0 = 0）
-            dp[0][s + sum] = (s == 0 && nums[0] == 0) ? 2 : (Math.abs(s) == nums[0] ? 1 : 0);
+        for (int s = -sum; s <= sum; s++) {      // base case
+            if (s == 0) dp[0][s] += 1;           // 若容量 s=0，则结果至少为1（nums[i]=0 时是特殊情况 ∵ -0 = +0 = 0 ∴ 结果应为2）
+            if (Math.abs(s) == nums[0]) dp[0][s] += 1;
+        }
 
         for (int i = 1; i < n; i++) {
             for (int s = -sum; s <= sum; s++) {
@@ -189,16 +191,16 @@ public class L494_TargetSum {
     }
 
     public static void main(String[] args) {
-        log(findTargetSumWays5(new int[]{1, 1, 1, 1}, 2));
+        log(findTargetSumWays(new int[]{1, 1, 1, 1}, 2));
         // expects 4. -1+1+1+1、+1-1+1+1、+1+1-1+1、+1+1+1-1
 
-        log(findTargetSumWays5(new int[]{2, 1, 1, 2}, 0));
+        log(findTargetSumWays(new int[]{2, 1, 1, 2}, 0));
         // expects 4. +2-1+1-2、-2+1-1+2、+2+1-1-2、-2-1+1+2
 
-        log(findTargetSumWays5(new int[]{0, 0, 1}, 1));
+        log(findTargetSumWays(new int[]{0, 0, 1}, 1));
         // expects 4. +0+0+1、-0-0+1、+0-0+1、-0+0+1
 
-        log(findTargetSumWays5(new int[]{7, 9, 3, 8, 0, 2, 4, 8, 3, 9}, 0));
+        log(findTargetSumWays(new int[]{7, 9, 3, 8, 0, 2, 4, 8, 3, 9}, 0));
         // expects 0.
     }
 }
