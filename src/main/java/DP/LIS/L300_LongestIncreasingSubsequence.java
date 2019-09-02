@@ -36,30 +36,57 @@ public class L300_LongestIncreasingSubsequence {
     *          f(4) = 1；                             - ∵ 前4个元素中没有能与3组成上升子序列的元素 ∴ j 无值可取
     *          f(5) = max(1 + f(0), 1 + f(1), ..., 1 + f(4)) = 4；
     *
-    *     由此可得到：nums=[1, 5, 8, 3, 0, 9]，最终遍历得到最大 LIS 长度为4。
+    *     由此可得到：nums=[1, 5, 8, 3, 0, 9]，最后遍历得到最大 LIS 长度为4。
     *                     1  2  3  2  1  4
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int lengthOfLIS(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        int[] lisLens = new int[nums.length];
+
+        int[] lens = new int[nums.length];
+        Arrays.fill(lens, -1);
+
         for (int i = 0; i < nums.length; i++)
-            lisLens[i] = lengthOfLIS(nums, i);
-        return Arrays.stream(lisLens).reduce(Math::max).getAsInt();
+            lens[i] = lengthOfLIS(nums, i, lens);
+
+        return Arrays.stream(lens).reduce(Math::max).getAsInt();
     }
 
-    private static int lengthOfLIS(int[] nums, int i) {
+    private static int lengthOfLIS(int[] nums, int i, int[] lens) {
         if (i == 0) return 1;
-        int maxLen = 1;
-        for (int j = 0; j < i; j++) {
+        if (lens[i] != -1) return lens[i];
+
+        int maxLen = 1;  // 每个元素的 LIS 至少为1
+        for (int j = 0; j < i; j++)
             if (nums[j] < nums[i])
-                maxLen = Math.max(maxLen, 1 + lengthOfLIS(nums, j));
-        }
+                maxLen = Math.max(maxLen, 1 + lengthOfLIS(nums, j, lens));
+
         return maxLen;
     }
 
+    /*
+    * 解法2：DP
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * */
+    public static int lengthOfLIS2(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+        int[] lens = new int[nums.length];
+        Arrays.fill(lens, 1);  // 每个元素的 LIS 都初始化为1
+
+        int res = 1;           // 只要 nums 中有元素，res 就至少为1（见 test case 3）
+        for (int i = 1; i < nums.length; i++)
+            for (int j = 0; j < i; j++)
+                if (nums[j] < nums[i]) {
+                    lens[i] = Math.max(lens[i], 1 + lens[j]);
+                    res = Math.max(res, lens[i]);
+                }
+
+        return res;
+    }
+
     public static void main(String[] args) {
-        log(lengthOfLIS(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
-        log(lengthOfLIS(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
+        log(lengthOfLIS2(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
+        log(lengthOfLIS2(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
+        log(lengthOfLIS2(new int[]{0}));                           // expects 1.
     }
 }
