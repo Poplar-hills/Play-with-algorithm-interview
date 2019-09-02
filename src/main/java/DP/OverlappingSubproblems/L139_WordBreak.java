@@ -15,9 +15,9 @@ import java.util.Set;
 
 public class L139_WordBreak {
     /*
-    * 超时解：Recursion
+    * 超时解：Back-tracking（即 DFS，而没有 memoization 的 DFS 就是 Brute force)
     * - 思路：类似 L343_IntegerBreak 或 L91_DecodeWays 的思路，将字符串递归地分成两段，直到找到解或无解。例如对 test case 1 来说：
-    *     - "l" + f("eetcode")；
+    *     - "l" + f("eetcode")
     *             - "e" + f("etcode")
     *                     - "e" + f("tcode")
     *                     - "et" + f("code")
@@ -25,9 +25,9 @@ public class L139_WordBreak {
     *             - "ee" + f("tcode")
     *             - "eet" + f("code")
     *             - ...
-    *     - "le" + f("etcode")；
+    *     - "le" + f("etcode")
     *              - ...
-    *     - "lee" + f("tcode")；
+    *     - "lee" + f("tcode")
     *              - ...
     *     - "leet" + f("code")    → 此时前后两端同时存在于 wordDict 中，说明原问题有解
     *
@@ -39,8 +39,8 @@ public class L139_WordBreak {
     }
 
     private static boolean search(String s, int l, Set<String> set) {
-        if (l == s.length()) return true;            // 递归到底时后半段为空，而前半段可能存在于 set 中 ∴ 也要返回 true 后面的 if 才能为 true
-        for (int r = l + 1; r <= s.length(); r++)    // 注意遍历终止条件为 <= s.length() ∵ 下面 substring 时 r 是不包括在内的
+        if (l == s.length()) return true;          // 递归到底时后半段为空，而前半段可能存在于 set 中 ∴ 也要返回 true 这样下面的 if 才能为 true
+        for (int r = l + 1; r <= s.length(); r++)  // 注意遍历终止条件为 <= s.length() ∵ 下面 substring 时 r 是不包括在内的
             if (set.contains(s.substring(l, r)) && search(s, r, set))  // 若前半段和后半段都在 set 中，说明原问题有解
                 return true;
         return false;
