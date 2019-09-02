@@ -20,7 +20,6 @@ import java.util.Arrays;
 *     ∴ 子序列的个数为 2^n；判断每个子序列是否是上升的需要 O(n) 复杂度；因此总复杂度为 O((2^n)*n)。
 *   - 从上面分析中可见，子序列的问题本质上是组合问题，而组合问题肯定都可以通过递归求解，关键就在于是否找到重叠子问题和最优子结构，
 *     从而使用 Memoization 或 DP 进行优化，若可以的话时间复杂度会大大降低。
-*
 * */
 
 public class L300_LongestIncreasingSubsequence {
