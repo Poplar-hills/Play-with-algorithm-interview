@@ -107,9 +107,8 @@ public class L300_LongestIncreasingSubsequence {
     }
 
     public static void main(String[] args) {
-        // log(lengthOfLIS3(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
-        // log(lengthOfLIS3(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
-        // log(lengthOfLIS3(new int[]{0}));                           // expects 1.
-        log(Arrays.binarySearch(new int[]{10, 20, 30, 40}, 0, 4, 305));
+        log(lengthOfLIS3(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
+        log(lengthOfLIS3(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
+        log(lengthOfLIS3(new int[]{0}));                           // expects 1.
     }
 }
