@@ -9,6 +9,7 @@ import java.util.Arrays;
 *
 * - Given an unsorted array of integers, find the length of longest increasing subsequence.
 *   There may be more than one LIS combination, it is only necessary for you to return the length.
+* - Follow up: Could you improve it to O(nlogn) time complexity?
 *
 * - 注意澄清需求：
 *   1. 区分子串和子序列 —— 子串要求每个数相连，而子序列中间可以不是连着的，在本题中为子序列；
@@ -70,23 +71,45 @@ public class L300_LongestIncreasingSubsequence {
     * */
     public static int lengthOfLIS2(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        int[] lens = new int[nums.length];
-        Arrays.fill(lens, 1);  // 每个元素的 LIS 都初始化为1
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);  // 每个元素的 LIS 都初始化为1
 
         int res = 1;           // 只要 nums 中有元素，res 就至少为1（见 test case 3）
         for (int i = 1; i < nums.length; i++)
             for (int j = 0; j < i; j++)
                 if (nums[j] < nums[i]) {
-                    lens[i] = Math.max(lens[i], 1 + lens[j]);
-                    res = Math.max(res, lens[i]);
+                    dp[i] = Math.max(dp[i], 1 + dp[j]);
+                    res = Math.max(res, dp[i]);
                 }
 
         return res;
     }
 
+    /*
+    * 解法3：DP
+    * - 思路：题中 Follow up 中问是否有 O(nlogn) 的解法。当有大 O 中有 log 时要联想到二分查找，而二分查找需要数组是 sorted。
+    *   因此可想如何通过构造有序数组来求得上升子序列。视频讲解 SEE: https://www.youtube.com/watch?v=YoeWZ3ELMEk (7'58'')。
+    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+    * */
+    public static int lengthOfLIS3(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+        int[] dp = new int[nums.length];  // 保存最长上升子序列的元素
+        int len = 0;
+
+        for (int num : nums) {
+            int i = Arrays.binarySearch(dp, 0, len, num);  // 在 dp[0..len) 中查找 num 的索引（只有 num 重复时 i 才为正）
+            if (i < 0) i = -(i + 1);    // 若找不到，则将 i 转换成插入点（见 Arrays.binarySearch 文档）
+            dp[i] = num;                // 替换元素
+            if (i == len) len++;        // 若 num 比 dp 中的元素都大，则不会替换 dp 中的任何元素，而是直接插入，因此要维护 len
+        }
+
+        return len;                     // len 即是 LIS 的长度
+    }
+
     public static void main(String[] args) {
-        log(lengthOfLIS2(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
-        log(lengthOfLIS2(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
-        log(lengthOfLIS2(new int[]{0}));                           // expects 1.
+        // log(lengthOfLIS3(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
+        // log(lengthOfLIS3(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
+        // log(lengthOfLIS3(new int[]{0}));                           // expects 1.
+        log(Arrays.binarySearch(new int[]{10, 20, 30, 40}, 0, 4, 305));
     }
 }
