@@ -3,8 +3,6 @@ package DP.LIS;
 import static Utils.Helpers.*;
 
 import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
 
 /*
 * Longest Increasing Subsequence
@@ -87,7 +85,7 @@ public class L300_LongestIncreasingSubsequence {
     }
 
     /*
-    * 解法3：DP
+    * 解法3：插入排序
     * - 思路：题中 Follow up 中问是否有 O(nlogn) 的解法。当有大 O 中有 log 时要联想到二分查找，而二分查找需要数组是 sorted。
     *   因此可想如何通过构造有序数组来求得上升子序列。视频讲解 SEE: https://www.youtube.com/watch?v=YoeWZ3ELMEk (7'58'')。
     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。

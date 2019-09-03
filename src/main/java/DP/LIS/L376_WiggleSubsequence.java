@@ -13,6 +13,7 @@ import java.util.Arrays;
 * - Follow up: Can you do it in O(n) time?
 *
 * - 初步分析：同 L300_LongestIncreasingSubsequence。
+* - 进一步分析：与 L300 不同，该问题有两个维度需要进行动态规划 —— 处于峰/谷两种状态下进行动态规划。
 * */
 
 public class L376_WiggleSubsequence {
@@ -21,8 +22,8 @@ public class L376_WiggleSubsequence {
     * - 思路：
     *   - 定义子问题：f(i) 表示“在前 i 个数字中，以第 i 个数结尾的并且是 wiggle subsequence 的最长子序列的长度”；
     *     ∵ f(i) 的值取决于 f(i-1) 的值 ∴ 该问题存最优子结构，可以进行递推。
-    *   - 状态转移方程：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示升/降序。核心逻辑是：对于每个 nums[i]，
-    *     都在 (i, nums.length-1] 范围中寻找下一个能与 nums[i] 连成 wiggle sequence 的数字。
+    *   - 状态转移方程：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示当前处于峰/谷。核心逻辑是：对于每个
+    *     nums[i]，都在 (i, nums.length-1] 范围中寻找下一个能与 nums[i] 连成 wiggle sequence 的数字。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int wiggleMaxLength(int[] nums) {
@@ -46,7 +47,7 @@ public class L376_WiggleSubsequence {
 
     /*
     * 解法1：DP
-    * - 思路：状态转移方程还是一样的：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示升/降序。但考虑到
+    * - 思路：状态转移方程还是一样的：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示当前处于峰/谷。但考虑到
     *   ∵ wiggle sequence 的特点是峰谷相连，且 f(i) 的值取决于 f(i-1) 的值 ∴ 可以维护2个数组，分别记录 i 上为峰时 f 的值，
     *   以及在 i 上为谷时 f 的值，最后比较两数组最后一个元素，取两者中大的即是原问题的解。
     *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
@@ -58,17 +59,17 @@ public class L376_WiggleSubsequence {
         if (nums == null || nums.length == 0) return 0;
 
         int n = nums.length;
-        int[] up = new int[n];    // up[i] 保存在前 i 个数字中，以第 i 个数结尾时为升序，并且是 wiggle subsequence 的最长子序列的长度
-        int[] down = new int[n];  // down[i] 保存在前 i 个数字中，以第 i 个数结尾时为降序，并且是 wiggle subsequence 的最长子序列的长度
+        int[] up = new int[n];    // up[i] 保存在前 i 个数字中，以第 i 个数结尾时处于峰，并且是 wiggle subsequence 的最长子序列的长度
+        int[] down = new int[n];  // down[i] 保存在前 i 个数字中，以第 i 个数结尾时处于谷，并且是 wiggle subsequence 的最长子序列的长度
 
         Arrays.fill(up, 1);
         Arrays.fill(down, 1);
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < i; j++) {    // 注意这里与超时解中的范围不一样，这里 j ∈ [0,i)
-                if (nums[j] < nums[i])       // 若 i 处为升序，则前一个元素一定为降序，即 f(i, up) = max(1 + f(j, down))
+                if (nums[j] < nums[i])       // 若 i 处于峰，则前一个元素一定为降序，即 f(i, up) = max(1 + f(j, down))
                     up[i] = Math.max(up[i], 1 + down[j]);
-                else if (nums[j] > nums[i])  // 若 i 处为降序，则前一个元素一定为升序，即 f(i, down) = max(1 + f(j, up))
+                else if (nums[j] > nums[i])  // 若 i 处于谷，则前一个元素一定为升序，即 f(i, down) = max(1 + f(j, up))
                     down[i] = Math.max(down[i], 1 + up[j]);
             }
         }
@@ -78,7 +79,7 @@ public class L376_WiggleSubsequence {
 
     /*
     * 解法2：DP（解法1的时间优化版）
-    * - 思路：
+    * - 思路：只用一层循环求解。
     *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
     *        up  [1  2   2  4   4   4   4   4   6  6]
     *      down  [1  1   3  3   3   3   5   5   5  7]
@@ -97,7 +98,7 @@ public class L376_WiggleSubsequence {
         for (int i = 1; i < n; i++) {   // 从第2个元素开始
             if (nums[i - 1] < nums[i]) {
                 up[i] = Math.max(up[i], 1 + down[i - 1]);
-                down[i] = down[i - 1];  // 若 i 处为升序，则
+                down[i] = down[i - 1];
             } else if (nums[i - 1] > nums[i]) {
                 down[i] = Math.max(down[i], 1 + up[i - 1]);
                 up[i] = up[i - 1];
