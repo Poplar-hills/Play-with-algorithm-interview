@@ -73,13 +73,61 @@ public class L376_WiggleSubsequence {
         return Math.max(up[n - 1], down[n - 1]);
     }
 
+    /*
+    * 解法2：DP（解法1的时间优化版）
+    * - 思路：
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static int wiggleMaxLength2(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int n = nums.length;
+        int[] up = new int[n];
+        int[] down = new int[n];
+
+        Arrays.fill(up, 1);
+        Arrays.fill(down, 1);
+
+        for (int i = 1; i < n; i++) {
+            if (nums[i - 1] < nums[i]) {
+                up[i] = Math.max(up[i], 1 + down[i - 1]);
+                down[i] = down[i - 1];
+            } else if (nums[i - 1] > nums[i]) {
+                down[i] = Math.max(down[i], 1 + up[i - 1]);
+                up[i] = up[i - 1];
+            } else {
+                up[i] = up[i - 1];
+                down[i] = down[i - 1];
+            }
+        }
+
+        return Math.max(up[n - 1], down[n - 1]);
+    }
+
+    /*
+    * 解法3：DP（解法2的空间优化版）
+    * - 思路：∵ 在解法2中我们只是用了 up 和 down 数组中的前一个数字 ∴ 不需要维护整个数组，而只要复用变量即可。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * */
+    public static int wiggleMaxLength3(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int up = 1, down = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i - 1] < nums[i]) up = Math.max(up, down + 1);
+            if (nums[i - 1] > nums[i]) down = Math.max(down, up + 1);
+        }
+
+        return Math.max(up, down);
+    }
+
     public static void main(String[] args) {
-        log(wiggleMaxLength1(new int[]{1, 17, 5, 10, 13, 15, 10, 5, 16, 8}));  // expects 7. 其中之一是 [1,17,10,13,10,16,8]
-        log(wiggleMaxLength1(new int[]{1, 7, 4, 9, 2, 5}));                    // expects 6. 整个序列都是
-        log(wiggleMaxLength1(new int[]{3, 3, 3, 2, 5}));                       // expects 3.
-        log(wiggleMaxLength1(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));           // expects 2.
-        log(wiggleMaxLength1(new int[]{1, 0}));                                // expects 2.
-        log(wiggleMaxLength1(new int[]{0, 0}));                                // expects 1.
-        log(wiggleMaxLength1(new int[]{1}));                                   // expects 1.
+        log(wiggleMaxLength3(new int[]{1, 17, 5, 10, 13, 15, 10, 5, 16, 8}));  // expects 7. 其中之一是 [1,17,10,13,10,16,8]
+        log(wiggleMaxLength3(new int[]{1, 7, 4, 9, 2, 5}));                    // expects 6. 整个序列都是
+        log(wiggleMaxLength3(new int[]{3, 3, 3, 2, 5}));                       // expects 3.
+        log(wiggleMaxLength3(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));           // expects 2.
+        log(wiggleMaxLength3(new int[]{1, 0}));                                // expects 2.
+        log(wiggleMaxLength3(new int[]{0, 0}));                                // expects 1.
+        log(wiggleMaxLength3(new int[]{1}));                                   // expects 1.
     }
 }
