@@ -44,7 +44,8 @@ public class L376_WiggleSubsequence {
 
     /*
     * 解发1：Recursion + Memoization
-    * - 思路：在解法1的基础上加入 Memoization。但 ∵ helper 的输入参数有两个：i、isUp，因此
+    * - 思路：在解法1的基础上加入 Memoization。∵ helper 的输入参数有两个：i、isUp ∴ memoization 要根据这两个参数设置。
+    *   即在峰/谷两种状态下为 i 各设置一行缓存。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int wiggleMaxLength1(int[] nums) {
@@ -54,7 +55,7 @@ public class L376_WiggleSubsequence {
         for (int[] row : cache)
             Arrays.fill(row, -1);
 
-        return 1 + Math.max(helper(nums, 0, true, cache), helper(nums, 0, false, cache));  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
+        return 1 + Math.max(helper(nums, 0, true, cache), helper(nums, 0, false, cache));
     }
 
     private static int helper(int[] nums, int i, boolean isUp, int[][] cache) {
@@ -64,7 +65,7 @@ public class L376_WiggleSubsequence {
         if (cacheRow[i] != -1) return cacheRow[i];
 
         int maxLen = 0;
-        for (int j = i; j < nums.length; j++)  // 从前往后遍历，若当前是 up 则往后找 !up 的数字，直到最后 i == nums.length
+        for (int j = i; j < nums.length; j++)
             if ((isUp && nums[j] > nums[i]) || (!isUp && nums[j] < nums[i]))
                 maxLen = Math.max(maxLen, 1 + helper(nums, j, !isUp, cache));
 
