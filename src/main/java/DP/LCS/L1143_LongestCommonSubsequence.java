@@ -124,7 +124,7 @@ public class L1143_LongestCommonSubsequence {
     }
 
     /*
-    * 解法4：DP + 滚动数组（另一种写法，不如解法3好理解）
+    * 解法4：DP + 滚动数组（另一种写法，不如解法3好理解，但是速度最快）
     * - 时间复杂度 O(l1*l2))，空间复杂度 O(l2)。
     * */
     public static int longestCommonSubsequence4(String s1, String s2) {
