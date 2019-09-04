@@ -2,6 +2,8 @@ package DP.LCS;
 
 import static Utils.Helpers.*;
 
+import java.util.Arrays;
+
 /*
 * Longest Common Subsequence (LCS, 最长公共子序列)
 *
@@ -47,16 +49,33 @@ public class L1143_LongestCommonSubsequence {
 
     /*
     * 解法1：Recursion + Memoization
-    * -
+    * - 时间复杂度 O(len1*len2))，空间复杂度 O(len1*len2)。
     * */
     public static int longestCommonSubsequence1(String s1, String s2) {
-        return 0;
+        if (s1 == null || s2 == null) return 0;
+
+        int[][] cache = new int[s1.length()][s2.length()];
+        for (int[] row : cache)
+            Arrays.fill(row, -1);
+
+        return helper(s1, s2, 0, 0, cache);
+    }
+
+    private static int helper(String s1, String s2, int i, int j, int[][] cache) {
+        if (i == s1.length() || j == s2.length()) return 0;
+        if (cache[i][j] != -1) return cache[i][j];
+
+        int len = s1.charAt(i) == s2.charAt(j)
+            ? 1 + helper(s1, s2, i + 1, j + 1, cache)
+            : Math.max(helper(s1, s2, i + 1, j, cache), helper(s1, s2, i, j + 1, cache));
+
+        return cache[i][j] = len;
     }
 
     public static void main(String[] args) {
-        log(longestCommonSubsequence("abcd", "aebd"));   // expects 3. "ace"
-        log(longestCommonSubsequence("abcde", "ace"));   // expects 3. "ace"
-        log(longestCommonSubsequence("abc", "abc"));     // expects 3. "abc"
-        log(longestCommonSubsequence("abc", "def"));     // expects 0.
+        log(longestCommonSubsequence1("abcd", "aebd"));   // expects 3. "ace"
+        log(longestCommonSubsequence1("abcde", "ace"));   // expects 3. "ace"
+        log(longestCommonSubsequence1("abc", "abc"));     // expects 3. "abc"
+        log(longestCommonSubsequence1("abc", "def"));     // expects 0.
     }
 }
