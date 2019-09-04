@@ -33,7 +33,7 @@ public class L1143_LongestCommonSubsequence {
     *                              ↓
     *                             -|-              - 右左分支已到底
     *
-    * - 时间复杂度 O(2^(len1+len2))，空间复杂度 O(len1+len2)。
+    * - 时间复杂度 O(2^(l1+l2))，空间复杂度 O(l1+l2)。
     * */
     public static int longestCommonSubsequence(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
@@ -49,7 +49,7 @@ public class L1143_LongestCommonSubsequence {
 
     /*
     * 解法1：Recursion + Memoization
-    * - 时间复杂度 O(len1*len2))，空间复杂度 O(len1*len2)。
+    * - 时间复杂度 O(l1*l2))，空间复杂度 O(l1*l2)，其中 l1、l2 分别为两字符串的长度。
     * */
     public static int longestCommonSubsequence1(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
@@ -74,21 +74,30 @@ public class L1143_LongestCommonSubsequence {
 
     /*
     * 解法2：DP
-    * - 时间复杂度 O(len1*len2))，空间复杂度 O(len1*len2)。
+    * - 时间复杂度 O(l1*l2))，空间复杂度 O(l1*l2)。
     * */
     public static int longestCommonSubsequence2(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
 
-        int len1 = s1.length(), len2 = s2.length();
-        int[][] dp = new int[len1 + 1][len2 + 1];
+        int l1 = s1.length(), l2 = s2.length();
+        int[][] dp = new int[l1 + 1][l2 + 1];
 
-        for (int i = 0; i < len1; i++)
-            for (int j = 0; j < len2; j++)
-                dp[i + 1][j + 1] = s1.charAt(i) == s2.charAt(j)
+        for (int i = 0; i < l1; i++)                             // 从前往后遍历
+            for (int j = 0; j < l2; j++)
+                dp[i + 1][j + 1] = s1.charAt(i) == s2.charAt(j)  // 由 f(i)、f(j) 递推出 f(i+1, j+1)
                     ? 1 + dp[i][j]
                     : Math.max(dp[i + 1][j], dp[i][j + 1]);
 
-        return dp[len1][len2];
+        return dp[l1][l2];
+
+        // 同样也可以让 i、j 从后往前遍历：
+        // for (int i = l1 - 1; i >= 0; i--)
+        //     for (int j = l2 - 1; j >= 0; j--)
+        //         dp[i][j] = s1.charAt(i) == s2.charAt(j)
+        //             ? 1 + dp[i + 1][j + 1]
+        //             : Math.max(dp[i + 1][j], dp[i][j + 1]);
+
+        // return dp[0][0];  // 最后取左上角的值
     }
 
     public static void main(String[] args) {
