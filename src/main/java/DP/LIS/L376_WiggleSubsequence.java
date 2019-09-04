@@ -18,7 +18,7 @@ import java.util.Arrays;
 
 public class L376_WiggleSubsequence {
     /*
-    * 超时解：Recursion + Memoization
+    * 超时解：DFS
     * - 思路：
     *   - 定义子问题：f(i) 表示“在前 i 个数字中，以第 i 个数结尾的并且是 wiggle subsequence 的最长子序列的长度”；
     *     ∵ f(i) 的值取决于 f(i-1) 的值 ∴ 该问题存最优子结构，可以进行递推。
@@ -28,25 +28,51 @@ public class L376_WiggleSubsequence {
     * */
     public static int wiggleMaxLength(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        int[] cache = new int[nums.length];
-        Arrays.fill(cache, -1);
-        return 1 + Math.max(helper(nums, 0, true, cache), helper(nums, 0, false, cache));  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
+        return 1 + Math.max(helper(nums, 0, true), helper(nums, 0, false));  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
     }
 
-    private static int helper(int[] nums, int i, boolean up, int[] cache) {
+    private static int helper(int[] nums, int i, boolean isUp) {
         if (i == nums.length) return 0;
-        if (cache[i] != -1) return cache[i];
 
         int maxLen = 0;
         for (int j = i; j < nums.length; j++)  // 从前往后遍历，若当前是 up 则往后找 !up 的数字，直到最后 i == nums.length
-            if ((up && nums[j] > nums[i]) || (!up && nums[j] < nums[i]))
-                maxLen = Math.max(maxLen, 1 + helper(nums, j, !up, cache));
+            if ((isUp && nums[j] > nums[i]) || (!isUp && nums[j] < nums[i]))
+                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isUp));
 
         return maxLen;
     }
 
     /*
-    * 解法1：DP
+    * 解发1：Recursion + Memoization
+    * - 思路：在解法1的基础上加入 Memoization。但 ∵ helper 的输入参数有两个：i、isUp，因此
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * */
+    public static int wiggleMaxLength1(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int[][] cache = new int[2][nums.length];
+        for (int[] row : cache)
+            Arrays.fill(row, -1);
+
+        return 1 + Math.max(helper(nums, 0, true, cache), helper(nums, 0, false, cache));  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
+    }
+
+    private static int helper(int[] nums, int i, boolean isUp, int[][] cache) {
+        if (i == nums.length) return 0;
+
+        int[] cacheRow = isUp ? cache[0] : cache[1];
+        if (cacheRow[i] != -1) return cacheRow[i];
+
+        int maxLen = 0;
+        for (int j = i; j < nums.length; j++)  // 从前往后遍历，若当前是 up 则往后找 !up 的数字，直到最后 i == nums.length
+            if ((isUp && nums[j] > nums[i]) || (!isUp && nums[j] < nums[i]))
+                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isUp, cache));
+
+        return cacheRow[i] = maxLen;
+    }
+
+    /*
+    * 解法2：DP
     * - 思路：状态转移方程还是一样的：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示当前处于峰/谷。但考虑到
     *   ∵ wiggle sequence 的特点是峰谷相连，且 f(i) 的值取决于 f(i-1) 的值 ∴ 可以维护2个数组，分别记录 i 上为峰时 f 的值，
     *   以及在 i 上为谷时 f 的值，最后比较两数组最后一个元素，取两者中大的即是原问题的解。
@@ -55,7 +81,7 @@ public class L376_WiggleSubsequence {
     *      down  [1  1   3  3   3   3   5   5   5  7]
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
-    public static int wiggleMaxLength1(int[] nums) {
+    public static int wiggleMaxLength2(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
         int n = nums.length;
@@ -78,14 +104,14 @@ public class L376_WiggleSubsequence {
     }
 
     /*
-    * 解法2：DP（解法1的时间优化版）
+    * 解法3：DP（解法2的时间优化版）
     * - 思路：只用一层循环求解。
     *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
     *        up  [1  2   2  4   4   4   4   4   6  6]
     *      down  [1  1   3  3   3   3   5   5   5  7]
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
-    public static int wiggleMaxLength2(int[] nums) {
+    public static int wiggleMaxLength3(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
         int n = nums.length;
@@ -112,14 +138,14 @@ public class L376_WiggleSubsequence {
     }
 
     /*
-    * 解法3：DP（解法2的空间优化版）
+    * 解法4：DP（解法2的空间优化版）
     * - 思路：∵ 在解法2中我们只是用了 up 和 down 数组中的前一个数字 ∴ 不需要维护整个数组，而只要复用变量即可：
     *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
     *        up   1  2      4   4   4          6
     *      down   1      3              5   5      7
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
-    public static int wiggleMaxLength3(int[] nums) {
+    public static int wiggleMaxLength4(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
         int up = 1, down = 1;
