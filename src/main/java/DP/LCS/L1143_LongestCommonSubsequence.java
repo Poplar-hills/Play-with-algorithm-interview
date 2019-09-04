@@ -124,15 +124,15 @@ public class L1143_LongestCommonSubsequence {
     }
 
     /*
-    * 解法4：DP + 滚动数组（另一种写法）
+    * 解法4：DP + 滚动数组（另一种写法，不如解法3好理解）
     * - 时间复杂度 O(l1*l2))，空间复杂度 O(l2)。
     * */
     public static int longestCommonSubsequence4(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
 
         int l1 = s1.length(), l2 = s2.length();
-        int[] row1 = new int[l1 + 1];
-        int[] row2 = new int[l2 + 1];
+        int[] row1 = new int[l2 + 1];
+        int[] row2 = new int[l2 + 1];  // 两个 row 的大小都为 l2 + 1
 
         for (int i = l1 - 1; i >= 0; i--) {
             for (int j = l2 - 1; j >= 0; j--) {
@@ -145,13 +145,14 @@ public class L1143_LongestCommonSubsequence {
             row2 = temp;
         }
 
-        return row2[0];
+        return row2[0];         // 最后返回的是 row2 的首元素
     }
 
     public static void main(String[] args) {
         log(longestCommonSubsequence4("abcd", "aebd"));  // expects 3. "ace"
         log(longestCommonSubsequence4("abcde", "ace"));  // expects 3. "ace"
         log(longestCommonSubsequence4("abc", "abc"));    // expects 3. "abc"
+        log(longestCommonSubsequence4("bl", "yby"));     // expects 1. "b"
         log(longestCommonSubsequence4("abc", "def"));    // expects 0.
     }
 }
