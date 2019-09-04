@@ -12,18 +12,16 @@ import java.util.Arrays;
 *   给定一个数组，求其中是 wiggle subsequence 的最长子序列的长度。
 * - Follow up: Can you do it in O(n) time?
 *
-* - 初步分析：同 L300_LongestIncreasingSubsequence。
-* - 进一步分析：与 L300 不同，该问题有两个维度需要进行动态规划 —— 处于峰/谷两种状态下进行动态规划。
+* - 分析：仍然是2种思路：
+*   a). 递归：同 L300_LongestIncreasingSubsequence 的初步分析；
+*   b). 递推：f(i) 的值取决于 f(i-1) 的值 ∴ 存在最优子结构，可以进行递推（即 DP）。但与 L300 不同，该问题有两个维度需要进
+*       行动态规划 —— 处于峰/谷两种状态下进行动态规划。
 * */
 
 public class L376_WiggleSubsequence {
     /*
     * 超时解：DFS
-    * - 思路：
-    *   - 定义子问题：f(i) 表示“在前 i 个数字中，以第 i 个数结尾的并且是 wiggle subsequence 的最长子序列的长度”；
-    *     ∵ f(i) 的值取决于 f(i-1) 的值 ∴ 该问题存最优子结构，可以进行递推。
-    *   - 状态转移方程：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示当前处于峰/谷。核心逻辑是：对于每个
-    *     nums[i]，都在 (i, nums.length-1] 范围中寻找下一个能与 nums[i] 连成 wiggle sequence 的数字。
+    * - 思路：深度优先遍历，对于每个 nums[i]，都在 (i..n] 中搜索下一个能与 nums[i] 连成 wiggle sequence 的数字。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int wiggleMaxLength(int[] nums) {
@@ -31,19 +29,19 @@ public class L376_WiggleSubsequence {
         return 1 + Math.max(helper(nums, 0, true), helper(nums, 0, false));  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
     }
 
-    private static int helper(int[] nums, int i, boolean isUp) {
+    private static int helper(int[] nums, int i, boolean isPeak) {
         if (i == nums.length) return 0;
 
         int maxLen = 0;
         for (int j = i; j < nums.length; j++)  // 从前往后遍历，若当前是 up 则往后找 !up 的数字，直到最后 i == nums.length
-            if ((isUp && nums[j] > nums[i]) || (!isUp && nums[j] < nums[i]))
-                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isUp));
+            if ((isPeak && nums[j] > nums[i]) || (!isPeak && nums[j] < nums[i]))
+                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isPeak));
 
         return maxLen;
     }
 
     /*
-    * 解发1：Recursion + Memoization
+    * 解法1：Recursion + Memoization
     * - 思路：在解法1的基础上加入 Memoization。∵ helper 的输入参数有两个：i、isUp ∴ memoization 要根据这两个参数设置。
     *   即在峰/谷两种状态下为 i 各设置一行缓存。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
@@ -51,32 +49,33 @@ public class L376_WiggleSubsequence {
     public static int wiggleMaxLength1(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
-        int[][] cache = new int[2][nums.length];
+        int[][] cache = new int[2][nums.length];  // 开辟2行缓存，分别记录 i 处于峰/谷时的计算结果
         for (int[] row : cache)
             Arrays.fill(row, -1);
 
         return 1 + Math.max(helper(nums, 0, true, cache), helper(nums, 0, false, cache));
     }
 
-    private static int helper(int[] nums, int i, boolean isUp, int[][] cache) {
+    private static int helper(int[] nums, int i, boolean isPeak, int[][] cache) {
         if (i == nums.length) return 0;
 
-        int[] cacheRow = isUp ? cache[0] : cache[1];
+        int[] cacheRow = isPeak ? cache[0] : cache[1];  // 先根据 isUp 取得相应的缓存行
         if (cacheRow[i] != -1) return cacheRow[i];
 
         int maxLen = 0;
         for (int j = i; j < nums.length; j++)
-            if ((isUp && nums[j] > nums[i]) || (!isUp && nums[j] < nums[i]))
-                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isUp, cache));
+            if ((isPeak && nums[j] > nums[i]) || (!isPeak && nums[j] < nums[i]))
+                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isPeak, cache));
 
         return cacheRow[i] = maxLen;
     }
 
     /*
     * 解法2：DP
-    * - 思路：状态转移方程还是一样的：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示当前处于峰/谷。但考虑到
-    *   ∵ wiggle sequence 的特点是峰谷相连，且 f(i) 的值取决于 f(i-1) 的值 ∴ 可以维护2个数组，分别记录 i 上为峰时 f 的值，
-    *   以及在 i 上为谷时 f 的值，最后比较两数组最后一个元素，取两者中大的即是原问题的解。
+    * - 思路：
+    *   - 定义子问题：f(i) 表示“在前 i 个数字中，以第 i 个数结尾的并且是 wiggle subsequence 的最长子序列的长度”；
+    *   - 状态转移方程：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示当前处于峰/谷。
+    * - 实现：将解法1中的两行缓存拆成2个 dp 数组来用，最后比较两数组的最后一个元素即可。
     *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
     *        up  [1  2   2  4   4   4   4   4   6  6]
     *      down  [1  1   3  3   3   3   5   5   5  7]
