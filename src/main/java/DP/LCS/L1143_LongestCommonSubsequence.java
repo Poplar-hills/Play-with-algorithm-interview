@@ -72,10 +72,29 @@ public class L1143_LongestCommonSubsequence {
         return cache[i][j] = len;
     }
 
+    /*
+    * 解法2：DP
+    * - 时间复杂度 O(len1*len2))，空间复杂度 O(len1*len2)。
+    * */
+    public static int longestCommonSubsequence2(String s1, String s2) {
+        if (s1 == null || s2 == null) return 0;
+
+        int len1 = s1.length(), len2 = s2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+
+        for (int i = 0; i < len1; i++)
+            for (int j = 0; j < len2; j++)
+                dp[i + 1][j + 1] = s1.charAt(i) == s2.charAt(j)
+                    ? 1 + dp[i][j]
+                    : Math.max(dp[i + 1][j], dp[i][j + 1]);
+
+        return dp[len1][len2];
+    }
+
     public static void main(String[] args) {
-        log(longestCommonSubsequence1("abcd", "aebd"));   // expects 3. "ace"
-        log(longestCommonSubsequence1("abcde", "ace"));   // expects 3. "ace"
-        log(longestCommonSubsequence1("abc", "abc"));     // expects 3. "abc"
-        log(longestCommonSubsequence1("abc", "def"));     // expects 0.
+        log(longestCommonSubsequence2("abcd", "aebd"));  // expects 3. "ace"
+        log(longestCommonSubsequence2("abcde", "ace"));  // expects 3. "ace"
+        log(longestCommonSubsequence2("abc", "abc"));    // expects 3. "abc"
+        log(longestCommonSubsequence2("abc", "def"));    // expects 0.
     }
 }
