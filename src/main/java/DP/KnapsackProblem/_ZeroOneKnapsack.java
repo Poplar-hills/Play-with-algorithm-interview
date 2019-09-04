@@ -141,7 +141,7 @@ public class _ZeroOneKnapsack {
 
         for (int i = 1; i < n; i++) {
             for (int j = 0; j <= c; j++) {
-                cache[i % 2][j] = cache[(i-1) % 2][j];  // i 为偶则写第0行，读第1行；i 为奇则写第1行，读第0行
+                cache[i % 2][j] = cache[(i-1) % 2][j];  // 若 i 为偶则写第0行，读第1行；若 i 为奇则写第1行，读第0行
                 if (j >= w[i])
                     cache[i % 2][j] = Math.max(cache[i % 2][j], v[i] + cache[(i-1) % 2][j - w[i]]);
             }
