@@ -98,30 +98,28 @@ public class L279_PerfectSquares {
     }
 
     /*
-    * 解法3：DP (bottom-up iteration)
-    * - 思路：
-    *   - 类似 DP/Fibonacci 中解法3的自下而上的求解思路。
-    *   - 与解法2都是基于已解决的子问题去解决高层次的问题，但不同点在于该解法是 bottom-up 的，即直接从子问题开始求解，而解法2是
-    *     从高层次问题入手，递归到最底层问题后再开始逐层解决。
-    * - DP 与 Memoization 的区别 SEE: https://zhuanlan.zhihu.com/p/68059061。
+    * 解法3：DP
+    * - 思路：采用 DP 自下而上的递推思路。与解法2都是基于已解决的子问题去解决高层次的问题，不同点在于 DP 是 bottom-up 的，
+    *   即直接从子问题开始求解，而解法2是先从高层次问题入手，递归到最基本问题后再开始往上逐层解决。
+    * - DP vs. Memoization, SEE: https://zhuanlan.zhihu.com/p/68059061。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares3(int n) {
-        int[] steps = new int[n + 1];
-        Arrays.fill(steps, Integer.MAX_VALUE);
-        steps[0] = 0;
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);  // ∵ 求最小值 ∴ 初值为正无穷
+        dp[0] = 0;
 
-        for (int v = 1; v <= n; v++)  // 为 [1, n] 中的所有元素计算到达0的最小步数（计算是从1开始的，体现 bottom-up 的理念）
-            for (int i = 1; v - i * i >= 0; i++)  // 外层循环确定了顶点后，在内层循环中计算该顶点的最小步数
-                steps[v] = Math.min(steps[v], steps[v - i * i] + 1);
+        for (int i = 1; i <= n; i++)         // 从 1→n 逐个计算到达0的最少步数，层层递推出原问题 f(n) 的解
+            for (int j = 1; j * j <= i; j++)
+                dp[i] = Math.min(dp[i], dp[i - j * j] + 1);
 
-        return steps[n];              // 最后返回 n 的 step
+        return dp[n];
     }
 
     public static void main(String[] args) {
-        log(numSquares2(5));   // expects 2. (5 = 4 + 1)
-        log(numSquares2(6));   // expects 3. (6 = 4 + 1 + 1)
-        log(numSquares2(12));  // expects 3. (12 = 4 + 4 + 4)
-        log(numSquares2(13));  // expects 2. (13 = 4 + 9)
+        log(numSquares3(5));   // expects 2. (5 = 4 + 1)
+        log(numSquares3(6));   // expects 3. (6 = 4 + 1 + 1)
+        log(numSquares3(12));  // expects 3. (12 = 4 + 4 + 4)
+        log(numSquares3(13));  // expects 2. (13 = 4 + 9)
     }
 }
