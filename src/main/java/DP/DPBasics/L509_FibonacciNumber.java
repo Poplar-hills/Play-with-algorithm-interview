@@ -11,10 +11,9 @@ import static Utils.Helpers.timeIt;
 *
 * - 通过求第 n 个 Fibonacci 数。
 *
-* - 看完解法1、2、3之后再看这个总结：
-*   Dynamic programming is a method for solving a complex problem by breaking it down into simpler subproblems,
-*   solving each of those subproblems just once, and storing their solutions – ideally, in an memory-based
-*   data structure.
+* - DP 定义：Dynamic programming is a method for solving a complex problem by breaking it down into simpler
+*   subproblems, solving each of those subproblems just once, and storing their solutions – ideally, in an
+*   memory-based data structure.
 *
 * ️➡️ 看完本题后再看 L279_PerfectSquares、L64_MinimumPathSum，它们都采用了2种 DP 解法，是非常好的例子。
 * */
