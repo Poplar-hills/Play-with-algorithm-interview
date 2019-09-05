@@ -22,7 +22,7 @@ import static Utils.Helpers.timeIt;
 public class L509_FibonacciNumber {
     /*
     * 超时解：top-down naive recursion 方式
-    * - 时间复杂度 O(2^n)，因为每次调用方法都会产生2个分支再调用该方法，一共递归 n 次，所以总调用次数是 2^n；
+    * - 时间复杂度 O(2^n) ∵ 每次调用方法都会产生2个调用该方法的分支，递归 n 次 ∴ 总调用次数是 2^n；
     * - 空间复杂度 O(n)。
     * */
     public static int fib(int n) {
@@ -61,13 +61,26 @@ public class L509_FibonacciNumber {
     }
 
     /*
-     * 解法3：DP
-     * - 思路：解法2的自下而上版 —— 先找到 n 为最小值时的解，再层层递推出 n 为更大值时的解。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。相比解法2，该解法在时间、空间效率上的统计效率都更高，因为：
-     *   1. 没有递归，所以没有系统栈空间的消耗；
-     *   2. 自下而上求解，使得 cache 中的每一项都只被访问1次（解法2中会被访问多次）。
-     * */
+    * 解法3：DP
+    * - 思路：先解决最基本问题，再从最基本问题层层递推出 n 为更大值时的解。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。相比解法1、2，该解法在时间、空间效率上的统计效率都更高，因为：
+    *   1. 没有递归，所以没有系统栈空间的消耗；
+    *   2. 自下而上求解，使得 cache 中的每一项都只被访问1次（解法1、2中会计算一次但被访问多次）。
+    * */
     public static int fib3(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++)
+            dp[i] = dp[i - 1] + dp[i - 2];
+        return dp[n];
+    }
+
+    /*
+    * 解法4：解法3的 Map 版
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static int fib4(int n) {
         Map<Integer, Integer> cache = new HashMap<>();
         cache.put(0, 0);
         cache.put(1, 1);
@@ -81,10 +94,12 @@ public class L509_FibonacciNumber {
         log(fib1(40));
         log(fib2(40));
         log(fib3(40));
+        log(fib4(40));
 
         timeIt(40, L509_FibonacciNumber::fib);
         timeIt(40, L509_FibonacciNumber::fib1);
         timeIt(40, L509_FibonacciNumber::fib2);
-        timeIt(40, L509_FibonacciNumber::fib3);
+        timeIt(40, L509_FibonacciNumber::fib3);  // 可见使用数组的 DP 解法最快
+        timeIt(40, L509_FibonacciNumber::fib4);
     }
 }
