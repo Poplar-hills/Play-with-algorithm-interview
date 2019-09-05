@@ -33,7 +33,7 @@ public class L279_PerfectSquares {
     *   - ∵ 最终要返回找到的最短路径的步数，因此队列中除了保存顶点之外还要保存步数信息。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
-    public static int numSquares(int n) {
+    public static int numSquares1(int n) {
         if (n <= 0) return 0;
         Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点所走过的步数>
         q.offer(new Pair<>(n, 0));                 // 顶点 n 作为 BFS 的起点
@@ -59,28 +59,42 @@ public class L279_PerfectSquares {
     }
 
     /*
-    * 解法2：Recursion + Memoization（也可以理解为 DFS）
-    * - 思路：基于解法1中的图论建模思路，在具体实现时采用 DFS（SEE: Play-with-algorithms/Graph/Path.java)。具体来说是通过 DFS
-    *   从 n 开始往0方向递归，计算每个顶点到达0的最少步数，从而得到前一个节点的到0的最少步数。
-    * - 本质：该解法可以理解为是 top-down 版的 DP，以及其中对于 overlap sub-problem 的优化策略采用的是 Memoization，而非 DP
-    *   中的 Tabulation。SEE: https://zhuanlan.zhihu.com/p/68059061。更具体的分析 SEE: L343_IntegerBreak。
+    * 超时解：DFS
+    * - 思路：基于解法1中的图论建模，具体实现采用 DFS（SEE: Play-with-algorithms/Graph/Path.java)，即通过 DFS 从 n 顶点
+    *   开始向0顶点方向递归，沿途为每个顶点 i 计算到达0的最少步数 f(i)。∵ 前一顶点到达0的最少步数 = 后一顶点到达0的最少步数 + 1，
+    *   且后一顶点与前一顶点直接差一个完全平方数 ∴ 有 f(i) = min(f(i - s) + 1)，其中 s 为 <= i 的完全平方数。
+    * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
+    * */
+    public static int numSquares(int n) {
+        if (n == 0) return 0;             // 顶点0到达自己的步数为0
+
+        int minStep = Integer.MAX_VALUE;  // 用于记录当前顶点到0的最小步数
+        for (int i = 1; i * i <= n; i++)  // 找到当前顶点的相邻顶点
+            minStep = Math.min(minStep, numSquares(n - i * i) + 1);  // 计算所有相邻顶点到0的最少步数，其中最小值+1即是当前顶点到0的最少步数
+
+        return minStep;
+    }
+
+    /*
+    * 解法2：Recursion + Memoization（DFS with cache）
+    * - 思路：👆超时解的问题在于大量子问题会被重复计算 ∴ 可以加入 Memoization 机制来优化重叠子问题。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares2(int n) {
-        int[] steps = new int[n + 1];  // 保存每个顶点到达0的最短路径的步数（n+1 是因为从 n 到 0 需要开 n+1 的空间）
+        int[] steps = new int[n + 1];         // 保存每个顶点到达0的最少步数（n+1 是因为从 n 到 0 需要开 n+1 的空间）
         Arrays.fill(steps, -1);
         return numSquares2(n, steps);
     }
 
     private static int numSquares2(int n, int[] steps) {
-        if (n == 0) return 0;                   // 顶点0到达自己的步数为0
-        if (steps[n] != -1) return steps[n];    // 计算过的顶点直接返回（以免重复计算）
+        if (n == 0) return 0;
+        if (steps[n] != -1) return steps[n];  // cache hit
 
-        int minStep = Integer.MAX_VALUE;        // 用于记录当前顶点到0的最小步数
-        for (int i = 1; n - i * i >= 0; i++)    // 找到当前顶点的相邻顶点
-            minStep = Math.min(minStep, numSquares2(n - i * i, steps) + 1);  // 计算所有相邻顶点到0的最小步数，从中选出最小的，再+1即是当前顶点到0的最小步数
+        int minStep = Integer.MAX_VALUE;
+        for (int i = 1; i * i <= n; i++)
+            minStep = Math.min(minStep, numSquares2(n - i * i, steps) + 1);
 
-        return steps[n] = minStep;              // 赋值语句的返回值为所赋的值
+        return steps[n] = minStep;            // 赋值语句的返回值为所赋的值
     }
 
     /*
@@ -89,6 +103,7 @@ public class L279_PerfectSquares {
     *   - 类似 DP/Fibonacci 中解法3的自下而上的求解思路。
     *   - 与解法2都是基于已解决的子问题去解决高层次的问题，但不同点在于该解法是 bottom-up 的，即直接从子问题开始求解，而解法2是
     *     从高层次问题入手，递归到最底层问题后再开始逐层解决。
+    * - DP 与 Memoization 的区别 SEE: https://zhuanlan.zhihu.com/p/68059061。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numSquares3(int n) {
