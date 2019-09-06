@@ -126,9 +126,9 @@ public class L120_Triangle {
 	}
 
     /*
-    * 解法2：DFS
-    * - 思路：
-    * - 时间复杂度 O()，空间复杂度 O()。
+    * 解法2：Recursion + Memoization (DFS with cache)
+    * - 思路：在超时解3的基础上加入 Memoization 优化。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int minimumTotal2(List<List<Integer>> triangle) {
         int h = triangle.size();
