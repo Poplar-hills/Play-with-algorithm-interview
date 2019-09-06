@@ -75,6 +75,66 @@ public class L64_MinimumPathSum {
     }
 
     /*
+    * 超时解2：DFS
+    * - 思路：从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum。
+    * - 时间复杂度 O(2^(m*n))，空间复杂度 O(m*n)。
+    * */
+    public static int minPathSum0(int[][] grid) {
+        if (grid == null || grid[0] == null) return 0;
+        return helper(grid, 0, 0);
+    }
+
+    private static int helper(int[][] grid, int i, int j) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int sum = grid[i][j];
+
+        if (i == m - 1 && j == n - 1)
+            return sum;
+        if (i == m - 1)
+            return sum + helper(grid, i, j + 1);
+        if (j == n - 1)
+            return sum + helper(grid, i + 1, j);
+
+        return sum + Math.min(helper(grid, i + 1, j), helper(grid, i, j + 1));
+    }
+
+    /*
+    * 解法1：Recursion + Memoization（DFS with cache）
+    * - 思路：在超时解2的基础上加入 Memoization 进行优化。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+    * */
+    public static int minPathSum1(int[][] grid) {
+        if (grid == null || grid[0] == null) return 0;
+
+        int[][] cache = new int[grid.length][grid[0].length];
+        for (int[] row : cache)
+            Arrays.fill(row, Integer.MAX_VALUE);
+
+        return helper(grid, 0, 0, cache);
+    }
+
+    private static int helper(int[][] grid, int i, int j, int[][] cache) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int sum = grid[i][j];
+
+        if (i == m - 1 && j == n - 1)
+            return sum;
+
+        if (cache[i][j] != Integer.MAX_VALUE)
+            return cache[i][j];
+
+        if (i == m - 1)
+            return cache[i][j] = sum + helper(grid, i, j + 1, cache);
+        if (j == n - 1)
+            return cache[i][j] = sum + helper(grid, i + 1, j, cache);
+
+        cache[i][j] = sum + Math.min(helper(grid, i + 1, j, cache), helper(grid, i, j + 1, cache));
+        return cache[i][j];
+    }
+
+    /*
     * 解法2：DP
     * - 思路：
     *   - 子问题定义：f(i, j) 表示“从左上角到位置 (i,j) 的所有路径上最小的节点值之和”；
@@ -137,82 +197,46 @@ public class L64_MinimumPathSum {
     * 解法4：In-place DP
     * - 思路：∵ 第一行和第一列是特殊情况，不需要比较，只有一种选择 ∴ 先手动解决它们之后再处理其他位置上的情况：
     *       1 → 3 → 1             1 → 4 → 5             1 → 4 → 5              1 → 4 → 5
-    *       ↓   ↓   ↓   Add up    ↓   ↓   ↓   Add up    ↓   ↓   ↓    handle    ↓   ↓   ↓
+    *       ↓   ↓   ↓   Add up    ↓   ↓   ↓   Add up    ↓   ↓   ↓    Handle    ↓   ↓   ↓
     *       1 → 5 → 1  -------->  1 → 5 → 1  -------->  2 → 5 → 1  --------->  2 → 7 → 6
     *       ↓   ↓   ↓   1st row   ↓   ↓   ↓   1st col   ↓   ↓   ↓   the rest   ↓   ↓   ↓
     *       4 → 2 → 1             4 → 2 → 1             6 → 2 → 1              6 → 8 → 7
-    * - 时间复杂度 O(m*n)，空间复杂度 O(1)，其中 m 为行数，n 为列数。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
     * */
     public static int minPathSum4(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
 
-        for (int i = 1; i < m; i++)
+        for (int i = 1; i < m; i++)  // Add up 1st row
             grid[i][0] += grid[i - 1][0];
 
-        for (int j = 1; j < n; j++)
+        for (int j = 1; j < n; j++)  // Add up 1st column
             grid[0][j] += grid[0][j - 1];
 
-        for (int i = 1; i < m; i++)
+        for (int i = 1; i < m; i++)  // Handle the rest
             for (int j = 1; j < n; j++)
                 grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
 
         return grid[m - 1][n - 1];
     }
 
-    /*
-    * 解法5：Recursion + Memoization（也可以理解为 DFS）
-    * - 思路：
-    *   1. 从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum；
-    *   2. ∵ 中间节点会被重复计算 ∴ 使用 memoization（cache）进行优化；
-    *   3. 思路上很类似 L279_PerfectSquares 中的解法2。
-    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)，其中 m 为行数，n 为列数。
-    * */
-    public static int minPathSum5(int[][] grid) {
-        int[][] cache = new int[grid.length][grid[0].length];
-        return calcNodeMinPathSum(grid, 0, 0, cache);
-    }
-
-    private static int calcNodeMinPathSum(int[][] grid, int row, int col, int[][] cache) {
-        int m = grid.length;
-        int n = grid[0].length;
-
-        if (row == m - 1 && col == n - 1)      // 递归终止条件：到达右下角，此时返回右下角节点的值
-            return grid[row][col];
-
-        if (cache[row][col] != 0)              // 有缓存就用缓存（Q: 是否应在初始化时将 cache 填充-1？？？）
-            return cache[row][col];
-
-        int downSum = Integer.MAX_VALUE;  // 下方节点的 path sum
-        int rightSum = Integer.MAX_VALUE;  // 右侧节点的 path sum
-
-        if (row < m - 1)
-            downSum = calcNodeMinPathSum(grid, row + 1, col, cache);  // 若还未到达最底层 row 则计算当前节点下方的节点
-        if (col < n - 1)
-            rightSum = calcNodeMinPathSum(grid, row, col + 1, cache);  // 若还未到达最右侧 column 则计算当前节点右侧的节点
-
-        cache[row][col] = Math.min(downSum, rightSum) + grid[row][col]; // 递归到底（右下角节点）后在回来的路上开始真正计算
-
-        return cache[row][col];
-    }
-
     public static void main(String[] args) {
-        log(minPathSum2(new int[][]{
+        log(minPathSum4(new int[][]{
             new int[]{1, 3, 1},
             new int[]{1, 5, 1},
             new int[]{4, 2, 1}
         }));  // expects 7. (1->3->1->1->1)
 
-        log(minPathSum2(new int[][]{
+        log(minPathSum4(new int[][]{
             new int[]{1, 3, 4},
             new int[]{1, 2, 1},
         }));  // expects 5. (1->1->2->1)
 
-        log(minPathSum2(new int[][]{
+        log(minPathSum4(new int[][]{
             new int[]{1, 2, 3}
         }));  // expects 6.
 
-        log(minPathSum2(new int[][]{
+        log(minPathSum4(new int[][]{
             new int[]{0}
         }));  // expects 0.
     }
