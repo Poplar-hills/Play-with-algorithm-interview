@@ -100,11 +100,11 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法1：Recursion + Memoization（DFS with cache）
+    * 解法2：Recursion + Memoization（DFS with cache）
     * - 思路：在超时解2的基础上加入 Memoization 进行优化。
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
-    public static int minPathSum1(int[][] grid) {
+    public static int minPathSum2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int[][] cache = new int[grid.length][grid[0].length];
@@ -135,7 +135,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法2：DP
+    * 解法3：DP
     * - 思路：
     *   - 子问题定义：f(i, j) 表示“从左上角到位置 (i,j) 的所有路径上最小的节点值之和”；
     *   - 状态转移方程：f(i, j) = min(f(i+1, j), f(i, j+1))。
@@ -143,7 +143,7 @@ public class L64_MinimumPathSum {
     *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
-    public static int minPathSum2(int[][] grid) {
+    public static int minPathSum3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int m = grid.length;
@@ -168,11 +168,11 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法3：In-place DP
-    * - 思路：与解法2不同点：1. 不建立 dp 数组，就地修改；2. 遍历方向从左上到右下 f(i, j) = min(f(i-1, j), f(i, j-1))。
+    * 解法4：In-place DP
+    * - 思路：与解法3不同点：1. 不建立 dp 数组，就地修改；2. 遍历方向从左上到右下 f(i, j) = min(f(i-1, j), f(i, j-1))。
     * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
     * */
-    public static int minPathSum3(int[][] grid) {
+    public static int minPathSum4(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int m = grid.length;
@@ -194,7 +194,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法4：In-place DP
+    * 解法5：In-place DP
     * - 思路：∵ 第一行和第一列是特殊情况，不需要比较，只有一种选择 ∴ 先手动解决它们之后再处理其他位置上的情况：
     *       1 → 3 → 1             1 → 4 → 5             1 → 4 → 5              1 → 4 → 5
     *       ↓   ↓   ↓   Add up    ↓   ↓   ↓   Add up    ↓   ↓   ↓    Handle    ↓   ↓   ↓
@@ -203,7 +203,7 @@ public class L64_MinimumPathSum {
     *       4 → 2 → 1             4 → 2 → 1             6 → 2 → 1              6 → 8 → 7
     * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
     * */
-    public static int minPathSum4(int[][] grid) {
+    public static int minPathSum5(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
 

@@ -97,18 +97,67 @@ public class L120_Triangle {
     }
 
     /*
-    * 解法1：DP (bottom-up iteration)
+    * TODO: 解法1：Dijkstra
+    * - 思路：同 L64_MinimumPathSum 解法1，可将该问题建模成带权图，而带权图的最短路径可使用 Dijkstra 算法。
+    * */
+    public static int minimumTotal1(List<List<Integer>> triangle) {
+        return 0;
+    }
+
+    /*
+    * 超时解3：DFS
+    * - 思路：
+    *   - 定义子问题：f(i, j) 表示"从节点 (i, j) 开始到三角形底层的之间的 minimum path sum"；
+    *   - 状态转移方程：f(i, j) = min(f(i+1, j), f(i+1, j+1))。
+    * - 时间复杂度 O(2^n)，空间复杂度 O(h)。
+    * */
+    public static int minimumTotal00(List<List<Integer>> triangle) {
+        return helper(triangle, 0, 0);
+    }
+
+    private static int helper(List<List<Integer>> triangle, int i, int j) {
+        if (i == triangle.size() - 1)
+            return triangle.get(i).get(j);
+
+        int minSum = triangle.get(i).get(j);
+        minSum += Math.min(helper(triangle, i + 1, j), helper(triangle, i + 1, j + 1));
+
+        return minSum;
+	}
+
+    /*
+    * 解法2：DFS
+    * - 思路：
+    * - 时间复杂度 O()，空间复杂度 O()。
+    * */
+    public static int minimumTotal2(List<List<Integer>> triangle) {
+    //     int[][] cache = new int[2][];
+    //     return helper2(triangle, 0, 0);
+    // }
+
+    // private static int helper2(List<List<Integer>> triangle, int l, int i) {
+    //     if (l == triangle.size() - 1)
+    //         return triangle.get(l).get(i);
+
+    //     int minSum = triangle.get(l).get(i);
+    //     minSum += Math.min(helper(triangle, l + 1, i), helper(triangle, l + 1, i + 1));
+
+    //     return minSum;
+	}
+
+	/*
+    * 解法3：DP (bottom-up iteration)
     * - 思路：横向顶点直接进行比较，纵向层与层之间进行 reduce：
-    *            -1                -1              -1
-    *           /  \              /  \
-    *          2    3     --->   1    0    --->
-    *        /  \  /  \
+    *            -1
+    *           /  \               -1
+    *          2    3     --->    /  \    --->    -1
+    *        /  \  /  \          1    0
     *       1    -1   -3
     *   在第三层中从 (1, -1) 中选出-1加到第二层的2上；(-1, -3) 中选出-3加到第二层的3上。在第二层中从 (1, 0) 中选出0加到
     *   第一层的-1上，得到最终结果-1。
     * - 时间复杂度 O(h^2)，空间复杂度 O(1)，其中 h 为三角形高度。
     * */
-    public static int minimumTotal1(List<List<Integer>> triangle) {
+    public static int minimumTotal3(List<List<Integer>> triangle) {
         int h = triangle.size();
 
         for (int i = h - 1; i > 0; i--) {    // 从下到上遍历 triangle 中除了顶层以外的每一层
@@ -125,11 +174,11 @@ public class L120_Triangle {
     }
 
     /*
-    * 解法2：DP (bottom-up iteration)
-    * - 思路：与解法1一样，只是写法不同，另外操作数组比操作 List 更快，因此该解法统计性能更优。
+    * 解法4：DP (bottom-up iteration)
+    * - 思路：与解法3一样，只是写法不同，另外操作数组比操作 List 更快，因此该解法统计性能更优。
     * - 时间复杂度 O(h^2)，空间复杂度 O(n)，其中 h 为三角形高度。
     * */
-    public static int minimumTotal2(List<List<Integer>> triangle) {
+    public static int minimumTotal4(List<List<Integer>> triangle) {
         int h = triangle.size();
 
         int[] arr = new int[h];                   // 开辟额外空间，不改变 triangle 中的值
@@ -144,20 +193,20 @@ public class L120_Triangle {
     }
     public static void main(String[] args) {
         log(minimumTotal2(Arrays.asList(
-                Arrays.asList(2),
-                Arrays.asList(3, 4),
-                Arrays.asList(6, 5, 7),
-                Arrays.asList(4, 1, 8, 3)
+            Arrays.asList(2),
+            Arrays.asList(3, 4),
+            Arrays.asList(6, 5, 7),
+            Arrays.asList(4, 1, 8, 3)
         )));  // expects 11 (2 + 3 + 5 + 1)
 
         log(minimumTotal2(Arrays.asList(
-                Arrays.asList(-1),
-                Arrays.asList(2, 3),
-                Arrays.asList(1, -1, -3)
+            Arrays.asList(-1),
+            Arrays.asList(2, 3),
+            Arrays.asList(1, -1, -3)
         )));  // expects -1 (-1 + 3 + -3) 注意不是从每行中找到最小值就行，如：(-1 + 2 + -3)
 
         log(minimumTotal2(Arrays.asList(
-                Arrays.asList(-10)
+            Arrays.asList(-10)
         )));  // expects -10
     }
 }
