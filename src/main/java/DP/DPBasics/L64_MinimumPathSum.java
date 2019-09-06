@@ -2,17 +2,18 @@ package DP.DPBasics;
 
 import static Utils.Helpers.log;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
 /*
 * Minimum Path Sum
 *
-* - Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes
-*   the sum of all numbers along its path. Returns the sum at the end.
+* - Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which
+*   minimizes the sum of all numbers along its path. Returns the sum at the end.
 * - Rule: You can only move either down or right at any point in time.
 *
-* - 注意：本题与 L120 不同，L120 是由一个顶点出发到多个顶点结束，而本题中是由一个顶点出发到一个顶点结束。
+* - 注意：本题与 L120_Triangle 不同，L120 是由一个顶点出发到多个顶点结束，而本题中是由一个顶点出发到一个顶点结束。
 * */
 
 public class L64_MinimumPathSum {
@@ -65,7 +66,66 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法1：DP (bottom-up iteration)
+    * 解法1：DP
+    * - 思路：
+    *   - 子问题定义：f(i, j) 表示“从左上角到位置 (i,j) 的所有路径上最小的节点值之和”；
+    *   - 状态转移方程：f(i, j) = min(f(i+1, j), f(i, j+1))。
+    * - 优化：该解法还可以再进行空间优化 —— ∵ 每一行的计算都只依赖于当前行右侧和下一行中的值 ∴ 可以采用类似 _ZeroOneKnapsack
+    *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+    * */
+    public static int minPathSum1(int[][] grid) {
+        if (grid == null || grid[0] == null) return 0;
+
+        int m = grid.length;
+        int n = grid[0].length;
+
+        int[][] dp = new int[m][n];
+        for (int[] row : dp)
+            Arrays.fill(row, Integer.MAX_VALUE);
+
+        dp[m - 1][n - 1] = grid[m - 1][n - 1];
+
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (i != m - 1)
+                    dp[i][j] = Math.min(dp[i][j], grid[i][j] + dp[i + 1][j]);
+                if (j != n - 1)
+                    dp[i][j] = Math.min(dp[i][j], grid[i][j] + dp[i][j + 1]);
+            }
+        }
+
+        return dp[0][0];
+    }
+
+    /*
+    * 解法2：In-place DP
+    * - 思路：不建立 dp 数组，就地修改。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(n)。
+    * */
+    public static int minPathSum2(int[][] grid) {
+        if (grid == null || grid[0] == null) return 0;
+
+        int m = grid.length;
+        int n = grid[0].length;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 && j == 0) continue;
+                if (i == 0)
+                    grid[0][j] += grid[0][j - 1];
+                else if (j == 0)
+                    grid[i][0] += grid[i - 1][j];
+                else
+                    grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
+            }
+        }
+
+        return grid[m - 1][n - 1];
+    }
+
+    /*
+    * 解法3：DP
     * - 思路：
     *       1 → 3 → 1           1 → 3 → 1           1 → 4 → 5           1 → 4 → 5
     *       ↓   ↓   ↓   step1   ↓   ↓   ↓   step2   ↓   ↓   ↓   step3   ↓   ↓   ↓
@@ -74,7 +134,7 @@ public class L64_MinimumPathSum {
     *       4 → 2 → 1           6 → 2 → 1           6 → 2 → 1           6 → 8 → 7
     * - 时间复杂度 O(m*n)，空间复杂度 O(1)，其中 m 为行数，n 为列数。
     * */
-    public static int minPathSum1(int[][] grid) {
+    public static int minPathSum3(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
 
@@ -92,14 +152,14 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法2：Recursion + Memoization（也可以理解为 DFS）
+    * 解法4：Recursion + Memoization（也可以理解为 DFS）
     * - 思路：
     *   1. 从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum；
     *   2. ∵ 中间节点会被重复计算 ∴ 使用 memoization（cache）进行优化；
     *   3. 思路上很类似 L279_PerfectSquares 中的解法2。
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)，其中 m 为行数，n 为列数。
     * */
-    public static int minPathSum2(int[][] grid) {
+    public static int minPathSum4(int[][] grid) {
         int[][] cache = new int[grid.length][grid[0].length];
         return calcNodeMinPathSum(grid, 0, 0, cache);
     }
