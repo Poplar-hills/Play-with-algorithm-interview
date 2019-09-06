@@ -13,19 +13,22 @@ import java.util.Queue;
 *   minimizes the sum of all numbers along its path. Returns the sum at the end.
 * - Rule: You can only move either down or right at any point in time.
 *
-* - 注意：本题与 L120_Triangle 不同，L120 是由一个顶点出发到多个顶点结束，而本题中是由一个顶点出发到一个顶点结束。
+* 💎 若用图论建模则需要注意：
+*   1. 本题与 L120_Triangle 不同，L120 是由一个顶点出发到多个顶点结束，而本题中是由一个顶点出发到一个顶点结束。
+*   2. 该题与 L279_PerfectSquares 不同，L279 可建模成无权图，无权图的最短路径是节点数最少的那条；而该题用图论建模只能建模成
+*      带权图，因为要求的是节点值之和最小的路径，相当于求成本最小的路径。
 * */
 
 public class L64_MinimumPathSum {
     /*
-    * 超时解：top-down BFS
-    * - 思路：与 L120 解法2完全一致，用图论将问题建模成为典型的寻路问题：
+    * 超时解：Brute force BFS
+    * - 思路：与 L120_Triangle 解法2完全一致，采用 BFS 遍历每一条路径，同时计算最小的节点值之和。
     *        1 → 3 → 1
     *        ↓   ↓   ↓
     *        1 → 5 → 1
     *        ↓   ↓   ↓
     *        4 → 2 → 1
-    *   这样该问题就转化为了求左上到右下的所有路径中最小的节点值之和，因此可以用 BFS 找到每一条路径，同时求其中最小的顶点值之和。
+    *   这样该问题就转化为了求左上到右下的所有路径中最小的节点值之和 ∴ 可以用 BFS 找到每一条路径，同时求其中最小的顶点值之和。
     * - 时间复杂度 O(2^n)，空间复杂度 O(n)，其中 n 为节点个数。
     * */
     static class Path {
@@ -39,26 +42,23 @@ public class L64_MinimumPathSum {
 
     public static int minPathSum(int[][] grid) {
         int res = Integer.MAX_VALUE;
-        int rowCount = grid.length;
-        int colCount = grid[0].length;
+        int m = grid.length, n = grid[0].length;
 
         Queue<Path> q = new LinkedList<>();
         q.offer(new Path(0, 0, grid[0][0]));
 
         while (!q.isEmpty()) {
             Path path = q.poll();
-            int row = path.row;
-            int col = path.col;
-            int sum = path.sum;
+            int row = path.row, col = path.col, sum = path.sum;
 
-            if (row == rowCount - 1 && col == colCount - 1) {  // 若已抵达右下角
-                res = Math.min(res, sum);
+            if (row == m - 1 && col == n - 1) {  // 若已抵达右下角
+                res = Math.min(res, sum);        // 求最小的节点值之和
                 continue;
             }
 
-            if (col < colCount - 1)  // 若还没到最右侧一列，则入队右侧节点
+            if (col < n - 1)       // 若还没到最右一列，则入队右侧节点
                 q.offer(new Path(row, col + 1, sum + grid[row][col + 1]));
-            if (row < rowCount - 1)        // 若还没到最下面一行，则入队下方节点
+            if (row < m - 1)       // 若还没到最后一行，则入队下方节点
                 q.offer(new Path(row + 1, col, sum + grid[row + 1][col]));
         }
 
@@ -66,7 +66,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法1：DP
+    * 解法2：DP
     * - 思路：
     *   - 子问题定义：f(i, j) 表示“从左上角到位置 (i,j) 的所有路径上最小的节点值之和”；
     *   - 状态转移方程：f(i, j) = min(f(i+1, j), f(i, j+1))。
@@ -74,7 +74,7 @@ public class L64_MinimumPathSum {
     *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
-    public static int minPathSum1(int[][] grid) {
+    public static int minPathSum2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int m = grid.length;
@@ -99,11 +99,11 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法2：In-place DP
+    * 解法3：In-place DP
     * - 思路：不建立 dp 数组，就地修改。
     * - 时间复杂度 O(m*n)，空间复杂度 O(n)。
     * */
-    public static int minPathSum2(int[][] grid) {
+    public static int minPathSum3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int m = grid.length;
@@ -125,7 +125,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法3：DP
+    * 解法4：DP
     * - 思路：
     *       1 → 3 → 1           1 → 3 → 1           1 → 4 → 5           1 → 4 → 5
     *       ↓   ↓   ↓   step1   ↓   ↓   ↓   step2   ↓   ↓   ↓   step3   ↓   ↓   ↓
@@ -134,7 +134,7 @@ public class L64_MinimumPathSum {
     *       4 → 2 → 1           6 → 2 → 1           6 → 2 → 1           6 → 8 → 7
     * - 时间复杂度 O(m*n)，空间复杂度 O(1)，其中 m 为行数，n 为列数。
     * */
-    public static int minPathSum3(int[][] grid) {
+    public static int minPathSum4(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
 
@@ -152,14 +152,14 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法4：Recursion + Memoization（也可以理解为 DFS）
+    * 解法5：Recursion + Memoization（也可以理解为 DFS）
     * - 思路：
     *   1. 从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum；
     *   2. ∵ 中间节点会被重复计算 ∴ 使用 memoization（cache）进行优化；
     *   3. 思路上很类似 L279_PerfectSquares 中的解法2。
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)，其中 m 为行数，n 为列数。
     * */
-    public static int minPathSum4(int[][] grid) {
+    public static int minPathSum5(int[][] grid) {
         int[][] cache = new int[grid.length][grid[0].length];
         return calcNodeMinPathSum(grid, 0, 0, cache);
     }
