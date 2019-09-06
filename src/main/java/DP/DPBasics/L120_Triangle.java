@@ -131,18 +131,23 @@ public class L120_Triangle {
     * - 时间复杂度 O()，空间复杂度 O()。
     * */
     public static int minimumTotal2(List<List<Integer>> triangle) {
-    //     int[][] cache = new int[2][];
-    //     return helper2(triangle, 0, 0);
-    // }
+        int h = triangle.size();
+        int[][] cache = new int[h][triangle.get(h - 1).size()];
+        for (int[] row : cache)
+            Arrays.fill(row, -1);
+        return helper(triangle, 0, 0, cache);
+    }
 
-    // private static int helper2(List<List<Integer>> triangle, int l, int i) {
-    //     if (l == triangle.size() - 1)
-    //         return triangle.get(l).get(i);
+    private static int helper(List<List<Integer>> triangle, int i, int j, int[][] cache) {
+        if (i == triangle.size() - 1)
+            return triangle.get(i).get(j);
 
-    //     int minSum = triangle.get(l).get(i);
-    //     minSum += Math.min(helper(triangle, l + 1, i), helper(triangle, l + 1, i + 1));
+        if (cache[i][j] != -1) return cache[i][j];
 
-    //     return minSum;
+        int minSum = triangle.get(i).get(j);
+        minSum += Math.min(helper(triangle, i + 1, j, cache), helper(triangle, i + 1, j + 1, cache));
+
+        return cache[i][j] = minSum;
 	}
 
 	/*
