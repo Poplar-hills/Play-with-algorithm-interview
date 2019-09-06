@@ -15,7 +15,7 @@ import static Utils.Helpers.log;
 
 public class L120_Triangle {
     /*
-    * 超时解1：top-down BFS
+    * 超时解1：Brute force BFS
     * - 思路：与 L70_ClimbingStairs 中的超时解一致，用图论建模：
     *            -1
     *           ↙  ↘
@@ -36,15 +36,15 @@ public class L120_Triangle {
         while (!q.isEmpty()) {
             List<Integer> path = q.poll();
 
-            if (path.size() == triangle.size()) {     // 若一个 path 中的顶点个数 == triangle 的高度，则说明已经到底
-                int sum = 0;                          // 开始求该 path 的所有顶点值之和
+            if (path.size() == triangle.size()) {       // 若一个 path 中的顶点个数 == triangle 的高度，则说明已经到底
+                int sum = 0;                            // 开始求该 path 的所有顶点值之和
                 for (int i = 0; i < path.size(); i++)
                     sum += triangle.get(i).get(path.get(i));
                 res = Math.min(res, sum);
-                continue;                             // 退出循环
+                continue;                               // 进入下一轮循环
             }
 
-            int currIndex = path.get(path.size() - 1);  // 若该 path 还未到底，则获取其最新经过的顶点在其 level 上的 index
+            int currIndex = path.get(path.size() - 1);  // 若该 path 还未到底，则获取其最新顶点在其 level 上的 index
             for (int i = 0; i < 2; i++) {               // 寻找相邻顶点
                 List<Integer> newPath = new ArrayList<>(path);   // 复制当前的 path（这个技巧很有用）
                 newPath.add(currIndex + i);                      // 将下一步节点的 index 放入 newPath 中
@@ -56,9 +56,9 @@ public class L120_Triangle {
     }
 
     /*
-    * 超时解2：top-down BFS
-    * - 思路：本解法本质上和超时解1的思路是一样的，同样也是采用 BFS 遍历每一条路径。区别在于本解法中 queue 里存的不是代表路径的顶点列表，
-    *   而是由 level, index, sum 三者确定的一条路径的最新状态，level, index 记录路径经过的最新顶点，sum 记录路径当前的节点值之和。
+    * 超时解2：Brute force BFS
+    * - 思路：和超时解1一样，都采用 BFS 遍历每一条路径。区别在于封装了 Path 对象，由 level, index, sum 三者确定的一条路径，
+    *   level, index 记录路径上的最新顶点，sum 记录路径当前的节点值之和。
     * - 时间复杂度 O(2^n)：解释同超时解1。
     * - 空间复杂度 O(n)：queue 中每个元素只是 Path 对象，而非如超时解1中的整个顶点列表，因此不需要乘以 logn。
     * */
