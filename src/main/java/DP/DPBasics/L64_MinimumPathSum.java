@@ -66,6 +66,15 @@ public class L64_MinimumPathSum {
     }
 
     /*
+    * TODO: 解法1：Dijkstra
+    * - 思路：带权图的最短路径可使用 Dijkstra 算法，可先解决 https://leetcode.com/problems/network-delay-time/，再解决本问题
+    * - 时间复杂度 O()，空间复杂度 O()。
+    * */
+    public static int minPathSum1(int[][] grid) {
+        return 0;
+    }
+
+    /*
     * 解法2：DP
     * - 思路：
     *   - 子问题定义：f(i, j) 表示“从左上角到位置 (i,j) 的所有路径上最小的节点值之和”；
@@ -100,7 +109,7 @@ public class L64_MinimumPathSum {
 
     /*
     * 解法3：In-place DP
-    * - 思路：不建立 dp 数组，就地修改。
+    * - 思路：与解法2不同点：1. 不建立 dp 数组，就地修改；2. 遍历方向从左上到右下 f(i, j) = min(f(i-1, j), f(i, j-1))。
     * - 时间复杂度 O(m*n)，空间复杂度 O(n)。
     * */
     public static int minPathSum3(int[][] grid) {
