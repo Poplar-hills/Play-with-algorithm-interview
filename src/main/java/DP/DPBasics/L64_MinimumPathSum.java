@@ -110,7 +110,7 @@ public class L64_MinimumPathSum {
     /*
     * 解法3：In-place DP
     * - 思路：与解法2不同点：1. 不建立 dp 数组，就地修改；2. 遍历方向从左上到右下 f(i, j) = min(f(i-1, j), f(i, j-1))。
-    * - 时间复杂度 O(m*n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
     * */
     public static int minPathSum3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -134,30 +134,30 @@ public class L64_MinimumPathSum {
     }
 
     /*
-    * 解法4：DP
-    * - 思路：
-    *       1 → 3 → 1           1 → 3 → 1           1 → 4 → 5           1 → 4 → 5
-    *       ↓   ↓   ↓   step1   ↓   ↓   ↓   step2   ↓   ↓   ↓   step3   ↓   ↓   ↓
-    *       1 → 5 → 1  ------>  2 → 5 → 1  ------>  2 → 5 → 1  ------>  2 → 7 → 6
-    *       ↓   ↓   ↓           ↓   ↓   ↓           ↓   ↓   ↓           ↓   ↓   ↓
-    *       4 → 2 → 1           6 → 2 → 1           6 → 2 → 1           6 → 8 → 7
+    * 解法4：In-place DP
+    * - 思路：∵ 第一行和第一列是特殊情况，不需要比较，只有一种选择 ∴ 先手动解决它们之后再处理其他位置上的情况：
+    *       1 → 3 → 1             1 → 4 → 5             1 → 4 → 5              1 → 4 → 5
+    *       ↓   ↓   ↓   Add up    ↓   ↓   ↓   Add up    ↓   ↓   ↓    handle    ↓   ↓   ↓
+    *       1 → 5 → 1  -------->  1 → 5 → 1  -------->  2 → 5 → 1  --------->  2 → 7 → 6
+    *       ↓   ↓   ↓   1st row   ↓   ↓   ↓   1st col   ↓   ↓   ↓   the rest   ↓   ↓   ↓
+    *       4 → 2 → 1             4 → 2 → 1             6 → 2 → 1              6 → 8 → 7
     * - 时间复杂度 O(m*n)，空间复杂度 O(1)，其中 m 为行数，n 为列数。
     * */
     public static int minPathSum4(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
 
-        for (int i = 1; i < m; i++)  // step1: 遍历除第1行之外的每一行，让每行第0个元素加上上一行的第0个元素
+        for (int i = 1; i < m; i++)
             grid[i][0] += grid[i - 1][0];
 
-        for (int j = 1; j < n; j++)  // step2: 遍历除第1列之外的每一列，让每列第0个元素加上左边一列的第0个元素
+        for (int j = 1; j < n; j++)
             grid[0][j] += grid[0][j - 1];
 
-        for (int i = 1; i < m; i++)  // step3: 计算除第一行和第一列外的所有节点，一边比较一边往右下角 reduce
+        for (int i = 1; i < m; i++)
             for (int j = 1; j < n; j++)
                 grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
 
-        return grid[m - 1][n - 1];   // 返回右下角的元素值
+        return grid[m - 1][n - 1];
     }
 
     /*
