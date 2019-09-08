@@ -136,10 +136,11 @@ public class L62_UniquePaths {
     }
 
     /*
-    * 解法5：DP + Rolling array（滚动数组）
+    * 解法5：DP + 滚动数组（Rolling array）
     * - 思路：在解法3、4中 ∵ 每个坐标的计算结果都只取决于该坐标左侧及上方的结果（状态转移方程也说明的了这一点）∴ 在计算 f(i, j)
     *   时只需要第 i 行和第 i-1 行的计算结果即可，而不再需要维护整个二维表 ∴ 可在解法3或4的基础上使用类似 _ZeroOneKnapsack
     *   解法3中的滚动数组进行优化：当 i 为偶数时，读写 dp[0]；当 i 为奇数时，读写 dp[1]。
+    * - 注意：若使用滚动数组，最好像从左上向右下遍历（如解法3、4），若从右下向左上遍历（如解法2）会有问题。
     * - 时间复杂度 O(m*n)，空间复杂度 O(2n)。
     * */
     public static int uniquePaths5(int m, int n) {
@@ -156,8 +157,28 @@ public class L62_UniquePaths {
         return dp[(m - 1) % 2][n - 1];
     }
 
+    /*
+    * 解法6：DP
+    * - 思路：采用 _ZeroOneKnapsack 解法4的思路再进一步优化 —— 只使用一维数组。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(1n)。
+    * */
+    public static int uniquePaths6(int m, int n) {
+        if (m == 0 || n == 0) return 0;
+        int[] dp = new int[n];
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || j == 0) dp[j] = 1;
+                else dp[j] += dp[j - 1];
+            }
+        }
+
+        return dp[n - 1];
+    }
+
     public static void main(String[] args) {
-        log(uniquePaths3(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
-        log(uniquePaths3(7, 3));  // expects 28.
+        log(uniquePaths6(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths6(3, 3));  // expects 6.
+        log(uniquePaths6(7, 3));  // expects 28.
     }
 }
