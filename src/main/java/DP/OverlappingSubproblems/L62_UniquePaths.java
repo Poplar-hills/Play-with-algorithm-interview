@@ -84,21 +84,80 @@ public class L62_UniquePaths {
     * */
     public static int uniquePaths2(int m, int n) {
         if (m == 0 || n == 0) return 0;
-        int[][] cache = new int[m][n];
-        cache[m - 1][n - 1] = 1;
+        int[][] dp = new int[m][n];
+        dp[m - 1][n - 1] = 1;
 
         for (int i = m - 1; i >= 0; i--) {
             for (int j = n - 1; j >= 0; j--) {
-                if (i != m - 1) cache[i][j] += cache[i + 1][j];
-                if (j != n - 1) cache[i][j] += cache[i][j + 1];
+                if (i != m - 1) dp[i][j] += dp[i + 1][j];
+                if (j != n - 1) dp[i][j] += dp[i][j + 1];
             }
         }
 
-        return cache[0][0];
+        return dp[0][0];
+    }
+
+    /*
+    * 解法3：DP（解法2的反向遍历版）
+    * - 思路：不同于解法2，本解法是是从左上遍历到右下 ∴ 状态转移方程变成了 f(i, j) = f(i-1, j) + f(i, j-1)。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+    * */
+    public static int uniquePaths3(int m, int n) {
+        if (m == 0 || n == 0) return 0;
+        int[][] dp = new int[m][n];
+        dp[0][0] = 1;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != 0) dp[i][j] += dp[i - 1][j];
+                if (j != 0) dp[i][j] += dp[i][j - 1];
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+
+    /*
+    * 解法4：DP（解法3的另一种实现）
+    * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+    * */
+    public static int uniquePaths4(int m, int n) {
+        if (m == 0 || n == 0) return 0;
+        int[][] dp = new int[m][n];
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || j == 0) dp[i][j] = 1;
+                else dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+
+    /*
+    * 解法5：DP + Rolling array（滚动数组）
+    * - 思路：在解法3、4中 ∵ 每个坐标的计算结果都只取决于该坐标左侧及上方的结果（状态转移方程也说明的了这一点）∴ 在计算 f(i, j)
+    *   时只需要第 i 行和第 i-1 行的计算结果即可，而不再需要维护整个二维表 ∴ 可在解法3或4的基础上使用类似 _ZeroOneKnapsack
+    *   解法3中的滚动数组进行优化：当 i 为偶数时，读写 dp[0]；当 i 为奇数时，读写 dp[1]。
+    * - 时间复杂度 O(m*n)，空间复杂度 O(2n)。
+    * */
+    public static int uniquePaths5(int m, int n) {
+        if (m == 0 || n == 0) return 0;
+        int[][] dp = new int[2][n];
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || j == 0) dp[i % 2][j] = 1;
+                else dp[i % 2][j] = dp[(i - 1) % 2][j] + dp[i % 2][j - 1];
+            }
+        }
+
+        return dp[(m - 1) % 2][n - 1];
     }
 
     public static void main(String[] args) {
-        log(uniquePaths2(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
-        log(uniquePaths2(7, 3));  // expects 28. 
+        log(uniquePaths3(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths3(7, 3));  // expects 28.
     }
 }
