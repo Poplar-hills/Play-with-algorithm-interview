@@ -13,6 +13,8 @@ import javafx.util.Pair;
 *   or right at any point in time. The robot is trying to reach the bottom-right corner of the grid. How many
 *   possible unique paths are there?
 * - Note: m and n will be at most 100.
+*
+* - 与 L64_MinimumPathSum 的区别是 L64 是求最小成本的路径，而该题是求有多少种不同路径。
 * */
 
 public class L62_UniquePaths {
@@ -41,22 +43,21 @@ public class L62_UniquePaths {
                 continue;
             }
 
-            if (x + 1 < m)
-                q.offer(new Pair<>(x + 1, y));
-            if (y + 1 < n)
-                q.offer(new Pair<>(x, y + 1));
+            if (x + 1 < m) q.offer(new Pair<>(x + 1, y));
+            if (y + 1 < n) q.offer(new Pair<>(x, y + 1));
         }
 
         return res;
     }
 
     /*
-    * 解法1：Recursion + Memoization (DFS)
-    * - 思路：类似 L64 解法2，该题符合“全局解 = 局部解之和”，即前一个问题的解是基于后两个问题的解，因此可采用 top-down 的
-    *   recursion 方式求解 + memoization 的方式优化：
+    * 解法1：Recursion + Memoization (DFS with cache)
+    * - 思路：类似 L64 解法2。该题具有明显的重叠子问题特征 —— 前一个问题的解是基于后两个问题的解。
     *        ■ → ■ → ■         3 ← 2 ← 1
     *        ↓   ↓   ↓   -->   ↑   ↑   ↑
     *        ■ → ■ → ■         1 ← 1 ← 0
+    *   - 定义子问题：f(i, j) 表示"从坐标 (i,j) 到达右下角的 unique paths 个数"；
+    *   - 状态转移方程：f(i, j) = f(i+1, j) + f(i, j+1)。
     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
     * */
     public static int uniquePaths1(int m, int n) {
@@ -66,14 +67,12 @@ public class L62_UniquePaths {
     }
 
     private static int uniquePaths2(int m, int n, int i, int j, int[][] cache) {
-        if (i == m - 1 && j == n - 1) return 1;
+        if (i == m - 1 && j == n - 1) return 1;  // 注意递归到底时（即 cache[m-1][n-1]）要返回1
         if (cache[i][j] != 0) return cache[i][j];
 
         int res = 0;
-        if (i + 1 < m)
-            res += uniquePaths2(m, n, i + 1, j, cache);
-        if (j + 1 < n)
-            res += uniquePaths2(m, n, i, j + 1, cache);
+        if (i != m - 1) res += uniquePaths2(m, n, i + 1, j, cache);
+        if (j != n - 1) res += uniquePaths2(m, n, i, j + 1, cache);
 
         return cache[i][j] = res;
     }
@@ -90,10 +89,8 @@ public class L62_UniquePaths {
 
         for (int i = m - 1; i >= 0; i--) {
             for (int j = n - 1; j >= 0; j--) {
-                if (i + 1 < m)
-                    cache[i][j] += cache[i + 1][j];
-                if (j + 1 < n)
-                    cache[i][j] += cache[i][j + 1];
+                if (i != m - 1) cache[i][j] += cache[i + 1][j];
+                if (j != n - 1) cache[i][j] += cache[i][j + 1];
             }
         }
 
@@ -101,7 +98,7 @@ public class L62_UniquePaths {
     }
 
     public static void main(String[] args) {
-        log(uniquePaths2(2, 3));  // expects 3.  (R->R->D, R->D->R, D->R->R)
-        log(uniquePaths2(7, 3));  // expects 28. ...
+        log(uniquePaths2(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths2(7, 3));  // expects 28. 
     }
 }
