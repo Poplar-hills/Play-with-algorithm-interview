@@ -159,7 +159,8 @@ public class L62_UniquePaths {
 
     /*
     * 解法6：DP
-    * - 思路：采用 _ZeroOneKnapsack 解法4的思路再进一步优化 —— 只使用一维数组。
+    * - 思路：采用 _ZeroOneKnapsack 解法4的思路再进一步优化 —— 只使用一维数组，每次对其进行覆盖。
+    * - 注意：覆盖的方向要跟递推方向相同 —— 递推是从左到右（由 f(i-1) 推出 f(i)），覆盖是从 0 到 n 进行覆盖。
     * - 时间复杂度 O(m*n)，空间复杂度 O(1n)。
     * */
     public static int uniquePaths6(int m, int n) {
