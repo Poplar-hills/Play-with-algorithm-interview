@@ -44,7 +44,7 @@ public class L343_IntegerBreak {
     *      方案 1+? 来说，?中的整数之和为3，而3又有两种分割方案：1+?、2+?；这样下去直到每部分都分割成最小整数1时递归结束。
     *   3. 基于以上推断，可知：
     *      - 定义子问题：f(i) 表示“由正整数 i 分割得到的多个正整数的最大乘积”；
-    *      - 状态转移方程：f(i) = max(f(i-1), f(i-2), ..., f(1))。
+    *      - 状态转移方程：f(i) = max(j*(i-j), j*f(i-j))，其中 j ∈ [1, i)。
     *
     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
     * */
@@ -52,8 +52,8 @@ public class L343_IntegerBreak {
         if (n == 1) return 1;
 
         int maxProduct = 0;
-        for (int i = 1; i < n; i++)  // 遍历所有分割方案：1*(n-1), 2*(n-2), ..., (n-1)*1
-            maxProduct = maxOfN(maxProduct, i*(n-i), i*integerBreak(n-i));  // 求所有方案中的最大乘积
+        for (int j = 1; j < n; j++)  // 遍历所有分割方案：1*(n-1), 2*(n-2), ..., (n-1)*1
+            maxProduct = maxOfN(maxProduct, j*(n-j), j*integerBreak(n-j));  // 求所有方案中的最大乘积
 
         return maxProduct;
     }
@@ -73,8 +73,8 @@ public class L343_IntegerBreak {
         if (cache[n] != 0) return cache[n];
 
         int res = 0;
-        for (int i = 1; i < n; i++)
-            res = maxOfN(res, i*(n-i), i*helper1(n-i, cache));
+        for (int j = 1; j < n; j++)
+            res = maxOfN(res, j*(n-j), j*helper1(n-j, cache));
 
         return cache[n] = res;
     }
