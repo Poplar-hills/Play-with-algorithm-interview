@@ -122,10 +122,10 @@ public class L139_WordBreak {
 
     /*
     * 解法4：DFS
-    * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段，而是采用头部单词匹配（s.startWith(word, start)）。理由是若 s 能
-    *   由 wordDict 中的词组成，则一定是由其中某一个词开头的，因此。
-    * - 注意：s.startWith() 方法的第二个参数指定匹配的起始索引，很好用。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
+    * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段检测，而是采用头部单词匹配。理由是，若 s 能由 wordDict 中的
+    *   词组成，则一定是由其中某一个词开头的，找到这个词之后再对其后半段继续这样的匹配检测，从而形成递归结构。
+    * - 注意：startWith() 方法的第二个参数指定匹配的起始索引，好用。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)，统计性能是几种解法中最快的。
     * */
     public static boolean wordBreak4(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
@@ -134,11 +134,11 @@ public class L139_WordBreak {
     }
 
     private static boolean dfs(String s, int start, List<String> wordDict, Boolean[] cache) {
-        if (start == s.length()) return true;  // 只有找到解（s 完全有 wordDict 中的词组成）时才会递归到底
+        if (start == s.length()) return true;
         if (cache[start] != null) return cache[start];
 
         for (String word : wordDict)
-            if (s.startsWith(word, start) && dfs(s, start + word.length(), wordDict, cache))  // 若前、后两段都存在于 wordDict 中则说明有解
+            if (s.startsWith(word, start) && dfs(s, start + word.length(), wordDict, cache))  // 若前、后两段都存在于 wordDict 中
                 return cache[start] = true;
         return cache[start] = false;
     }
