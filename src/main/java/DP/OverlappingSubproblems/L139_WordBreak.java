@@ -17,46 +17,50 @@ import java.util.Set;
 public class L139_WordBreak {
     /*
     * 超时解：DFS（没有 cache 的 DFS 就是 Brute force，同时也是 Back-tracking)
-    * - 思路：类似 L343_IntegerBreak，将字符串递归地截成两段，直到有解或到底。例如对 s="sunisfo", wordDict=["sun","is","fo"]：
-    *   - f("sunisfo")
-    *     - "s" && f("unisfo")
-    *     - "su" && f("nisfo")
-    *     - "sun" && f("isfo")                  → "sun" 在 wordDict 中，继续递归分解后半段
-    *                - "i" && f("sfo")
-    *                - "is" && f("fo")          → "is" 在 wordDict 中，继续递归分解后半段
-    *                          - "f" && f("o")
-    *                          - "fo" && f("")  → 此时返回 true 到上层，上层也返回 true...直到原问题返回 true
+    * - 思路：类似 L343_IntegerBreak，将字符串递归地截成两段，直到有解或到底：
+    *   - 定义子问题：f(i) 表示“从索引 i 开始的字符串 s[i,len) 是否能由 wordDict 中的单词拼接而成”；
+    *   - 状态转移方程：f(i) = any(s[i,j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
+    *   例如对 s="sunisfo", wordDict=["sun","is","fo"] 来说：
+    *      f("sunisfo")
+    *        - "s" && f("unisfo")
+    *        - "su" && f("nisfo")
+    *        - "sun" && f("isfo")                  → "sun" 在 wordDict 中，继续递归分解后半段
+    *                   - "i" && f("sfo")
+    *                   - "is" && f("fo")          → "is" 在 wordDict 中，继续递归分解后半段
+    *                             - "f" && f("o")
+    *                             - "fo" && f("")  → 此时返回 true 到上层，上层也返回 true...直到原问题返回 true
+    * - 实现：根据递归结构可知需要双重循环：一重用于在 s 上移动 i，另一重用于在 i 固定的情况下移动 j，将字符串截成两段。
     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
     * */
-    public static boolean search2(String s, List<String> wordDict) {
+    public static boolean wordBreak(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
-        return search(s, 0, new HashSet<>(wordDict));  // 为了高效查询 wordDict 是否包含某个字符串，将 wordDict 转为 set
+        return helper(s, 0, new HashSet<>(wordDict));  // 为了高效查询 wordDict 是否包含某个字符串，将 wordDict 转为 set
     }
 
-    private static boolean search(String s, int l, Set<String> set) {
-        if (l == s.length()) return true;          // 递归到底时后半段为空，而前半段可能存在于 set 中 ∴ 也要返回 true 这样下面的 if 才能为 true
-        for (int r = l + 1; r <= s.length(); r++)  // 注意遍历终止条件为 <= s.length() ∵ 下面 substring 时 r 是不包括在内的
-            if (set.contains(s.substring(l, r)) && search(s, r, set))  // 若前半段和后半段都在 set 中，说明原问题有解
+    private static boolean helper(String s, int i, Set<String> set) {
+        if (i == s.length()) return true;              // f("") 的情况要返回 true
+        for (int j = i + 1; j <= s.length(); j++)      // 注意 j 可以等于 s.length() ∵ 下面 substring 时 j 是不包含的
+            if (set.contains(s.substring(i, j)) && helper(s, j, set))  // 若前后两段都在 set 中，说明该问题有解
                 return true;
         return false;
     }
 
     /*
-    * 解法1：Recursion + Memoization
+    * 解法1：Recursion + Memoization (DFS with cache)
     * - 思路：用缓存记录重叠子问题的计算结果。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static boolean wordBreak1(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
         Boolean[] cache = new Boolean[s.length()];  // 此处使用 Boolean 而非 boolean，从而下面可以判断是否为 null
-        return search1(s, 0, new HashSet<>(wordDict), cache);
+        return helper1(s, 0, new HashSet<>(wordDict), cache);
     }
 
-    private static boolean search1(String s, int l, HashSet<String> set, Boolean[] cache) {
+    private static boolean helper1(String s, int l, HashSet<String> set, Boolean[] cache) {
         if (l == s.length()) return true;
         if (cache[l] != null) return cache[l];
         for (int r = l + 1; r <= s.length(); r++)
-            if (set.contains(s.substring(l, r)) && search1(s, r, set, cache))
+            if (set.contains(s.substring(l, r)) && helper1(s, r, set, cache))
                 return cache[l] = true;
         return cache[l] = false;
     }
