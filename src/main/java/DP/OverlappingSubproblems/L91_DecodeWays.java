@@ -2,6 +2,7 @@ package DP.OverlappingSubproblems;
 
 import static Utils.Helpers.log;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class L91_DecodeWays {
     *                         f("3")      f("")                1       1
     *                           ↓                              ↑
     *                         f("")                            1
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
     * */
     public static int numDecodings(String s) {
         if (s == null || s.length() == 0) return 0;
@@ -58,20 +59,21 @@ public class L91_DecodeWays {
     * */
     public static int numDecodings1(String s) {
         if (s == null || s.length() == 0) return 0;
-        return dfs(s, 0, new HashMap<>());
+        int[] cache = new int[s.length()];
+        Arrays.fill(cache, -1);  // ∵ 计算结果可能为0，所以要初始化为-1
+        return dfs(s, 0, cache);
     }
 
-    public static int dfs(String s, int i, HashMap<Integer, Integer> map) {
+    public static int dfs(String s, int i, int[] cache) {
         if (i == s.length()) return 1;
         if (s.charAt(i) == '0') return 0;
-        if (map.containsKey(i)) return map.get(i);
+        if (cache[i] != -1) return cache[i];
 
-        int res = dfs(s, i + 1, map);
+        int res = dfs(s, i + 1, cache);
         if (i + 1 < s.length() && Integer.parseInt(s.substring(i, i + 2)) < 27)
-            res += dfs(s, i + 2, map);
+            res += dfs(s, i + 2, cache);
 
-        map.put(i, res);
-        return res;
+        return cache[i] = res;
     }
 
     /*
@@ -100,10 +102,10 @@ public class L91_DecodeWays {
     }
 
     public static void main(String[] args) {
-        log(numDecodings("27"));     // expects 1. 2,7  -> "BG"
-        log(numDecodings("12"));     // expects 2. 1,2  -> "AB" or 12 -> "L"
-        log(numDecodings("227"));    // expects 2. 22,7 -> "VG" or 2,2,7 -> "BBG"
-        log(numDecodings("226"));    // expects 3. 2,26 -> "BZ" or 22,6 -> "VF" or 2,2,6 -> "BBF"
-        log(numDecodings("102213")); // expects 5. ...
+        log(numDecodings1("27"));     // expects 1. 2,7  -> "BG"
+        log(numDecodings1("12"));     // expects 2. 1,2  -> "AB" or 12 -> "L"
+        log(numDecodings1("227"));    // expects 2. 22,7 -> "VG" or 2,2,7 -> "BBG"
+        log(numDecodings1("226"));    // expects 3. 2,26 -> "BZ" or 22,6 -> "VF" or 2,2,6 -> "BBF"
+        log(numDecodings1("102213")); // expects 5. ...
     }
 }
