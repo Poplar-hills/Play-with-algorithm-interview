@@ -133,14 +133,14 @@ public class L139_WordBreak {
         return dfs(s, 0, wordDict, cache);
     }
 
-    private static boolean dfs(String s, int start, List<String> wordDict, Boolean[] cache) {
-        if (start == s.length()) return true;
-        if (cache[start] != null) return cache[start];
+    private static boolean dfs(String s, int i, List<String> wordDict, Boolean[] cache) {
+        if (i == s.length()) return true;
+        if (cache[i] != null) return cache[i];
 
         for (String word : wordDict)
-            if (s.startsWith(word, start) && dfs(s, start + word.length(), wordDict, cache))  // 若前、后两段都存在于 wordDict 中
-                return cache[start] = true;
-        return cache[start] = false;
+            if (s.startsWith(word, i) && dfs(s, i + word.length(), wordDict, cache))  // 若前、后两段都存在于 wordDict 中
+                return cache[i] = true;
+        return cache[i] = false;
     }
 
     public static void main(String[] args) {
