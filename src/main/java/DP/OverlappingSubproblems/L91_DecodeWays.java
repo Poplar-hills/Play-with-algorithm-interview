@@ -78,34 +78,38 @@ public class L91_DecodeWays {
 
     /*
     * 解法2：DP
-    * - 思路：DP 与解法1中 recursion 的思路一致 —— 每个以指针 i 为起点的字符串的解码方法数 f(s, i) = f(s, i+1) + f(s, i+2)；
-    *   只是实现方式相反 —— recursion 是从前往后递归，而 DP 是从后往前递推，前一个问题的解是建立在后面问题的解的基础上。
+    * - 思路：定义子问题和状态转移方程不变：
+    *   - f(i) 表示“从索引 i 开始的字符串的解码方式个数”；
+    *   - f(i) = f(i + 1) + f(i + 2)，其中 i ∈ [0, len-3]，且：
+    *     1. 递推的起始条件：f("") = 1；
+    *     2. 以0开头的字符串无法解码：f("0...") = 0。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int numDecodings2(String s) {
         if (s == null || s.length() == 0) return 0;
+
         int n = s.length();
-        int[] cache = new int[n + 1];   // ∵ cache 大小是已知的 ∴ 可以采用数组（否则只能采用 Map）
-        cache[n] = 1;                   // 先解答最小问题，即 f("") 的情况
+        int[] dp = new int [n + 1];
+        dp[n] = 1;                     // f("") = 1
 
         for (int i = n - 1; i >= 0; i--) {
-            if (s.charAt(i) == '0')
-                cache[i] = 0;
-            else {
-                cache[i] = cache[i + 1];
-                if (i + 1 < n && Integer.parseInt(s.substring(i, i + 2)) < 27)
-                    cache[i] += cache[i + 2];
+            if (s.charAt(i) == '0') {  // f("0...") = 0
+                dp[i] = 0;
+                continue;
             }
+            dp[i] = dp[i + 1];
+            if (i + 1 < n && Integer.parseInt(s.substring(i, i + 2)) < 27)
+                dp[i] += dp[i + 2];
         }
 
-        return cache[0];
+        return dp[0];
     }
 
     public static void main(String[] args) {
-        log(numDecodings1("27"));     // expects 1. 2,7  -> "BG"
-        log(numDecodings1("12"));     // expects 2. 1,2  -> "AB" or 12 -> "L"
-        log(numDecodings1("227"));    // expects 2. 22,7 -> "VG" or 2,2,7 -> "BBG"
-        log(numDecodings1("226"));    // expects 3. 2,26 -> "BZ" or 22,6 -> "VF" or 2,2,6 -> "BBF"
-        log(numDecodings1("102213")); // expects 5. ...
+        log(numDecodings2("27"));     // expects 1. 2,7  -> "BG"
+        log(numDecodings2("12"));     // expects 2. 1,2  -> "AB" or 12 -> "L"
+        log(numDecodings2("227"));    // expects 2. 22,7 -> "VG" or 2,2,7 -> "BBG"
+        log(numDecodings2("226"));    // expects 3. 2,26 -> "BZ" or 22,6 -> "VF" or 2,2,6 -> "BBF"
+        log(numDecodings2("102213")); // expects 5. ...
     }
 }
