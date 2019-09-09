@@ -36,34 +36,35 @@ public class L91_DecodeWays {
     * */
     public static int numDecodings(String s) {
         if (s == null || s.length() == 0) return 0;
-        return helper(s, 0);
+        return helper(s, 0);  // 0指向待解码字符串的第0个字母
     }
 
     private static int helper(String s, int i) {
-        if (i == s.length()) return 1;
-        if (i > s.length() || s.charAt(i) == '0') return 0;
+        if (i == s.length()) return 1;                       // f("") 的情况
+        if (i > s.length() || s.charAt(i) == '0') return 0;  // 越界以及 f("0...") 的情况
         return helper(s, i + 1) + helper(s, i + 2);
     }
 
     /*
-     * 解法1：Recursion + Memoization (DFS with cache) - 思路：在超时解的基础上加入 Memoization 优化。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
-     */
+    * 解法1：Recursion + Memoization (DFS with cache)
+    * - 思路：在超时解的基础上加入 Memoization 优化。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
     public static int numDecodings1(String s) {
         if (s == null || s.length() == 0) return 0;
-        return dfs(s, 0, new HashMap<>());  // 第2个参数是指向待解码字符串第0个字母的指针（cache 采用 Map，使用数组也可以）
+        return dfs(s, 0, new HashMap<>());
     }
 
     public static int dfs(String s, int i, HashMap<Integer, Integer> map) {
-        if (i == s.length()) return 1;      // f("") 的情况
-        if (s.charAt(i) == '0') return 0;   // f("0...") 的情况
+        if (i == s.length()) return 1;
+        if (s.charAt(i) == '0') return 0;
         if (map.containsKey(i)) return map.get(i);
 
         int res = dfs(s, i + 1, map);
         if (i + 1 < s.length() && Integer.parseInt(s.substring(i, i + 2)) < 27)
             res += dfs(s, i + 2, map);
 
-        map.put(i, res);       // 全局解 = 局部解之和: f(s, i) = f(s, i+1) + f(s, i+2)
+        map.put(i, res);
         return res;
     }
 
