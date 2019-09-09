@@ -52,44 +52,71 @@ public class L139_WordBreak {
     * */
     public static boolean wordBreak1(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
-        Boolean[] cache = new Boolean[s.length()];  // 此处使用 Boolean 而非 boolean，从而下面可以判断是否为 null
+        Boolean[] cache = new Boolean[s.length()];  // 此处使用 Boolean 而非 boolean，从而未计算状态可以设为 null
         return helper1(s, 0, new HashSet<>(wordDict), cache);
     }
 
-    private static boolean helper1(String s, int l, HashSet<String> set, Boolean[] cache) {
-        if (l == s.length()) return true;
-        if (cache[l] != null) return cache[l];
-        for (int r = l + 1; r <= s.length(); r++)
-            if (set.contains(s.substring(l, r)) && helper1(s, r, set, cache))
-                return cache[l] = true;
-        return cache[l] = false;
+    private static boolean helper1(String s, int i, HashSet<String> set, Boolean[] cache) {
+        if (i == s.length()) return true;
+        if (cache[i] != null) return cache[i];
+        for (int j = i + 1; j <= s.length(); j++)
+            if (set.contains(s.substring(i, j)) && helper1(s, j, set, cache))
+                return cache[i] = true;
+        return cache[i] = false;
     }
 
     /*
     * 解法2：DP
-    * - 思路：
-    *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 wordDict 中的单词组成；
-    *   - 状态转移方程：对于任意 j ∈ [0,i) 有 dp[i] = dp[j] && wordDict.contains(s[j+1, i])，即前后两段都是 wordDict 中的单词。
+    * - 思路：子问题定义和状态转移方程不变：
+    *   - f(i) 表示“从索引 i 开始的字符串 s[i,len) 是否能由 wordDict 中的单词拼接而成”；
+    *   - f(i) = any(s[i,j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static boolean wordBreak2(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
 
-        int n = s.length();
         Set<String> set = new HashSet<>(wordDict);
-        boolean[] dp = new boolean[n + 1];  // ∵ dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成 ∴ 要开辟 n+1 的空间
-        dp[0] = true;                       // dp[0]，即 s[0,0)，即空字符串。空字符串不需要任何单词即可组成，因此设为 true
+        int n = s.length();
+        boolean[] dp = new boolean[n + 1];
+        dp[n] = true;
 
-        for (int i = 1; i <= n; i++) {      // i ∈ [1..n]
-            for (int j = 0; j < i; j++) {   // j ∈ [0..i)
-                if (dp[j] && set.contains(s.substring(j, i))) {  // 若前、后两段字符串都在 set 中
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n; j >= i + 1; j--) {
+                if (set.contains(s.substring(i, j)) && dp[j]) {
                     dp[i] = true;
                     break;
                 }
             }
         }
-        return dp[n];
+
+        return dp[0];
     }
+
+    /*
+    * 解法3：DP
+    * - 思路：
+    *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 wordDict 中的单词组成；
+    *   - 状态转移方程：对于任意 j ∈ [0,i) 有 dp[i] = dp[j] && wordDict.contains(s[j+1, i])，即前后两段都是 wordDict 中的单词。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * */
+    // public static boolean wordBreak3(String s, List<String> wordDict) {
+    //     if (s == null || s.length() == 0) return false;
+
+    //     int n = s.length();
+    //     Set<String> set = new HashSet<>(wordDict);
+    //     boolean[] dp = new boolean[n + 1];  // ∵ dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成 ∴ 要开辟 n+1 的空间
+    //     dp[0] = true;                       // dp[0]，即 s[0,0)，即空字符串。空字符串不需要任何单词即可组成，因此设为 true
+
+    //     for (int i = 1; i <= n; i++) {      // i ∈ [1..n]
+    //         for (int j = 0; j < i; j++) {   // j ∈ [0..i)
+    //             if (dp[j] && set.contains(s.substring(j, i))) {  // 若前、后两段字符串都在 set 中
+    //                 dp[i] = true;
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     return dp[n];
+    // }
 
     /*
     * 解法3：DFS
@@ -115,9 +142,9 @@ public class L139_WordBreak {
     }
 
     public static void main(String[] args) {
-        log(wordBreak3("leetcode", Arrays.asList("leet", "code")));       // expects true
-        log(wordBreak3("applepenapple", Arrays.asList("apple", "pen")));  // expects true
-        log(wordBreak3("cars", Arrays.asList("car", "ca", "rs")));        // expects true
-        log(wordBreak3("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // expects false
+        log(wordBreak2("leetcode", Arrays.asList("leet", "code")));       // expects true
+        log(wordBreak2("applepenapple", Arrays.asList("apple", "pen")));  // expects true
+        log(wordBreak2("cars", Arrays.asList("car", "ca", "rs")));        // expects true
+        log(wordBreak2("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // expects false
     }
 }
