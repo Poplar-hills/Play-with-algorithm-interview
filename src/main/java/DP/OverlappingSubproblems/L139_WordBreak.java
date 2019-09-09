@@ -10,27 +10,22 @@ import java.util.Set;
 /*
 * Word Break
 *
-* - 给定一个字符串 s 和一个字符串数组 wordDict（无重复字符串），问能否能使用 wordDict 中的字符串拼接成 s（每个字符串只能用一次）。
+* - 给定一个字符串 s 和一个字符串数组 wordDict，问能否能使用 wordDict 中的字符串拼接成 s。
+* - 注：1. wordDict 中的元素可以重复使用；2. wordDict 中不存在重复元素。
 * */
 
 public class L139_WordBreak {
     /*
-    * 超时解：Back-tracking（即 DFS，而没有 memoization 的 DFS 就是 Brute force)
-    * - 思路：类似 L343_IntegerBreak 或 L91_DecodeWays 的思路，将字符串递归地分成两段，直到找到解或无解。例如对 test case 1 来说：
-    *     - "l" + f("eetcode")
-    *             - "e" + f("etcode")
-    *                     - "e" + f("tcode")
-    *                     - "et" + f("code")
-    *                     - ...
-    *             - "ee" + f("tcode")
-    *             - "eet" + f("code")
-    *             - ...
-    *     - "le" + f("etcode")
-    *              - ...
-    *     - "lee" + f("tcode")
-    *              - ...
-    *     - "leet" + f("code")    → 此时前后两端同时存在于 wordDict 中，说明原问题有解
-    *
+    * 超时解：DFS（没有 cache 的 DFS 就是 Brute force，同时也是 Back-tracking)
+    * - 思路：类似 L343_IntegerBreak，将字符串递归地截成两段，直到有解或到底。例如对 s="sunisfo", wordDict=["sun","is","fo"]：
+    *   - f("sunisfo")
+    *     - "s" && f("unisfo")
+    *     - "su" && f("nisfo")
+    *     - "sun" && f("isfo")                  → "sun" 在 wordDict 中，继续递归分解后半段
+    *                - "i" && f("sfo")
+    *                - "is" && f("fo")          → "is" 在 wordDict 中，继续递归分解后半段
+    *                          - "f" && f("o")
+    *                          - "fo" && f("")  → 此时返回 true 到上层，上层也返回 true...直到原问题返回 true
     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
     * */
     public static boolean search2(String s, List<String> wordDict) {
@@ -47,10 +42,10 @@ public class L139_WordBreak {
     }
 
     /*
-     * 解法1：Recursion + Memoization
-     * - 思路：用缓存记录重叠子问题的计算结果。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-     * */
+    * 解法1：Recursion + Memoization
+    * - 思路：用缓存记录重叠子问题的计算结果。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * */
     public static boolean wordBreak1(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
         Boolean[] cache = new Boolean[s.length()];  // 此处使用 Boolean 而非 boolean，从而下面可以判断是否为 null
@@ -67,12 +62,12 @@ public class L139_WordBreak {
     }
 
     /*
-     * 解法2：DP
-     * - 思路：
-     *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 wordDict 中的单词组成；
-     *   - 状态转移方程：对于任意 j ∈ [0,i) 有 dp[i] = dp[j] && wordDict.contains(s[j+1, i])，即前后两段都是 wordDict 中的单词。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-     * */
+    * 解法2：DP
+    * - 思路：
+    *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 wordDict 中的单词组成；
+    *   - 状态转移方程：对于任意 j ∈ [0,i) 有 dp[i] = dp[j] && wordDict.contains(s[j+1, i])，即前后两段都是 wordDict 中的单词。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * */
     public static boolean wordBreak2(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
 
@@ -93,12 +88,12 @@ public class L139_WordBreak {
     }
 
     /*
-     * 解法3：DFS
-     * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段，而是采用头部单词匹配（s.startWith(word, start)）。理由是若 s 能
-     *   由 wordDict 中的词组成，则一定是由其中某一个词开头的，因此。
-     * - 注意：s.startWith() 方法的第二个参数指定匹配的起始索引，很好用。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
-     * */
+    * 解法3：DFS
+    * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段，而是采用头部单词匹配（s.startWith(word, start)）。理由是若 s 能
+    *   由 wordDict 中的词组成，则一定是由其中某一个词开头的，因此。
+    * - 注意：s.startWith() 方法的第二个参数指定匹配的起始索引，很好用。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
+    * */
     public static boolean wordBreak3(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
         Boolean[] cache = new Boolean[s.length()];
