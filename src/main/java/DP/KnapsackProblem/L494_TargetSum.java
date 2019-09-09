@@ -18,7 +18,7 @@ public class L494_TargetSum {
     * - TODO: Brute force 与 Back-tracking 与 DFS 的关系？？？
     * - 思路：∵ nums 中的每个元素都有 + 或 - 两种选择 ∴ 每个选择都会产生两条路径。比如对 nums=[1,2,3], S=0 来说：
     *                          0
-    *                    +1/        \-1
+    *                    +1/       \-1
     *                 1                -1
     *             +2/  -2\          +2/  -2\
     *            3       -1        1       -3
