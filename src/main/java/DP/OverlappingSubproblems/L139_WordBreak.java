@@ -18,8 +18,8 @@ public class L139_WordBreak {
     /*
     * 超时解：DFS（没有 cache 的 DFS 就是 Brute force，同时也是 Back-tracking)
     * - 思路：类似 L343_IntegerBreak，将字符串递归地截成两段，直到有解或到底：
-    *   - 定义子问题：f(i) 表示“从索引 i 开始的字符串 s[i,len) 是否能由 wordDict 中的单词拼接而成”；
-    *   - 状态转移方程：f(i) = any(s[i,j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
+    *   - 定义子问题：f(i) 表示“从索引 i 开始的字符串 s[i..len) 是否能由 wordDict 中的单词拼接而成”；
+    *   - 状态转移方程：f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
     *   例如对 s="sunisfo", wordDict=["sun","is","fo"] 来说：
     *      f("sunisfo")
     *        - "s" && f("unisfo")
@@ -29,7 +29,8 @@ public class L139_WordBreak {
     *                   - "is" && f("fo")          → "is" 在 wordDict 中，继续递归分解后半段
     *                             - "f" && f("o")
     *                             - "fo" && f("")  → 此时返回 true 到上层，上层也返回 true...直到原问题返回 true
-    * - 实现：根据递归结构可知需要双重循环：一重用于在 s 上移动 i，另一重用于在 i 固定的情况下移动 j，将字符串截成两段。
+    * - 实现：根据上面推导可知需要双重循环：一重用于在 s 上移动 i，另一重用于在 s[i+1..len] 上滑动 j，将字符串 s[i..len) 截
+    *   成两段 s[i..j) 和 s[j..len]，前半段可直接在 wordDict 中验证是否存在，后半段可继续递归分解。
     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
     * */
     public static boolean wordBreak(String s, List<String> wordDict) {
@@ -68,8 +69,8 @@ public class L139_WordBreak {
     /*
     * 解法2：DP
     * - 思路：子问题定义和状态转移方程不变：
-    *   - f(i) 表示“从索引 i 开始的字符串 s[i,len) 是否能由 wordDict 中的单词拼接而成”；
-    *   - f(i) = any(s[i,j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
+    *   - f(i) 表示“从索引 i 开始的字符串 s[i..len) 是否能由 wordDict 中的单词拼接而成”；
+    *   - f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static boolean wordBreak2(String s, List<String> wordDict) {
@@ -77,12 +78,12 @@ public class L139_WordBreak {
 
         Set<String> set = new HashSet<>(wordDict);
         int n = s.length();
-        boolean[] dp = new boolean[n + 1];
-        dp[n] = true;
+        boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[i..len) 是否能由 set 中的单词组成。最后多开辟1的空间是为了容纳 f("") 的情况
+        dp[n] = true;                       // f("") 的情况
 
         for (int i = n - 1; i >= 0; i--) {
             for (int j = n; j >= i + 1; j--) {
-                if (set.contains(s.substring(i, j)) && dp[j]) {
+                if (set.contains(s.substring(i, j)) && dp[j]) {  // 若 s[i..j)、s[j..len) 两段字符串都在 set 中
                     dp[i] = true;
                     break;
                 }
@@ -94,38 +95,39 @@ public class L139_WordBreak {
 
     /*
     * 解法3：DP
-    * - 思路：
-    *   - 定义子问题：dp[i] 表示子串 s[0..i) 是否能由 wordDict 中的单词组成；
-    *   - 状态转移方程：对于任意 j ∈ [0,i) 有 dp[i] = dp[j] && wordDict.contains(s[j+1, i])，即前后两段都是 wordDict 中的单词。
+    * - 思路：与解法2的逻辑一样，但是采用正向遍历：
+    *   - 定义子问题：f(i) 表示“字符串 s[0..i) 是否能由 wordDict 中的单词拼接而成”；
+    *   - 状态转移方程：f(i) = any(f(j) && s[j..i])。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
-    // public static boolean wordBreak3(String s, List<String> wordDict) {
-    //     if (s == null || s.length() == 0) return false;
+    public static boolean wordBreak3(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0) return false;
 
-    //     int n = s.length();
-    //     Set<String> set = new HashSet<>(wordDict);
-    //     boolean[] dp = new boolean[n + 1];  // ∵ dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成 ∴ 要开辟 n+1 的空间
-    //     dp[0] = true;                       // dp[0]，即 s[0,0)，即空字符串。空字符串不需要任何单词即可组成，因此设为 true
+        Set<String> set = new HashSet<>(wordDict);
+        int n = s.length();
+        boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成
+        dp[0] = true;                       // f("") 的情况
 
-    //     for (int i = 1; i <= n; i++) {      // i ∈ [1..n]
-    //         for (int j = 0; j < i; j++) {   // j ∈ [0..i)
-    //             if (dp[j] && set.contains(s.substring(j, i))) {  // 若前、后两段字符串都在 set 中
-    //                 dp[i] = true;
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     return dp[n];
-    // }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && set.contains(s.substring(j, i))) {  // 若 s[0..j)、s[j..len) 两段字符串都在 set 中
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+
+        return dp[n];
+    }
 
     /*
-    * 解法3：DFS
+    * 解法4：DFS
     * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段，而是采用头部单词匹配（s.startWith(word, start)）。理由是若 s 能
     *   由 wordDict 中的词组成，则一定是由其中某一个词开头的，因此。
     * - 注意：s.startWith() 方法的第二个参数指定匹配的起始索引，很好用。
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)，该解法是几种解法中最快的。
     * */
-    public static boolean wordBreak3(String s, List<String> wordDict) {
+    public static boolean wordBreak4(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
         Boolean[] cache = new Boolean[s.length()];
         return dfs(s, 0, wordDict, cache);
