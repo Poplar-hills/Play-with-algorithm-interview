@@ -64,9 +64,8 @@ public class L343_IntegerBreak {
     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
     * */
     public static int integerBreak1(int n) {
-        assert n >= 2;                 // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >= 2
-        int[] cache = new int[n + 1];  // 初值为0即可
-        return helper1(n, cache);
+        assert n >= 2;                      // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >= 2
+        return helper1(n, new int[n + 1]);  // ∵ 正整数分解不会出现0 ∴ 最大乘积一定大于0 ∴ cache 初值为0即可
     }
 
     private static int helper1(int n, int[] cache) {
@@ -81,15 +80,16 @@ public class L343_IntegerBreak {
     }
 
     /*
-     * 解法2：DP (bottom-up iteration) - 思路：与 L279_PerfectSquares 解法3极其类似。 - 时间复杂度
-     * O(n^2)，空间复杂度 O(n)。
-     */
+    * 解法2：DP
+    * - 思路：与 L279_PerfectSquares 解法3类似。
+    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+    * */
     public static int integerBreak2(int n) {
         assert n >= 2;
-        int[] cache = new int[n + 1];
-        cache[1] = 1;                    // 先解答最小问题
+        int[] cache = new int[n + 1];    // cache[0] 空着不用
+        cache[1] = 1;                    // 最基本问题
 
-        for (int i = 2; i <= n; i++)     // 从小到大一个一个解决更大的问题
+        for (int i = 2; i <= n; i++)
             for (int j = 1; j < i; j++)  // 将 i 分割成 j 和 i-j
                 cache[i] = maxOfN(cache[i], j*(i-j), j*cache[i-j]);  // 此时 cache[i-j] 已经被计算过了
 
