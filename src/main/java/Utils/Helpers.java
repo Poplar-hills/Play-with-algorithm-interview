@@ -197,10 +197,4 @@ public class Helpers {
         printBinaryTree(node.left, list);
         printBinaryTree(node.right, list);
     }
-
-    public static int maxOfN(int ...nums) {
-        return Arrays.stream(nums)
-            .reduce(Math::max)
-            .getAsInt();  // reduce 返回的是一个 OptionalInt，需要解包
-    }
 }

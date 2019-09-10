@@ -1,7 +1,6 @@
 package DP.OverlappingSubproblems;
 
 import static Utils.Helpers.log;
-import static Utils.Helpers.maxOfN;
 
 import java.util.Arrays;
 
@@ -58,6 +57,12 @@ public class L343_IntegerBreak {
         return maxProduct;
     }
 
+    private static int maxOfN(int ...nums) {
+        return Arrays.stream(nums)
+            .reduce(Math::max)
+            .getAsInt();  // 若 reduce 有初值参数则返回 int 类型；若没有则返回 OptionalInt 类型，因此需要解包
+    }
+
     /*
     * 解法1：Recursion + Memoization (DFS with cache)
     * - 思路：在超时解的基础上加入 Memoization 优化。
@@ -74,16 +79,18 @@ public class L343_IntegerBreak {
 
         int res = 0;
         for (int j = 1; j < n; j++)
-            res = maxOfN(res, j*(n-j), j*helper1(n-j, cache));
+            res = maxOf3(res, j*(n-j), j*helper1(n-j, cache));
 
         return cache[n] = res;
     }
 
+    private static int maxOf3(int a, int b, int c) {
+        return Math.max(a, Math.max(b, c));
+    }
+
     /*
-    * 解法2：DP
-    * - 思路：与 L279_PerfectSquares 解法3类似。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法2：DP - 思路：与 L279_PerfectSquares 解法3类似。 - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     */
     public static int integerBreak2(int n) {
         assert n >= 2;
         int[] cache = new int[n + 1];    // cache[0] 空着不用
@@ -91,7 +98,7 @@ public class L343_IntegerBreak {
 
         for (int i = 2; i <= n; i++)
             for (int j = 1; j < i; j++)  // 将 i 分割成 j 和 i-j
-                cache[i] = maxOfN(cache[i], j*(i-j), j*cache[i-j]);  // 此时 cache[i-j] 已经被计算过了
+                cache[i] = maxOf3(cache[i], j*(i-j), j*cache[i-j]);  // 此时 cache[i-j] 已经被计算过了
 
         return cache[n];                 // 最后返回最大问题的解
     }
