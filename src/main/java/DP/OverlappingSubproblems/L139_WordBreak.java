@@ -81,14 +81,12 @@ public class L139_WordBreak {
         boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[i..len) 是否能由 set 中的单词组成。最后多开辟1的空间是为了容纳 f("") 的情况
         dp[n] = true;                       // f("") 的情况
 
-        for (int i = n - 1; i >= 0; i--) {
-            for (int j = n; j >= i + 1; j--) {
+        for (int i = n - 1; i >= 0; i--)
+            for (int j = n; j >= i + 1; j--)
                 if (set.contains(s.substring(i, j)) && dp[j]) {  // 若 s[i..j)、s[j..len) 两段字符串都在 set 中
                     dp[i] = true;
                     break;
                 }
-            }
-        }
 
         return dp[0];
     }
@@ -108,14 +106,12 @@ public class L139_WordBreak {
         boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成
         dp[0] = true;                       // f("") 的情况
 
-        for (int i = 1; i <= n; i++) {
-            for (int j = 0; j < i; j++) {
+        for (int i = 1; i <= n; i++)
+            for (int j = 0; j < i; j++)
                 if (dp[j] && set.contains(s.substring(j, i))) {  // 若 s[0..j)、s[j..len) 两段字符串都在 set 中
                     dp[i] = true;
                     break;
                 }
-            }
-        }
 
         return dp[n];
     }
