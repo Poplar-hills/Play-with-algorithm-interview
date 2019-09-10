@@ -10,7 +10,7 @@ import java.util.Arrays;
 * - Given a positive integer n, break it into the sum of at least two positive integers and maximize the
 *   product of those integers. Return the maximum product you can get.
 *
-* ⭐总结：
+* - ⭐ 总结：
 *   1. 当一个问题具有递归结构，且该结构中有重叠子问题 & 满足最优子结构性质时，可使用 Memoization 或 DP 求解：
 *                                          Memoization（自顶向下）
 *                                                ↗
