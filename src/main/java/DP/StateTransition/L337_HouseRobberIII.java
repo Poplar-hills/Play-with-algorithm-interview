@@ -64,7 +64,6 @@ public class L337_HouseRobberIII {
     *   - 定义子问题：f(i) 表示“以节点 i 为根的二叉树上能获得的最大收获”；
     *   - 状态转移方程：f(i) = max(nums[i] + f(!i.l) + f(!i.r), f(i.l) + f(i.r))，其中 ! 表示不偷某个节点上的房子；
     *     解释：nums[i] + f(!i.l) + f(!i.r) 是偷节点 i 时的最大收获；f(i.l) + f(i.r) 是不偷节点 i 时的最大收获；
-    *     关键：认清子问题定义，
     * - 实现：要实现状态转移方程中的“!”，可以通过给给 f 添加 boolean 参数实现。
     * - 时间复杂度 O(n)，空间复杂度 O(logn)。
     * */
@@ -73,12 +72,12 @@ public class L337_HouseRobberIII {
         return helper2(root, true);  // 相当于 Math.max(helper2(root, true), helper2(root, false));
     }
 
-    private static int helper2(TreeNode node, boolean included) {
+    private static int helper2(TreeNode node, boolean included) {  // 求以节点 node 为根的二叉树上能获得的最大收获
         if (node == null) return 0;
         int res = helper2(node.left, true) + helper2(node.right, true);  // 不偷该节点时的最大收获
         if (included) {                                                  // 考虑该节点并不意味着一定要偷该节点
-            int a = node.val + helper2(node.left, false) + helper2(node.right, false);  // 偷该节点时的最大收获
-            res = Math.max(res, a);  // 以节点 i 为根的二叉树上能获得的最大收获 = max(偷该节点时的最大收获, 不偷该节点时的最大收获)
+            int steal = node.val + helper2(node.left, false) + helper2(node.right, false);  // 偷该节点时的最大收获
+            res = Math.max(res, steal);  // 最大收获 = max(偷该节点时的最大收获, 不偷该节点时的最大收获)
         }
         return res;
     }
