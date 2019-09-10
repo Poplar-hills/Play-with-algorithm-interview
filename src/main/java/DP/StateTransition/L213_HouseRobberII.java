@@ -11,11 +11,11 @@ import static Utils.Helpers.log;
 
 public class L213_HouseRobberII {
     /*
-    * 解法1：
+    * 解法1：DP
     * - 思路：This problem can simply be decomposed into two L198_HouseRobber problems. Since house 0 and n-1
     *   are now neighbors and we can't rob them together, the solution is now the maximum of robbing houses
     *   [0..n-2] and robbing houses [1..n-1].
-    * - 实现：采用 L198_HouseRobber 解法3。
+    * - 实现：采用 L198_HouseRobber 解法3，状态转移方程：f(i) = max(nums[i] + f(i - 2), f(i - 1))。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int rob(int[] nums) {
@@ -36,15 +36,17 @@ public class L213_HouseRobberII {
         dp[1] = Math.max(nums[l], nums[l + 1]);
 
         for (int i = 2; i < dp.length; i++)
-            dp[i] = Math.max(nums[l + i] + dp[i - 2], dp[i - 1]);  // 注意是 nums[l+i]，而非 nums[i]，要加上 l 的偏移量
+            dp[i] = Math.max(nums[i + l] + dp[i - 2], dp[i - 1]);  // 注意是 nums[i + l] 里的偏移量 l
 
         return dp[n - 1];
     }
 
     /*
-    * 解法2：
+    * 解法2：DP（另一种子问题定义方式）
     * - 思路：同解法1。
-    * - 实现：采用 L198_HouseRobber 解法4。
+    * - 实现：采用 L198_HouseRobber 解法4，状态转移方程：
+    *        1. y(i) = nums[i] + n(i - 1)；
+    *        2. n(i) = max(y(i - 1), n(i - 1))。
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static int rob2(int[] nums) {
@@ -56,7 +58,7 @@ public class L213_HouseRobberII {
 
     private static int rob2(int[] nums, int l, int r) {
         int prevNo = 0, prevYes = 0;
-        for (int i = l; i <= r; i++) {
+        for (int i = l; i <= r; i++) {  // 遍历有效范围内的房子
             int currYes = prevNo + nums[i];
             int currNo = Math.max(prevNo, prevYes);
             prevNo = currNo;
