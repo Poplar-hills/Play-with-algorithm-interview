@@ -2,13 +2,15 @@ package DP.StateTransition;
 
 import static Utils.Helpers.*;
 
+import java.util.HashMap;
+
 import Utils.Helpers.TreeNode;
 
 /*
 * House Robber III
 *
 * - 基本与 L198_HouseRobber 中的条件一样，只是本题中的街道为一棵二叉树，问在该街道中，在不触发警报的情况下，最多能盗取多少财产。
-*   其本质上是在问如何在二叉树上选择不相邻的节点，使节点值之和最大。
+* - 本质：如何在二叉树上选择不相邻的节点，使节点值之和最大。
 * */
 
 public class L337_HouseRobberIII {
@@ -26,7 +28,7 @@ public class L337_HouseRobberIII {
 
     /*
     * 解法1：
-    * - 思路：该问题在二叉树上同样具有最优子结构性质，因此可以以 bottom-up 的方式分析：先思考一个节点，对于每一个节点都可以偷或
+    * - 思路：该问题在二叉树上同样具有最优子结构性质 ∴ 可以以 bottom-up 的方式分析：先思考一个节点，对于每一个节点都可以偷或
     *   不偷，因此有2种所得。而对其父节点来说：1.若偷父节点，则不能偷子节点；2.若不偷父节点，则最大所得为2个子节点各自的最大所得
     *   之和。以这样的方式一直推导到根节点记得到最终解。
     *           1                             12/15
@@ -50,26 +52,34 @@ public class L337_HouseRobberIII {
         int[] left = tryToRob(node.left);
         int[] right = tryToRob(node.right);
 
-        res[0] = node.val + left[1] + right[1];  // res[0] 记录若偷该节点得到的最大收益
-        res[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);  // res[1] 记录若不偷该节点得到的最大收益
+        res[0] = node.val + left[1] + right[1];  // res[0] 记录若偷该节点得到的最大收获
+        res[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);  // res[1] 记录若不偷该节点得到的最大收获
 
         return res;
     }
 
     /*
     * 解法2：Memoization
-    * - 思路：TODO: 没有完全理解
+    * - 思路：∵ 每个节点都有偷/不偷2种选择 ∴ 有：
+    *   - 定义子问题：f(i) 表示“以节点 i 为根的二叉树上能获得的最大收获”；
+    *   - 状态转移方程：f(i) = max(nums[i] + f(!i.l) + f(!i.r), f(i.l) + f(i.r))，其中 ! 表示不偷某个节点上的房子；
+    *     解释：nums[i] + f(!i.l) + f(!i.r) 是偷节点 i 时的最大收获；f(i.l) + f(i.r) 是不偷节点 i 时的最大收获；
+    *     关键：认清子问题定义，
+    * - 实现：要实现状态转移方程中的“!”，可以通过给给 f 添加 boolean 参数实现。
     * - 时间复杂度 O(n)，空间复杂度 O(logn)。
     * */
     public static int rob2(TreeNode root) {
-        return rob2(root, true);
+        if (root == null) return 0;
+        return helper2(root, true);  // 相当于 Math.max(helper2(root, true), helper2(root, false));
     }
 
-    private static int rob2(TreeNode node, boolean included) {
+    private static int helper2(TreeNode node, boolean included) {
         if (node == null) return 0;
-        int res = rob2(node.left, true) + rob2(node.right, true);
-        if (included)
-            res = Math.max(res, node.val + rob2(node.left, false) + rob2(node.right, false));
+        int res = helper2(node.left, true) + helper2(node.right, true);  // 不偷该节点时的最大收获
+        if (included) {                                                  // 考虑该节点并不意味着一定要偷该节点
+            int a = node.val + helper2(node.left, false) + helper2(node.right, false);  // 偷该节点时的最大收获
+            res = Math.max(res, a);  // 以节点 i 为根的二叉树上能获得的最大收获 = max(偷该节点时的最大收获, 不偷该节点时的最大收获)
+        }
         return res;
     }
 
@@ -115,16 +125,6 @@ public class L337_HouseRobberIII {
         log(rob2(t2));  // expects 10. (5 + 5)
 
         /*
-        *        1
-        *       / \
-        *      1   5
-        *     / \   \
-        *    5   5   1
-        * */
-        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
-        log(rob2(t3));  // expects 15. (5 + 5 + 5)
-
-        /*
         *          5
         *         /
         *        1
@@ -135,5 +135,15 @@ public class L337_HouseRobberIII {
         * */
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, null, 1, null, 5});
         log(rob2(t4));  // expects 10. (5 + 5)
+
+        /*
+        *        1
+        *       / \
+        *      1   5
+        *     / \   \
+        *    5   5   1
+        * */
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
+        log(rob2(t3));  // expects 15. (5 + 5 + 5)
     }
 }

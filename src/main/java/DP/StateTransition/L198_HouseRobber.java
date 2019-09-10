@@ -26,8 +26,8 @@ import java.util.Arrays;
 public class L198_HouseRobber {
     /*
     * 超时解：暴力破解
-    * - 思路：该题的本质是一个组合优化问题 —— 在所有房子中，哪几个房子的组合能满足条件：1.房子之间各不相邻 2.收益最大化。
-    *   因此可以遍历所有房子的组合，从符合条件的组合中找到最大的收益。
+    * - 思路：该题的本质是一个组合优化问题 —— 在所有房子中，哪几个房子的组合能满足条件：1.房子之间各不相邻 2.收获最大化。
+    *   因此可以遍历所有房子的组合，从符合条件的组合中找到最大的收获。
     * - 时间复杂度 O((2^n)*n)。∵ 每个房子有偷/不偷2种可能，n 个房子共有 2^n 种组合 ∴ 遍历所有组合就是 O(2^n) 操作；从所有
     *   组合中筛出符合条件1的组合是 O(n) 操作 ∴ 整体是 O((2^n)*n)。
     * */
@@ -87,8 +87,8 @@ public class L198_HouseRobber {
     * 解法3：更自然的 DP
     * - 思路：解法2的 DP 思路是由解法1再反向思考后得到的。而更自然的 DP 思路是：∵ 每个房子都有偷/不偷两种选择 ∴ 可以有：
     *   - 定义子问题：f(i) 表示“从前 i 所房子中所能得到的最大收获”；
-    *   - 状态转移方程：f(i) = max(nums[i] + f(i-2), f(i-1))。其中 nums[i] + f(i-2) 为偷第 i 所房子的最大收益，f(i-1)
-    *     为不偷第 i 所房子的最大收益。
+    *   - 状态转移方程：f(i) = max(nums[i] + f(i-2), f(i-1))。其中 nums[i] + f(i-2) 为偷第 i 所房子的最大收获，f(i-1)
+    *     为不偷第 i 所房子的最大收获。
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int rob3(int[] nums) {
@@ -121,9 +121,9 @@ public class L198_HouseRobber {
         int prevNo = 0;           // 偷前一间的最大收获
         int prevYes = 0;          // 不偷前一间的最大收获
 
-        for (int n : nums) {      // 从第一间房子开始对计算每间房子在偷/不偷时的最大收益
+        for (int n : nums) {      // 从第一间房子开始对计算每间房子在偷/不偷时的最大收获
             int currYes = prevNo + n;
-            int currNo = Math.max(prevNo, prevYes);
+            int currNo = Math.max(prevNo, prevYes);  // 不偷这间并不意味着一定要偷前一间
             prevNo = currNo;      // 前阵变后阵
             prevYes = currYes;
         }
