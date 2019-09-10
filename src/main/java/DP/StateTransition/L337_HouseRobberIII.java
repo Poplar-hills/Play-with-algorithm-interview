@@ -3,6 +3,7 @@ package DP.StateTransition;
 import static Utils.Helpers.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import Utils.Helpers.TreeNode;
 
@@ -59,7 +60,7 @@ public class L337_HouseRobberIII {
     }
 
     /*
-    * 解法2：Memoization
+    * 解法2：DP
     * - 思路：∵ 每个节点都有偷/不偷2种选择 ∴ 有：
     *   - 定义子问题：f(i) 表示“以节点 i 为根的二叉树上能获得的最大收获”；
     *   - 状态转移方程：f(i) = max(nums[i] + f(!i.l) + f(!i.r), f(i.l) + f(i.r))，其中 ! 表示不偷某个节点上的房子；
@@ -82,12 +83,42 @@ public class L337_HouseRobberIII {
         return res;
     }
 
-	/*
-    * 解法3：非常聪明的解法
-    * - 思路：同样是基于每个节点可以偷或不偷进行递归。
+    /*
+    * 解法3：DP + Memoization
+    * - 思路：不同于解法2，本解法更 straight-forward，但也更冗长。加入的 Memoization 是以 TreeNode 为 key，因此需要在
+    *   TreeNode 类上 @override hashCode 和 equals 方法。
     * - 时间复杂度 O(n)，空间复杂度 O(logn)。
     * */
     public static int rob3(TreeNode root) {
+        if (root == null) return 0;
+        return helper3(root, new HashMap<>());  // ∵ 二叉树节点个数未知 ∴ 使用 map 实现 memoization
+    }
+
+    private static int helper3(TreeNode node, Map<TreeNode, Integer> memo) {
+        if (node == null) return 0;
+        if (node.left == null && node.right == null) return node.val;
+        if (memo.containsKey(node)) return memo.get(node);
+
+        int sum1 = node.val;    // 偷该节点时的最大收获
+        if (node.left != null)
+            sum1 += helper3(node.left.left, memo) + helper3(node.left.right, memo);
+        if (node.right != null)
+            sum1 += helper3(node.right.left, memo) + helper3(node.right.right, memo);
+
+        int sum2 = helper3(node.left, memo) + helper3(node.right, memo);  // 不偷该节点时的最大收获
+
+        int sum = Math.max(sum1, sum2);  // 得到子问题解
+        memo.put(node, sum);
+
+        return sum;
+	}
+
+	/*
+    * 解法4：非常聪明的解法
+    * - 思路：同样是基于每个节点可以偷或不偷进行递归。
+    * - 时间复杂度 O(n)，空间复杂度 O(logn)。
+    * */
+    public static int rob4(TreeNode root) {
         if (root == null) return 0;
         return Math.max(robInclude(root), robExclude(root));
     }
@@ -111,7 +142,7 @@ public class L337_HouseRobberIII {
         *      3   1
         * */
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 2, 2, null, 3, null, 1});
-        log(rob2(t1));  // expects 7. (3 + 3 + 1)
+        log(rob3(t1));  // expects 7. (3 + 3 + 1)
 
         /*
         *        1
@@ -121,7 +152,7 @@ public class L337_HouseRobberIII {
         *    1   1   1
         * */
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 5, 5, 1, 1, null, 1});
-        log(rob2(t2));  // expects 10. (5 + 5)
+        log(rob3(t2));  // expects 10. (5 + 5)
 
         /*
         *          5
@@ -133,7 +164,7 @@ public class L337_HouseRobberIII {
         *    5
         * */
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, null, 1, null, 5});
-        log(rob2(t4));  // expects 10. (5 + 5)
+        log(rob3(t4));  // expects 10. (5 + 5)
 
         /*
         *        1
@@ -143,6 +174,6 @@ public class L337_HouseRobberIII {
         *    5   5   1
         * */
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
-        log(rob2(t3));  // expects 15. (5 + 5 + 5)
+        log(rob3(t3));  // expects 15. (5 + 5 + 5)
     }
 }
