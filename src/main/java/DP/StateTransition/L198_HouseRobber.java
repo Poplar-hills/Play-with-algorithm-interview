@@ -33,7 +33,7 @@ public class L198_HouseRobber {
     * */
 
     /*
-    * 解法1：Recursion + Memoization (DFS)
+    * 解法1：Recursion + Memoization (DFS with cache)
     * - 思路：∵ 该题的本质是一个组合优化问题 ∴ 并不需要求出所有的组合，只需要像 L91_DecodeWays 解法1那样对问题进行分解：
     *                                            [0..n-1]内的最大收获
     *                       偷0号/                    偷1号|            ...   偷n-1号\
@@ -108,18 +108,21 @@ public class L198_HouseRobber {
 
     /*
     * 解法4：更简洁的 DP
-    * - 思路：∵ 每个房子都有2种可能（偷或不偷），且这2种可能会有不同的最终收获。若想计算这2种收获，又需要知道前一间房子在偷或没偷
-    *   2种可能情况下的最大收获……这个过程类似链表上的累计操作。
+    * - 思路：解法3的思路是将 f(i) 定义为“从前 i 所房子中所能得到的最大收获”，这里同时包含了偷以及不偷 i 这2种情况。另一种思路
+    *   是将偷/不偷这2种情况分开进行递推：
+    *   - y(i) 表示“若偷第 i 所房子，则从前 i 所房子中能获得的最大收获”； y(i) = n(i-1) + nums[i]；
+    *   - n(i) 表示“若不偷第 i 所房子，则从前 i 所房子中能获得的最大收获”：n(i) = max(y(i-1), n(i-1))。
+    *   最后只要取 max(y(i), n(i)) 即得到原问题的解。
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static int rob4(int[] nums) {
-        int prevNo = 0;   // 偷了前一间的最大收获
-        int prevYes = 0;  // 没偷前一间的最大收获
+        int prevNo = 0;           // 偷前一间的最大收获
+        int prevYes = 0;          // 不偷前一间的最大收获
 
-        for (int n : nums) {
-            int currYes = prevNo + n;                // 偷当前这间的最大收获 = 没偷前一间的最大收获 + 当前房子里的钱
-            int currNo = Math.max(prevNo, prevYes);  // 不偷当前这间的最大收获 = max(没偷前一间的最大收获, 偷了前一间的最大收获)
-            prevNo = currNo;
+        for (int n : nums) {      // 从第一间房子开始对计算每间房子在偷/不偷时的最大收益
+            int currYes = prevNo + n;
+            int currNo = Math.max(prevNo, prevYes);
+            prevNo = currNo;      // 前阵变后阵
             prevYes = currYes;
         }
 
@@ -127,9 +130,9 @@ public class L198_HouseRobber {
     }
 
     public static void main(String[] args) {
-        log(rob1(new int[]{3, 4, 1, 2}));     // expects 6. [3, (4), 1, (2)]
-        log(rob1(new int[]{4, 3, 1, 2}));     // expects 6. [(4), 3, 1, (2)]
-        log(rob1(new int[]{1, 2, 3, 1}));     // expects 4. [(1), 2, (3), 1].
-        log(rob1(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
+        log(rob4(new int[]{3, 4, 1, 2}));     // expects 6.  [3, (4), 1, (2)]
+        log(rob4(new int[]{4, 3, 1, 2}));     // expects 6.  [(4), 3, 1, (2)]
+        log(rob4(new int[]{1, 2, 3, 1}));     // expects 4.  [(1), 2, (3), 1].
+        log(rob4(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
     }
 }
