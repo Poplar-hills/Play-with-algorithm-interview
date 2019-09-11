@@ -27,50 +27,50 @@ public class _MultiKnapsack {
         int[][] cache = new int[n][c + 1];
         for (int[] row : cache)
             Arrays.fill(row, -1);
-        return largestValue(n - 1, c, w, v, q, cache);
+        return helper(n - 1, c, w, v, q, cache);
     }
 
-    private static int largestValue(int i, int j, int[] w, int[] v, int[] q, int[][] cache) {
+    private static int helper(int i, int j, int[] w, int[] v, int[] q, int[][] cache) {
         if (i < 0 || j == 0) return 0;
         if (cache[i][j] != -1) return cache[i][j];
 
-        int res = largestValue(i - 1, j, w, v, q, cache);
+        int res = helper(i - 1, j, w, v, q, cache);
         if (j >= w[i])
             for (int k = 1; k <= q[i] && w[i] * k <= j; k++)  // 这里多一个约束条件（唯一与 CompleteKnapsack 解法1不同的地方）
-                res = Math.max(res, v[i] * k + largestValue(i - 1, j - w[i] * k, w, v, q, cache));
+                res = Math.max(res, v[i] * k + helper(i - 1, j - w[i] * k, w, v, q, cache));
 
         return cache[i][j] = res;
     }
 
     /*
     * 解法2：DP + 一维数组
-    * - 思路：bottom-up 方式，类似 _CompleteKnapsack 中的解法3。
+    * - 思路：类似 _CompleteKnapsack 中的解法3。
     * - 时间复杂度 O(n*c*k)，空间复杂度 O(c)，其中 k 为每种物品的最多件数。
     * */
     public static int knapsack2(int[] w, int[] v, int[] q, int c) {
         int n = w.length;
         if (n == 0) return 0;
 
-        int[] cache = new int[c + 1];
+        int[] dp = new int[c + 1];
 
         for (int j = 0; j <= c; j++) {
-            int maxNum = j / w[0];                               // 容量为 j 时最多能装下物品0的件数
-            cache[j] = (maxNum <= q[0] ? maxNum : q[0]) * v[0];  // 增加物品件数的约束
+            int maxNum = j / w[0];                            // 容量为 j 时最多能装下物品0的件数
+            dp[j] = (maxNum <= q[0] ? maxNum : q[0]) * v[0];  // 增加物品件数的约束
         }
 
         for (int i = 1; i < n; i++)
             for (int j = c; j >= 0; j--)
                 for (int k = 0; k <= q[i] && w[i] * k <= j; k++)  // 增加物品件数的约束
-                    cache[j] = Math.max(cache[j], v[i] * k + cache[j - w[i] * k]);
+                    dp[j] = Math.max(dp[j], v[i] * k + dp[j - w[i] * k]);
 
-        return cache[c];
+        return dp[c];
     }
 
     public static void main(String[] args) {
-        log(knapsack(          // expects 11.
+        log(knapsack(          // expects 11. (3 + 4 + 4)
           new int[]{3, 4, 5},  // weight
           new int[]{2, 3, 4},  // value
           new int[]{4, 3, 2},  // quantity
-          15));                // knapsack capacity
+          15));                // capacity
     }
 }

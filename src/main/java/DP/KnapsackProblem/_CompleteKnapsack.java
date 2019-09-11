@@ -29,24 +29,6 @@ import java.util.Arrays;
 * */
 
 public class _CompleteKnapsack {
-    public static int knapsack(int[] w, int[] v, int c) {
-        int n = w.length;
-
-        int[] dp = new int[c + 1];
-
-        for (int j = 0; j <= c; j++)
-            dp[j] = (j / w[0]) * v[0];
-
-        for (int i = 1; i < n; i++) {
-            for (int j = 0; j <= c; j++) {
-                for (int k = 0; w[i] * k <= j; k++)
-                    dp[j] = Math.max(dp[j], k * v[i] + dp[j - k * w[i]]);
-            }
-        }
-
-        return dp[c];
-    }
-
     /*
     * 解法1：Recursion + Memoization
     * - 思路：top-down 方式。
@@ -54,29 +36,29 @@ public class _CompleteKnapsack {
     *   出最优解，这就需要多一层循环来求最大值。
     * - 时间复杂度 O(n*c^2)，空间复杂度 O(n*c)。
     * */
-    // public static int knapsack(int[] w, int[] v, int c) {
-    //     int n = w.length;
-    //     int[][] cache = new int[n][c + 1];
-    //     for (int[] row : cache)
-    //         Arrays.fill(row, -1);
-    //     return largestValue(n - 1, c, w, v, cache);
-    // }
+    public static int knapsack(int[] w, int[] v, int c) {
+        int n = w.length;
+        int[][] cache = new int[n][c + 1];
+        for (int[] row : cache)
+            Arrays.fill(row, -1);
+        return helper(n - 1, c, w, v, cache);  // 从 n-1 开始递归
+    }
 
-    // private static int largestValue(int i, int j, int[] w, int[] v, int[][] cache) {
-    //     if (i < 0 || j == 0) return 0;
-    //     if (cache[i][j] != -1) return cache[i][j];
+    private static int helper(int i, int j, int[] w, int[] v, int[][] cache) {
+        if (i < 0 || j == 0) return 0;
+        if (cache[i][j] != -1) return cache[i][j];
 
-    //     int res = largestValue(i - 1, j, w, v, cache);
-    //     if (j >= w[i])
-    //         for (int k = 1; w[i] * k <= j; k++)  // 从放入0, 1, 2, ... k 件物品 i 中选出价值最大的方案（这里也是与0/1背包问题的唯一区别）
-    //             res = Math.max(res, v[i] * k + largestValue(i - 1, j - w[i] * k, w, v, cache));
+        int res = helper(i - 1, j, w, v, cache);
+        if (j >= w[i])
+            for (int k = 1; w[i] * k <= j; k++)  // 从放入0, 1, 2, ... k 件物品 i 中选出价值最大的方案（这里也是与0/1背包问题的唯一区别）
+                res = Math.max(res, v[i] * k + helper(i - 1, j - w[i] * k, w, v, cache));
 
-    //     return cache[i][j] = res;
-    // }
+        return cache[i][j] = res;
+    }
 
     /*
     * 解法2：DP + 二维数组
-    * - 思路：bottom-up 方式，类似 _ZeroOneKnapsack 的解法2。
+    * - 思路：类似 _ZeroOneKnapsack 的解法2。
     * - 时间复杂度 O(n*c^2)，空间复杂度 O(n*c)。
     * */
     public static int knapsack2(int[] w, int[] v, int c) {
