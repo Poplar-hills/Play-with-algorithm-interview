@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class L309_BestTimeToBuyAndSellStockWithCooldown {
     /*
     * 解法1：DP
-    * - 思路：可以看出该问题具有明显的状态转移特点，因此可以尝试先写出状态转移方程（transition function），然后使用 DP 实现。
+    * - 思路：∵ 该问题具有明显的状态转移特点 ∴ 可以采用 L198_HouseRobber 解法4的状态转移思路，写出状态转移方程后使用 DP 实现。
     *   而要写出状态转移方程，需先分析有哪些 action 会使状态发生转移。由题中可知，共有4种 action：buy、sell、hold1、hold0。
     *   由此可以画出状态转移图：
     *                               +-----> sell <------+
@@ -25,8 +25,7 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     *                               ↑        ↓  ↗—↘        ↖-↙
     *                               +----- hold0   |
     *                                           ↖-↙
-    *   - 该问题同时还符合最优子结构性质 —— 通过求子问题的最优解可获得原问题的最优解。这体现在，在股价已定的情况下，每天的最大
-    *     收益和采取的 action 有以下递推关系：
+    *   - 该问题同时还符合最优子结构性质 —— 在股价已定的情况下，每天的最大收益和采取的 action 有以下递推关系：
     *       第i天的  -->  第i天采取的  -->  第i-1天的  -->  第i-1天采取  -->  ...  -->  第1天采取的
     *       最大收益      最优 action       最大收益       的最优 action               最优 action
     *
@@ -36,10 +35,39 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     *       hold1[i] = max(hold1[i-1], buy[i-1])
     *       hold0[i] = max(hold0[i-1], sell[i-1])
     *
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int maxProfit(int[] prices) {
-        if (prices.length < 2) return 0;
+        if (prices == null || prices.length < 2) return 0;
+
+        int n = prices.length;
+        int[] buy = new int[n];
+        int[] sell = new int[n];
+        int[] hold0 = new int[n];
+        int[] hold1 = new int[n];
+
+        buy[0] = -prices[0];
+        sell[0] = 0;
+        hold0[0] = 0;
+        hold1[0] = -prices[0];
+
+        for (int i = 1; i < n; i++) {
+            buy[i] = hold0[i-1] - prices[i];
+            sell[i] = Math.max(hold1[i-1], buy[i-1]) + prices[i];
+            hold1[i] = Math.max(hold1[i-1], buy[i-1]);
+            hold0[i] = Math.max(hold0[i-1], sell[i-1]);
+        }
+
+        return Math.max(sell[n - 1], hold0[n - 1]);
+    }
+
+    /*
+    * 解法2：DP（解法1的空间优化版）
+    * - 思路：在解法1的基础上 ∵ 每个数组都只用到 i-1 处的值 ∴ 不需要维护整个数组，只需记录单个值即可。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static int maxProfit2(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
 
         int buy = -prices[0];      // 第0天买入后的收益
         int sell = 0;              // 第0天卖出后的收益（∵ 不可能第0天就卖出 ∴ 设为0）
@@ -62,11 +90,11 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     }
 
     /*
-    * 解法2：Recursion + Memoization
+    * 解法3：Recursion + Memoization
     * - 思路：
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
-    public static int maxProfit2(int[] prices) {
+    public static int maxProfit3(int[] prices) {
         int n = prices.length;
         if (n < 2) return 0;
 
@@ -81,7 +109,7 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
         if (i == 0) return 0;
         if (i == 1) return Math.max(0, prices[1] - prices[0]);
         if (sells[i] != -1) return sells[i];
-        
+
         return 0;
     }
 
