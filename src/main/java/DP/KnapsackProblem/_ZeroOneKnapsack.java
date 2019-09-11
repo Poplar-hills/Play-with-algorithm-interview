@@ -7,8 +7,9 @@ import java.util.Arrays;
 /*
 * 0/1 Knapsack Problem
 *
-* - 有个背包，容量为 C, 现有 n 个不同种物品，编号为 0..n-1，其中每件物品的重量为 w(i)，价值为 v(i)。求可以像这个背包中放入哪些
-*   物品，使得在不超过容量的基础上，背包中的物品价值最大。注意：只要不超过容量即可，不需要完全填满，这是与 L416 的不同之处。
+* - 尝试往容量为 C 的背包里放 n 件不同种物品，其中每件物品的重量为 w[i]，价值为 v[i]。求在不超过背包容量的前提下，向背包中放入
+*   哪些物品使得总价值最大。
+* - 注意：只要不超过容量即可，不需要完全填满，这是与 L416 的不同之处。
 *
 * - 分析：该问题本质上是个最优组合问题，尝试以下思路：
 *   - Brute Force：
@@ -100,22 +101,20 @@ public class _ZeroOneKnapsack {
         int n = w.length;
         if (n == 0) return 0;
 
-        int[][] cache = new int[n][c + 1];
-        for (int[] row : cache)
-            Arrays.fill(row, -1);
+        int[][] dp = new int[n][c + 1];
 
-        for (int j = 0; j <= c; j++)  // 先解决最基础的问题（即表的第0行 —— 只考虑0号物品时在不同容量下能得到的最大价值）
-            cache[0][j] = w[0] <= j ? v[0] : 0;
+        for (int j = 0; j < dp.length; j++)  // 先解决最基础的问题（即表的第0行，即只考虑0号物品时不同容量下能得到的最大价值）
+            dp[0][j] = (j >= w[0]) ? v[0] : 0;
 
         for (int i = 1; i < n; i++) {
             for (int j = 0; j <= c; j++) {
-                cache[i][j] = cache[i - 1][j];  // cache[i][j] 表示在剩余容量为 j 时从 0-i 号物品中所能得到的最大价值
+                dp[i][j] = dp[i - 1][j];  // cache[i][j] 表示在剩余容量为 j 时从 0-i 号物品中所能得到的最大价值
                 if (j >= w[i])
-                    cache[i][j] = Math.max(cache[i][j], v[i] + cache[i - 1][j - w[i]]);
+                    dp[i][j] = Math.max(dp[i][j], v[i] + dp[i - 1][j - w[i]]);
             }
         }
 
-        return cache[n - 1][c];
+        return dp[n - 1][c];
     }
 
     /*
@@ -133,21 +132,20 @@ public class _ZeroOneKnapsack {
         int n = w.length;
         if (n == 0) return 0;
 
-        int[][] cache = new int[2][c + 1];
-        Arrays.fill(cache[1], -1);    // 第0行在后面初始化了
+        int[][] dp = new int[2][c + 1];
 
-        for (int j = 0; j <= c; j++)
-            cache[0][j] = w[0] <= j ? v[0] : 0;
+        for (int j = 0; j < dp.length; j++)
+            dp[0][j] = (j >= w[0]) ? v[0] : 0;
 
         for (int i = 1; i < n; i++) {
             for (int j = 0; j <= c; j++) {
-                cache[i % 2][j] = cache[(i-1) % 2][j];  // 若 i 为偶则写第0行，读第1行；若 i 为奇则写第1行，读第0行
+                dp[i % 2][j] = dp[(i-1) % 2][j];  // 若 i 为偶则写第0行，读第1行；若 i 为奇则写第1行，读第0行
                 if (j >= w[i])
-                    cache[i % 2][j] = Math.max(cache[i % 2][j], v[i] + cache[(i-1) % 2][j - w[i]]);
+                    dp[i % 2][j] = Math.max(dp[i % 2][j], v[i] + dp[(i-1) % 2][j - w[i]]);
             }
         }
 
-        return cache[(n-1) % 2][c];  // 凡是有 i 的地方都要 %2
+        return dp[(n-1) % 2][c];  // 凡是有 i 的地方都要 %2
     }
 
     /*
@@ -163,20 +161,20 @@ public class _ZeroOneKnapsack {
         int n = w.length;
         if (n <= 0) return 0;
 
-        int[] cache = new int[c + 1];        // 下面解决最基础问题时就顺便初始化了
-
-        for (int j = 0; j < c; j++)
-            cache[j] = w[0] <= j ? v[0] : 0;
+        int[] dp = new int[c + 1];
+        
+        for (int j = 0; j < dp.length; j++)
+            dp[j] = (j >= w[0]) ? v[0] : 0;
 
         for (int i = 1; i < n; i++)
             for (int j = c; j >= w[i]; j--)  // 只覆盖 j >= w[i] 的部分即可，因为 j < w[i]，物品放不进背包因此结果和上次计算是一样的
-                cache[j] = Math.max(cache[j], v[i] + cache[j - w[i]]);
+                dp[j] = Math.max(dp[j], v[i] + dp[j - w[i]]);
 
-        return cache[c];
+        return dp[c];
     }
 
     public static void main(String[] args) {
-        log(knapsack(new int[]{1, 2, 3}, new int[]{6, 10, 12}, 5));       // expects 22. (10 + 12)
-        log(knapsack(new int[]{1, 3, 4, 2}, new int[]{3, 9, 12, 8}, 5));  // expects 17. (9 + 8)
+        log(knapsack2(new int[]{1, 2, 3}, new int[]{6, 10, 12}, 5));       // expects 22. (10 + 12)
+        log(knapsack2(new int[]{1, 3, 4, 2}, new int[]{3, 9, 12, 8}, 5));  // expects 17. (9 + 8)
     }
 }
