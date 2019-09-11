@@ -22,9 +22,9 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     *                               +-----> sell <------+
     *                               |        |          |  ↗—↘
     *                              buy ------|------> hold1   |
-    *                               ↑        ↓  ↗—↘        ↖-↙
+    *                               ↑        ↓  ↗—↘        ↖_↙
     *                               +----- hold0   |
-    *                                           ↖-↙
+    *                                           ↖_↙
     *   - 该问题同时还符合最优子结构性质 —— 在股价已定的情况下，每天的最大收益和采取的 action 有以下递推关系：
     *       第i天的  -->  第i天采取的  -->  第i-1天的  -->  第i-1天采取  -->  ...  -->  第1天采取的
     *       最大收益      最优 action       最大收益       的最优 action               最优 action
@@ -46,12 +46,12 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
         int[] hold0 = new int[n];
         int[] hold1 = new int[n];
 
-        buy[0] = -prices[0];
-        sell[0] = 0;
-        hold0[0] = 0;
-        hold1[0] = -prices[0];
+        buy[0] = -prices[0];    // 第0天买入后的收益
+        sell[0] = 0;            // 第0天卖出后的收益（∵ 不可能第0天就卖出 ∴ 设为0）
+        hold0[0] = 0;           // 第0天什么都不做的收益
+        hold1[0] = -prices[0];  // 第0天持有1股的收益（∵ 不可能第0天就持有股票 ∴ 设为负的第0天的股价）
 
-        for (int i = 1; i < n; i++) {
+        for (int i = 1; i < n; i++) {  // 通过前一天的值递推后一天的值
             buy[i] = hold0[i-1] - prices[i];
             sell[i] = Math.max(hold1[i-1], buy[i-1]) + prices[i];
             hold1[i] = Math.max(hold1[i-1], buy[i-1]);
@@ -64,29 +64,29 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     /*
     * 解法2：DP（解法1的空间优化版）
     * - 思路：在解法1的基础上 ∵ 每个数组都只用到 i-1 处的值 ∴ 不需要维护整个数组，只需记录单个值即可。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static int maxProfit2(int[] prices) {
         if (prices == null || prices.length < 2) return 0;
 
-        int buy = -prices[0];      // 第0天买入后的收益
-        int sell = 0;              // 第0天卖出后的收益（∵ 不可能第0天就卖出 ∴ 设为0）
-        int hold1 = -prices[0];    // 第0天持有1股后的收益（∵ 不可能第0天就持有股票 ∴ 设为负的第0天的股价）
-        int hold0 = 0;             // 第0天什么都不做的收益
+        int lastBuy = -prices[0];
+        int lastSell = 0;
+        int lastHold1 = -prices[0];
+        int lastHold0 = 0;
 
-        for (int i = 1; i < prices.length; i++) {  // 每天都尝试4种 action 所能获得的最大收益
-            int lastBuy = buy;
-            int lastSell = sell;
-            int lastHold1 = hold1;
-            int lastHold0 = hold0;
+        for (int i = 1; i < prices.length; i++) {
+            int buy = lastHold0 - prices[i];
+            int sell = Math.max(lastHold1, lastBuy) + prices[i];
+            int hold1 = Math.max(lastHold1, lastBuy);
+            int hold0 = Math.max(lastHold0, lastSell);
 
-            buy = lastHold0 - prices[i];                      // 第i天买入后的最大收益 = 前一天持有后的收益 - 第i天的股价
-            sell = Math.max(lastHold1, lastBuy) + prices[i];  // 第i天卖出后的最大收益 = max(前一天持有后的收益, 前一天买入后的收益) + 第i天的股价
-            hold1 = Math.max(lastHold1, lastBuy);
-            hold0 = Math.max(lastHold0, lastSell);
+            lastBuy = buy;
+            lastSell = sell;
+            lastHold1 = hold1;
+            lastHold0 = hold0;
         }
 
-        return Math.max(sell, hold0);
+        return Math.max(lastSell, lastHold0);
     }
 
     /*
@@ -122,9 +122,9 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     }
 
     public static void main(String[] args) {
-        log(maxProfit(new int[]{1, 2, 3, 0, 2}));  // expects 3. [buy, sell, cooldown, buy, sell]
-        log(maxProfit(new int[]{1, 2}));           // expects 1. [buy, sell]
-        log(maxProfit(new int[]{2, 1}));           // expects 0. [cooldown, cooldown]
-        log(maxProfit(new int[]{3, 3}));           // expects 0. [cooldown, cooldown] or [buy, sell]
+        log(maxProfit2(new int[]{1, 2, 3, 0, 2}));  // expects 3. [buy, sell, cooldown, buy, sell]
+        log(maxProfit2(new int[]{1, 2}));           // expects 1. [buy, sell]
+        log(maxProfit2(new int[]{2, 1}));           // expects 0. [cooldown, cooldown]
+        log(maxProfit2(new int[]{3, 3}));           // expects 0. [cooldown, cooldown] or [buy, sell]
     }
 }
