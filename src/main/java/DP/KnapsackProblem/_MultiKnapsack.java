@@ -67,11 +67,10 @@ public class _MultiKnapsack {
     }
 
     public static void main(String[] args) {
-        log(knapsack(
+        log(knapsack(          // expects 11.
           new int[]{3, 4, 5},  // weight
           new int[]{2, 3, 4},  // value
           new int[]{4, 3, 2},  // quantity
-          15                   // knapsack capacity
-        ));                    // expects 11.
+          15));                // knapsack capacity
     }
 }

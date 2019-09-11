@@ -131,16 +131,14 @@ public class _CompleteKnapsack {
     }
 
     public static void main(String[] args) {
-        log(knapsack4(
+        log(knapsack4(        // expects 10. (5 + 5)
             new int[]{5, 7},  // weight
             new int[]{5, 8},  // value
-            10                // capacity
-        ));                   // expects 10. (5 + 5)
+            10));             // capacity
 
-        log(knapsack4(
+        log(knapsack4(        // expects 16. (5 + 5)
             new int[]{5, 7},
             new int[]{5, 8},
-            14
-        ));                   // expects 16. (5 + 5)
+            14));
     }
 }
