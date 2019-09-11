@@ -8,8 +8,12 @@ import java.util.Arrays;
 * Coin Change
 *
 * - You are given coins of different denominations and a total amount of money amount. Write a function to
-*   compute the fewest number of coins that you need to make up that amount. If that amount of money cannot
-*   be made up by any combination of the coins, return -1. （注：同一面额的硬币可以使用无数次）
+*   compute the fewest number of coins that you need to make up that amount. Return -1 if that amount of money
+*   cannot be made up by any combination of the coins. Note you have an infinite number of each kind of coin.
+*
+* - 该题跟完全背包问题类似，但区别在于：
+*   1. 求最少所需硬币个数，而非最大价值；
+*   2. 各硬币面额之和要能正好等于要求的额度，不能多不能少。
 * */
 
 public class L322_CoinChange {
@@ -24,21 +28,22 @@ public class L322_CoinChange {
     *   - 当 c=5, a=6 时 ∵ a > c 但 a-c 处的值为 M，说明容量装得下一个5硬币，但装下之后没法再用2硬币填满剩余容量 ∴ 直接使用上一行的值；
     *   - 当 c=5, a=7 时 ∵ a > c 且 a-c 处的值不为 M，说明容量装得下一个5硬币，且装下之后剩余容量可用2硬币填满 ∴ 从两种方案中取最小的。
     *   - 因此可得：
-    *     - 子问题定义：f(a) 表示“用前 i 个硬币填满容量 a 所需的最少硬币个数”；
-    *     - 状态转移方程：f(a) = min(f(a), 1 + f(a - v[i]))。
+    *     - 子问题定义：f(i, j) 表示“用前 i 个硬币填满容量 j 所需的最少硬币个数”；
+    *     - 状态转移方程：f(i, j) = min(f(j), 1 + f(j - v[i]))。
     * - 时间复杂度 O(n*a)，空间复杂度 O(a)。
     * */
     public static int coinChange(int[] coins, int amount) {
         if (amount < 1) return 0;
+
         int[] dp = new int[amount + 1];
 
-        for (int a = 0; a <= amount; a++)
-            dp[a] = (a % coins[0] == 0) ? a / coins[0] : Integer.MAX_VALUE;  // 解决最基本问题（∵ 要求的是最小值 ∴ 初值设为正最大）
+        for (int j = 0; j <= amount; j++)
+            dp[j] = (j % coins[0] == 0) ? (j / coins[0]) : Integer.MAX_VALUE;  // 解决最基本问题（∵ 要求的是最小值 ∴ 初值设为正最大）
 
         for (int coin : coins)
-            for (int a = coin; a <= amount; a++)  // 从左到右进行遍历和覆盖
-                if (dp[a - coin] != Integer.MAX_VALUE)
-                    dp[a] = Math.min(dp[a], dp[a - coin] + 1);
+            for (int j = coin; j <= amount; j++)  // 从左到右进行遍历和覆盖
+                if (dp[j - coin] != Integer.MAX_VALUE)
+                    dp[j] = Math.min(dp[j], dp[j - coin] + 1);
 
         return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
     }
@@ -50,16 +55,17 @@ public class L322_CoinChange {
     * */
     public static int coinChange2(int[] coins, int amount) {
         if (amount < 1) return 0;
-        int[] cache = new int[amount + 1];
-        Arrays.fill(cache, Integer.MAX_VALUE);  // 全初始化为正最大
-        cache[0] = 0;                           // 解决最基本问题只有 cache[0] 而已
+
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);  // 全初始化为正最大
+        dp[0] = 0;                           // 解决最基本问题只有 cache[0] 而已
 
         for (int coin : coins)
             for (int a = coin; a <= amount; a++)
-                if (cache[a - coin] != Integer.MAX_VALUE)
-                    cache[a] = Math.min(cache[a], cache[a - coin] + 1);
+                if (dp[a - coin] != Integer.MAX_VALUE)
+                    dp[a] = Math.min(dp[a], dp[a - coin] + 1);
 
-        return cache[amount] == Integer.MAX_VALUE ? -1 : cache[amount];
+        return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
     }
 
     /*
@@ -87,9 +93,9 @@ public class L322_CoinChange {
     }
 
     public static void main(String[] args) {
-        log(coinChange(new int[]{1, 2, 5}, 11));      // expects 3. (5 + 5 + 1)
         log(coinChange(new int[]{2, 5}, 11));         // expects 4. (5 + 2 + 2 + 2)
-        log(coinChange(new int[]{2}, 3));             // expects -1.
         log(coinChange(new int[]{2, 5, 10, 1}, 27));  // expects 4.
+        log(coinChange(new int[]{1, 2, 5}, 11));      // expects 3. (5 + 5 + 1)
+        log(coinChange(new int[]{2}, 3));             // expects -1.
     }
 }
