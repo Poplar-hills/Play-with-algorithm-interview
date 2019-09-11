@@ -15,8 +15,8 @@ import java.util.Arrays;
 
 public class L309_BestTimeToBuyAndSellStockWithCooldown {
     /*
-    * 解法1：DP
-    * - 思路：∵ 该问题具有明显的状态转移特点，且有4种行为能使状态发生改变 ∴ 可以采用 L198_HouseRobber 解法4的状态递推的思路，
+    * 解法1：DP（多状态递推）
+    * - 思路：∵ 该问题具有明显的状态转移特点，且有4种行为能使状态发生改变 ∴ 可以采用 L198_HouseRobber 解法4的多状态递推的思路，
     *   即通过梳理不同行为对状态的影响写出不同状态的递推表达式。由题中可知，共有4种行为：buy、sell、hold1、hold0。由此进行梳理：
     *                               +-----> sell <------+
     *                               |        |          |  ↗—↘
@@ -48,13 +48,13 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
         hold1[0] = -prices[0];  // 第0天持有1股的收益（∵ 不可能第0天就持有股票 ∴ 设为负的第0天的股价）
 
         for (int i = 1; i < n; i++) {  // 通过前一天的值递推后一天的值
-            buy[i] = hold0[i-1] - prices[i];
-            sell[i] = Math.max(hold1[i-1], buy[i-1]) + prices[i];
-            hold1[i] = Math.max(hold1[i-1], buy[i-1]);
-            hold0[i] = Math.max(hold0[i-1], sell[i-1]);
+            buy[i] = hold0[i - 1] - prices[i];
+            sell[i] = Math.max(hold1[i - 1], buy[i - 1]) + prices[i];
+            hold1[i] = Math.max(hold1[i - 1], buy[i - 1]);
+            hold0[i] = Math.max(hold0[i - 1], sell[i - 1]);
         }
 
-        return Math.max(sell[n - 1], hold0[n - 1]);
+        return Math.max(sell[n - 1], hold0[n - 1]);  // 若要获得最大收益，则最后一天只能卖出或处于已经卖出状态
     }
 
     /*
@@ -70,9 +70,9 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
         int lastHold1 = -prices[0];
         int lastHold0 = 0;
 
-        for (int i = 1; i < prices.length; i++) {
-            int buy = lastHold0 - prices[i];
-            int sell = Math.max(lastHold1, lastBuy) + prices[i];
+        for (int price : prices) {
+            int buy = lastHold0 - price;
+            int sell = Math.max(lastHold1, lastBuy) + price;
             int hold1 = Math.max(lastHold1, lastBuy);
             int hold0 = Math.max(lastHold0, lastSell);
 
@@ -85,42 +85,11 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
         return Math.max(lastSell, lastHold0);
     }
 
-    /*
-    * 解法3：Recursion + Memoization
-    * - 思路：
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
-    public static int maxProfit3(int[] prices) {
-        int n = prices.length;
-        if (n < 2) return 0;
-
-        int[] buys = new int[n], sells = new int[n];
-        Arrays.fill(buys, -1);
-        Arrays.fill(sells, -1);
-
-        return sell(prices, n - 1, buys, sells);
-    }
-
-    private static int sell(int[] prices, int i, int[] buys, int[] sells) {
-        if (i == 0) return 0;
-        if (i == 1) return Math.max(0, prices[1] - prices[0]);
-        if (sells[i] != -1) return sells[i];
-
-        return 0;
-    }
-
-    private static int buy(int[] prices, int i, int[] buys, int[] sells) {
-        if (i == 0) return -prices[0];
-        if (i == 1) return Math.max(-prices[0], -prices[1]);
-        if (buys[i] != -1) return buys[i];
-
-        return 0;
-    }
-
     public static void main(String[] args) {
-        log(maxProfit2(new int[]{1, 2, 3, 0, 2}));  // expects 3. [buy, sell, cooldown, buy, sell]
+        log(maxProfit2(new int[]{1, 2, 3, 0, 2}));  // expects 3. [buy, sell, hold0, buy, sell]
+        log(maxProfit2(new int[]{1, 4, 2}));        // expects 3. [buy, sell, hold0]
         log(maxProfit2(new int[]{1, 2}));           // expects 1. [buy, sell]
-        log(maxProfit2(new int[]{2, 1}));           // expects 0. [cooldown, cooldown]
-        log(maxProfit2(new int[]{3, 3}));           // expects 0. [cooldown, cooldown] or [buy, sell]
+        log(maxProfit2(new int[]{2, 1}));           // expects 0. [hold0, hold0]
+        log(maxProfit2(new int[]{3, 3}));           // expects 0. [hold0, hold0] or [buy, sell]
     }
 }
