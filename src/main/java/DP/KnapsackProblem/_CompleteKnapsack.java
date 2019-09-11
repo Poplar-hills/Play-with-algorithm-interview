@@ -7,10 +7,10 @@ import java.util.Arrays;
 /*
 * Complete Knapsack Problem
 *
-* - 在0/1背包问题基础上改变一点 —— 每种物品不再又有一个，而是可以添加任意多个。
+* - 在0/1背包问题基础上改变一点 —— 每种物品不再又有一个，而是可以放入任意多个。
 *
 * - 分析：
-*   - Greedy Algorithm：
+*   - 思路1：Greedy Algorithm：
 *     采用贪心算法看上去是可行的：∵ 每种物品有无限个 ∴ 先不断放入性价比最高的物品，直到背包容量不足以再放时尝试放入性价比第二高的
 *     物品，若仍旧无法填满，则再用性价比第三高的物品来填充…… 这样看上去可行，但仍然存在反例：
 *                           Item       0     1
@@ -20,7 +20,7 @@ import java.util.Arrays;
 *     若背包容量为10，∵ 物品1的性价比 > 物品0 ∴ 先放物品1，之后的剩余空间已放不下任何一种物品了，所以背包里的价值就是8。而实际上
 *     放入两个物品0即可得到价值10，因此贪心算法并不适用。
 *
-*   - DP：
+*   - 思路2：DP：
 *     DP 的关键是寻找原问题的子问题，并写出状态转移方程：
 *     - 子问题与0/1背包一样，仍然是：f(i, j) 表示“用前 i 个物品填充剩余容量为 j 的背包所能得到的最大价值”。
 *     - 状态转移方程：∵ 每件物品可以放入无数个 ∴ 对每件物品来说，策略已经不再是放或不放的问题了，而是放入多少件的问题。设能放入的
@@ -29,6 +29,24 @@ import java.util.Arrays;
 * */
 
 public class _CompleteKnapsack {
+    public static int knapsack(int[] w, int[] v, int c) {
+        int n = w.length;
+
+        int[] dp = new int[c + 1];
+
+        for (int j = 0; j <= c; j++)
+            dp[j] = (j / w[0]) * v[0];
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j <= c; j++) {
+                for (int k = 0; w[i] * k <= j; k++)
+                    dp[j] = Math.max(dp[j], k * v[i] + dp[j - k * w[i]]);
+            }
+        }
+
+        return dp[c];
+    }
+
     /*
     * 解法1：Recursion + Memoization
     * - 思路：top-down 方式。
@@ -36,25 +54,25 @@ public class _CompleteKnapsack {
     *   出最优解，这就需要多一层循环来求最大值。
     * - 时间复杂度 O(n*c^2)，空间复杂度 O(n*c)。
     * */
-    public static int knapsack(int[] w, int[] v, int c) {
-        int n = w.length;
-        int[][] cache = new int[n][c + 1];
-        for (int[] row : cache)
-            Arrays.fill(row, -1);
-        return largestValue(n - 1, c, w, v, cache);
-    }
+    // public static int knapsack(int[] w, int[] v, int c) {
+    //     int n = w.length;
+    //     int[][] cache = new int[n][c + 1];
+    //     for (int[] row : cache)
+    //         Arrays.fill(row, -1);
+    //     return largestValue(n - 1, c, w, v, cache);
+    // }
 
-    private static int largestValue(int i, int j, int[] w, int[] v, int[][] cache) {
-        if (i < 0 || j == 0) return 0;
-        if (cache[i][j] != -1) return cache[i][j];
+    // private static int largestValue(int i, int j, int[] w, int[] v, int[][] cache) {
+    //     if (i < 0 || j == 0) return 0;
+    //     if (cache[i][j] != -1) return cache[i][j];
 
-        int res = largestValue(i - 1, j, w, v, cache);
-        if (j >= w[i])
-            for (int k = 1; w[i] * k <= j; k++)  // 从放入0, 1, 2, ... k 件物品 i 中选出价值最大的方案（这里也是与0/1背包问题的唯一区别）
-                res = Math.max(res, v[i] * k + largestValue(i - 1, j - w[i] * k, w, v, cache));
+    //     int res = largestValue(i - 1, j, w, v, cache);
+    //     if (j >= w[i])
+    //         for (int k = 1; w[i] * k <= j; k++)  // 从放入0, 1, 2, ... k 件物品 i 中选出价值最大的方案（这里也是与0/1背包问题的唯一区别）
+    //             res = Math.max(res, v[i] * k + largestValue(i - 1, j - w[i] * k, w, v, cache));
 
-        return cache[i][j] = res;
-    }
+    //     return cache[i][j] = res;
+    // }
 
     /*
     * 解法2：DP + 二维数组
@@ -65,26 +83,24 @@ public class _CompleteKnapsack {
         int n = w.length;
         if (n <= 0) return 0;
 
-        int[][] cache = new int[n][c + 1];
-        for (int[] row : cache)
-            Arrays.fill(row, -1);
+        int[][] dp = new int[n][c + 1];
 
         for (int j = 0; j <= c; j++)
-            cache[0][j] = (j / w[0]) * v[0];  // 解决最基本问题（填充第一行）
+            dp[0][j] = (j / w[0]) * v[0];  // 解决最基本问题（填充第一行）
 
         for (int i = 1; i < n; i++) {
             for (int j = 0; j <= c; j++) {
-                cache[i][j] = cache[i - 1][j];
+                dp[i][j] = dp[i - 1][j];
                 for (int k = 0; w[i] * k <= j; k++)
-                    cache[i][j] = Math.max(cache[i][j], v[i] * k + cache[i - 1][j - w[i] * k]);
+                    dp[i][j] = Math.max(dp[i][j], v[i] * k + dp[i - 1][j - w[i] * k]);
             }
         }
 
-        return cache[n - 1][c];
+        return dp[n - 1][c];
     }
 
     /*
-    * 解法3：解法2的空间优化版（DP + 一维数组）
+    * 解法3：DP + 一维数组（解法2的空间优化版）
     * - 思路：类似 _ZeroOneKnapsack 中的解法4，状态转移方程简化为：f(i, j) = max(f(j), v[i]*k + f(j - w[j]*k))。
     * - 时间复杂度 O(n*c^2)，空间复杂度 O(c)。
     * */
@@ -92,17 +108,17 @@ public class _CompleteKnapsack {
         int n = w.length;
         if (n <= 0) return 0;
 
-        int[] cache = new int[c + 1];
+        int[] dp = new int[c + 1];
 
         for (int j = 0; j <= c; j++)
-            cache[j] = (j / w[0]) * v[0];
+            dp[j] = (j / w[0]) * v[0];
 
         for (int i = 1; i < n; i++)
             for (int j = c; j >= w[i]; j--)
                 for (int k = 0; w[i] * k <= j; k++)
-                    cache[j] = Math.max(cache[j], v[i] * k + cache[j - w[i] * k]);
+                    dp[j] = Math.max(dp[j], v[i] * k + dp[j - w[i] * k]);
 
-        return cache[c];
+        return dp[c];
     }
 
     /*
@@ -113,8 +129,8 @@ public class _CompleteKnapsack {
     *        w  v | i\c  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14
     *        5  5 |  0   0  0  0  0  0  5  5  5  5  5  10  10  10  10  10
     *        7  8 |  1   0  0  0  0  0  5  5  8  8  8  10  10  13  13  16
-    *   当 i=1，c=14 时，j-w[i]=7，即左边 cache[7] 中已经存储了之刨除一件物品 i 的重量之后的最大价值，因此只要再加上一件 i
-    *   的价值（v[i]）后再与原有的 cache[j] 比较取最大即可。状态转移方程为：f(i, j) = max(f(j), v[i] + f(j - w[j]))。
+    *   当 i=1，c=14 时，j-w[i]=7，即左边 dp[7] 中已经存储了之刨除一件物品 i 的重量之后的最大价值，因此只要再加上一件 i 的
+    *   价值（v[i]）后再与原有的 dp[j] 比较取最大即可。状态转移方程为：f(i, j) = max(f(j), v[i] + f(j - w[j]))。
     * - 时间复杂度 O(n*c)，空间复杂度 O(c)。
     * */
     public static int knapsack4(int[] w, int[] v, int c) {
@@ -131,12 +147,12 @@ public class _CompleteKnapsack {
     }
 
     public static void main(String[] args) {
-        log(knapsack4(        // expects 10. (5 + 5)
+        log(knapsack(         // expects 10. (5 + 5)
             new int[]{5, 7},  // weight
             new int[]{5, 8},  // value
             10));             // capacity
 
-        log(knapsack4(        // expects 16. (5 + 5)
+        log(knapsack(         // expects 16. (5 + 5)
             new int[]{5, 7},
             new int[]{5, 8},
             14));
