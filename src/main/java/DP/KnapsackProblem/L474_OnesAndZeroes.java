@@ -48,12 +48,12 @@ public class L474_OnesAndZeroes {
         int[][][] dp = new int[l][m + 1][n + 1];
 
         for (int i = 0; i < l; i++) {
-            int[] cnt = count1(strs[i]);
+            int[] cnt = count1(strs[i]);        // 每遍历一个字符串就先计算其0、1数量
             for (int z = 0; z <= m; z++) {
                 for (int o = 0; o <= n; o++) {
-                    if (i == 0) {               // 解决 base case
+                    if (i == 0) {               // base case 放在这里解决
                         if (z >= cnt[0] && o >= cnt[1])
-                            dp[i][z][o] = 1;
+                            dp[0][z][o] = 1;
                     } else {
                         dp[i][z][o] = dp[i-1][z][o];
                         if (z >= cnt[0] && o >= cnt[1])
@@ -77,8 +77,9 @@ public class L474_OnesAndZeroes {
 
     /*
     * 解法2：DP + 二维表（解法1的空间优化版）
-    * - 思路：按照 _ZeroOneKnapsack 解法4的思路复用内层的二维表，从而不再需要为每个 i 的结算结果进行缓存，因此状态转移方程化
-    *   简为：f(z, o) = max(f(z, o), 1 + f(z-zeros[i], o-ones[i]))。
+    * - 思路：_ZeroOneKnapsack 解法4的思路是将二维表化简为一维数组，每次覆盖该数组；在该题中同样可以采用这个思路，即将解法1中
+    *   的三维表化简为二维表，每次在计算 f(i) 时都覆盖一遍二维表。因此状态转移方程化简为：
+    *   f(z, o) = max(f(z, o), 1 + f(z-zeros[i], o-ones[i]))。
     * - 时间复杂度 O(l*m*n)，空间复杂度 O(m*n)。
     * */
     public static int findMaxForm2(String[] strs, int m, int n) {
