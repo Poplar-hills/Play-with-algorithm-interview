@@ -106,26 +106,29 @@ public class _CompleteKnapsack {
     /*
     * 解法4：解法3的优化版
     * - 思路：前3种解法相比 _ZeroOneKnapsack 中的解法来说多了一层对 k 的循环，用于确定“同样的物品应放几个最优”，但也因此提高
-    *   了时间复杂度（n*c*c）。优化方法是将对 j 的循环改为从左往右覆盖，即从第一个放得下物品 i 的容量（w[i]）开始到最大容量（c）。
-    *   这样不再需要对每个物品尝试放 0-k 件，而是只需在左侧的计算结果之上尝试再加一个 v[i] 即可。例如：
+    *   了时间复杂度（n*c*c）。优化方法是将“遍历 k 逐一尝试”的思路改为“基于前面的结果进行递推”的思路。
+    * - 实现：将对 j 的循环改为从左往右覆盖，即从第一个放得下物品 i 的容量 w[i] 开始，比较再放入/不再放入一个物品 i 的价值。例如：
     *        w  v | i\c  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14
     *        5  5 |  0   0  0  0  0  0  5  5  5  5  5  10  10  10  10  10
     *        7  8 |  1   0  0  0  0  0  5  5  8  8  8  10  10  13  13  16
-    *   当 i=1，c=14 时，j-w[i]=7，即左边 dp[7] 中已经存储了之刨除一件物品 i 的重量之后的最大价值，因此只要再加上一件 i 的
-    *   价值（v[i]）后再与原有的 dp[j] 比较取最大即可。状态转移方程为：f(i, j) = max(f(j), v[i] + f(j - w[j]))。
+    *   当 i=1 时，j 从7开始向右遍历：
+    *     - 当 j=7 时 ∵ 7处刚好能容纳一个物品1 ∴ 比较放入/不放一个物品1的价值谁更大（v[1] 与 dp[7]），谁就是 dp[7] 的最新取值。
+    *     - 当 j=8 时 ∵ 8处已经能容纳一个物品1 ∴ 比较放入/不放一个物品1的价值谁更大（v[1] + dp[1] 与 dp[8]），谁就是 dp[8] 的最新取值。
+    *     - 当 j=14 时 ∵ 14处已经能容纳两个物品1 ∴ 比较再放入/不再放一个物品1的价值谁更大（v[1] + dp[7] 与 dp[14]），谁就是 dp[14] 的最新取值。
+    *   状态转移方程：f(i, j) = max(f(j), v[i] + f(j - w[j]))。
     * - 时间复杂度 O(n*c)，空间复杂度 O(c)。
     * */
     public static int knapsack4(int[] w, int[] v, int c) {
         int n = w.length;
         if (n <= 0) return 0;
 
-        int[] cache = new int[c + 1];        // 不再需要初始化，下面对 i 的遍历从0开始
+        int[] dp = new int[c + 1];
 
         for (int i = 0; i < n; i++)
             for (int j = w[i]; j <= c; j++)  // 从左到右 [w[i], c] 进行覆盖（这里是与 _ZeroOneKnapsack 解法4的最大区别）
-                cache[j] = Math.max(cache[j], v[i] + cache[j - w[i]]);
+                dp[j] = Math.max(dp[j], v[i] + dp[j - w[i]]);
 
-        return cache[c];
+        return dp[c];
     }
 
     public static void main(String[] args) {
@@ -134,7 +137,7 @@ public class _CompleteKnapsack {
             new int[]{5, 8},  // value
             10));             // capacity
 
-        log(knapsack(         // expects 16. (5 + 5)
+        log(knapsack(         // expects 16. (8 + 8)
             new int[]{5, 7},
             new int[]{5, 8},
             14));
