@@ -80,10 +80,10 @@ public class L377_CombinationSumIV {
         int[] dp = new int[target + 1];
         dp[0] = 1;                         // 解决 i=0 时的 base case
 
-        for (int i = 1; i <= target; i++)  // 循环从 i=1 开始
+        for (int i = 1; i <= target; i++)  // 循环从 i=1 开始，对每个 i 都遍历一遍 nums 中的数字
             for (int n : nums)
                 if (i >= n)
-                    dp[i] += dp[i - n];
+                    dp[i] += dp[i - n];    // dp[i-n] 表示能凑成 i-n 的方法数
 
         return dp[target];
     }
