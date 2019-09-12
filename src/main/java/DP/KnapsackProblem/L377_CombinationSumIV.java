@@ -35,13 +35,14 @@ public class L377_CombinationSumIV {
     * - 时间复杂度为 O(n^n)，空间复杂度 O(target)。
     * */
     public static int combinationSum(int[] nums, int target) {
-        if (target < 0 || nums == null || nums.length == 0) return 0;
         if (target == 0) return 1;
-        int res = 0;
-        for (int num : nums)
-            if (num <= target)
-                res += combinationSum(nums, target - num);
-        return res;
+
+        int count = 0;
+        for (int n : nums)
+            if (target - n >= 0)
+                count += combinationSum(nums, target - n);
+
+        return count;
     }
 
     /*
@@ -56,16 +57,16 @@ public class L377_CombinationSumIV {
         return combinationSum1(nums, target, cache);
     }
 
-    public static int combinationSum1(int[] nums, int t, int[] cache) {
-        if (t == 0) return 1;    // The base case 最基本问题，即上面的 f(0) = 1
-        if (cache[t] != -1) return cache[t];
+    public static int combinationSum1(int[] nums, int i, int[] cache) {
+        if (i == 0) return 1;    // The base case 最基本问题，即上面的 f(0) = 1
+        if (cache[i] != -1) return cache[i];
 
-        int res = 0;
-        for (int num : nums)
-            if (t >= num)
-                res += combinationSum1(nums, t - num, cache);
+        int count = 0;
+        for (int n : nums)
+            if (i - n >= 0)
+                count += combinationSum1(nums, i - n, cache);
 
-        return cache[t] = res;
+        return cache[i] = count;
     }
 
     /*
@@ -76,15 +77,15 @@ public class L377_CombinationSumIV {
     public static int combinationSum2(int[] nums, int target) {
         if (target <= 0 || nums == null || nums.length == 0) return 0;
 
-        int[] cache = new int[target + 1];
-        cache[0] = 1;   // base case 在这里解决 ∴ 下面的循环不需要处理 t=0 的情况
+        int[] dp = new int[target + 1];
+        dp[0] = 1;                         // 解决 i=0 时的 base case
 
-        for (int t = 1; t <= target; t++)
-            for (int num : nums)
-                if (t >= num)
-                    cache[t] += cache[t - num];
+        for (int i = 1; i <= target; i++)  // 循环从 i=1 开始
+            for (int n : nums)
+                if (i >= n)
+                    dp[i] += dp[i - n];
 
-        return cache[target];
+        return dp[target];
     }
 
     public static void main(String[] args) {
