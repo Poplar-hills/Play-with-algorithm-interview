@@ -8,26 +8,31 @@ import java.util.Arrays;
 * Combination Sum IV
 *
 * - Given an integer array with all positive numbers and no duplicates, find the number of possible
-*   combinations that add up to a positive integer target. (注：1.数组中的整数可被重复使用；2.结果是顺序相关的）
+*   combinations that add up to a positive integer target.
+* - 注意：
+*   1. 数组中的整数可被重复使用；
+*   2. 结果是顺序相关的，即 112 和 211 是两种不同组合。
 * */
 
 public class L377_CombinationSumIV {
     /*
-    * - 分析：Think about the recurrence relation first. How does the # of combinations of the target related
-    *   to the # of combinations of numbers that are smaller than the target? We know that target is the sum
-    *   of some numbers in the array. Imagine we only need one more number to reach target, this number can
-    *   be any one in the array. So the # of combinations of target, f(t) = sum(f(t - nums[i])),
-    *   where 0 <= i < nums.length && t >= nums[i]（这就是该问题的状态转移方程）.
+    * 超时解：
+    * - 思路：
+    *   - 定义子问题：f(i) 表示“用 nums 中的数字相加得到 i 的不同组合个数”。
+    *   - 状态转移：We know that target is the sum of some numbers in the array. Imagine we only need one more
+    *     number to reach target, this number can be any one in the array. So the # of combinations of target
+    *     f(i) = sum(f(i - nums[j])), where 0 <= j < nums.length && i >= nums[j].
     *
-    *   Therefore, f(4) = f(4-1) + f(4-2) + f(4-3)
-    *                   = f(3) + f(2) + f(1)
-    *                   = f(3-1) + f(3-2) + f(3-3) + f(2-1) + f(2-2) + f(1-1)
-    *                   = f(2) + f(1) + f(0) + f(1) + f(0) + f(0)
-    *                   = 3 * f(1) + 4 * f(0)
-    *   Let f(0) = 1    = 7 * f(0)
-    *                   = 7
+    *     证明：对于 nums=[2, 3, 4], target=6 来说：
+    *          f(6) = f(6-2) + f(6-3) + f(6-4)
+    *               = f(4) + f(3) + f(2)
+    *               = (f(4-2) + f(4-3) + f(4-4)) + (f(3-2) + f(3-3)) + f(2-2)
+    *               = f(2) + 2*f(1) + 3*f(0)     - 1无法由任何 nums 中的元素组成 ∴ f(1) = 0
+    *               = f(2-2) + 3*f(0)
+    *               = 4*f(0)                     - 0不需要任何 nums 中的元素就可以组成 ∴ f(0) = 1
+    *               = 4
     *
-    *   基于以上分析，可写出下面的 naive 递归解，时间复杂度为 O(n^n)。
+    * - 时间复杂度为 O(n^n)，空间复杂度 O(target)。
     * */
     public static int combinationSum(int[] nums, int target) {
         if (target < 0 || nums == null || nums.length == 0) return 0;
@@ -83,6 +88,8 @@ public class L377_CombinationSumIV {
     }
 
     public static void main(String[] args) {
-        log(combinationSum2(new int[]{1, 2, 3}, 4));  // expects 7. (1111, 112, 211, 121, 13, 31, 22)
+        log(combinationSum2(new int[]{2, 3, 4}, 6));   // expects 4. (2+2+2, 2+4, 4+2, 3+3)
+        log(combinationSum2(new int[]{1, 2, 3}, 4));   // expects 7. (1+1+1+1, 1+1+2, 2+1+1, 1+2+1, 1+3, 3+1, 2+2)
+        log(combinationSum2(new int[]{4, 1, 2}, 32));  // expects 39882198.
     }
 }
