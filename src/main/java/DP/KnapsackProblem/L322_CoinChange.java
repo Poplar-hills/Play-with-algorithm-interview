@@ -11,7 +11,7 @@ import java.util.Arrays;
 *   compute the fewest number of coins that you need to make up that amount. Return -1 if that amount of money
 *   cannot be made up by any combination of the coins. Note you have an infinite number of each kind of coin.
 *
-* - 该题跟完全背包问题类似，但区别在于：
+* - 初步分析：该题跟完全背包问题类似，但区别在于：
 *   1. 求最少所需硬币个数，而非最大价值；
 *   2. 各硬币面额之和要能正好等于要求的额度，不能多不能少。
 * */
@@ -19,18 +19,18 @@ import java.util.Arrays;
 public class L322_CoinChange {
     /*
     * 解法1：DP + 一维数组
-    * - 思路：这是个典型的完全背包问题，参考 _CompleteKnapsack 解法4。
-    *       c\a| 0  1  2  3  4  5  6  7  8  9  10  11
-    *        2 | 0  M  1  M  2  M  3  M  4  M   5   M  - 只考虑硬币2时，a 的遍历范围是 [2, 11] ∴ a=0,1 处的值不变
-    *            ↓  ↓  ↓  ↓  ↓
-    *        5 | 0  M  1  M  2  1  3  2  4  3   2   4  - 考虑硬币2,5时，a 的遍历范围是 [1, 11] ∴ a=0~4 处的值不变
-    *   - 当 c=5, a=0~4 时 ∵ a < c，说明容量连一个5硬币都装不下 ∴ 直接使用上一行的值；
-    *   - 当 c=5, a=6 时 ∵ a > c 但 a-c 处的值为 M，说明容量装得下一个5硬币，但装下之后没法再用2硬币填满剩余容量 ∴ 直接使用上一行的值；
-    *   - 当 c=5, a=7 时 ∵ a > c 且 a-c 处的值不为 M，说明容量装得下一个5硬币，且装下之后剩余容量可用2硬币填满 ∴ 从两种方案中取最小的。
+    * - 思路：参考 _CompleteKnapsack 解法4。对于 coins[2, 5], amount=11 来说：
+    *     coins i\j | 0  1  2  3  4  5  6  7  8  9  10  11
+    *       2    0  | 0  M  1  M  2  M  3  M  4  M   5   M  - 最基本问题，只考虑硬币2的情况
+    *                 ↓  ↓  ↓  ↓  ↓
+    *       5    1  | 0  M  1  M  2  1  3  2  4  3   2   4  - 考虑硬币2、5时，j 从5开始遍历 ∴ 0~4处的值不变
+    *   - 当 i=1, j=0~4 时 ∵ j < coins[1]，说明容量连一个5硬币都装不下 ∴ 直接使用上一行的值；
+    *   - 当 i=1, j=6 时 ∵ j > coins[1] 但 a-j 处的值为 M，说明容量装得下一个5硬币，但装下之后没法再用2硬币填满剩余容量 ∴ 直接使用上一行的值；
+    *   - 当 i=1, j=7 时 ∵ j > coins[1] 且 a-j 处的值不为 M，说明容量装得下一个5硬币，且装下之后剩余容量可用2硬币填满 ∴ 从两种方案中取最小的。
     *   - 因此可得：
     *     - 子问题定义：f(i, j) 表示“用前 i 个硬币填满容量 j 所需的最少硬币个数”；
     *     - 状态转移方程：f(i, j) = min(f(j), 1 + f(j - v[i]))。
-    * - 时间复杂度 O(n*a)，空间复杂度 O(a)。
+    * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
     * */
     public static int coinChange(int[] coins, int amount) {
         if (amount < 1) return 0;
@@ -40,10 +40,10 @@ public class L322_CoinChange {
         for (int j = 0; j <= amount; j++)
             dp[j] = (j % coins[0] == 0) ? (j / coins[0]) : Integer.MAX_VALUE;  // 解决最基本问题（∵ 要求的是最小值 ∴ 初值设为正最大）
 
-        for (int coin : coins)
-            for (int j = coin; j <= amount; j++)  // 从左到右进行遍历和覆盖
-                if (dp[j - coin] != Integer.MAX_VALUE)
-                    dp[j] = Math.min(dp[j], dp[j - coin] + 1);
+        for (int i = 1; i < coins.length; i++)        // i 从1开始遍历
+            for (int j = coins[i]; j <= amount; j++)  // 从第一个能放入 coins[i] 的容量开始向右进行遍历和覆盖
+                if (dp[j - coins[i]] != Integer.MAX_VALUE)
+                    dp[j] = Math.min(dp[j], dp[j - coins[i]] + 1);
 
         return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
     }
@@ -51,45 +51,45 @@ public class L322_CoinChange {
     /*
     * 解法2：解法1的简化版
     * - 思路：本解法与解法1的不同之处在于对最基本问题的设定不同。
-    * - 时间复杂度 O(n*a)，空间复杂度 O(a)。
+    * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
     * */
     public static int coinChange2(int[] coins, int amount) {
         if (amount < 1) return 0;
 
         int[] dp = new int[amount + 1];
         Arrays.fill(dp, Integer.MAX_VALUE);  // 全初始化为正最大
-        dp[0] = 0;                           // 解决最基本问题只有 cache[0] 而已
+        dp[0] = 0;                           // 解决最基本问题只有 dp[0] 而已
 
-        for (int coin : coins)
-            for (int a = coin; a <= amount; a++)
-                if (dp[a - coin] != Integer.MAX_VALUE)
-                    dp[a] = Math.min(dp[a], dp[a - coin] + 1);
+        for (int coin : coins)               // i 从0开始遍历、递推
+            for (int j = coin; j <= amount; j++)
+                if (dp[j - coin] != Integer.MAX_VALUE)
+                    dp[j] = Math.min(dp[j], dp[j - coin] + 1);
 
         return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
     }
 
     /*
     * 解法3：Recursion + Memoization
-    * - 时间复杂度 O(n*a)，空间复杂度 O(a)。
+    * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
     * */
     public static int coinChange3(int[] coins, int amount) {
         if (amount < 1) return 0;
         return minCoinNum(coins, amount, new int[amount + 1]);
     }
 
-    private static int minCoinNum(int[] coins, int a, int[] cache) {
-        if (a == 0) return 0;
-        if (a < 0) return -1;
-        if (cache[a] != 0) return cache[a];
+    private static int minCoinNum(int[] coins, int j, int[] cache) {
+        if (j == 0) return 0;
+        if (j < 0) return -1;
+        if (cache[j] != 0) return cache[j];
 
         int min = Integer.MAX_VALUE;
         for (int coin : coins) {
-            int res = minCoinNum(coins, a - coin, cache);
+            int res = minCoinNum(coins, j - coin, cache);
             if (res >= 0 && res < min)
                 min = res + 1;
         }
 
-        return cache[a] = (min == Integer.MAX_VALUE) ? -1 : min;
+        return cache[j] = (min == Integer.MAX_VALUE) ? -1 : min;
     }
 
     public static void main(String[] args) {
