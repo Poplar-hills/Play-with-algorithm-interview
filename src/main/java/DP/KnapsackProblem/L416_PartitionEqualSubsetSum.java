@@ -28,7 +28,7 @@ public class L416_PartitionEqualSubsetSum {
     * */
     public static boolean canPartition(int[] nums) {
         int sum = Arrays.stream(nums).reduce(0, Integer::sum);  // 相当于背包容量
-        if (sum % 2 != 0) return false;                         // 若总和为奇数则一定无解
+        if (sum % 2 == 1) return false;                         // 若总和为奇数则一定无解
         return helper(nums, nums.length - 1, sum / 2);
     }
 
@@ -61,8 +61,7 @@ public class L416_PartitionEqualSubsetSum {
     }
 
     /*
-    * 解法1：DP
-    * - 思路：bottom-up。
+    * 解法2：DP
     * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
     * */
     public static boolean canPartition2(int[] nums) {
@@ -96,31 +95,27 @@ public class L416_PartitionEqualSubsetSum {
     * */
     public static boolean canPartition3(int[] nums) {
         int sum = 0;
-        for (int i = 0; i < nums.length; i++)  // for 循环比 stream 的方式快很多
-            sum += nums[i];
-
+        for (int num : nums) sum += num;  // for 循环比 stream 的方式快很多
         if (sum % 2 == 1) return false;
 
-        int n = nums.length;
-        int halfSum = sum / 2;
-        int[] cache = new int[halfSum + 1];
+        boolean[] dp = new boolean[sum / 2 + 1];
+        for (int j = 0; j < dp.length; j++)
+            dp[j] = j == nums[0];
 
-        for (int j = 0; j <= halfSum; j++)
-            cache[j] = nums[0] == j ? 1 : 0;
+        for (int i = 1; i < nums.length; i++)  // 注意 i 从1开始遍历
+            for (int j = sum / 2; j >= nums[i]; j--)
+                dp[j] = dp[j] || dp[j - nums[i]];
 
-        for (int i = 1; i < n; i++)
-            for (int j = halfSum; j >= nums[i]; j--)
-                cache[j] = cache[j] | cache[j - nums[i]];
-
-        return cache[halfSum] == 1;
+        return dp[sum / 2];
     }
 
     public static void main(String[] args) {
-        log(canPartition1(new int[]{1, 5, 11, 5}));    // expects true. ([1, 5, 5] and [11])
-        log(canPartition1(new int[]{1, 2, 3, 4}));     // expects true. ([1, 4] and [2, 3])
-        log(canPartition1(new int[]{1, 2, 3, 5}));     // expects false
-        log(canPartition1(new int[]{1, 5, 3}));        // expects false
-        log(canPartition1(new int[]{1, 100, 5, 3}));   // expects false
-        log(canPartition1(new int[]{1}));              // expects false
+        log(canPartition3(new int[]{1, 5, 11, 5}));    // expects true. ([1, 5, 5] and [11])
+        log(canPartition3(new int[]{1, 2, 3, 4}));     // expects true. ([1, 4] and [2, 3])
+        log(canPartition3(new int[]{1, 2, 3, 5}));     // expects false
+        log(canPartition3(new int[]{1, 5, 3}));        // expects false
+        log(canPartition3(new int[]{1, 2, 5}));        // expects false
+        log(canPartition3(new int[]{1, 100, 5, 3}));   // expects false
+        log(canPartition3(new int[]{1}));              // expects false
     }
 }
