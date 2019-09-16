@@ -1,4 +1,4 @@
-package DP.LIS;
+package DP.LongestSubsequence;
 
 import static Utils.Helpers.*;
 
@@ -86,11 +86,11 @@ public class L300_LongestIncreasingSubsequence {
     }
 
     /*
-    * 解法3：插入排序
-    * - 思路：题中 Follow up 中问是否有 O(nlogn) 的解法。当有大 O 中有 log 时要联想到二分查找，而二分查找需要数组是 sorted。
-    *   因此可想如何通过构造有序数组来求得上升子序列。视频讲解 SEE: https://www.youtube.com/watch?v=YoeWZ3ELMEk (7'58'')。
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
-    * */
+     * 解法3：插入排序
+     * - 思路：题中 Follow up 中问是否有 O(nlogn) 的解法。当有大 O 中有 log 时要联想到二分查找，而二分查找需要数组是 sorted。
+     *   因此可想如何通过构造有序数组来求得上升子序列。视频讲解 SEE: https://www.youtube.com/watch?v=YoeWZ3ELMEk (7'58'')。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+     * */
     public static int lengthOfLIS3(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
         int[] lis = new int[nums.length];  // 记录最长上升子序列
@@ -107,12 +107,9 @@ public class L300_LongestIncreasingSubsequence {
     }
 
     public static void main(String[] args) {
-        int[] a = new int[]{1, 5, 8, 3, 0, 9};
-        log(Arrays.binarySearch(a, 0, a.length, 10));
-
-        // log(lengthOfLIS(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
-        // log(lengthOfLIS(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
-        // log(lengthOfLIS(new int[]{1, 3, 6, 7, 9, 4, 10, 5, 6}));  // expects 6.
-        // log(lengthOfLIS(new int[]{0}));                           // expects 1.
+        log(lengthOfLIS(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
+        log(lengthOfLIS(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
+        log(lengthOfLIS(new int[]{1, 3, 6, 7, 9, 4, 10, 5, 6}));  // expects 6.
+        log(lengthOfLIS(new int[]{0}));                           // expects 1.
     }
 }

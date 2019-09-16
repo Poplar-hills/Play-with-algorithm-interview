@@ -1,4 +1,4 @@
-package DP.LIS;
+package DP.LongestSubsequence;
 
 import static Utils.Helpers.*;
 
@@ -20,10 +20,10 @@ import java.util.Arrays;
 
 public class L376_WiggleSubsequence {
     /*
-    * 超时解：DFS
-    * - 思路：深度优先遍历，对于每个 nums[i]，都在 (i..n] 中搜索下一个能与 nums[i] 连成 wiggle sequence 的数字。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 超时解：DFS
+     * - 思路：深度优先遍历，对于每个 nums[i]，都在 (i..n] 中搜索下一个能与 nums[i] 连成 wiggle sequence 的数字。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int wiggleMaxLength(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
         return 1 + Math.max(helper(nums, 0, true), helper(nums, 0, false));  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
@@ -41,11 +41,11 @@ public class L376_WiggleSubsequence {
     }
 
     /*
-    * 解法1：Recursion + Memoization
-    * - 思路：在解法1的基础上加入 Memoization。∵ helper 的输入参数有两个：i、isUp ∴ memoization 要根据这两个参数设置。
-    *   即在峰/谷两种状态下为 i 各设置一行缓存。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法1：Recursion + Memoization
+     * - 思路：在解法1的基础上加入 Memoization。∵ helper 的输入参数有两个：i、isUp ∴ memoization 要根据这两个参数设置。
+     *   即在峰/谷两种状态下为 i 各设置一行缓存。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int wiggleMaxLength1(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
@@ -71,16 +71,16 @@ public class L376_WiggleSubsequence {
     }
 
     /*
-    * 解法2：DP
-    * - 思路：
-    *   - 定义子问题：f(i) 表示“在前 i 个数字中，以第 i 个数结尾的并且是 wiggle subsequence 的最长子序列的长度”；
-    *   - 状态转移方程：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示当前处于峰/谷。
-    * - 实现：将解法1中的两行缓存拆成2个 dp 数组来用，最后比较两数组的最后一个元素即可。
-    *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
-    *        up  [1  2   2  4   4   4   4   4   6  6]
-    *      down  [1  1   3  3   3   3   5   5   5  7]
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法2：DP
+     * - 思路：
+     *   - 定义子问题：f(i) 表示“在前 i 个数字中，以第 i 个数结尾的并且是 wiggle subsequence 的最长子序列的长度”；
+     *   - 状态转移方程：f(i, ord) = max(1 + f(j, !ord))，其中 j ∈ [0,i)，ord 表示当前处于峰/谷。
+     * - 实现：将解法1中的两行缓存拆成2个 dp 数组来用，最后比较两数组的最后一个元素即可。
+     *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
+     *        up  [1  2   2  4   4   4   4   4   6  6]
+     *      down  [1  1   3  3   3   3   5   5   5  7]
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int wiggleMaxLength2(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
@@ -104,13 +104,13 @@ public class L376_WiggleSubsequence {
     }
 
     /*
-    * 解法3：DP（解法2的时间优化版）
-    * - 思路：只用一层循环求解。
-    *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
-    *        up  [1  2   2  4   4   4   4   4   6  6]
-    *      down  [1  1   3  3   3   3   5   5   5  7]
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法3：DP（解法2的时间优化版）
+     * - 思路：只用一层循环求解。
+     *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
+     *        up  [1  2   2  4   4   4   4   4   6  6]
+     *      down  [1  1   3  3   3   3   5   5   5  7]
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static int wiggleMaxLength3(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
@@ -138,13 +138,13 @@ public class L376_WiggleSubsequence {
     }
 
     /*
-    * 解法4：DP（解法2的空间优化版）
-    * - 思路：∵ 在解法2中我们只是用了 up 和 down 数组中的前一个数字 ∴ 不需要维护整个数组，而只要复用变量即可：
-    *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
-    *        up   1  2      4   4   4          6
-    *      down   1      3              5   5      7
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
+     * 解法4：DP（解法2的空间优化版）
+     * - 思路：∵ 在解法2中我们只是用了 up 和 down 数组中的前一个数字 ∴ 不需要维护整个数组，而只要复用变量即可：
+     *            [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
+     *        up   1  2      4   4   4          6
+     *      down   1      3              5   5      7
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static int wiggleMaxLength4(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 

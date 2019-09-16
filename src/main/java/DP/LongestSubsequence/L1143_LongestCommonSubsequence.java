@@ -1,4 +1,4 @@
-package DP.LCS;
+package DP.LongestSubsequence;
 
 import static Utils.Helpers.*;
 
