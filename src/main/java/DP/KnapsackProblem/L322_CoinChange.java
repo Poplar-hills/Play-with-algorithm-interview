@@ -140,7 +140,7 @@ public class L322_CoinChange {
 
     public static void main(String[] args) {
         log(coinChange(new int[]{2, 5}, 11));         // expects 4. (5 + 2 + 2 + 2)
-        log(coinChange(new int[]{2, 5, 10, 1}, 27));  // expects 4.
+        log(coinChange(new int[]{2, 5, 10, 1}, 27));  // expects 4. (10 + 10 + 5 + 2)
         log(coinChange(new int[]{1, 2, 5}, 11));      // expects 3. (5 + 5 + 1)
         log(coinChange(new int[]{2}, 3));             // expects -1.
     }
