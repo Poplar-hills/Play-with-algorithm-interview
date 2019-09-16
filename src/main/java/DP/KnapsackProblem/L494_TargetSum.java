@@ -14,19 +14,19 @@ import static Utils.Helpers.*;
 
 public class L494_TargetSum {
     /*
-    * 解法1：Back-tracking（即 DFS，而没有 memoization 的 DFS 就是 Brute force)
-    * - TODO: Brute force 与 Back-tracking 与 DFS 的关系？？？
-    * - 思路：∵ nums 中的每个元素都有 + 或 - 两种选择 ∴ 每个选择都会产生两条路径。比如对 nums=[1,2,3], S=0 来说：
-    *                          0
-    *                    +1/       \-1
-    *                 1                -1
-    *             +2/  -2\          +2/  -2\
-    *            3       -1        1       -3
-    *        +3/ -3\  +3/ -3\  +3/ -3\  +3/ -3\
-    *        6     0  2    -4   4   -2   0    -6
-    *   可见形成了一个树形结构，而树天然具有递归性，因此可采用回溯法（即 DFS）求解。
-    * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
-    * */
+     * 解法1：Back-tracking（即 DFS，而没有 memoization 的 DFS 就是 Brute force)
+     * - TODO: Brute force 与 Back-tracking 与 DFS 的关系？？？
+     * - 思路：∵ nums 中的每个元素都有 + 或 - 两种选择 ∴ 每个选择都会产生两条路径。比如对 nums=[1,2,3], S=0 来说：
+     *                          0
+     *                    +1/       \-1
+     *                 1                -1
+     *             +2/  -2\          +2/  -2\
+     *            3       -1        1       -3
+     *        +3/ -3\  +3/ -3\  +3/ -3\  +3/ -3\
+     *        6     0  2    -4   4   -2   0    -6
+     *   可见形成了一个树形结构，而树天然具有递归性，因此可采用回溯法（即 DFS）求解。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
+     * */
     public static int findTargetSumWays(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
         return dfs(nums, 0, S);
@@ -68,9 +68,9 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法3：解法2的 Map 版
-    * - 思路：使用 Map 实现缓存，key 为 "s->i" 的形式，value 为计算结果。时间、空间复杂度与解法2一致。
-    * */
+     * 解法3：解法2的 Map 版
+     * - 思路：使用 Map 实现缓存，key 为 "s->i" 的形式，value 为计算结果。时间、空间复杂度与解法2一致。
+     * */
     public static int findTargetSumWays3(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
         int sum = Arrays.stream(nums).reduce(0, Integer::sum);
@@ -90,18 +90,18 @@ public class L494_TargetSum {
     }
 
 	/*
-    * 解法4：DP
-    * - 思路：∵ nums 中的每个元素都有 + 或 - 两种选择：
-    *   - 定义子问题：f(i, s) 表示"用前 i 个元素填充剩余容量 s 共有几种方式"；
-    *   - 状态转移方程：f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i])。
-    *   - 填表验证：对于 nums=[1,1,1,1], S=2 有：
-    *          v | i\s -4 -3 -2 -1  0  1  2  3  4   (其中 ∵ nums 中的元素都是非负数 ∴ s ∈ [-sum, sum])
-    *          1 |  0   0  0  0  1  0  1  0  0  0
-    *          1 |  1   0  0  1  0  2  0  1  0  0
-    *          1 |  2   0  1  0  3  0  3  0  1  0
-    *          1 |  3   1  0  4  0  6  0  4  0  1
-    * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
-    * */
+     * 解法4：DP
+     * - 思路：∵ nums 中的每个元素都有 + 或 - 两种选择：
+     *   - 定义子问题：f(i, s) 表示"用前 i 个元素填充剩余容量 s 共有几种方式"；
+     *   - 状态转移方程：f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i])。
+     *   - 填表验证：对于 nums=[1,1,1,1], S=2 有：
+     *          v | i\s -4 -3 -2 -1  0  1  2  3  4   (其中 ∵ nums 中的元素都是非负数 ∴ s ∈ [-sum, sum])
+     *          1 |  0   0  0  0  1  0  1  0  0  0
+     *          1 |  1   0  0  1  0  2  0  1  0  0
+     *          1 |  2   0  1  0  3  0  3  0  1  0
+     *          1 |  3   1  0  4  0  6  0  4  0  1
+     * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
+     * */
     public static int findTargetSumWays4(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
 
@@ -129,11 +129,11 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法5：DP + 滚动数组（解法4的空间优化版）
-    * - 后期优化：∵ 状态转移方程仍然是 f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i]) ∴ 可见任意一格的计算结果都是基于
-    *   前一行中左右两侧的格中得来的，并非只由一侧的结果得来 ∴ 不能采用 _ZeroOneKnapsack 解法4中的方式将 dp 数组进一步优化成一维。
-    * - 时间复杂度 O(n*sum)，空间复杂度 O(sum)。
-    * */
+     * 解法5：DP + 滚动数组（解法4的空间优化版）
+     * - 后期优化：∵ 状态转移方程仍然是 f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i]) ∴ 可见任意一格的计算结果都是基于
+     *   前一行中左右两侧的格中得来的，并非只由一侧的结果得来 ∴ 不能采用 _ZeroOneKnapsack 解法4中的方式将 dp 数组进一步优化成一维。
+     * - 时间复杂度 O(n*sum)，空间复杂度 O(sum)。
+     * */
     public static int findTargetSumWays5(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
 
@@ -161,20 +161,20 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法6：DP（转化为0/1背包）
-    * - 思路：通过一点数学推导转化为0/1背包问题：设所有给 + 的元素之和为 plusSum，给 - 的元素之和为 minusSum，则有：
-    *       plusSum + minusSum = sum
-    *       plusSum - minusSum = S
-    *   两边相加得到：2 * plusSum = S + sum，最终得到：plusSum = (S + sum) / 2，如此一来我们不再需要考虑添加 - 的情况，
-    *   将原问题转化成为：“用 nums 中的元素填满 (S+sum)/2 的容量共有几种方式？”，就是一个典型的0/1背包问题（注意背包容量必须
-    *   刚好填满），从而得到状态转移方程 f(i, s) = f(i - 1, s) + f(f - 1, s - nums[i])。
-    * - 时间复杂度 O(n*(sum+S))，空间复杂度 O(S+sum)。
-    * */
+     * 解法6：DP（转化为0/1背包）
+     * - 思路：通过一点数学推导转化为0/1背包问题：设所有给 + 的元素之和为 plusSum，给 - 的元素之和为 minusSum，则有：
+     *       plusSum + minusSum = sum
+     *       plusSum - minusSum = S
+     *   两边相加得到：2 * plusSum = S + sum，最终得到：plusSum = (S+sum)/2，如此一来我们不再需要考虑添加 - 的情况，因此
+     *   将原问题转化成为：“用 nums 中的元素填满 (S+sum)/2 的容量共有几种方式？”，就是一个典型的0/1背包问题（注意背包容量必须
+     *   刚好填满），从而得到状态转移方程 f(i, s) = f(i-1, s) + f(f-1, s-nums[i])。
+     * - 时间复杂度 O(n*(sum+S))，空间复杂度 O(S+sum)。
+     * */
     public static int findTargetSumWays6(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
 
         int sum = Arrays.stream(nums).reduce(0, Integer::sum);
-        if ((S + sum) % 2 == 1 || S > sum) return 0;  // ∵ 下面 dp 要开辟 (S+sum)/2 的大小，若不能被2整除，则无解
+        if ((S + sum) % 2 == 1 || S > sum) return 0;  // ∵ 要填充的容量为 (S+sum)/2 ∴ 若该容量不是整除，说明无解
 
         int n = nums.length;
         int c = (S + sum) / 2;
@@ -196,11 +196,11 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法7：DP（转化为0/1背包 + 一位数组）
-    * - 思路：不同于解法5，解法6中的每个格的计算结果只一来于上一行的左侧部分 ∴ 可以采用 _ZeroOneKnapsack 解法4中的方式将 dp
-    *   数组进一步优化成一维。
-    * - 时间复杂度 O(n*(sum+S))，空间复杂度 O(S+sum)。
-    * */
+     * 解法7：DP（转化为0/1背包 + 一位数组）
+     * - 思路：不同于解法5，解法6中的每个格的计算结果只一来于上一行的左侧部分 ∴ 可以采用 _ZeroOneKnapsack 解法4中的方式将 dp
+     *   数组进一步优化成一维。
+     * - 时间复杂度 O(n*(sum+S))，空间复杂度 O(S+sum)。
+     * */
     public static int findTargetSumWays7(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
 
@@ -214,15 +214,15 @@ public class L494_TargetSum {
             if (nums[0] == s) dp[s] += 1;
 
         for (int i = 1; i < nums.length; i++)
-            for (int s = dp.length - 1; s >= nums[i]; s--)
+            for (int s = dp.length - 1; s >= nums[i]; s--)  // 从后完全遍历/覆盖，遍历到 nums[i] 终止
                 dp[s] += dp[s - nums[i]];
 
         return dp[dp.length - 1];
     }
 
     /*
-    * 解法8：解法5的精简版（复杂度一致）
-    * */
+     * 解法8：解法5的精简版（复杂度一致）
+     * */
     public static int findTargetSumWays8(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
 
