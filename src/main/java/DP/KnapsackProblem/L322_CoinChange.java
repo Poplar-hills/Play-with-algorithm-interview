@@ -95,10 +95,10 @@ public class L322_CoinChange {
     }
 
     /*
-    * 解法4：解法3的简化版
-    * - 思路：本解法与解法3的不同之处在于对最基本问题的设定不同。
-    * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
-    * */
+     * 解法4：解法3的简化版
+     * - 思路：本解法与解法3的不同之处在于对最基本问题的设定不同。
+     * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
+     * */
     public static int coinChange4(int[] coins, int amount) {
         if (amount < 1) return 0;
 
@@ -115,9 +115,9 @@ public class L322_CoinChange {
     }
 
     /*
-    * 解法5：Recursion + Memoization
-    * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
-    * */
+     * 解法5：Recursion + Memoization
+     * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
+     * */
     public static int coinChange5(int[] coins, int amount) {
         if (amount < 1) return 0;
         return minCoinNum(coins, amount, new int[amount + 1]);
