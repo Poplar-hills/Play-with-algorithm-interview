@@ -8,14 +8,14 @@ import java.util.Comparator;
 /*
 * Ones and Zeroes
 *
-* - 给定一个字符串数组，其中每个字符串都是由01组成的，问用 m 个0和 n 个1最多能组成数组中的多少个字符串。
+* - 给定一个字符串数组 strs，其中每个字符串都是由0、1组成的。问 m 个0和 n 个1最多能组成 strs 中的多少个字符串？
 * - Note: each 0 and 1 can be used at most once.
 * */
 
 public class L474_OnesAndZeroes {
     /*
-    * 错误解：第一直觉是用贪心算法，但贪心算法无法做到全局最优，例如 test case 3。
-    * */
+     * 错误解：第一直觉是用贪心算法，但贪心算法无法做到全局最优，例如 test case 3。
+     * */
     public static int findMaxForm(String[] strs, int m, int n) {
         Arrays.sort(strs, Comparator.comparingInt(String::length));  // 让字符串从短到长排列
         int res = 0;
@@ -34,13 +34,12 @@ public class L474_OnesAndZeroes {
     }
 
     /*
-    * 解法1：DP
-    * - 思路：该题实际上是一道多维的0/1背包问题 —— 用数组中的字符串（相当于物品）同时填充0、1两个背包。每个字符串都有放/不放两种
-    *   选择，因此：
-    *   - 子问题定义：f(i, z, o) 表示“用前 i 个字符串填充0容量为 z 和1容量为 o 的背包，最多能填充的物品数量”；
-    *   - 状态转移方程：f(i, z, o) = max(f(i-1, z, o), 1 + f(i-1, z-zeros[i], o-ones[i]))。
-    * - 时间复杂度 O(l*m*n)，空间复杂度 O(l*m*n)。
-    * */
+     * 解法1：DP
+     * - 思路：该题是一道多维0/1背包问题：用数组中的字符串同时填充容量为 m 和 n 的两个背包。每个字符串都有放/不放两种选择，因此：
+     *   - 子问题定义：f(i, z, o) 表示“用前 i 个字符串填充0容量为 z 和1容量为 o 的背包，最多能填充的物品数量”；
+     *   - 状态转移方程：f(i, z, o) = max(f(i-1, z, o), 1 + f(i-1, z-zeros[i], o-ones[i]))。
+     * - 时间复杂度 O(l*m*n)，空间复杂度 O(l*m*n)。
+     * */
     public static int findMaxForm1(String[] strs, int m, int n) {
         if (strs == null || strs.length == 0) return 0;
 
@@ -76,12 +75,11 @@ public class L474_OnesAndZeroes {
     }
 
     /*
-    * 解法2：DP + 二维表（解法1的空间优化版）
-    * - 思路：_ZeroOneKnapsack 解法4的思路是将二维表化简为一维数组，每次覆盖该数组；在该题中同样可以采用这个思路，即将解法1中
-    *   的三维表化简为二维表，每次在计算 f(i) 时都覆盖一遍二维表。因此状态转移方程化简为：
-    *   f(z, o) = max(f(z, o), 1 + f(z-zeros[i], o-ones[i]))。
-    * - 时间复杂度 O(l*m*n)，空间复杂度 O(m*n)。
-    * */
+     * 解法2：DP + 二维表（解法1的空间优化版）
+     * - 思路：借鉴 _ZeroOneKnapsack 解法4的思路，将二维表化简为一维数组。该思路在本题中就是将解法1中的三维表化简为二维表，
+     *   每次在计算 f(i) 时都覆盖一遍二维表 ∴ 状态转移方程化简为：f(z, o) = max(f(z, o), 1 + f(z-zeros[i], o-ones[i]))。
+     * - 时间复杂度 O(l*m*n)，空间复杂度 O(m*n)。
+     * */
     public static int findMaxForm2(String[] strs, int m, int n) {
         if (strs == null || strs.length == 0) return 0;
 
