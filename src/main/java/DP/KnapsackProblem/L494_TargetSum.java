@@ -106,11 +106,11 @@ public class L494_TargetSum {
 
 	/*
     * 解法4：DP
-    * - 思路：容量为 S，nums 中的每个元素都有 + 或 - 两种选择
+    * - 思路：∵ nums 中的每个元素都有 + 或 - 两种选择：
     *   - 定义子问题：f(i, s) 表示"用前 i 个元素填充剩余容量 s 共有几种方式"；
     *   - 状态转移方程：f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i])。
     *   - 填表验证：对于 nums=[1,1,1,1], S=2 有：
-    *          v | i\s -4 -3 -2 -1  0  1  2  3  4   (其中 s ∈ [-sum, sum])
+    *          v | i\s -4 -3 -2 -1  0  1  2  3  4   (其中 ∵ nums 中的元素都是非负数 ∴ s ∈ [-sum, sum])
     *          1 |  0   0  0  0  1  0  1  0  0  0
     *          1 |  1   0  0  1  0  2  0  1  0  0
     *          1 |  2   0  1  0  3  0  3  0  1  0
@@ -124,18 +124,18 @@ public class L494_TargetSum {
         if (S > sum || S < -sum) return 0;
 
         int n = nums.length;
-        int[][] dp = new int[n][sum * 2 + 1];    // ∵ s ∈ [-sum, sum] ∴ 开辟 sum*2+1 的空间
+        int[][] dp = new int[n][2 * sum + 1];   // ∵ s ∈ [-sum, sum] ∴ 开辟 sum*2+1 的空间
 
         for (int s = -sum; s <= sum; s++) {     // base case
-            if (s == 0 && nums[0] == 0) dp[0][s + sum] += 1;  // 注意特殊情况：∵ -0 = +0 = 0 ∴ 结果应为2
+            if (s == 0 && nums[0] == 0) dp[0][s + sum] += 1;  // test case 3 中的特殊情况：s = nums[0] = 0 时 ∵ -0 = +0 = 0 ∴ 结果应为2
             if (Math.abs(s) == nums[0]) dp[0][s + sum] += 1;
         }
 
         for (int i = 1; i < n; i++) {
             for (int s = -sum; s <= sum; s++) {
-                if (s - nums[i] >= -sum)         // 注意越界情况（比如上面填表中 s=-5 时）
+                if (s - nums[i] >= -sum)
                     dp[i][s + sum] += dp[i - 1][s + sum - nums[i]];
-                if (s + nums[i] <= sum)          // 注意越界情况（比如上面填表中 s=5 时）
+                if (s + nums[i] <= sum)
                     dp[i][s + sum] += dp[i - 1][s + sum + nums[i]];
             }
         }
@@ -144,25 +144,89 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法5：DP + 一维数组
-    * - 思路：通过一点数学推导转化为0/1背包问题：设 nums 中加 + 的元素之和为 plusSum，加 - 的元素之和为 minusSum，则有：
-    *       plusSum + minusSum = sum
-    *       plusSum - minusSum = S
-    *   两边相加得到：2 * plusSum = S + sum，最终得到：plusSum = (S + sum) / 2，于是问题转化为：
-    *   “用 nums 中的元素填充 (S+sum)/2，共有几种选择方式能填满？”，这就是个典型的0/1背包问题了 —— 每个元素有放/不放两种选择。
-    * - 时间复杂度 O(n*(sum+S))，空间复杂度 O(S+sum)。
+    * 解法5：DP + 滚动数组（解法4的空间优化版）
+    * - 后期优化：∵ 状态转移方程仍然是 f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i]) ∴ 可见任意一格的计算结果都是基于
+    *   前一行中左右两侧的格中得来的，并非只由一侧的结果得来 ∴ 不能采用 _ZeroOneKnapsack 解法4中的方式将 dp 数组进一步优化成一维。
+    * - 时间复杂度 O(n*sum)，空间复杂度 O(sum)。
     * */
     public static int findTargetSumWays5(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
 
         int sum = Arrays.stream(nums).reduce(0, Integer::sum);
-        if ((S + sum) % 2 == 1 || S > sum) return 0;  // 若 S+sum 为奇数，则 ÷2 后不是整数，说明无解
+        if (S > sum || S < -sum) return 0;
 
-        int[] dp = new int[(S + sum) / 2 + 1];  // 从这往下就是标准的 _ZeroOneKnapsack 解法4的实现
-        for (int s = 0; s < dp.length; s++) {
-            if (s == 0) dp[s] += 1;             // 若容量 s=0，则结果至少为1（nums[0]=0 时为2，nums[0]!=0 时再看下面的条件是否满足）
-            if (nums[0] == s) dp[s] += 1;
+        int n = nums.length;
+        int[][] dp = new int[2][2 * sum + 1];
+
+        for (int s = -sum; s <= sum; s++) {
+            if (s == 0 && nums[0] == 0) dp[0][s + sum] += 1;
+            if (Math.abs(s) == nums[0]) dp[0][s + sum] += 1;
         }
+
+        for (int i = 1; i < n; i++) {
+            for (int s = -sum; s <= sum; s++) {
+                if (s - nums[i] >= -sum)
+                    dp[i % 2][s + sum] = dp[(i - 1) % 2][s + sum - nums[i]];  // 注意这里是 = 而非 +=，∵ 要覆盖上次的结算结果，而非在之前的结果上累加
+                if (s + nums[i] <= sum)
+                    dp[i % 2][s + sum] += dp[(i - 1) % 2][s + sum + nums[i]];
+            }
+        }
+
+        return dp[(n - 1) % 2][S + sum];
+    }
+
+    /*
+    * 解法6：DP（转化为0/1背包）
+    * - 思路：通过一点数学推导转化为0/1背包问题：设所有给 + 的元素之和为 plusSum，给 - 的元素之和为 minusSum，则有：
+    *       plusSum + minusSum = sum
+    *       plusSum - minusSum = S
+    *   两边相加得到：2 * plusSum = S + sum，最终得到：plusSum = (S + sum) / 2，如此一来我们不再需要考虑添加 - 的情况，
+    *   将原问题转化成为：“用 nums 中的元素填满 (S+sum)/2 的容量共有几种方式？”，就是一个典型的0/1背包问题（注意背包容量必须
+    *   刚好填满），从而得到状态转移方程 f(i, s) = f(i - 1, s) + f(f - 1, s - nums[i])。
+    * - 时间复杂度 O(n*(sum+S))，空间复杂度 O(S+sum)。
+    * */
+    public static int findTargetSumWays6(int[] nums, int S) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int sum = Arrays.stream(nums).reduce(0, Integer::sum);
+        if ((S + sum) % 2 == 1 || S > sum) return 0;  // ∵ 下面 dp 要开辟 (S+sum)/2 的大小，若不能被2整除，则无解
+
+        int n = nums.length;
+        int c = (S + sum) / 2;
+        int[][] dp = new int[n][c + 1];
+        dp[0][0] = 1;                     // 若容量 s=0，则结果至少为1
+
+        for (int s = 0; s <= c; s++)
+            if (s == nums[0]) dp[0][s] += 1;
+
+        for (int i = 1; i < n; i++) {
+            for (int s = 0; s <= c; s++) {
+                dp[i][s] = dp[i - 1][s];
+                if (s >= nums[i])
+                    dp[i][s] += dp[i - 1][s - nums[i]];
+            }
+        }
+
+        return dp[n - 1][c];
+    }
+
+    /*
+    * 解法7：DP（转化为0/1背包 + 一位数组）
+    * - 思路：不同于解法5，解法6中的每个格的计算结果只一来于上一行的左侧部分 ∴ 可以采用 _ZeroOneKnapsack 解法4中的方式将 dp
+    *   数组进一步优化成一维。
+    * - 时间复杂度 O(n*(sum+S))，空间复杂度 O(S+sum)。
+    * */
+    public static int findTargetSumWays7(int[] nums, int S) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int sum = Arrays.stream(nums).reduce(0, Integer::sum);
+        if ((S + sum) % 2 == 1 || S > sum) return 0;
+
+        int[] dp = new int[(S + sum) / 2 + 1];
+        dp[0] = 1;
+
+        for (int s = 0; s < dp.length; s++)
+            if (nums[0] == s) dp[s] += 1;
 
         for (int i = 1; i < nums.length; i++)
             for (int s = dp.length - 1; s >= nums[i]; s--)
@@ -172,17 +236,17 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法6：解法4的精简版（复杂度一致）
+    * 解法8：解法5的精简版（复杂度一致）
     * */
-    public static int findTargetSumWays6(int[] nums, int S) {
+    public static int findTargetSumWays8(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
 
         int sum = Arrays.stream(nums).reduce(0, Integer::sum);
         if ((S + sum) % 2 == 1 || S > sum) return 0;
 
         int[] dp = new int[(S + sum) / 2 + 1];
-        dp[0] = 1;            // 若容量 s=0，则结果至少为1，下面再次覆盖后才是 dp[0] 的最终结果
-
+        dp[0] = 1;
+                              // 不再需要对第0行整行进行初始化
         for (int num : nums)  // 这里从第0个元素开始遍历、覆盖
             for (int s = dp.length - 1; s >= num; s--)
                 dp[s] += dp[s - num];
@@ -191,16 +255,16 @@ public class L494_TargetSum {
     }
 
     public static void main(String[] args) {
-        log(findTargetSumWays4(new int[]{1, 1, 1, 1}, 2));
+        log(findTargetSumWays8(new int[]{1, 1, 1, 1}, 2));
         // expects 4. -1+1+1+1、+1-1+1+1、+1+1-1+1、+1+1+1-1
 
-        log(findTargetSumWays4(new int[]{2, 1, 1, 2}, 0));
+        log(findTargetSumWays8(new int[]{2, 1, 1, 2}, 0));
         // expects 4. +2-1+1-2、-2+1-1+2、+2+1-1-2、-2-1+1+2
 
-        log(findTargetSumWays4(new int[]{0, 0, 1}, 1));
+        log(findTargetSumWays8(new int[]{0, 0, 1}, 1));
         // expects 4. +0+0+1、-0-0+1、+0-0+1、-0+0+1
 
-        log(findTargetSumWays4(new int[]{7, 9, 3, 8, 0, 2, 4, 8, 3, 9}, 0));
+        log(findTargetSumWays8(new int[]{7, 9, 3, 8, 0, 2, 4, 8, 3, 9}, 0));
         // expects 0.
     }
 }
