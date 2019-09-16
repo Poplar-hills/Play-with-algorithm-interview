@@ -9,7 +9,7 @@ import static Utils.Helpers.*;
 /*
 * Target Sum
 *
-* - 给定一个非零数字序列，在这些数字前面加上 + 或 - 号，求一共有多少种方式使其计算结果为给定的整数 S。
+* - 给定一个非负整数序列，在这些数字前面加上 + 或 - 号，求一共有多少种方式使其计算结果为给定的整数 S。
 * */
 
 public class L494_TargetSum {
@@ -110,11 +110,11 @@ public class L494_TargetSum {
     *   - 定义子问题：f(i, s) 表示"用前 i 个元素填充剩余容量 s 共有几种方式"；
     *   - 状态转移方程：f(i, s) = f(i-1, s-nums[i]) + f(i-1, s+nums[i])。
     *   - 填表验证：对于 nums=[1,1,1,1], S=2 有：
-    *          v | i\s -3 -2 -1  0  1  2  3   (其中 s ∈ [-sum, sum])
-    *          1 |  0   0  0  1  0  1  0  0
-    *          1 |  1   0  1  0  2  0  1  0
-    *          1 |  2   1  0  3  0  3  0  1
-    *          1 |  3   0  4  0  6  0  4  0
+    *          v | i\s -4 -3 -2 -1  0  1  2  3  4   (其中 s ∈ [-sum, sum])
+    *          1 |  0   0  0  0  1  0  1  0  0  0
+    *          1 |  1   0  0  1  0  2  0  1  0  0
+    *          1 |  2   0  1  0  3  0  3  0  1  0
+    *          1 |  3   1  0  4  0  6  0  4  0  1
     * - 时间复杂度 O(n*sum)，空间复杂度 O(n*sum)。
     * */
     public static int findTargetSumWays4(int[] nums, int S) {
@@ -126,9 +126,9 @@ public class L494_TargetSum {
         int n = nums.length;
         int[][] dp = new int[n][sum * 2 + 1];    // ∵ s ∈ [-sum, sum] ∴ 开辟 sum*2+1 的空间
 
-        for (int s = -sum; s <= sum; s++) {      // base case
-            if (s == 0) dp[0][s] += 1;           // 若容量 s=0，则结果至少为1（nums[i]=0 时是特殊情况 ∵ -0 = +0 = 0 ∴ 结果应为2）
-            if (Math.abs(s) == nums[0]) dp[0][s] += 1;
+        for (int s = -sum; s <= sum; s++) {     // base case
+            if (s == 0 && nums[0] == 0) dp[0][s + sum] += 1;  // 注意特殊情况：∵ -0 = +0 = 0 ∴ 结果应为2
+            if (Math.abs(s) == nums[0]) dp[0][s + sum] += 1;
         }
 
         for (int i = 1; i < n; i++) {
@@ -144,7 +144,7 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法4：DP + 一维数组
+    * 解法5：DP + 一维数组
     * - 思路：通过一点数学推导转化为0/1背包问题：设 nums 中加 + 的元素之和为 plusSum，加 - 的元素之和为 minusSum，则有：
     *       plusSum + minusSum = sum
     *       plusSum - minusSum = S
@@ -172,7 +172,7 @@ public class L494_TargetSum {
     }
 
     /*
-    * 解法5：解法4的精简版（复杂度一致）
+    * 解法6：解法4的精简版（复杂度一致）
     * */
     public static int findTargetSumWays6(int[] nums, int S) {
         if (nums == null || nums.length == 0) return 0;
@@ -191,16 +191,16 @@ public class L494_TargetSum {
     }
 
     public static void main(String[] args) {
-        log(findTargetSumWays(new int[]{1, 1, 1, 1}, 2));
+        log(findTargetSumWays4(new int[]{1, 1, 1, 1}, 2));
         // expects 4. -1+1+1+1、+1-1+1+1、+1+1-1+1、+1+1+1-1
 
-        log(findTargetSumWays(new int[]{2, 1, 1, 2}, 0));
+        log(findTargetSumWays4(new int[]{2, 1, 1, 2}, 0));
         // expects 4. +2-1+1-2、-2+1-1+2、+2+1-1-2、-2-1+1+2
 
-        log(findTargetSumWays(new int[]{0, 0, 1}, 1));
+        log(findTargetSumWays4(new int[]{0, 0, 1}, 1));
         // expects 4. +0+0+1、-0-0+1、+0-0+1、-0+0+1
 
-        log(findTargetSumWays(new int[]{7, 9, 3, 8, 0, 2, 4, 8, 3, 9}, 0));
+        log(findTargetSumWays4(new int[]{7, 9, 3, 8, 0, 2, 4, 8, 3, 9}, 0));
         // expects 0.
     }
 }
