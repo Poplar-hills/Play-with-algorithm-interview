@@ -24,22 +24,21 @@ import java.util.Arrays;
 
 public class L300_LongestIncreasingSubsequence {
     /*
-    * 解法1：Recursion + Memoization
-    * - 思路：
-    *   - 定义子问题：f(i) 表示“在前 i 个元素中，以第 i 个元素为结尾（即一定放第 i 个元素）的最长子序列的长度”；
-    *   - 状态转移方程：f(i) = max(1 + f(j))，其中 j ∈ [0,i)，且 nums[j] < nums[i]。
-    *   - 验证：对于 nums=[1, 5, 8, 3, 0, 9]，从头到尾遍历：
-    *          f(0) = 1；                             - j 无值可取
-    *          f(1) = 1 + f(0) = 2；                  - j 只有0可取
-    *          f(2) = max(1 + f(0), 1 + f(1)) = 3；   - j 可取0、1
-    *          f(3) = 1 + f(0) = 2；                  - ∵ 前3个元素中只有1能与3组成上升子序列 ∴ j 只能取0
-    *          f(4) = 1；                             - ∵ 前4个元素中没有能与3组成上升子序列的元素 ∴ j 无值可取
-    *          f(5) = max(1 + f(0), 1 + f(1), ..., 1 + f(4)) = 4；
-    *
-    *     由此可得到：nums=[1, 5, 8, 3, 0, 9]，最后遍历得到最大 LIS 长度为4。
-    *                     1  2  3  2  1  4
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法1：Recursion + Memoization
+     * - 思路：
+     *   - 定义子问题：f(i) 表示“在前 i 个元素中，以第 i 个元素为结尾（即一定放第 i 个元素）的最长子序列的长度”；
+     *   - 状态转移方程：f(i) = max(1 + f(j))，其中 j ∈ [0,i)，且 nums[j] < nums[i]。
+     *   - 验证：对于 nums=[1, 5, 8, 3, 0, 9]，从头到尾遍历：
+     *          f(0) = 1；                             - j 无值可取
+     *          f(1) = 1 + f(0) = 2；                  - j 只有0可取
+     *          f(2) = max(1 + f(0), 1 + f(1)) = 3；   - j 可取0、1
+     *          f(3) = 1 + f(0) = 2；                  - ∵ 前3个元素中只有1能与3组成上升子序列 ∴ j 只能取0
+     *          f(4) = 1；                             - ∵ 前4个元素中没有能与3组成上升子序列的元素 ∴ j 无值可取
+     *          f(5) = max(1 + f(0), 1 + f(1), ..., 1 + f(4)) = 4；
+     *     由此可得到：nums=[1, 5, 8, 3, 0, 9]，最后遍历得到最大 LIS 长度为4。
+     *                     1  2  3  2  1  4
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int lengthOfLIS(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
@@ -47,41 +46,43 @@ public class L300_LongestIncreasingSubsequence {
         Arrays.fill(lens, -1);
 
         for (int i = 0; i < nums.length; i++)
-            lens[i] = lengthOfLIS(nums, i, lens);
+            lens[i] = helper(nums, i, lens);  // lens 同时也作为 cache 传入
 
         return Arrays.stream(lens).reduce(Math::max).getAsInt();
     }
 
-    private static int lengthOfLIS(int[] nums, int i, int[] lens) {
+    private static int helper(int[] nums, int i, int[] lens) {
         if (i == 0) return 1;
         if (lens[i] != -1) return lens[i];
 
-        int maxLen = 1;  // 每个元素的 LIS 至少为1
+        int maxLen = 1;              // 每个元素的 LIS 至少为1
         for (int j = 0; j < i; j++)
             if (nums[j] < nums[i])
-                maxLen = Math.max(maxLen, 1 + lengthOfLIS(nums, j, lens));
+                maxLen = Math.max(maxLen, 1 + helper(nums, j, lens));
 
         return maxLen;
     }
 
     /*
-    * 解法2：DP
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法2：DP
+     * - 思路：解法1的 bottom-up 方式。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int lengthOfLIS2(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        int[] dp = new int[nums.length];
-        Arrays.fill(dp, 1);  // 每个元素的 LIS 都初始化为1
 
-        int res = 1;           // 只要 nums 中有元素，res 就至少为1（见 test case 3）
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);    // 每个元素的 LIS 最少为1
+
+        int maxLen = 1;        // 只要 nums 中有元素，res 就至少为1（见 test case 3）
         for (int i = 1; i < nums.length; i++)
             for (int j = 0; j < i; j++)
                 if (nums[j] < nums[i]) {
                     dp[i] = Math.max(dp[i], 1 + dp[j]);
-                    res = Math.max(res, dp[i]);
+                    maxLen = Math.max(maxLen, dp[i]);
                 }
 
-        return res;
+        return maxLen;
     }
 
     /*
@@ -92,22 +93,26 @@ public class L300_LongestIncreasingSubsequence {
     * */
     public static int lengthOfLIS3(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        int[] dp = new int[nums.length];  // 保存最长上升子序列的元素
+        int[] lis = new int[nums.length];  // 记录最长上升子序列
         int len = 0;
 
         for (int num : nums) {
-            int i = Arrays.binarySearch(dp, 0, len, num);  // 在 dp[0..len) 中查找 num 的索引（只有 num 重复时 i 才为正）
-            if (i < 0) i = -(i + 1);    // 若找不到，则将 i 转换成插入点（见 Arrays.binarySearch 文档）
-            dp[i] = num;                // 替换元素
-            if (i == len) len++;        // 若 num 比 dp 中的元素都大，则不会替换 dp 中的任何元素，而是直接插入，因此要维护 len
+            int i = Arrays.binarySearch(lis, 0, len, num);  // 在 lis[0..len) 中查找 num 的索引（只有找到 num 时 i 才 ≥0）
+            if (i < 0) i = -(i + 1);  // 若找不到，则将 i 转换成插入点（见 Arrays.binarySearch 文档）
+            lis[i] = num;             // 在插入点处插入元素
+            if (i == len) len++;      // 若插入点在最右边（num 比 lis 中的元素都大）则直接插入到 lis 末尾，并维护 len
         }
 
-        return len;                     // len 即是 LIS 的长度
+        return len;
     }
 
     public static void main(String[] args) {
-        log(lengthOfLIS3(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
-        log(lengthOfLIS3(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
-        log(lengthOfLIS3(new int[]{0}));                           // expects 1.
+        int[] a = new int[]{1, 5, 8, 3, 0, 9};
+        log(Arrays.binarySearch(a, 0, a.length, 10));
+
+        // log(lengthOfLIS(new int[]{1, 5, 8, 3, 0, 9}));            // expects 4. One of the LISs is [1,5,8,9]
+        // log(lengthOfLIS(new int[]{10, 9, 2, 5, 3, 7, 101, 18}));  // expects 4. One of the LISs is [2,3,7,101]
+        // log(lengthOfLIS(new int[]{1, 3, 6, 7, 9, 4, 10, 5, 6}));  // expects 6.
+        // log(lengthOfLIS(new int[]{0}));                           // expects 1.
     }
 }
