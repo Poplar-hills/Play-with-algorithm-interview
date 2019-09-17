@@ -222,12 +222,15 @@ public class L376_WiggleSubsequence {
         if (n < 2) return n;
 
         int count = 1;
-        boolean isUp = false;
+        int isUp = 0;  // 1为峰，-1为谷，0不是峰也不是谷
 
         for (int i = 1; i < n; i++) {
-            if ((nums[i - 1] < nums[i] && !isUp) || (nums[i - 1] > nums[i] && isUp)) {
+            if ((nums[i - 1] < nums[i] && isUp != 1)) {  // peak
                 count++;
-                isUp = !isUp;
+                isUp = 1;
+            } else if (nums[i - 1] > nums[i] && isUp != -1) {  // valley
+                count++;
+                isUp = -1;
             }
         }
 
