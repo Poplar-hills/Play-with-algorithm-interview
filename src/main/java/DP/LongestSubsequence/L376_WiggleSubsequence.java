@@ -189,8 +189,8 @@ public class L376_WiggleSubsequence {
     /*
      * 解法5：Greedy
      * - 思路：采用贪心算法。本题的规律是统计单调上升/下降区间内的极值，极值的个数就是 wiggle sequence 的最大长度。解释 SEE:
-     *   https://leetcode.com/problems/wiggle-subsequence/solution/ (Approach #5 中的解释)。
-     * - 实现：在遍历过程中记录前后 diff，来识别当前数组是在 wiggle up 还是在 wiggle down（用 test case 1 画图理解）。
+     *   https://leetcode.com/problems/wiggle-subsequence/solution/ (Approach #5 中的解释，以及第一条 comment)。
+     * - 实现：在遍历过程中记录前后 diff 来识别当前极值（用 test case 1 画图理解）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int wiggleMaxLength5(int[] nums) {
@@ -211,13 +211,35 @@ public class L376_WiggleSubsequence {
         return count;
     }
 
+    /*
+     * 解法6：Greedy
+     * - 思路：与解法5一致。
+     * - 实现：另一种数极值的办法是通过前后两个元素和一个标志位来判断。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static int wiggleMaxLength6(int[] nums) {
+        int n = nums.length;
+        if (n < 2) return n;
+
+        int count = 1;
+        boolean isUp = false;
+
+        for (int i = 1; i < n; i++) {
+            if ((nums[i - 1] < nums[i] && !isUp) || (nums[i - 1] > nums[i] && isUp)) {
+                count++;
+                isUp = !isUp;
+            }
+        }
+
+        return count;
+    }
     public static void main(String[] args) {
-        log(wiggleMaxLength5(new int[]{5, 10, 13, 15, 11, 7, 16, 8}));  // expects 5. 其中之一是 [10,13,11,16,8]
-        log(wiggleMaxLength5(new int[]{1, 7, 4, 9, 2, 5}));             // expects 6. 整个序列都是
-        log(wiggleMaxLength5(new int[]{3, 3, 3, 2, 5}));                // expects 3.
-        log(wiggleMaxLength5(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));    // expects 2.
-        log(wiggleMaxLength5(new int[]{1, 0}));                         // expects 2.
-        log(wiggleMaxLength5(new int[]{0, 0}));                         // expects 1.
-        log(wiggleMaxLength5(new int[]{1}));                            // expects 1.
+        log(wiggleMaxLength6(new int[]{5, 10, 13, 15, 11, 7, 16, 8}));  // expects 5. 其中之一是 [10,13,11,16,8]
+        log(wiggleMaxLength6(new int[]{1, 7, 4, 9, 2, 5}));             // expects 6. 整个序列都是
+        log(wiggleMaxLength6(new int[]{3, 3, 3, 2, 5}));                // expects 3.
+        log(wiggleMaxLength6(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));    // expects 2.
+        log(wiggleMaxLength6(new int[]{1, 0}));                         // expects 2.
+        log(wiggleMaxLength6(new int[]{0, 0}));                         // expects 1.
+        log(wiggleMaxLength6(new int[]{1}));                            // expects 1.
     }
 }
