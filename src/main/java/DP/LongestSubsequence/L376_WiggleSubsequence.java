@@ -35,7 +35,7 @@ public class L376_WiggleSubsequence {
      *   2. 对每个元素 nums[i] 都在 [0,i) 范围内搜索下一个能与其连成 wiggle sequence 同时长度最大的元素。
      *   - 注意我们假设第一个元素上是谷得到的最长序列是5，还需求第一个元素上是峰时的情况，并取两者最大值才是最终结果。
      *   - ∴ 用递归实现时可以从最后一个元素开始，向前递归 —— f(n) -> f(n-1) -> ... -> f(0)。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int wiggleMaxLength(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
@@ -57,7 +57,7 @@ public class L376_WiggleSubsequence {
      * - 思路：与超时解1一致。
      * - 实现：与超时解1不同在于，本解法从第一个元素开始，向后递归；对每个元素 nums[i] 都在 (i,n] 范围内从前往后搜索下一个能与
      *   nums[i] 连成 wiggle sequence 且长度最大的元素。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int wiggleMaxLength0(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
@@ -65,40 +65,40 @@ public class L376_WiggleSubsequence {
     }
 
     private static int helper0(int[] nums, int i, boolean isPeak) {
-        if (i == nums.length) return 0;  // 递归到底时返回0
+        if (i == nums.length) return 0;            // 递归到底时返回0
         int maxLen = 1;
-        for (int j = i + 1; j < nums.length; j++)  // 在 [i+1,..) 范围内从前往后搜索
+        for (int j = i + 1; j < nums.length; j++)  // 在 [i+1,..) 范围内搜索
             if ((isPeak && nums[j] < nums[i]) || (!isPeak && nums[j] > nums[i]))
                 maxLen = Math.max(maxLen, 1 + helper0(nums, j, !isPeak));
         return maxLen;
     }
 
     /*
-     * 解法1：Recursion + Memoization
-     * - 思路：在解法1的基础上加入 Memoization。∵ helper 的输入参数有两个：i、isUp ∴ memoization 要根据这两个参数设置。
-     *   即在峰/谷两种状态下为 i 各设置一行缓存。
+     * 解法1：Recursion + Memoization (DFS with cache)
+     * - 思路：在超时解1的基础上加入 Memoization。∵ helper 的输入参数有两个：i、isPeak ∴ cache 是二维的。而又因为 isPeak
+     *   只有两种取值，因此 cache 只需开辟两行即可，即在峰/谷两种状态下为 i 各设置一行缓存。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int wiggleMaxLength1(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
-        int[][] cache = new int[2][nums.length];  // 开辟2行缓存，分别记录 i 处于峰/谷时的计算结果
+        int n = nums.length;
+        int[][] cache = new int[2][n];  // 开辟2行缓存，分别记录 i 处于峰/谷时的计算结果
         for (int[] row : cache)
             Arrays.fill(row, -1);
 
-        return 1 + Math.max(helper(nums, 0, true, cache), helper(nums, 0, false, cache));
+        return Math.max(helper1(nums, n - 1, true, cache), helper1(nums, n - 1, false, cache));
     }
 
-    private static int helper(int[] nums, int i, boolean isPeak, int[][] cache) {
-        if (i == nums.length) return 0;
-
-        int[] cacheRow = isPeak ? cache[0] : cache[1];  // 先根据 isUp 取得相应的缓存行
+    private static int helper1(int[] nums, int i, boolean isPeak, int[][] cache) {
+        if (i == 0) return 1;
+        int[] cacheRow = isPeak ? cache[0] : cache[1];  // 先根据 isPeak 取得相应的缓存行的引用
         if (cacheRow[i] != -1) return cacheRow[i];
 
-        int maxLen = 0;
-        for (int j = i; j < nums.length; j++)
-            if ((isPeak && nums[j] > nums[i]) || (!isPeak && nums[j] < nums[i]))
-                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isPeak, cache));
+        int maxLen = 1;
+        for (int j = 0; j < i; j++)
+            if ((isPeak && nums[j] < nums[i]) || (!isPeak && nums[j] > nums[i]))
+                maxLen = Math.max(maxLen, 1 + helper1(nums, j, !isPeak, cache));
 
         return cacheRow[i] = maxLen;
     }
@@ -193,12 +193,12 @@ public class L376_WiggleSubsequence {
     }
 
     public static void main(String[] args) {
-        log(wiggleMaxLength(new int[]{5, 10, 13, 15, 10, 5, 16, 8}));  // expects 5. 其中之一是 [10,13,10,16,8]
-        log(wiggleMaxLength(new int[]{1, 7, 4, 9, 2, 5}));             // expects 6. 整个序列都是
-        log(wiggleMaxLength(new int[]{3, 3, 3, 2, 5}));                // expects 3.
-        log(wiggleMaxLength(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));    // expects 2.
-        log(wiggleMaxLength(new int[]{1, 0}));                         // expects 2.
-        log(wiggleMaxLength(new int[]{0, 0}));                         // expects 1.
-        log(wiggleMaxLength(new int[]{1}));                            // expects 1.
+        log(wiggleMaxLength1(new int[]{5, 10, 13, 15, 10, 5, 16, 8}));  // expects 5. 其中之一是 [10,13,10,16,8]
+        log(wiggleMaxLength1(new int[]{1, 7, 4, 9, 2, 5}));             // expects 6. 整个序列都是
+        log(wiggleMaxLength1(new int[]{3, 3, 3, 2, 5}));                // expects 3.
+        log(wiggleMaxLength1(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));    // expects 2.
+        log(wiggleMaxLength1(new int[]{1, 0}));                         // expects 2.
+        log(wiggleMaxLength1(new int[]{0, 0}));                         // expects 1.
+        log(wiggleMaxLength1(new int[]{1}));                            // expects 1.
     }
 }
