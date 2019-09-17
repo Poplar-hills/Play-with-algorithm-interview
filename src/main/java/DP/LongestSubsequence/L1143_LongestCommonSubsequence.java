@@ -48,7 +48,7 @@ public class L1143_LongestCommonSubsequence {
     }
 
     /*
-     * 解法1：Recursion + Memoization
+     * 解法1：Recursion + Memoization (DFS + cache)
      * - 时间复杂度 O(l1*l2))，空间复杂度 O(l1*l2)，其中 l1、l2 分别为两字符串的长度。
      * */
     public static int longestCommonSubsequence1(String s1, String s2) {
@@ -92,8 +92,7 @@ public class L1143_LongestCommonSubsequence {
 
     /*
      * 解法3：DP
-     * - 思路：与解法2一直。
-     * - 实现：由前往后递推。
+     * - 实现：由前往后递推（不如解法2直观）。
      * - 时间复杂度 O(l1*l2))，空间复杂度 O(l1*l2)。
      * */
     public static int longestCommonSubsequence3(String s1, String s2) {
