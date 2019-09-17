@@ -72,71 +72,82 @@ public class L1143_LongestCommonSubsequence {
 
     /*
      * 解法2：DP
+     * - 实现：由后往前递推。
      * - 时间复杂度 O(l1*l2))，空间复杂度 O(l1*l2)。
      * */
     public static int longestCommonSubsequence2(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
 
         int l1 = s1.length(), l2 = s2.length();
-        int[][] dp = new int[l1 + 1][l2 + 1];
+        int[][] dp = new int[l1 + 1][l2 + 1];  // ∵ 递推都是用后一个的值推前一个的值 ∴ 这里要多开辟1的空间用于递推最后一个元素
 
-        for (int i = l1 - 1; i >= 0; i--)  // 从后往前遍历
+        for (int i = l1 - 1; i >= 0; i--)      // 从 s1、s2 的最后一个元素开始往前递推
             for (int j = l2 - 1; j >= 0; j--)
-                dp[i][j] = s1.charAt(i) == s2.charAt(j)  // f(i, j) 是由 f(i+1, j+1)、f(i, j+1)、f(i+1, j) 递推出来的
+                dp[i][j] = s1.charAt(i) == s2.charAt(j)  // 由 dp[i+1][j+1] 等推出 dp[i][j]
                     ? 1 + dp[i + 1][j + 1]
                     : Math.max(dp[i + 1][j], dp[i][j + 1]);
 
-        return dp[0][0];
-
-        // 同样也可以让 i、j 从前往后遍历（不如上面的写法直观）：
-        // for (int i = 0; i < l1; i++)
-        //     for (int j = 0; j < l2; j++)
-        //         dp[i + 1][j + 1] = s1.charAt(i) == s2.charAt(j)  // f(i+1, j+1) 是由 f(i,j)、f(i+1, j)、f(i, j+1) 递推出来的
-        //             ? 1 + dp[i][j]
-        //             : Math.max(dp[i + 1][j], dp[i][j + 1]);
-
-        // return dp[l1][l2];  // 最后取右下角的值
+        return dp[0][0];  // 最后取左上角的值
     }
 
     /*
-    * 解法3：DP + 滚动数组（解法2的空间优化版）
-    * - 思路：类似 _ZeroOneKnapsack 解法3的思路 —— ∵ 解法2中的每个 f(i, j) 都是由 f(i+1, j+1)、f(i, j+1)、f(i+1, j)
-    *   递推出来的，即上一行的值是基于下一行中的值计算出来的 ∴ dp 数组只需两行，在从下到上逐行计算时，交替使用这两行即可。
-    * - 时间复杂度 O(l1*l2))，空间复杂度 O(l2)。
-    * */
+     * 解法3：DP
+     * - 思路：与解法2一直。
+     * - 实现：由前往后递推。
+     * - 时间复杂度 O(l1*l2))，空间复杂度 O(l1*l2)。
+     * */
     public static int longestCommonSubsequence3(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
 
         int l1 = s1.length(), l2 = s2.length();
-        int[][] dp = new int[2][l2 + 1];
+        int[][] dp = new int[l1 + 1][l2 + 1];
 
-        for (int i = l1 - 1; i >= 0; i--) {
-            for (int j = l2 - 1; j >= 0; j--) {
-                dp[i % 2][j] = s1.charAt(i) == s2.charAt(j)  // 若 i 为偶则写 dp[0]，读 dp[1]；若 i 为奇则写 dp[1]，读 dp[0]
-                    ? 1 + dp[(i+1) % 2][j + 1]
-                    : Math.max(dp[(i+1) % 2][j], dp[i % 2][j + 1]);
-            }
-        }
+        for (int i = 0; i < l1; i++)      // 从 s1、s2 的第一个元素开始往后递推
+            for (int j = 0; j < l2; j++)
+                dp[i + 1][j + 1] = s1.charAt(i) == s2.charAt(j)  // 由 dp[i][j] 等推出 dp[i+1][j+1]
+                    ? 1 + dp[i][j]
+                    : Math.max(dp[i + 1][j], dp[i][j + 1]);
 
-        return dp[0][0];
+        return dp[l1][l2];  // 最后取右下角的值
     }
 
     /*
-    * 解法4：DP + 滚动数组（另一种写法，不如解法3好理解，但是速度最快）
+    * 解法4：DP + 滚动数组（解法2的空间优化版）
+    * - 思路：类似 _ZeroOneKnapsack 解法3的思路 —— ∵ 解法2中的每个 f(i, j) 都是由 f(i+1, j+1)、f(i, j+1)、f(i+1, j)
+    *   递推出来的，即上一行的值是基于下一行中的值计算出来的 ∴ dp 数组只需两行，在从下到上逐行计算时，交替使用这两行即可。
     * - 时间复杂度 O(l1*l2))，空间复杂度 O(l2)。
     * */
     public static int longestCommonSubsequence4(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
 
         int l1 = s1.length(), l2 = s2.length();
-        int[] row1 = new int[l2 + 1];
-        int[] row2 = new int[l2 + 1];  // 两个 row 的大小都为 l2 + 1
+        int[][] dp = new int[2][l2 + 1];
+
+        for (int i = l1 - 1; i >= 0; i--)
+            for (int j = l2 - 1; j >= 0; j--)
+                dp[i % 2][j] = s1.charAt(i) == s2.charAt(j)  // 若 i 为偶则写 dp[0]，读 dp[1]；若 i 为奇则写 dp[1]，读 dp[0]
+                    ? 1 + dp[(i + 1) % 2][j + 1]
+                    : Math.max(dp[(i + 1) % 2][j], dp[i % 2][j + 1]);
+
+        return dp[0][0];
+    }
+
+    /*
+    * 解法5：DP + 滚动数组（另一种写法，不如解法3好理解，但是速度最快）
+    * - 时间复杂度 O(l1*l2))，空间复杂度 O(l2)。
+    * */
+    public static int longestCommonSubsequence5(String s1, String s2) {
+        if (s1 == null || s2 == null) return 0;
+
+        int l1 = s1.length(), l2 = s2.length();
+        int[] row1 = new int[l2 + 1];  // 两个 row 的大小都为 l2 + 1
+        int[] row2 = new int[l2 + 1];
 
         for (int i = l1 - 1; i >= 0; i--) {
             for (int j = l2 - 1; j >= 0; j--) {
-                row1[j] = s1.charAt(i) == s2.charAt(j)  // 若 i 为偶则写 dp[0]，读 dp[1]；若 i 为奇则写 dp[1]，读 dp[0]
-                    ? 1 + row2[j + 1]                   // 读取下一行中 j+1 处的值，相当于解法2中的 dp[i+1][j+1]
-                    : Math.max(row1[j + 1], row2[j]);
+                row1[j] = s1.charAt(i) == s2.charAt(j)
+                    ? 1 + row2[j + 1]                   // row2[j+1] 相当于解法2中的 dp[i+1][j+1]
+                    : Math.max(row1[j + 1], row2[j]);   // row2[j] 相当于解法2中的 dp[i+1][j]
             }
             int[] temp = row1;  // 交换两行，让数组滚动起来
             row1 = row2;
@@ -147,10 +158,10 @@ public class L1143_LongestCommonSubsequence {
     }
 
     public static void main(String[] args) {
-        log(longestCommonSubsequence1("abcd", "aebd"));  // expects 3. "ace"
-        log(longestCommonSubsequence1("abcde", "ace"));  // expects 3. "ace"
-        log(longestCommonSubsequence1("abc", "abc"));    // expects 3. "abc"
-        log(longestCommonSubsequence1("bl", "yby"));     // expects 1. "b"
-        log(longestCommonSubsequence1("abc", "def"));    // expects 0.
+        log(longestCommonSubsequence5("abcd", "aebd"));  // expects 3. "ace"
+        log(longestCommonSubsequence5("abcde", "ace"));  // expects 3. "ace"
+        log(longestCommonSubsequence5("abc", "abc"));    // expects 3. "abc"
+        log(longestCommonSubsequence5("bl", "yby"));     // expects 1. "b"
+        log(longestCommonSubsequence5("abc", "def"));    // expects 0.
     }
 }
