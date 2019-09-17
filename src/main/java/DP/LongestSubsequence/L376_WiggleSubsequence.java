@@ -8,55 +8,68 @@ import java.util.Arrays;
 * Wiggle Subsequence
 *
 * - 若一个序列中相邻数字是升序、降序轮流交替的，则该序列是一个 wiggle subsequence。例如：
-*   ✅ [1, 7, 4, 9, 2, 5]  ❎ [1, 4, 7, 2, 5]  ❎ [1, 7, 4, 5, 5]
+*   ✅ [1, 7, 4, 9]  ❎ [1, 5, 4, 3]  ❎ [1, 7, 4, 4]
 *   给定一个数组，求其中是 wiggle subsequence 的最长子序列的长度。
 * - Follow up: Can you do it in O(n) time?
 *
 * - 分析：仍然是2种思路：
-*   a). 递归：同 L300_LongestIncreasingSubsequence 的初步分析；
-*   b). 递推：f(i) 的值取决于 f(i-1) 的值 ∴ 存在最优子结构，可以进行递推（即 DP）。但与 L300 不同，该问题有两个维度需要进
+*   a). DFS 递归：同 L300_LongestIncreasingSubsequence 的初步分析；
+*   b). DP 递推：f(i) 的值取决于 f(i-1) 的值 ∴ 存在最优子结构，可以进行递推（即 DP）。但与 L300 不同，该问题有两个维度需要进
 *       行动态规划 —— 处于峰/谷两种状态下进行动态规划。
 * */
 
 public class L376_WiggleSubsequence {
     /*
      * 超时解1：DFS
-     * - 思路：深度优先遍历，对于每个 nums[i]，都在 (0..i-1] 范围内搜索下一个能与 nums[i] 连成 wiggle sequence 的数字。
+     * - 思路：对于 [5, 10, 13, 15, 11, 7, 16, 8]：
+     *             1                              - 设5上是谷（第一个元素可以是峰也可以是谷）∴ f(5) = 1
+     *             1   2                          - ∵ 5上是谷 ∴ 10可以接到5后面形成 wiggle seqence ∴ f(10) = f(5) + 1 = 2
+     *             1   2   2                      - ∵ 10上已经是峰了 ∴ 13只能接到5后面 ∴ f(13) = f(5) + 1 = 2
+     *             1   2   2   2                  - 同理15只能接到5后面 ∴ f(15) = f(5) + 1 = 2
+     *             1   2   2   2   3              - 11作为谷接到13/15后面时序列最长 ∴ f(11) = f(13/15) + 1 = 3
+     *             1   2   2   2   3   3          - ∵ 11上已经是谷了 ∴ 7只能接到10/13/15 = f(10/13/15) + 1 = 3
+     *             1   2   2   2   3   3  4       - 16作为峰接到11/7后面时序列最长 ∴ f(16) = f(11/7) + 1 = 4
+     *             1   2   2   2   3   3  4  5    - 8作为谷接到16后面时序列最长 ∴ f(8) = f(16) + 1 = 5
+     * - 实现：由上面可知，整个过程分别两部分：
+     *   1. 从左到右遍历 nums；
+     *   2. 对每个元素 nums[i] 都在 [0,i) 范围内搜索下一个能与其连成 wiggle sequence 同时长度最大的元素。
+     *   - 注意我们假设第一个元素上是谷得到的最长序列是5，还需求第一个元素上是峰时的情况，并取两者最大值才是最终结果。
+     *   - ∴ 用递归实现时可以从最后一个元素开始，向前递归 —— f(n) -> f(n-1) -> ... -> f(0)。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static int wiggleMaxLength0(int[] nums) {
+    public static int wiggleMaxLength(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        return Math.max(helper0(nums, nums.length - 1, true), helper0(nums, nums.length - 1, false));
+        return Math.max(helper(nums, nums.length - 1, true),  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
+                        helper(nums, nums.length - 1, false));
     }
 
-    private static int helper0(int[] nums, int i, boolean isPeak) {
-        if (i == 0) return 1;
+    private static int helper(int[] nums, int i, boolean isPeak) {
+        if (i == 0) return 1;  // 递归到底时返回1
         int maxLen = 1;
-        for (int j = i - 1; j >= 0; j--) {
-            if ((isPeak && nums[j] < nums[i]) || (!isPeak && nums[j] > nums[i]))
-                maxLen = Math.max(maxLen, 1 + helper0(nums, j, !isPeak));
-        }
+        for (int j = 0; j < i; j++)                                               // 在 [0,i) 范围内搜索
+            if ((isPeak && nums[j] < nums[i]) || (!isPeak && nums[j] > nums[i]))  // 能与 nums[i] 连成 wiggle sequence
+                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isPeak));          // 且 sequence 长度最大
         return maxLen;
     }
 
     /*
      * 超时解2：DFS
-     * - 思路：深度优先遍历，对于每个 nums[i]，都在 (i+1..n] 范围内搜索下一个能与 nums[i] 连成 wiggle sequence 的数字。
+     * - 思路：与超时解1一致。
+     * - 实现：与超时解1不同在于，本解法从第一个元素开始，向后递归；对每个元素 nums[i] 都在 (i,n] 范围内从前往后搜索下一个能与
+     *   nums[i] 连成 wiggle sequence 且长度最大的元素。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static int wiggleMaxLength(int[] nums) {
+    public static int wiggleMaxLength0(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        return 1 + Math.max(helper(nums, 0, true), helper(nums, 0, false));  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
+        return Math.max(helper0(nums, 0, true), helper0(nums, 0, false));
     }
 
-    private static int helper(int[] nums, int i, boolean isPeak) {
-        if (i == nums.length) return 0;
-
-        int maxLen = 0;
-        for (int j = i + 1; j < nums.length; j++)  // 从前往后遍历，若当前是 up 则往后找 !up 的数字，直到最后 i == nums.length
+    private static int helper0(int[] nums, int i, boolean isPeak) {
+        if (i == nums.length) return 0;  // 递归到底时返回0
+        int maxLen = 1;
+        for (int j = i + 1; j < nums.length; j++)  // 在 [i+1,..) 范围内从前往后搜索
             if ((isPeak && nums[j] < nums[i]) || (!isPeak && nums[j] > nums[i]))
-                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isPeak));
-
+                maxLen = Math.max(maxLen, 1 + helper0(nums, j, !isPeak));
         return maxLen;
     }
 
@@ -180,12 +193,12 @@ public class L376_WiggleSubsequence {
     }
 
     public static void main(String[] args) {
-        log(wiggleMaxLength(new int[]{1, 17, 5, 10, 13, 15, 10, 5, 16, 8}));  // expects 7. 其中之一是 [1,17,10,13,10,16,8]
-        log(wiggleMaxLength(new int[]{1, 7, 4, 9, 2, 5}));                    // expects 6. 整个序列都是
-        log(wiggleMaxLength(new int[]{3, 3, 3, 2, 5}));                       // expects 3.
-        log(wiggleMaxLength(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));           // expects 2.
-        log(wiggleMaxLength(new int[]{1, 0}));                                // expects 2.
-        log(wiggleMaxLength(new int[]{0, 0}));                                // expects 1.
-        log(wiggleMaxLength(new int[]{1}));                                   // expects 1.
+        log(wiggleMaxLength(new int[]{5, 10, 13, 15, 10, 5, 16, 8}));  // expects 5. 其中之一是 [10,13,10,16,8]
+        log(wiggleMaxLength(new int[]{1, 7, 4, 9, 2, 5}));             // expects 6. 整个序列都是
+        log(wiggleMaxLength(new int[]{3, 3, 3, 2, 5}));                // expects 3.
+        log(wiggleMaxLength(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));    // expects 2.
+        log(wiggleMaxLength(new int[]{1, 0}));                         // expects 2.
+        log(wiggleMaxLength(new int[]{0, 0}));                         // expects 1.
+        log(wiggleMaxLength(new int[]{1}));                            // expects 1.
     }
 }
