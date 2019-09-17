@@ -188,20 +188,23 @@ public class L376_WiggleSubsequence {
 
     /*
      * 解法5：Greedy
-     * - 思路：TODO: 用贪心算法实现。参考 SEE: https://leetcode.com/problems/wiggle-subsequence/solution/ (Approach #5)
+     * - 思路：采用贪心算法。本题的规律是统计单调上升/下降区间内的极值，极值的个数就是 wiggle sequence 的最大长度。解释 SEE:
+     *   https://leetcode.com/problems/wiggle-subsequence/solution/ (Approach #5 中的解释)。
+     * - 实现：在遍历过程中记录前后 diff，来识别当前数组是在 wiggle up 还是在 wiggle down（用 test case 1 画图理解）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int wiggleMaxLength5(int[] nums) {
-        if (nums.length < 2) return nums.length;
+        int n = nums.length;
+        if (n < 2) return n;
 
-        int prevdiff = nums[1] - nums[0];
-        int count = prevdiff != 0 ? 2 : 1;
+        int prevDiff = nums[1] - nums[0];
+        int count = prevDiff != 0 ? 2 : 1;  // 初始化 count
 
-        for (int i = 2; i < nums.length; i++) {
+        for (int i = 2; i < n; i++) {
             int diff = nums[i] - nums[i - 1];
-            if ((diff > 0 && prevdiff <= 0) || (diff < 0 && prevdiff >= 0)) {
+            if ((diff > 0 && prevDiff <= 0) || (diff < 0 && prevDiff >= 0)) {  // 用前后2个 diff 来判断 wiggle up/down
                 count++;
-                prevdiff = diff;
+                prevDiff = diff;
             }
         }
 
@@ -209,7 +212,7 @@ public class L376_WiggleSubsequence {
     }
 
     public static void main(String[] args) {
-        log(wiggleMaxLength5(new int[]{5, 10, 13, 15, 10, 5, 16, 8}));  // expects 5. 其中之一是 [10,13,10,16,8]
+        log(wiggleMaxLength5(new int[]{5, 10, 13, 15, 11, 7, 16, 8}));  // expects 5. 其中之一是 [10,13,11,16,8]
         log(wiggleMaxLength5(new int[]{1, 7, 4, 9, 2, 5}));             // expects 6. 整个序列都是
         log(wiggleMaxLength5(new int[]{3, 3, 3, 2, 5}));                // expects 3.
         log(wiggleMaxLength5(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));    // expects 2.
