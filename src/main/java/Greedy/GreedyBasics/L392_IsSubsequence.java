@@ -36,12 +36,30 @@ public class L392_IsSubsequence {
     }
 
     /*
-     * 解法2：DP
+     * 解法2：Greedy
+     * - 思路：与解法1一致。
+     * - 实现：用 indexOf() 方法代替解法1中的双指针。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。该解法统计性能比解法1高很多，原因是解法1 while 中要调用2次 charAt()，而本解法中的
+     *   indexOf() 在 for 中只调用一次（charAt() 和 indexOf() 都是遍历搜索）。
+     * */
+    public static boolean isSubsequence2(String s, String t) {
+        int i = 0;
+        for (char size : s.toCharArray()) {
+            i = t.indexOf(size, i);
+            if (i == -1) return false;
+            i++;
+        }
+
+        return true;
+    }
+
+    /*
+     * 解法3：DP
      * - 思路：采用 L1143_LongestCommonSubsequence 的方法 —— len(若最长公共子串) = len(s)，则说明 s 是 t 的子串。
      * - 优化：可继续采用 L1143 解法4、5的方式优化空间复杂度。
      * - 时间复杂度 O(n*m)，空间复杂度 O(n*m)。
      * */
-    public static boolean isSubsequence2(String s, String t) {
+    public static boolean isSubsequence3(String s, String t) {
         int ls = s.length(), lt = t.length();
         int[][] dp = new int[ls + 1][lt + 1];
 
@@ -55,7 +73,7 @@ public class L392_IsSubsequence {
     }
 
     public static void main(String[] args) {
-        log(isSubsequence2("abc", "ahbgdc"));  // expects true
-        log(isSubsequence2("axc", "ahbgdc"));  // expects false
+        log(isSubsequence3("abc", "ahbgdc"));  // expects true
+        log(isSubsequence3("axc", "ahbgdc"));  // expects false
     }
 }
