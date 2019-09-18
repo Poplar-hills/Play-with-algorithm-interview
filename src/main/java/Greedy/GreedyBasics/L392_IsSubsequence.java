@@ -45,7 +45,7 @@ public class L392_IsSubsequence {
     public static boolean isSubsequence2(String s, String t) {
         int i = 0;
         for (char size : s.toCharArray()) {
-            i = t.indexOf(size, i);
+            i = t.indexOf(size, i);     // 注意 indexOf 第2个参数的用法
             if (i == -1) return false;
             i++;
         }
@@ -54,12 +54,27 @@ public class L392_IsSubsequence {
     }
 
     /*
-     * 解法3：DP
-     * - 思路：采用 L1143_LongestCommonSubsequence 的方法 —— len(若最长公共子串) = len(s)，则说明 s 是 t 的子串。
-     * - 优化：可继续采用 L1143 解法4、5的方式优化空间复杂度。
-     * - 时间复杂度 O(n*m)，空间复杂度 O(n*m)。
+     * 解法3：Recursion
+     * - 思路：与解法1一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSubsequence3(String s, String t) {
+        if (s.length() == 0) return true;
+
+        for (int i = 0; i < t.length(); i++)
+            if (s.charAt(0) == t.charAt(i))
+                return isSubsequence3(s.substring(1), t.substring(i + 1));
+
+        return false;  // 若 t 遍历完了还 return 说明 s 中有 t 中没有的字符 ∴ return false
+    }
+
+    /*
+     * 解法4：DP
+     * - 思路：采用 L1143_LongestCommonSubsequence 的方法 —— len(若最长公共子串) = len(s)，则说明 s 是 t 的子串。
+     * - 优化：可继续采用 L1143 中解法4、5的方式优化空间复杂度。
+     * - 时间复杂度 O(n*m)，空间复杂度 O(n*m)。
+     * */
+    public static boolean isSubsequence4(String s, String t) {
         int ls = s.length(), lt = t.length();
         int[][] dp = new int[ls + 1][lt + 1];
 
@@ -70,6 +85,14 @@ public class L392_IsSubsequence {
                     : Math.max(dp[i + 1][j], dp[i][j + 1]);
 
         return dp[0][0] == ls;
+    }
+
+    /*
+     * 解法5：
+     * - 时间复杂度 O()，空间复杂度 O()。
+     * */
+    public static boolean isSubsequence5(String s, String t) {
+        return true;
     }
 
     public static void main(String[] args) {
