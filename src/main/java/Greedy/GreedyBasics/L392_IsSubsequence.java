@@ -1,4 +1,4 @@
-package Greedy;
+package Greedy.GreedyBasics;
 
 import static Utils.Helpers.log;
 
