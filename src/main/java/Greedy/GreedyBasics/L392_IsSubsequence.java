@@ -2,7 +2,11 @@ package Greedy.GreedyBasics;
 
 import static Utils.Helpers.log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
 * Is Subsequence
@@ -21,7 +25,8 @@ import java.util.Arrays;
 
 public class L392_IsSubsequence {
     /*
-     * 解法1：双指针
+     * 解法1：Greedy（双指针）
+     * TODO: 为什么双指针也算是 greedy？？？
      * - 时间复杂度 O(n)，空间复杂度 O(1)，其中 n = len(s)。
      * */
     public static boolean isSubsequence(String s, String t) {
@@ -88,15 +93,46 @@ public class L392_IsSubsequence {
     }
 
     /*
-     * 解法5：
+     * 解法5：Binary Search
+     * - 思路：
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static boolean isSubsequence5(String s, String t) {
+        Map<Character, List<Integer>> map = new HashMap<>();  // 为 t 生成一个 {字符 -> 索引列表} 的 map
+        for (int i = 0; i < t.length(); i++) {
+            List<Integer> l = map.getOrDefault(t.charAt(i), new ArrayList<>());
+            l.add(i);
+            map.put(t.charAt(i), l);
+        }
+
+        int cur = -1;
+        for (char c : s.toCharArray()) {
+            if (!map.containsKey(c)) return false;
+            cur = binarySearch(cur, map.get(c));  // 在索引列表中搜索（∵ 列表中的索引是有序的 ∴ 可以使用二分搜索）
+            if (cur == -1) return false;
+        }
+
         return true;
     }
 
+    private static int binarySearch(int index, List<Integer> l) {
+        int lo = 0, hi = l.size()-1;
+        if (l.get(hi) <= index) return -1;
+        if (l.get(lo) > index) return l.get(lo);
+
+        while (lo < hi) {
+            int mi = (lo+hi) / 2;
+            if (l.get(mi) <= index) lo = mi+1;
+            else hi = mi;
+        }
+
+        return l.get(lo);
+    }
+
     public static void main(String[] args) {
-        log(isSubsequence3("abc", "ahbgdc"));  // expects true
-        log(isSubsequence3("axc", "ahbgdc"));  // expects false
+        log(isSubsequence5("abc", "ahbgdc"));  // expects true
+        log(isSubsequence5("axc", "ahbgdc"));  // expects false
+        log(isSubsequence5("aacc", "axaxyzcc"));  // expects true
+        log(isSubsequence5("aacc", "axaxyzc"));   // expects false
     }
 }
