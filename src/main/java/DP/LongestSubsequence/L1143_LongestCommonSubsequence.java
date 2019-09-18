@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class L1143_LongestCommonSubsequence {
     /*
      * 超时解：DFS
-     * - 分析：与 L376 类似，该问题也有两个维度需要进行动态规划。因此：
+     * - 分析：与 L376 类似，该问题也有两个维度需要进行动态规划，因此：
      *   - 子问题定义：f(i, j) 表示“s1[i..] 和 s2[j..] 两段字符串的 LCS 的长度”。
      *   - 状态转移方程：∵ 每个字符都有在/不在 LCS 中这2种状态：
      *     1. 若 s1[i] == s2[j]，即该字符在 LCS 中时：f(i, j) = 1 + f(i+1, j+1)，其中的1就是该字符；
@@ -114,7 +114,7 @@ public class L1143_LongestCommonSubsequence {
     * 解法4：DP + 滚动数组（解法2的空间优化版）
     * - 思路：类似 _ZeroOneKnapsack 解法3的思路 —— ∵ 解法2中的每个 f(i, j) 都是由 f(i+1, j+1)、f(i, j+1)、f(i+1, j)
     *   递推出来的，即上一行的值是基于下一行中的值计算出来的 ∴ dp 数组只需两行，在从下到上逐行计算时，交替使用这两行即可。
-    * - 时间复杂度 O(l1*l2))，空间复杂度 O(l2)。
+    * - 时间复杂度 O(l1*l2)，空间复杂度 O(l2)。
     * */
     public static int longestCommonSubsequence4(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
@@ -133,7 +133,7 @@ public class L1143_LongestCommonSubsequence {
 
     /*
     * 解法5：DP + 滚动数组（另一种写法，不如解法3好理解，但是速度最快）
-    * - 时间复杂度 O(l1*l2))，空间复杂度 O(l2)。
+    * - 时间复杂度 O(l1*l2)，空间复杂度 O(l2)。
     * */
     public static int longestCommonSubsequence5(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;

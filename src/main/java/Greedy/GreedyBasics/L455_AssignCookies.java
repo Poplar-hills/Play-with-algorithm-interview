@@ -29,7 +29,7 @@ public class L455_AssignCookies {
     /*
      * 解法1：Greedy
      * - 思路：Serve the least greedy children first.
-     * - 时间复杂度 O(max(nlogn, mlogm))，空间复杂度 O(1)，其中 n=len(g), m=len(s)。
+     * - 时间复杂度 O(max(nlogn, mlogm))，空间复杂度 O(1)，其中 n = len(g), m = len(s)。
      * */
     public static int findContentChildren(int[] g, int[] s) {
         Arrays.sort(g);
@@ -52,7 +52,7 @@ public class L455_AssignCookies {
     /*
      * 解法2：Greedy
      * - 思路：Serve the most greedy children first.
-     * - 时间复杂度 O(max(nlogn, mlogm))，空间复杂度 O(1)，其中 n=len(g), m=len(s)。
+     * - 时间复杂度 O(max(nlogn, mlogm))，空间复杂度 O(1)，其中 n = len(g), m = len(s)。
      * */
     public static int findContentChildren2(int[] g, int[] s) {
         Arrays.sort(g);
