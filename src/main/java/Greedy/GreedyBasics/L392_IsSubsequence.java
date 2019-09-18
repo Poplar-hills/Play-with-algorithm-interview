@@ -19,12 +19,18 @@ import static Utils.Helpers.log;
 
 public class L392_IsSubsequence {
     /*
-     * 解法1：
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * 解法1：双指针
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static boolean isSubsequence(String s, String t) {
-        return true;
+        int i = 0, j = 0;
+
+        while (i < s.length() && j < t.length()) {
+            if (s.charAt(i) == t.charAt(j)) i++;
+            j++;
+        }
+
+        return i == s.length();
     }
 
     public static void main(String[] args) {
