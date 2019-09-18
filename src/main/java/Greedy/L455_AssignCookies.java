@@ -3,8 +3,6 @@ package Greedy;
 import static Utils.Helpers.log;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 import java.util.TreeMap;
 
 /*
@@ -15,7 +13,8 @@ import java.util.TreeMap;
 *
 * - 贪心算法的题一般比较简单，因为代码会比较短。但难点在于判断一个问题是否可以使用贪心算法。
 *
-* - Follow-up: What if each child can get more than 1 cookies?
+* - Follow Up:
+*   What if each child can get more than 1 cookies?
 *   If each child can get more than one cookie, this is only helpful for cases where some cookies are left
 *   over prior to the assignment. For example:
 *      G = {10, 15}
@@ -77,7 +76,7 @@ public class L455_AssignCookies {
      * 解法3：TreeMap
      * - 思路：要让最多的小朋友开心，只需为每个小朋友从 s 中找到 ≥ 且最接近其贪心指数的饼干即可。要实现这个逻辑可以使用 TreeMap
      *   中的 ceilingKey() 方法。
-     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(m)。
      * */
     public static int findContentChildren3(int[] g, int[] s) {
         TreeMap<Integer, Integer> tree = new TreeMap<>();  // ∵ 要用到 ceilingKey() 方法 ∴ 接口和实现都得是 TreeMap
