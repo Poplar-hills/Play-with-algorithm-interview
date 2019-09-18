@@ -3,6 +3,7 @@ package Greedy;
 import static Utils.Helpers.log;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /*
 * Assign Cookies
@@ -16,6 +17,7 @@ import java.util.Arrays;
 public class L455_AssignCookies {
     /*
      * 解法1：Greedy
+     * - 思路：Serve the least greedy children first.
      * - 时间复杂度 O(max(nlogn, mlogm))，空间复杂度 O(1)，其中 n=len(g), m=len(s)。
      * */
     public static int findContentChildren(int[] g, int[] s) {
@@ -23,14 +25,37 @@ public class L455_AssignCookies {
         Arrays.sort(s);
 
         int count = 0;
-        int i = 0;                            // 小朋友指针
+        int i = 0, j = 0;
 
-        for (int j = 0; j < s.length; j++) {  // 遍历饼干
-            if (i >= g.length) return count;  // 若小朋友用完了则 return
-            if (s[j] >= g[i]) {               // 若能满足当前小朋友则 count++ 并移动 i 到下一个小朋友上
+        while (j < s.length && i < g.length) {  // 若饼干或小朋友用尽则 return
+            if (s[j] >= g[i]) {  // 若能满足第 i 个小朋友则 count++、i++
                 count++;
                 i++;
             }
+            j++;                 // 不管能不能满足都移到下一块饼干上
+        }
+
+        return count;
+    }
+
+    /*
+     * 解法2：Greedy
+     * - 思路：Serve the most greedy children first.
+     * - 时间复杂度 O(max(nlogn, mlogm))，空间复杂度 O(1)，其中 n=len(g), m=len(s)。
+     * */
+    public static int findContentChildren2(int[] g, int[] s) {
+        Arrays.sort(g);
+        Arrays.sort(s);  // Arrays.sort() 无法降序排列，只能升序排列后从后往前遍历
+
+        int count = 0;
+        int i = g.length - 1, j = s.length - 1;
+
+        while (j >= 0 && i >= 0) {
+            if (s[j] >= g[i]) {
+                count++;
+                j--;
+            }
+            i--;  // 不管能不能满足都往下走 ∵ 饼干也是从大到小排列的，若当前饼干满足不了则后面饼干都无法满足 ∴ 跳过该小朋友
         }
 
         return count;
