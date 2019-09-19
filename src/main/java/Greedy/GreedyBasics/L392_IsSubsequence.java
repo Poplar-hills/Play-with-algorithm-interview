@@ -3,6 +3,7 @@ package Greedy.GreedyBasics;
 import static Utils.Helpers.log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +95,7 @@ public class L392_IsSubsequence {
 
     /*
      * 解法5：Map + Binary Search
+     * - 同时也是 Follow up 的解法。
      * - 思路：s 是 t 的子序列需要满足2个条件：
      *   1. s 中的字符都存在于 t 中；
      *   2. s 中的字符的相对顺序与他们在 t 中的相对顺序一致。
@@ -102,7 +104,15 @@ public class L392_IsSubsequence {
      *     与在 t 中一致。
      * - 实现：要同时实现以上这两点，可以：
      *   1. 先为 t 构建一个 Map: {字符 -> 索引列表} 的数据结构；
-     *   2. 在遍历 s 的过程中，首先检查字符是否在字典中，若存在则继续对其在 Map 中的索引列表进行搜索，找到。
+     *   2. 在遍历 s 的过程中，首先检查字符是否在字典中，若存在则继续对其在 Map 中的索引列表进行二分搜索。
+     * - 演示：
+     *     对 s="abc", t="axacxbb" 来说：                    对 s="acc", t="baaxcc" 来说：
+     *     map = [a, b, c, x]                               map = [a, b, c, x]
+     *            0  5  3  1                                       1  0  4  3
+     *            2  6     4                                       2     5
+     *     For 'a': i=0, j=0, i=get(0)+1=1                  For 'a': i=0, ip=0, i=get(0)+1=2
+     *     For 'b': i=1, ip=0, i=get(0)+1=6                 For 'c': i=2, ip=0, i=get(0)+1=5
+     *     For 'c': i=6, ip=1=list.size(), return false     For 'c': i=5, j=1, i=get(1)+1=6, return true
      * - 时间复杂度 O(nlogn)，空间复杂度 O(m)。
      * */
     public static boolean isSubsequence5(String s, String t) {
@@ -113,32 +123,33 @@ public class L392_IsSubsequence {
             map.put(t.charAt(i), l);
         }
 
-        int i = -1;                                 //
+        int i = -1;
         for (char c : s.toCharArray()) {            // 遍历 s 中的字符
             if (!map.containsKey(c)) return false;  // 检查条件1是否满足
-            i = binarySearch(i, map.get(c));  // 在索引列表中搜索以检查条件2是否满足（∵ 索引列表是有序的 ∴ 可以使用二分搜索）
-            if (i == -1) return false;              // 若
+            List<Integer> list = map.get(c);
+            int j = binarySearch(list, i);  // 在索引列表中搜索以检查条件2是否满足（∵ 索引列表是有序的 ∴ 可以使用二分搜索）
+            if (j < 0) j = -(j + 1);
+            if (j == list.size()) return false;
+            i = list.get(j) + 1;
         }
 
         return true;
     }
 
-    private static int binarySearch(int el, List<Integer> list) {  // 在列表 l 中二分搜索 el
+    private static int binarySearch(List<Integer> list, int el) {  // 输入输出都与 Collections.binarySearch() 一致
         int l = 0, r = list.size() - 1;
-        if (el >= list.get(r)) return -1;          // 若 el >= 列表最大值，返回-1
-        if (el < list.get(l)) return list.get(l);  // 若 el < 列表最小值，返回最小值
-
-        while (l < r) {
+        while (l <= r) {
             int mid = (l + r) / 2;
-            if (el >= list.get(mid)) l = mid + 1;
-            else r = mid;
+            if (el < list.get(mid)) r = mid - 1;
+            else if (el > list.get(mid)) l = mid + 1;
+            else return mid;
         }
-
-        return list.get(l);
+        return -(l + 1);
     }
 
     /*
-     * 解法6：
+     * 解法6：Bucket 数组 + Binary Search
+     * - 同时也是 Follow up 的解法。
      * - 思路：与解法5一致。
      * - 实现：与解法5的不同之处在于：
      *   1. 使用了 bucket 形式的 List[] 实现字典；
@@ -158,19 +169,20 @@ public class L392_IsSubsequence {
         for (char c : s.toCharArray()) {
             List<Integer> list = buckets[c];
             if (list == null) return false;
-            int j = Collections.binarySearch(list, i);
-            if (j < 0) j = -(j + 1);
-            if (j == list.size()) return false;
-            i = list.get(j) + 1;
+            int j = Collections.binarySearch(list, i);  // 在 list 中二分搜索 i
+            if (j < 0) j = -(j + 1);             // 若没找到则转换成插入点（insertion point）
+            if (j == list.size()) return false;  // 若 i > list 中的最大值，说明 s 中的该字符的个数多于 t 中该字符的个数
+            i = list.get(j) + 1;                 // 若一切正常则将 i 更新成插入点+1
         }
 
         return true;
     }
 
     public static void main(String[] args) {
-        log(isSubsequence5("abc", "ahbgdc"));  // expects true
-        log(isSubsequence5("axc", "ahbgdc"));  // expects false
-        log(isSubsequence5("aacc", "axaxyzcc"));  // expects true
-        log(isSubsequence5("aacc", "axaxyzc"));   // expects false
+        log(isSubsequence5("abc", "ahbgdc"));   // expects true
+        log(isSubsequence5("acc", "baaxcc"));   // expects true
+        log(isSubsequence5("axc", "abcd"));     // expects false. (s 中存在 t 中没有的字符)
+        log(isSubsequence5("aac", "abcd"));     // expects false. (s 中的字符存在于 t 中，但个数比 t 中多)
+        log(isSubsequence5("abc", "axacxbb"));  // expects false. (s 与 t 字符相对顺序不匹配)
     }
 }
