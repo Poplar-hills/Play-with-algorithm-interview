@@ -80,7 +80,7 @@ public class L242_ValidAnagram {
         if (t.length() != s.length())
             return false;
 
-        int[] freq = new int[128];  // 使用数组比使用 map 开销小很多
+        int[] freq = new int[256];  // 使用数组比使用 map 开销小很多
         for (int i = 0; i < s.length(); i++) {
             freq[s.charAt(i)]++;
             freq[t.charAt(i)]--;

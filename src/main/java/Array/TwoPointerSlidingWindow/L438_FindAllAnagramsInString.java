@@ -23,7 +23,7 @@ public class L438_FindAllAnagramsInString {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;
 
-        int[] freq = new int[128];
+        int[] freq = new int[256];
         for (char c : p.toCharArray()) freq[c]++;  // 将 p 中每个字符的出现频次初始化为1
 
         int l = 0, r = 0;
@@ -55,7 +55,7 @@ public class L438_FindAllAnagramsInString {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;
 
-        int[] freq = new int[128];
+        int[] freq = new int[256];
         for (char c : p.toCharArray()) freq[c]++;  // 将 p 中每个字符的出现频次初始化为1
 
         int l = 0, r = 0;

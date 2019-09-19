@@ -27,7 +27,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
 
         int maxLen = 0;
         int l = 0, r = -1;          // 右边界初始化为-1，使得初始窗口不包含任何元素，这样初始 maxLen 才能为0
-        int[] freq = new int[128];  // ASCII 含有128个字符，因此开辟128的空间，若题中说明了只是0-9或者只是a-z，则开对应大小的空间即可（使用 Map 也行）
+        int[] freq = new int[256];  // ASCII 有256个字符 ∴ 开辟256的空间，若题中说明了只是0-9或者只是a-z，则开对应大小的空间即可（使用 Map 也行）
 
         while (r < s.length() - 1) {               // 该题中只要 r 到头滑动过程就可以结束了（不需要 l 到头）
             if (r < s.length() - 1 && freq[s.charAt(r + 1)] == 0)  // 若 r+1 不越界，且窗口中还没有 r+1 处的字符
@@ -50,7 +50,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
 
         int maxLen = 0;
         int l = 0, r = -1;
-        int[] freq = new int[128];
+        int[] freq = new int[256];
 
         while (r < s.length() - 1) {
             while (r < s.length() - 1 && freq[s.charAt(r + 1)] == 0)
@@ -82,7 +82,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
 
         int maxLen = 0;
         int l = 0, r = -1;
-        int[] charIndexes = new int[128];  // 保存每个字符在 s 中的索引（重复元素只保存最大索引）
+        int[] charIndexes = new int[256];  // 保存每个字符在 s 中的索引（重复元素只保存最大索引）
         Arrays.fill(charIndexes, -1);  // 填充-1（不能再用默认值0了），这里多遍历了一遍
 
         while (r < s.length() - 1) {

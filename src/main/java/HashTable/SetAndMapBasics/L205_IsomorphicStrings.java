@@ -19,8 +19,8 @@ public class L205_IsomorphicStrings {
         if (s.length() != t.length())
             return false;
 
-        char[] sMap = new char[128];  // 也可以使用 Map 实现
-        char[] tMap = new char[128];
+        char[] sMap = new char[256];                  // 也可以使用 Map 实现
+        char[] tMap = new char[256];
 
         for (int i = 0; i < s.length(); i++) {        // 只需遍历一遍即可
             char sc = s.charAt(i), tc = t.charAt(i);  // 取两个字符串相同索引上的字符
@@ -42,11 +42,11 @@ public class L205_IsomorphicStrings {
      * - 时间复杂度 O(n)，空间复杂度 O(2len(charset))。
      * */
     public static boolean isIsomorphic2(String s, String t) {
-        int[] map = new int[256];      // ∵ 要分成两部分使用 ∴ 无法用 Map 实现
+        int[] map = new int[512];      // ∵ 要分成两部分使用 ∴ 无法用 Map 实现
         for (int i = 0; i < s.length(); i++) {
-            if (map[s.charAt(i)] != map[t.charAt(i) + 128])
+            if (map[s.charAt(i)] != map[t.charAt(i) + 256])
                 return false;
-            map[s.charAt(i)] = map[t.charAt(i) + 128] = i + 1;  // 记录索引（+1 是因为要避免0，因为 int[] 的默认值是0）
+            map[s.charAt(i)] = map[t.charAt(i) + 256] = i + 1;  // 记录索引（+1 是因为要避免0，因为 int[] 的默认值是0）
         }
         return true;
     }

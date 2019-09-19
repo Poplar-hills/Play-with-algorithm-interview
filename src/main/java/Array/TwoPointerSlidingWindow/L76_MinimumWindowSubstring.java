@@ -23,7 +23,7 @@ public class L76_MinimumWindowSubstring {
     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
     * */
     public static String minWindow(String s, String t) {
-        int[] freq = new int[128];                 // 也可以用 Map
+        int[] freq = new int[256];                 // 也可以用 Map
         for (char c : t.toCharArray()) freq[c]++;  // t 中的所有字符在 freq 中初始化为1
 
         int l = 0, r = 0;
