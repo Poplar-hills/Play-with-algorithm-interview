@@ -3,7 +3,6 @@ package Greedy.GreedyBasics;
 import static Utils.Helpers.log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +50,7 @@ public class L392_IsSubsequence {
     public static boolean isSubsequence2(String s, String t) {
         int i = 0;
         for (char size : s.toCharArray()) {
-            i = t.indexOf(size, i);     // 注意 indexOf 第2个参数的用法
+            i = t.indexOf(size, i);     // 注意 indexOf 第2个参数是 fromIndex
             if (i == -1) return false;
             i++;
         }
@@ -127,9 +126,9 @@ public class L392_IsSubsequence {
         for (char c : s.toCharArray()) {            // 遍历 s 中的字符
             if (!map.containsKey(c)) return false;  // 检查条件1是否满足
             List<Integer> list = map.get(c);
-            int j = binarySearch(list, i);  // 在索引列表中搜索以检查条件2是否满足（∵ 索引列表是有序的 ∴ 可以使用二分搜索）
-            if (j < 0) j = -(j + 1);
-            if (j == list.size()) return false;
+            int j = binarySearch(list, i);       // 在索引列表中搜索以检查条件2是否满足（∵ 索引列表是有序的 ∴ 可以使用二分搜索）
+            if (j < 0) j = -(j + 1);             // 若没找到则将 j 转换成插入点（insertion point）
+            if (j == list.size()) return false;  // 若 i > list 中的最大值，说明 s 中的该字符的个数多于 t 中该字符的个数
             i = list.get(j) + 1;
         }
 
@@ -169,10 +168,10 @@ public class L392_IsSubsequence {
         for (char c : s.toCharArray()) {
             List<Integer> list = buckets[c];
             if (list == null) return false;
-            int j = Collections.binarySearch(list, i);  // 在 list 中二分搜索 i
-            if (j < 0) j = -(j + 1);             // 若没找到则转换成插入点（insertion point）
-            if (j == list.size()) return false;  // 若 i > list 中的最大值，说明 s 中的该字符的个数多于 t 中该字符的个数
-            i = list.get(j) + 1;                 // 若一切正常则将 i 更新成插入点+1
+            int j = Collections.binarySearch(list, i);
+            if (j < 0) j = -(j + 1);
+            if (j == list.size()) return false;
+            i = list.get(j) + 1;
         }
 
         return true;
