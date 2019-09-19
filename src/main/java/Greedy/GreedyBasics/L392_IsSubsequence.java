@@ -3,7 +3,7 @@ package Greedy.GreedyBasics;
 import static Utils.Helpers.log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,40 +93,78 @@ public class L392_IsSubsequence {
     }
 
     /*
-     * 解法5：Binary Search
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * 解法5：Map + Binary Search
+     * - 思路：s 是 t 的子序列需要满足2个条件：
+     *   1. s 中的字符都存在于 t 中；
+     *   2. s 中的字符的相对顺序与他们在 t 中的相对顺序一致。
+     *   - 对于条件1：可以为 t 构建一个字符字典，看 s 中的字符是否在字典中；
+     *   - 对于条件2：可以在遍历 s 的过程中用一个外部指针 i 记录当前字符在 t 中的索引，若 i 一直增大则说明 s 中字符的相对顺序
+     *     与在 t 中一致。
+     * - 实现：要同时实现以上这两点，可以：
+     *   1. 先为 t 构建一个 Map: {字符 -> 索引列表} 的数据结构；
+     *   2. 在遍历 s 的过程中，首先检查字符是否在字典中，若存在则继续对其在 Map 中的索引列表进行搜索，找到。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(m)。
      * */
     public static boolean isSubsequence5(String s, String t) {
-        Map<Character, List<Integer>> map = new HashMap<>();  // 为 t 生成一个 {字符 -> 索引列表} 的 map
+        Map<Character, List<Integer>> map = new HashMap<>();  // 为 t 生成一个 {字符 -> 索引列表} 的字典
         for (int i = 0; i < t.length(); i++) {
             List<Integer> l = map.getOrDefault(t.charAt(i), new ArrayList<>());
             l.add(i);
             map.put(t.charAt(i), l);
         }
 
-        int cur = -1;
-        for (char c : s.toCharArray()) {
-            if (!map.containsKey(c)) return false;
-            cur = binarySearch(cur, map.get(c));  // 在索引列表中搜索（∵ 列表中的索引是有序的 ∴ 可以使用二分搜索）
-            if (cur == -1) return false;
+        int i = -1;                                 //
+        for (char c : s.toCharArray()) {            // 遍历 s 中的字符
+            if (!map.containsKey(c)) return false;  // 检查条件1是否满足
+            i = binarySearch(i, map.get(c));  // 在索引列表中搜索以检查条件2是否满足（∵ 索引列表是有序的 ∴ 可以使用二分搜索）
+            if (i == -1) return false;              // 若
         }
 
         return true;
     }
 
-    private static int binarySearch(int index, List<Integer> l) {
-        int lo = 0, hi = l.size()-1;
-        if (l.get(hi) <= index) return -1;
-        if (l.get(lo) > index) return l.get(lo);
+    private static int binarySearch(int el, List<Integer> list) {  // 在列表 l 中二分搜索 el
+        int l = 0, r = list.size() - 1;
+        if (el >= list.get(r)) return -1;          // 若 el >= 列表最大值，返回-1
+        if (el < list.get(l)) return list.get(l);  // 若 el < 列表最小值，返回最小值
 
-        while (lo < hi) {
-            int mi = (lo+hi) / 2;
-            if (l.get(mi) <= index) lo = mi+1;
-            else hi = mi;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            if (el >= list.get(mid)) l = mid + 1;
+            else r = mid;
         }
 
-        return l.get(lo);
+        return list.get(l);
+    }
+
+    /*
+     * 解法6：
+     * - 思路：与解法5一致。
+     * - 实现：与解法5的不同之处在于：
+     *   1. 使用了 bucket 形式的 List[] 实现字典；
+     *   2. 使用了内置的 Collections.binarySearch() 进行二分查找。
+     * - 时/空间复杂度与解法5一致。
+     * */
+    public static boolean isSubsequence6(String s, String t) {
+        List<Integer>[] buckets = new List[256];  // ASCII 中有256个字符（其实可以只开辟26的大小，但读写时需要减偏移量）
+        for (int i = 0; i < t.length(); i++) {
+            char c = t.charAt(i);
+            if (buckets[c] == null)
+                buckets[c] = new ArrayList<>();
+            buckets[c].add(i);
+        }
+
+        int i = 0;
+        for (char c : s.toCharArray()) {
+            List<Integer> list = buckets[c];
+            if (list == null) return false;
+            int j = Collections.binarySearch(list, i);
+            if (j < 0) j = -(j + 1);
+            if (j == list.size()) return false;
+            i = list.get(j) + 1;
+        }
+
+        return true;
     }
 
     public static void main(String[] args) {
