@@ -25,7 +25,7 @@ import java.util.Arrays;
 public class L300_LongestIncreasingSubsequence {
     /*
      * 解法1：Recursion + Memoization
-     * - 思路：
+     * - 思路：对每个元素 nums[i] 都回头去看它是否能跟在它前面的某个元素 nums[j] 之后，并从中找到元素个数最多的组合：
      *   - 定义子问题：f(i) 表示“在前 i 个元素中，以第 i 个元素为结尾（即一定放第 i 个元素）的最长子序列的长度”；
      *   - 状态转移方程：f(i) = max(1 + f(j))，其中 j ∈ [0,i)，且 nums[j] < nums[i]。
      *   - 验证：对于 nums=[1, 5, 8, 3, 0, 9]，从头到尾遍历：
@@ -65,7 +65,8 @@ public class L300_LongestIncreasingSubsequence {
 
     /*
      * 解法2：DP
-     * - 思路：解法1的 bottom-up 方式。
+     * - 思路：解法1的 bottom-up 方式。仍然是对每个元素 nums[i] 都回头去看它是否能跟在它前面的某个元素 nums[j] 之后，并从中
+     *   找到元素个数最多的组合。状态转移方程：f(i) = max(1 + f(j))，其中 j ∈ [0,i)，且 nums[j] < nums[i]。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int lengthOfLIS2(int[] nums) {
@@ -76,7 +77,7 @@ public class L300_LongestIncreasingSubsequence {
 
         int maxLen = 1;        // 只要 nums 中有元素，res 就至少为1（见 test case 3）
         for (int i = 1; i < nums.length; i++)
-            for (int j = 0; j < i; j++)
+            for (int j = 0; j < i; j++)  // j ∈ [0,i)
                 if (nums[j] < nums[i]) {
                     dp[i] = Math.max(dp[i], 1 + dp[j]);
                     maxLen = Math.max(maxLen, dp[i]);
