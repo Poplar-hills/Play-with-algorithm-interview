@@ -74,7 +74,7 @@ public class L435_NonOverlappingIntervals {
         int prevEndPoint = intervals[0][1];
         int count = 1;
 
-        for (int i = 1; i < intervals.length; i++) {
+        for (int i = 1; i < intervals.length; i++) {  // ∵ 上面已经按区间结束点排序过了 ∴ 第1个肯定选用 ∴ 遍历从第2个开始
             if (prevEndPoint <= intervals[i][0]) {  // 上面的排序保证了每次选择的都是结束点最小的区间 ∴ 这里只需要保证不与前一个区间重叠即可
                 prevEndPoint = intervals[i][1];
                 count++;
@@ -82,26 +82,6 @@ public class L435_NonOverlappingIntervals {
         }
 
         return intervals.length - count;
-    }
-
-    /*
-     * 解法3：
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O()。
-     * */
-    public static int eraseOverlapIntervals3(int[][] intervals) {
-
-        return 0;
-    }
-
-    /*
-     * 解法4：
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O()。
-     * */
-    public static int eraseOverlapIntervals4(int[][] intervals) {
-
-        return 0;
     }
 
     public static void main(String[] args) {
