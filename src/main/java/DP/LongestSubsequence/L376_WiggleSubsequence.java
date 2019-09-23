@@ -33,7 +33,7 @@ public class L376_WiggleSubsequence {
      * - 实现：由上面可知，整个过程分别两部分：
      *   1. 从左到右遍历 nums；
      *   2. 对每个元素 nums[i] 都在 [0,i) 范围内搜索下一个能与其连成 wiggle sequence 同时长度最大的元素。
-     *   - 注意我们假设第一个元素上是谷得到的最长序列是5，还需求第一个元素上是峰时的情况，并取两者最大值才是最终结果。
+     *   - 注意我们假设第一个元素上是谷得到的最长序列是5，还要求第一个元素上是峰时的情况，两者之中的最大值才是最终结果。
      *   - ∴ 用递归实现时可以从最后一个元素开始，向前递归 —— f(n) -> f(n-1) -> ... -> f(0)。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
@@ -188,8 +188,9 @@ public class L376_WiggleSubsequence {
 
     /*
      * 解法5：Greedy
-     * - 思路：采用贪心算法。本题的规律是统计单调上升/下降区间内的极值，极值的个数就是 wiggle sequence 的最大长度。解释 SEE:
-     *   https://leetcode.com/problems/wiggle-subsequence/solution/ (Approach #5 中的解释，以及第一条 comment)。
+     * - 思路：通过 https://leetcode.com/problems/wiggle-subsequence/solution/ 中 Approach #5 中的解释以及下面第
+     *   一条 comment 可知，每次在考虑是否选用 nums[i] 时，若这个元素的值越极端，则给后面留出的选择空间就越大 ∴ 可以采用贪心
+     *   算法，即找到 nums 中的所有极值，极值的个数就是 wiggle sequence 的最大长度。
      * - 实现：在遍历过程中记录前后 diff 来识别当前极值（用 test case 1 画图理解）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
@@ -214,7 +215,7 @@ public class L376_WiggleSubsequence {
     /*
      * 解法6：Greedy
      * - 思路：与解法5一致。
-     * - 实现：另一种数极值的办法是通过前后两个元素和一个标志位来判断。
+     * - 实现：另一种数极值个数的办法是通过前后两个元素和一个标志位来判断。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int wiggleMaxLength6(int[] nums) {

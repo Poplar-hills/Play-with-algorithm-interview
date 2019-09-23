@@ -53,13 +53,35 @@ public class L435_NonOverlappingIntervals {
     }
 
     /*
-     * 解法2：
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * 解法2：Greedy
+     * - 思路：在求“从一系列区间中找出具有最多个不重叠区间的组合”的思路下，再采用 L376_WiggleSubsequence 解法5的思路，即每次
+     *   在选择是否某选用某个区间时，若该区间结束点越小，则为后面留出的选择空间就越大，越有可能容纳更多的区间 ∴ 可以采用贪心算法，
+     *   即先按照区间结束点顺序排列，每次选择结束点最小且不与前一个区间重叠的区间。对 [[2,3],[0,2],[0,1],[0,3]] 来说：
+     *     Visualised: 0__1__2__3      Sorted: [[0,1],[0,2],[0,3],[2,3]]
+     *                  ---                       √
+     *                  ------                    √     ×
+     *                  ---------                 √     ×     ×
+     *                        ---                 √     ×     ×     √
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     public static int eraseOverlapIntervals2(int[][] intervals) {
+        if (intervals == null || intervals.length == 0) return 0;
 
-        return 0;
+        Arrays.sort(intervals, (a, b) -> a[1] != b[1]  // 按照区间结束点顺序排列
+            ? a[1] - b[1]
+            : a[0] - b[0]);
+
+        int prevEndPoint = intervals[0][1];
+        int count = 1;
+
+        for (int i = 1; i < intervals.length; i++) {
+            if (prevEndPoint <= intervals[i][0]) {  // 上面的排序保证了每次选择的都是结束点最小的区间 ∴ 这里只需要保证不与前一个区间重叠即可
+                prevEndPoint = intervals[i][1];
+                count++;
+            }
+        }
+
+        return intervals.length - count;
     }
 
     /*
@@ -83,20 +105,27 @@ public class L435_NonOverlappingIntervals {
     }
 
     public static void main(String[] args) {
-        log(eraseOverlapIntervals(new int[][]{
+        log(eraseOverlapIntervals2(new int[][]{
             new int[]{2, 3},
             new int[]{1, 2},
             new int[]{3, 4},
             new int[]{1, 3}
         }));  // expects 1. Remove [1,3]
 
-        log(eraseOverlapIntervals(new int[][]{
+        log(eraseOverlapIntervals2(new int[][]{
+            new int[]{2, 3},
+            new int[]{0, 2},
+            new int[]{0, 1},
+            new int[]{0, 3}
+        }));  // expects 2. Remove [0,2],[0,3] or [0,1],[0,3]
+
+        log(eraseOverlapIntervals2(new int[][]{
             new int[]{1, 2},
             new int[]{1, 2},
             new int[]{1, 2}
         }));  // expects 2. Remove two [1,2]
 
-        log(eraseOverlapIntervals(new int[][]{
+        log(eraseOverlapIntervals2(new int[][]{
             new int[]{1, 2},
             new int[]{2, 3}
         }));  // expects 0
