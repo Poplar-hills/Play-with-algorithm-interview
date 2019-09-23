@@ -20,7 +20,8 @@ import java.util.Arrays;
 *   - 可以用贪心算法的问题一定满足“贪心选择性”，即在求解一个最优化问题时，若采用贪心的方式选择了一个元素后，不会影响之后子问题的求解。
 *   - 该性质不易正向证明，但易举例证伪，只要举出一个反例即可说明不能采用贪心。SEE: _ZeroOneKnapsack、L474_OnesAndZeroes、
 *     L279_PerfectSquares。
-*   - 通常贪心只解决某个复杂问题中的一步，而非只是用贪心就能完全解决问题（类似排序）。LeetCode 上 Greedy 标签的问题通常就是这样。
+*   - 通常贪心只解决某个复杂问题中的一步，而非只是用贪心就能完全解决问题（类似排序）。例如 Play-with-algorithms/Graph 中的
+*     最短路径和最小生成树就都用到了贪心的思路，但又不光是贪心。另外 LeetCode 上 Greedy 标签下的问题通常也是这样。
 * */
 
 public class L435_NonOverlappingIntervals {
