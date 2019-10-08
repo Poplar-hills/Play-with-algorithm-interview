@@ -152,8 +152,8 @@ public class L392_IsSubsequence {
      * - 同时也是 Follow up 的解法。
      * - 思路：与解法6一致。
      * - 实现：与解法6的不同之处在于：
-     *   1. 使用了 bucket 形式的 List[] 实现字典；
-     *   2. 使用了内置的 Collections.binarySearch() 进行二分查找。
+     *   1. 使用 bucket 形式的 List 数组代替解法6中的 Map；
+     *   2. 使用内置的 Collections.binarySearch() 进行二分查找。
      * - 时/空间复杂度与解法6一致。
      * */
     public static boolean isSubsequence7(String s, String t) {
