@@ -20,7 +20,6 @@ import java.util.Map;
 * - Follow up:
 *   If there are lots of incoming S, say S1, S2, ... , Sk where k >= 1B, and you want to check one by one to
 *   see if T has its subsequence. In this scenario, how would you change your code?
-*
 * */
 
 public class L392_IsSubsequence {
@@ -31,12 +30,10 @@ public class L392_IsSubsequence {
      * */
     public static boolean isSubsequence(String s, String t) {
         int i = 0, j = 0;
-
         while (i < s.length() && j < t.length()) {
             if (s.charAt(i) == t.charAt(j)) i++;
             j++;
         }
-
         return i == s.length();
     }
 
@@ -48,19 +45,17 @@ public class L392_IsSubsequence {
      *   indexOf() 在 for 中只调用一次（charAt() 和 indexOf() 都是遍历搜索）。
      * */
     public static boolean isSubsequence2(String s, String t) {
-        int i = 0;
-        for (char size : s.toCharArray()) {
-            i = t.indexOf(size, i);     // 注意 indexOf 第2个参数是 fromIndex
+        int fromIdx = 0;
+        for (char c : s.toCharArray()) {
+            int i = t.indexOf(c, fromIdx);
             if (i == -1) return false;
-            i++;
+            fromIdx = i + 1;
         }
-
         return true;
     }
 
     /*
-     * 解法3：Recursion
-     * - 思路：与解法1一致。
+     * 解法3：解法1的 Recursion 版
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSubsequence3(String s, String t) {
@@ -178,10 +173,10 @@ public class L392_IsSubsequence {
     }
 
     public static void main(String[] args) {
-        log(isSubsequence5("abc", "ahbgdc"));   // expects true
-        log(isSubsequence5("acc", "baaxcc"));   // expects true
-        log(isSubsequence5("axc", "abcd"));     // expects false. (s 中存在 t 中没有的字符)
-        log(isSubsequence5("aac", "abcd"));     // expects false. (s 中的字符存在于 t 中，但个数比 t 中多)
-        log(isSubsequence5("abc", "axacxbb"));  // expects false. (s 与 t 字符相对顺序不匹配)
+        log(isSubsequence2("abc", "ahbgdc"));   // expects true
+        log(isSubsequence2("acc", "baaxcc"));   // expects true
+        log(isSubsequence2("axc", "abcd"));     // expects false. (s 中存在 t 中没有的字符)
+        log(isSubsequence2("aac", "abcd"));     // expects false. (s 中的字符存在于 t 中，但个数比 t 中多)
+        log(isSubsequence2("abc", "axacxbb"));  // expects false. (s 与 t 字符相对顺序不匹配)
     }
 }
