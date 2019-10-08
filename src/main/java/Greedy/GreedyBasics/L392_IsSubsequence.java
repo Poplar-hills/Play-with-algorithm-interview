@@ -90,7 +90,7 @@ public class L392_IsSubsequence {
         int ls = s.length(), lt = t.length();
         int[][] dp = new int[ls + 1][lt + 1];  // 要多开辟一个空间用于递推最后一个元素
 
-        for (int i = ls - 1; i >= 0; i--)
+        for (int i = ls - 1; i >= 0; i--)      // 从后往前递推
             for (int j = lt - 1; j >= 0; j--)
                 dp[i][j] = s.charAt(i) == t.charAt(j)
                     ? 1 + dp[i + 1][j + 1]
@@ -105,44 +105,38 @@ public class L392_IsSubsequence {
      * - 思路：s 是 t 的子序列需要满足2个条件：
      *   1. s 中的字符都存在于 t 中；
      *   2. s 中的字符的相对顺序与他们在 t 中的相对顺序一致。
-     *   - 对于条件1：可以为 t 构建一个字符字典，看 s 中的字符是否在字典中；
-     *   - 对于条件2：可以在遍历 s 的过程中用一个外部指针 i 记录当前字符在 t 中的索引，若 i 一直增大则说明 s 中字符的相对顺序
-     *     与在 t 中一致。
+     *   - 对于条件1：为 t 构建一个字符字典，看 s 中的字符是否在字典中；
+     *   - 对于条件2：在遍历 s 的过程中，查找并记录当前字符在 t 中的索引，若索引值单调增大则说明条件2满足。
      * - 实现：要同时实现以上这两点，可以：
-     *   1. 先为 t 构建一个 Map: {字符 -> 索引列表} 的数据结构；
-     *   2. 在遍历 s 的过程中，首先检查字符是否在字典中，若存在则继续对其在 Map 中的索引列表进行二分搜索。
-     * - 演示：
-     *     对 s="abc", t="axacxbb" 来说：                    对 s="acc", t="baaxcc" 来说：
-     *     map = [a, b, c, x]                               map = [a, b, c, x]
-     *            0  5  3  1                                       1  0  4  3
-     *            2  6     4                                       2     5
-     *     For 'a': i=0, j=0, i=get(0)+1=1                  For 'a': i=0, ip=0, i=get(0)+1=2
-     *     For 'b': i=1, ip=0, i=get(0)+1=6                 For 'c': i=2, ip=0, i=get(0)+1=5
-     *     For 'c': i=6, ip=1=list.size(), return false     For 'c': i=5, j=1, i=get(1)+1=6, return true
+     *   1. 先为 t 构建一个 map: {字符 -> 索引列表}（∵ 是投建过程是顺序遍历 t ∴ 索引列表是有序的）；
+     *   2. 设置索引指针 i，遍历 s：
+     *      - 对于 s[0]，若其在 map 中，则获取对应索引列表中的第0个索引+1后赋给 i（后面搜索出的索引都得 > i 才能说明单调递增）；
+     *      - 对于 s[1..]，同样先检查是否在 map 中，若在则在其对应的索引列表中二分搜索 i，若得到的插入点在索引列表右边，说明在
+     *        t[i..] 中找不到该字符，说明原问题无解，否则说明找得到，继续下一轮循环。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(m)。
      * */
     public static boolean isSubsequence6(String s, String t) {
-        Map<Character, List<Integer>> map = new HashMap<>();  // 为 t 生成一个 {字符 -> 索引列表} 的字典
+        Map<Character, List<Integer>> map = new HashMap<>();  // 为 t 构建 {字符 -> 索引列表} 的字典
         for (int i = 0; i < t.length(); i++) {
-            List<Integer> l = map.getOrDefault(t.charAt(i), new ArrayList<>());
-            l.add(i);
-            map.put(t.charAt(i), l);
+            List<Integer> list = map.getOrDefault(t.charAt(i), new ArrayList<>());
+            list.add(i);
+            map.put(t.charAt(i), list);
         }
 
-        int i = -1;
+        int i = -1;                                 // 用于记录 s 中的字符在 t 中的索引，初始化为-1
         for (char c : s.toCharArray()) {            // 遍历 s 中的字符
-            if (!map.containsKey(c)) return false;  // 检查条件1是否满足
-            List<Integer> list = map.get(c);
-            int j = binarySearch(list, i);       // 在索引列表中搜索以检查条件2是否满足（∵ 索引列表是有序的 ∴ 可以使用二分搜索）
-            if (j < 0) j = -(j + 1);             // 若没找到则将 j 转换成插入点（insertion point）
-            if (j == list.size()) return false;  // 若 i > list 中的最大值，说明 s 中的该字符的个数多于 t 中该字符的个数
+            if (!map.containsKey(c)) return false;  // 检查条件1
+            List<Integer> list = map.get(c);        // 若满足则拿到 c 对应的索引列表
+            int j = binarySearch(list, i);          // 在索引列表中搜索以检查条件2（∵ 索引列表有序 ∴ 可二分搜索）
+            if (j < 0) j = -(j + 1);                // 若没找到则将 j 转换成插入点（insertion point）
+            if (j == list.size()) return false;     // 若插入点在最右边，说明 i > list 中的最大值，即 s 中该字符的个数多于 t 中该字符的个数
             i = list.get(j) + 1;
         }
 
         return true;
     }
 
-    private static int binarySearch(List<Integer> list, int el) {  // 输入输出都与 Collections.binarySearch() 一致
+    private static int binarySearch(List<Integer> list, int el) {  // 在 list 中二分搜索 el，输入输出与 Collections.binarySearch() 一致
         int l = 0, r = list.size() - 1;
         while (l <= r) {
             int mid = (l + r) / 2;
