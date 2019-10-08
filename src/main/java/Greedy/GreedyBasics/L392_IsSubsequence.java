@@ -69,12 +69,24 @@ public class L392_IsSubsequence {
     }
 
     /*
-     * 解法4：DP
+     * 解法4：解法2的 Recursion 版
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isSubsequence4(String s, String t) {
+        if (s.length() == 0) return true;
+        int idx = t.indexOf(s.charAt(0));
+        return (idx != -1)
+            ? isSubsequence(s.substring(1), t.substring(idx + 1))
+            : false;
+    }
+
+    /*
+     * 解法5：DP
      * - 思路：采用 L1143_LongestCommonSubsequence 的方法 —— len(若最长公共子串) = len(s)，则说明 s 是 t 的子串。
      * - 优化：可继续采用 L1143 中解法4、5的方式优化空间复杂度。
      * - 时间复杂度 O(n*m)，空间复杂度 O(n*m)。
      * */
-    public static boolean isSubsequence4(String s, String t) {
+    public static boolean isSubsequence5(String s, String t) {
         int ls = s.length(), lt = t.length();
         int[][] dp = new int[ls + 1][lt + 1];
 
@@ -88,7 +100,7 @@ public class L392_IsSubsequence {
     }
 
     /*
-     * 解法5：Map + Binary Search
+     * 解法6：Map + Binary Search
      * - 同时也是 Follow up 的解法。
      * - 思路：s 是 t 的子序列需要满足2个条件：
      *   1. s 中的字符都存在于 t 中；
@@ -109,7 +121,7 @@ public class L392_IsSubsequence {
      *     For 'c': i=6, ip=1=list.size(), return false     For 'c': i=5, j=1, i=get(1)+1=6, return true
      * - 时间复杂度 O(nlogn)，空间复杂度 O(m)。
      * */
-    public static boolean isSubsequence5(String s, String t) {
+    public static boolean isSubsequence6(String s, String t) {
         Map<Character, List<Integer>> map = new HashMap<>();  // 为 t 生成一个 {字符 -> 索引列表} 的字典
         for (int i = 0; i < t.length(); i++) {
             List<Integer> l = map.getOrDefault(t.charAt(i), new ArrayList<>());
@@ -142,15 +154,15 @@ public class L392_IsSubsequence {
     }
 
     /*
-     * 解法6：Bucket 数组 + Binary Search
+     * 解法7：Bucket 数组 + Binary Search
      * - 同时也是 Follow up 的解法。
-     * - 思路：与解法5一致。
-     * - 实现：与解法5的不同之处在于：
+     * - 思路：与解法6一致。
+     * - 实现：与解法6的不同之处在于：
      *   1. 使用了 bucket 形式的 List[] 实现字典；
      *   2. 使用了内置的 Collections.binarySearch() 进行二分查找。
-     * - 时/空间复杂度与解法5一致。
+     * - 时/空间复杂度与解法6一致。
      * */
-    public static boolean isSubsequence6(String s, String t) {
+    public static boolean isSubsequence7(String s, String t) {
         List<Integer>[] buckets = new List[256];  // ASCII 中有256个字符（其实可以只开辟26的大小，但读写时需要减偏移量）
         for (int i = 0; i < t.length(); i++) {
             char c = t.charAt(i);
@@ -173,10 +185,10 @@ public class L392_IsSubsequence {
     }
 
     public static void main(String[] args) {
-        log(isSubsequence2("abc", "ahbgdc"));   // expects true
-        log(isSubsequence2("acc", "baaxcc"));   // expects true
-        log(isSubsequence2("axc", "abcd"));     // expects false. (s 中存在 t 中没有的字符)
-        log(isSubsequence2("aac", "abcd"));     // expects false. (s 中的字符存在于 t 中，但个数比 t 中多)
-        log(isSubsequence2("abc", "axacxbb"));  // expects false. (s 与 t 字符相对顺序不匹配)
+        log(isSubsequence("abc", "ahbgdc"));   // expects true
+        log(isSubsequence("acc", "baaxcc"));   // expects true
+        log(isSubsequence("axc", "abcd"));     // expects false. (s 中存在 t 中没有的字符)
+        log(isSubsequence("aac", "abcd"));     // expects false. (s 中的字符存在于 t 中，但个数比 t 中多)
+        log(isSubsequence("abc", "axacxbb"));  // expects false. (s 与 t 字符相对顺序不匹配)
     }
 }
