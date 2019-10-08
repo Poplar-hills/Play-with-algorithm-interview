@@ -72,7 +72,8 @@ public class L1143_LongestCommonSubsequence {
 
     /*
      * 解法2：DP
-     * - 实现：由后往前递推。
+     * - 思路：子问题定义和状态转移方程同超时解。
+     * - 实现：∵ 状态转移方程中前一状态下的解取决于后一状态（f(i, j) = 1 + f(i+1, j+1)）∴ 由后往前递推更直观。
      * - 时间复杂度 O(l1*l2))，空间复杂度 O(l1*l2)。
      * */
     public static int longestCommonSubsequence2(String s1, String s2) {
@@ -128,7 +129,7 @@ public class L1143_LongestCommonSubsequence {
                     ? 1 + dp[(i + 1) % 2][j + 1]
                     : Math.max(dp[(i + 1) % 2][j], dp[i % 2][j + 1]);
 
-        return dp[0][0];
+        return dp[0][0];  // ∵ 从后往前递推 l1、l2 的最后一个值都是0 ∴ 最终返回 dp[0][0]
     }
 
     /*

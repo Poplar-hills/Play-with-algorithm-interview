@@ -88,12 +88,12 @@ public class L392_IsSubsequence {
      * */
     public static boolean isSubsequence5(String s, String t) {
         int ls = s.length(), lt = t.length();
-        int[][] dp = new int[ls + 1][lt + 1];
+        int[][] dp = new int[ls + 1][lt + 1];  // 要多开辟一个空间用于递推最后一个元素
 
         for (int i = ls - 1; i >= 0; i--)
             for (int j = lt - 1; j >= 0; j--)
                 dp[i][j] = s.charAt(i) == t.charAt(j)
-                    ? dp[i + 1][j + 1] + 1
+                    ? 1 + dp[i + 1][j + 1]
                     : Math.max(dp[i + 1][j], dp[i][j + 1]);
 
         return dp[0][0] == ls;
@@ -185,10 +185,10 @@ public class L392_IsSubsequence {
     }
 
     public static void main(String[] args) {
-        log(isSubsequence("abc", "ahbgdc"));   // expects true
-        log(isSubsequence("acc", "baaxcc"));   // expects true
-        log(isSubsequence("axc", "abcd"));     // expects false. (s 中存在 t 中没有的字符)
-        log(isSubsequence("aac", "abcd"));     // expects false. (s 中的字符存在于 t 中，但个数比 t 中多)
-        log(isSubsequence("abc", "axacxbb"));  // expects false. (s 与 t 字符相对顺序不匹配)
+        log(isSubsequence5("abc", "ahbgdc"));   // expects true
+        log(isSubsequence5("acc", "baaxcc"));   // expects true
+        log(isSubsequence5("axc", "abcd"));     // expects false. (s 中存在 t 中没有的字符)
+        log(isSubsequence5("aac", "abcd"));     // expects false. (s 中的字符存在于 t 中，但个数比 t 中多)
+        log(isSubsequence5("abc", "axacxbb"));  // expects false. (s 与 t 字符相对顺序不匹配)
     }
 }
