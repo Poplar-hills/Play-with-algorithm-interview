@@ -35,15 +35,13 @@ public class L455_AssignCookies {
         Arrays.sort(g);
         Arrays.sort(s);
 
-        int count = 0;
-        int i = 0, j = 0;
-
-        while (j < s.length && i < g.length) {  // 若饼干或小朋友用尽则 return
+        int i = 0, j = 0, count = 0;
+        while (i < g.length && j < s.length) {  // 若饼干或小朋友用尽则 return count
             if (s[j] >= g[i]) {  // 若能满足第 i 个小朋友则 count++、i++
                 count++;
                 i++;
             }
-            j++;                 // 不管能不能满足都移到下一块饼干上
+            j++;  // 即使不能满足也移到下一块饼干上 ∵ 小朋友是升序排序，若 s[j] 满足不了该小朋友则一定也无法满足后面的小朋友 ∴ 跳过该饼干
         }
 
         return count;
@@ -58,15 +56,13 @@ public class L455_AssignCookies {
         Arrays.sort(g);
         Arrays.sort(s);  // Arrays.sort() 无法降序排列，只能升序排列后从后往前遍历
 
-        int count = 0;
-        int i = g.length - 1, j = s.length - 1;
-
+        int i = g.length - 1, j = s.length - 1, count = 0;
         while (j >= 0 && i >= 0) {
             if (s[j] >= g[i]) {
                 count++;
                 j--;
             }
-            i--;  // 不管能不能满足都往下走 ∵ 饼干也是从大到小排列的，若当前饼干满足不了则后面饼干都无法满足 ∴ 跳过该小朋友
+            i--;  // 即使不能满足也移到下一个小朋友上 ∵ 饼干是降序排列，若 s[j] 满足不了该小朋友则后面饼干一定也无法满足 ∴ 跳过该小朋友
         }
 
         return count;
@@ -99,15 +95,15 @@ public class L455_AssignCookies {
     }
 
     public static void main(String[] args) {
-        log(findContentChildren3(
+        log(findContentChildren0(
             new int[]{1, 2, 3},
             new int[]{1, 1}));        // expects 1. 最多让一个小朋友开心
 
-        log(findContentChildren3(
+        log(findContentChildren0(
             new int[]{1, 2},
             new int[]{1, 2, 3}));     // expects 2. 两个小朋友都能开心
 
-        log(findContentChildren3(
+        log(findContentChildren0(
             new int[]{10, 9, 8, 7},
             new int[]{5, 6, 7, 8}));  // expects 2. 小朋友7、8能开心
     }
