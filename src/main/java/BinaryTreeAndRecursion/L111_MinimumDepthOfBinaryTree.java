@@ -27,14 +27,14 @@ public class L111_MinimumDepthOfBinaryTree {
     }
 
     /*
-     * 解法2：Level-order Traversal
-     * - 思路：对树进行层序遍历的过程中记录树高，若碰到叶子节点则提前结束遍历，返回树高，此时的树高即是 minimum depth。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 n 为节点数，h 为树高。
+     * 解法2：BFS (Level-order Traversal)
+     * - 思路：对树进行层序遍历的过程中，若碰到叶子节点则提前结束遍历，返回树高，此时的树高即是 minimum depth。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)，其中 n 为节点数。
      * */
     public static int minDepth2(TreeNode root) {
         if (root == null) return 0;
 
-        int depth = 1;
+        int depth = 1;  // 根节点不为 null 则最小树高就是1
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
 
