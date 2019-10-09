@@ -5,7 +5,7 @@ import static Utils.Helpers.*;
 /*
  * Maximum Depth of Binary Tree
  *
- * Given a binary tree, find its maximum depth.
+ * - Given a binary tree, find its maximum depth.
  * */
 
 public class L104_MaximumDepthOfBinaryTree {
