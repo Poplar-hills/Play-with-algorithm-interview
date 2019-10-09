@@ -32,7 +32,7 @@ public class L376_WiggleSubsequence {
      *             1   2   2   2   3   3  4  5    - 8作为谷接到16后面时序列最长 ∴ f(8) = f(16) + 1 = 5
      * - 实现：由上面可知，整个过程分别两部分：
      *   1. 从左到右遍历 nums；
-     *   2. 对每个元素 nums[i] 都在 [0,i) 范围内搜索下一个能与其连成 wiggle sequence 同时长度最大的元素。
+     *   2. 对每个元素 nums[i] 都在 [0,i) 范围内搜索前一个能与其连成 wiggle sequence 同时长度最大的元素。
      *   - 注意我们假设第一个元素上是谷得到的最长序列是5，还要求第一个元素上是峰时的情况，两者之中的最大值才是最终结果。
      *   - ∴ 用递归实现时可以从最后一个元素开始，向前递归 —— f(n) -> f(n-1) -> ... -> f(0)。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
@@ -118,8 +118,8 @@ public class L376_WiggleSubsequence {
         if (nums == null || nums.length == 0) return 0;
 
         int n = nums.length;
-        int[] up = new int[n];    // up[i] 保存在前 i 个数字中，以第 i 个数结尾时处于峰，且是 wiggle subsequence 的最长子序列的长度
-        int[] down = new int[n];  // down[i] 保存在前 i 个数字中，以第 i 个数结尾时处于谷，且是 wiggle subsequence 的最长子序列的长度
+        int[] up = new int[n];    // up[i] 保存前 i 个数中，以 nums[i] 结尾时处于峰，且是 wiggle subsequence 的最长子序列的长度
+        int[] down = new int[n];  // down[i] 保存前 i 个数中，以 nums[i] 结尾时处于谷，且是 wiggle subsequence 的最长子序列的长度
         Arrays.fill(up, 1);
         Arrays.fill(down, 1);
 
@@ -215,7 +215,7 @@ public class L376_WiggleSubsequence {
     /*
      * 解法6：Greedy
      * - 思路：与解法5一致。
-     * - 实现：另一种数极值个数的办法是通过前后两个元素和一个标志位来判断。
+     * - 实现：另一种识别极值的方法是通过比较前后两个元素以及一个记录之前峰/谷状态的标志位来判断。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int wiggleMaxLength6(int[] nums) {
