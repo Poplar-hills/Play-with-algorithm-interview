@@ -70,15 +70,16 @@ public class L455_AssignCookies {
 
     /*
      * 解法3：TreeMap
-     * - 思路：要让最多的小朋友开心，只需为每个小朋友从 s 中找到 ≥ 且最接近其贪心指数的饼干即可。要实现这个逻辑可以使用 TreeMap
-     *   中的 ceilingKey() 方法。
-     * - 时间复杂度 O(nlogn)，空间复杂度 O(m)。
+     * - 思路：要让最多的小朋友开心，只需为每个小朋友从饼干中找到 ≥ 且最接近其贪心指数的饼干（即 >= g[i] 的最小 s[j]），这可以
+     *   联想到 BST 上的 ceil 操作（在树上查找大于某个值的最小节点），进而可知有这种操作的数据结构就是 TreeMap。∴ 采用 TreeMap
+     *   作为该解法的辅助数据结构，并使用其上的 ceilingKey() 方法。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(m)，其中 n = len(g), m = len(s)。
      * */
     public static int findContentChildren3(int[] g, int[] s) {
         TreeMap<Integer, Integer> tree = new TreeMap<>();  // ∵ 要用到 ceilingKey() 方法 ∴ 接口和实现都得是 TreeMap
         int count = 0;
 
-        for (int size : s)                           // 将所有饼干添加进 tree 并累计个数，O(m)
+        for (int size : s)                           // 将所有饼干添加进 tree 并累计个数，O(mlogm)
             tree.put(size, tree.getOrDefault(size, 0) + 1);
 
         for (int greed : g) {                        // O(nlogn)
@@ -95,15 +96,15 @@ public class L455_AssignCookies {
     }
 
     public static void main(String[] args) {
-        log(findContentChildren0(
+        log(findContentChildren(
             new int[]{1, 2, 3},
             new int[]{1, 1}));        // expects 1. 最多让一个小朋友开心
 
-        log(findContentChildren0(
+        log(findContentChildren(
             new int[]{1, 2},
             new int[]{1, 2, 3}));     // expects 2. 两个小朋友都能开心
 
-        log(findContentChildren0(
+        log(findContentChildren(
             new int[]{10, 9, 8, 7},
             new int[]{5, 6, 7, 8}));  // expects 2. 小朋友7、8能开心
     }
