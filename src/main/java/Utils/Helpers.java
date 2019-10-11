@@ -211,9 +211,13 @@ public class Helpers {
 
         while (!q.isEmpty()) {
             TreeNode node = q.poll();
-            if (node != null) {
+            if (node == null)
+                list.add(null);      // 最终非叶子节点下的 null 节点会被打印出来（例：[1, null, 2]）
+            else {
                 list.add(node.val);
-                q.offer(node.left);
+                if (node.left == null && node.right == null)  // 只有叶子节点的左右子节点（null）不进入队列
+                    continue;
+                q.offer(node.left);  // 只要左右子节点至少有一个不是 null，则左右子节点就都要进入队列
                 q.offer(node.right);
             }
         }
