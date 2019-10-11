@@ -25,7 +25,7 @@ public class L226_InvertBinaryTree {
     }
 
     /*
-     * 解法2：Iterative (BFS)
+     * 解法2：Iteration (BFS)
      * - 时间复杂度 O(n)，其中 n 为节点数。
      * - 空间复杂度 O(n)，∵ q 中同时最多容纳 n/2 个节点（即完美二叉树的最后一行）∴ 是 O(n) 级别。
      * */
@@ -47,7 +47,7 @@ public class L226_InvertBinaryTree {
     }
 
     /*
-     * 解法2：Iterative (DFS)
+     * 解法2：Iteration (DFS)
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode invertTree3(TreeNode root) {
