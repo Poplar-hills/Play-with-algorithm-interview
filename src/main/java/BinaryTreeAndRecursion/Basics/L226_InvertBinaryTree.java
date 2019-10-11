@@ -4,6 +4,7 @@ import static Utils.Helpers.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 /*
  * Invert Binary Tree
@@ -38,8 +39,29 @@ public class L226_InvertBinaryTree {
             TreeNode temp = node.left;
             node.left = node.right;
             node.right = temp;
-            if (node.right != null) q.offer(node.right);
             if (node.left != null) q.offer(node.left);
+            if (node.right != null) q.offer(node.right);
+        }
+
+        return root;
+    }
+
+    /*
+     * 解法2：Iterative (DFS)
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static TreeNode invertTree3(TreeNode root) {
+        if (root == null) return null;
+        Stack<TreeNode> stack = new Stack<>();
+        stack.add(root);
+
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.pop();
+            TreeNode temp = node.left;
+            node.left = node.right;
+            node.right = temp;
+            if (node.left != null) stack.add(node.left);
+            if (node.right != null) stack.add(node.right);
         }
 
         return root;
@@ -47,7 +69,7 @@ public class L226_InvertBinaryTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{4, 2, 7, 1, 3, 6, 9});
-        printBinaryTreeBreadthFirst(invertTree2(t1));
+        printBinaryTreeBreadthFirst(invertTree3(t1));
         /*
          * expects [4, 7, 2, 9, 6, 3, 1].
          *         4                  4
@@ -55,6 +77,15 @@ public class L226_InvertBinaryTree {
          *      2     7    --->    7     2
          *     / \   / \          / \   / \
          *    1   3 6   9        9   6 3   1
+         * */
+
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2});
+        printBinaryTreeBreadthFirst(invertTree3(t2));
+        /*
+         * expects [1, null, 2].
+         *      1              1
+         *     /      --->      \
+         *    2                  2
          * */
     }
 }
