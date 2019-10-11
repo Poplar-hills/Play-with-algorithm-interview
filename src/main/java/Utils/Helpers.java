@@ -182,19 +182,42 @@ public class Helpers {
         return tree;
     }
 
-    public static void printBinaryTree(TreeNode node) {
-        ArrayList<Integer> list = new ArrayList<>();
-        if (node != null) printBinaryTree(node, list);
+    public static void printBinaryTreeDepthFirst(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        if (root != null) collectDepthFirst(root, list);
         log(list);
     }
 
-    private static void printBinaryTree(TreeNode node, List<Integer> list) {
+    private static void collectDepthFirst(TreeNode node, List<Integer> list) {
         if (node == null) {
             list.add(null);
             return;
         }
         list.add(node.val);
-        printBinaryTree(node.left, list);
-        printBinaryTree(node.right, list);
+        collectDepthFirst(node.left, list);
+        collectDepthFirst(node.right, list);
+    }
+
+    public static void printBinaryTreeBreadthFirst(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+
+        if (root == null) {
+            log(list);
+            return;
+        }
+
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+
+        while (!q.isEmpty()) {
+            TreeNode node = q.poll();
+            if (node != null) {
+                list.add(node.val);
+                q.offer(node.left);
+                q.offer(node.right);
+            }
+        }
+
+        log(list);
     }
 }
