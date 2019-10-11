@@ -5,8 +5,6 @@ import static Utils.Helpers.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import Utils.Helpers.TreeNode;
-
 /*
  * Minimum Depth of Binary Tree
  *
