@@ -1,4 +1,4 @@
-package BinaryTreeAndRecursion;
+package BinaryTreeAndRecursion.Basics;
 
 import static Utils.Helpers.*;
 
