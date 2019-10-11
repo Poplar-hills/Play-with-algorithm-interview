@@ -13,7 +13,9 @@ import java.util.Stack;
 public class L226_InvertBinaryTree {
     /*
      * 解法1：Recursion
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 n 为节点数，h 为树高。
+     * - 时间复杂度 O(n)；
+     * - 空间复杂度：若树平衡（Perfectly balanced tree），则空间复杂度达到最小 O(logn)，即树高；
+     *             若树退化为链表（Fully skewed tree），则空间复杂度达到最大 O(n)。
      * */
     public static TreeNode invertTree(TreeNode root) {
         if (root == null) return null;
@@ -27,7 +29,7 @@ public class L226_InvertBinaryTree {
     /*
      * 解法2：Iteration (BFS)
      * - 时间复杂度 O(n)，其中 n 为节点数。
-     * - 空间复杂度 O(n)，∵ q 中同时最多容纳 n/2 个节点（即完美二叉树的最后一行）∴ 是 O(n) 级别。
+     * - 空间复杂度 O(n)，∵ q 中同时最多容纳 n/2 个节点（即完美二叉树的最后一行）∴ 是 O(n) 级别。
      * */
     public static TreeNode invertTree2(TreeNode root) {
         if (root == null) return null;
@@ -47,7 +49,8 @@ public class L226_InvertBinaryTree {
     }
 
     /*
-     * 解法2：Iteration (DFS)
+     * 解法3：Iteration (DFS)
+     * - 思路：逻辑与解法2几乎完全一致，只是数据结构改为了 Stack。可见使用 Queue/Stack 决定了访问节点的顺序，即 BFS/DFS。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode invertTree3(TreeNode root) {
