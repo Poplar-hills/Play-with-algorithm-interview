@@ -18,6 +18,8 @@ import javafx.util.Pair;
 public class L104_MaximumDepthOfBinaryTree {
     /*
      * 解法1：Recursion
+     * - 时间复杂度 O(n)；
+     * - 空间复杂度：最好情况（平衡树）时为 O(logn)；最坏情况（退化为链表）时为 O(n)。
      * */
     public static int maxDepth(TreeNode root) {
         if (root == null) return 0;
@@ -26,6 +28,8 @@ public class L104_MaximumDepthOfBinaryTree {
 
     /*
      * 解法2：Iteration (BFS)
+     * - 思路：逻辑与 L102_BinaryTreeLevelOrderTraversal 解法1一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth2(TreeNode root) {
         if (root == null) return 0;
@@ -52,9 +56,33 @@ public class L104_MaximumDepthOfBinaryTree {
         return res.size();
     }
 
+    /*
+     * 解法3：Iteration (BFS)（解法2的简化版）
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int maxDepth3(TreeNode root) {
+        if (root == null) return 0;
+
+        int count = 0;
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(root, 1));
+
+        while (!q.isEmpty()) {
+            Pair<TreeNode, Integer> pair = q.poll();
+            TreeNode node = pair.getKey();
+            int level = pair.getValue();
+
+            count = Math.max(count, level);
+            if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
+            if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
+        }
+
+        return count;
+    }
+
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(maxDepth2(t));
+        log(maxDepth3(t));
         /*
          *  expects 3.
          *      3
