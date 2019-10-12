@@ -4,6 +4,7 @@ import static Utils.Helpers.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 import Utils.Helpers.TreeNode;
 
@@ -61,9 +62,61 @@ public class L101_SymmetricTree {
         return true;
     }
 
+    /*
+     * 解法3：Iteration (BFS)（解法2的空间优化版）
+     * - 思路：只使用一个 Queue。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isSymmetric3(TreeNode root) {
+        if (root == null) return true;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        q.offer(root);
+
+        while (!q.isEmpty()) {
+            TreeNode node1 = q.poll();
+            TreeNode node2 = q.poll();
+            if (node1 == null && node2 == null) continue;
+            if (node1 == null || node2 == null) return false;
+            if (node1.val != node2.val) return false;
+            q.offer(node1.left);
+            q.offer(node2.right);  // 注意这里跟解法2中的入队顺序不同，需对称入队
+            q.offer(node1.right);
+            q.offer(node2.left);
+        }
+
+        return true;
+    }
+
+    /*
+     * 解法4：Iteration (DFS)
+     * - 思路：对树同时从两个方向进行深度优先遍历（与解法2的差别只是数据结构不同）。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isSymmetric4(TreeNode root) {
+        if (root == null) return true;
+        Stack<TreeNode> s = new Stack<>();
+        s.add(root);
+        s.add(root);
+
+        while (!s.isEmpty()) {
+            TreeNode node1 = s.pop();
+            TreeNode node2 = s.pop();
+            if (node1 == null && node2 == null) continue;
+            if (node1 == null || node2 == null) return false;
+            if (node1.val != node2.val) return false;
+            s.add(node1.left);
+            s.add(node2.right);  // 这里同解法3，需对称入栈
+            s.add(node1.right);
+            s.add(node2.left);
+        }
+
+        return true;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 4, 3});
-        log(isSymmetric2(t1));
+        log(isSymmetric4(t1));
         /*
          * expects true.
          *        1
@@ -74,7 +127,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 3, 4});
-        log(isSymmetric2(t2));
+        log(isSymmetric4(t2));
         /*
          * expects false.
          *        1
@@ -85,7 +138,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, null, 3, null, 3});
-        log(isSymmetric2(t3));
+        log(isSymmetric4(t3));
         /*
          * expects false.
          *        1
@@ -96,7 +149,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, null, null, 3});
-        log(isSymmetric2(t4));
+        log(isSymmetric4(t4));
         /*
          * expects true.
          *        1
