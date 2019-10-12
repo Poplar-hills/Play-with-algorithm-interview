@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Stack;
 
 import javafx.util.Pair;
 
@@ -80,9 +81,32 @@ public class L104_MaximumDepthOfBinaryTree {
         return count;
     }
 
+    /*
+     * 解法4：Iteration (BFS)（解法3的简化版）
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int maxDepth4(TreeNode root) {
+        if (root == null) return 0;
+
+        int count = 0;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+
+        while (!q.isEmpty()) {
+            int qSize = q.size();
+            while (qSize-- > 0) {
+                TreeNode node = q.poll();
+                if (node.left != null) q.offer(node.left);
+                if (node.right != null) q.offer(node.right);
+            }
+            count++;
+        }
+
+        return count;
+    }
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(maxDepth3(t));
+        log(maxDepth4(t));
         /*
          *  expects 3.
          *      3
