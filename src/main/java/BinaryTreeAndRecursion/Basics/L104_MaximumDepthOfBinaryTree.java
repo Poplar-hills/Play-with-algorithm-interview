@@ -94,19 +94,45 @@ public class L104_MaximumDepthOfBinaryTree {
 
         while (!q.isEmpty()) {
             int qSize = q.size();
-            while (qSize-- > 0) {
+            while (qSize-- > 0) {  // 一次性将 q 中同一层的节点都消费完
                 TreeNode node = q.poll();
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
-            count++;
+            count++;               // 消费完一层的节点后就可以让 count++
         }
 
         return count;
     }
+
+    /*
+     * 解法5：Iteration (DFS)
+     * - 思路：∵ 深度优先遍历 ∴ 无法采用解法4的方式一次性将一层节点全部遍历完 ∴ 只能采用解法3的方式将层级信息携带在节点上。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int maxDepth5(TreeNode root) {
+        if (root == null) return 0;
+
+        int count = 0;
+        Stack<Pair<TreeNode, Integer>> stack = new Stack<>();
+        stack.add(new Pair<>(root, 1));
+
+        while (!stack.isEmpty()) {
+            Pair<TreeNode, Integer> pair = stack.pop();
+            TreeNode node = pair.getKey();
+            int level = pair.getValue();
+
+            count = Math.max(count, level);
+            if (node.left != null) stack.add(new Pair<>(node.left, level + 1));
+            if (node.right != null) stack.add(new Pair<>(node.right, level + 1));
+        }
+
+        return count;
+    }
+
     public static void main(String[] args) {
-        TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(maxDepth4(t));
+        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
+        log(maxDepth5(t1));
         /*
          *  expects 3.
          *      3
@@ -114,6 +140,17 @@ public class L104_MaximumDepthOfBinaryTree {
          *    9  20
          *      /  \
          *     15   7
+         * */
+
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, null, null, 5});
+        log(maxDepth5(t2));
+        /*
+         *  expects 3.
+         *      1
+         *     / \
+         *    2   3
+         *   /     \
+         *  4       5
          * */
     }
 }
