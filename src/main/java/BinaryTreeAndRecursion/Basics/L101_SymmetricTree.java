@@ -90,7 +90,7 @@ public class L101_SymmetricTree {
 
     /*
      * 解法4：Iteration (DFS)
-     * - 思路：对树同时从两个方向进行深度优先遍历（与解法2的差别只是数据结构不同）。
+     * - 思路：对树同时从两个方向进行深度优先遍历（与解法3的差别只是数据结构不同）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSymmetric4(TreeNode root) {
