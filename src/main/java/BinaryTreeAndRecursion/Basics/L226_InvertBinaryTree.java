@@ -13,9 +13,7 @@ import java.util.Stack;
 public class L226_InvertBinaryTree {
     /*
      * 解法1：Recursion
-     * - 时间复杂度 O(n)；
-     * - 空间复杂度：若树平衡（Perfectly balanced tree），则空间复杂度达到最小 O(logn)，即树高；
-     *             若树退化为链表（Fully skewed tree），则空间复杂度达到最大 O(n)。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 n 为节点数，h 为树高。
      * */
     public static TreeNode invertTree(TreeNode root) {
         if (root == null) return null;

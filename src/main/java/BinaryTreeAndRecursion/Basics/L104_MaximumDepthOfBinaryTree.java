@@ -19,8 +19,7 @@ import javafx.util.Pair;
 public class L104_MaximumDepthOfBinaryTree {
     /*
      * 解法1：Recursion
-     * - 时间复杂度 O(n)；
-     * - 空间复杂度：最好情况（平衡树）时为 O(logn)；最坏情况（退化为链表）时为 O(n)。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int maxDepth(TreeNode root) {
         if (root == null) return 0;

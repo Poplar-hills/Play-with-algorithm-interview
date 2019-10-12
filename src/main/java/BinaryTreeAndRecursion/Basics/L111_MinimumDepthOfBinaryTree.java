@@ -15,7 +15,7 @@ import java.util.Queue;
 public class L111_MinimumDepthOfBinaryTree {
     /*
      * 解法1：Recursion
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 n 为节点数，h 为树高。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int minDepth(TreeNode root) {
         if (root == null) return 0;

@@ -18,9 +18,7 @@ import javafx.util.Pair;
 public class L100_SameTree {
     /*
      * 解法1：Recursion
-     * - 时间复杂度 O(n)；
-     * - 空间复杂度：若树平衡（Perfectly balanced tree），则空间复杂度达到最小 O(logn)，即树高；
-     *             若树退化为链表（Fully skewed tree），则空间复杂度达到最大 O(n)。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isSameTree(TreeNode p, TreeNode q) {
         if (p == null && q == null) return true;
@@ -31,7 +29,7 @@ public class L100_SameTree {
 
     /*
      * 解法2：Iteration (BFS)
-     * - 时间复杂度 O(n)。
+     * - 时间复杂度 O(n)；
      * - 空间复杂度 O(n)，∵ q 中同时最多容纳 n/2 个节点（即完美二叉树的最后一行）∴ 是 O(n) 级别。
      * */
     public static boolean isSameTree2(TreeNode p, TreeNode q) {
