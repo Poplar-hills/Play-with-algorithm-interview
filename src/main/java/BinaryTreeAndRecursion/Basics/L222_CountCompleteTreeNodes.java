@@ -104,7 +104,7 @@ public class L222_CountCompleteTreeNodes {
     /*
      * 解法5：Recursion
      * - 思路：同样也是利用完全二叉树的性质进行优化，比解法4更精简，但逻辑也更绕一些。
-     * -
+     * - 时间复杂度 O(logn^2)，空间复杂度 O(logn)。
      * */
     public static int countNodes5(TreeNode root) {
         int h = leftHeight(root);
