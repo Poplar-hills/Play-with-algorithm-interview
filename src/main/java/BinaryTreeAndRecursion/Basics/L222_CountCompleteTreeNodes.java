@@ -101,9 +101,36 @@ public class L222_CountCompleteTreeNodes {
         return 1 + getRightDepth(root.right);
     }
 
+    /*
+     * 解法5：Recursion
+     * - 思路：同样也是利用完全二叉树的性质进行优化，比解法4更精简，但逻辑也更绕一些。
+     * -
+     * */
+    public static int countNodes5(TreeNode root) {
+        int h = leftHeight(root);
+        if (h == 0)	return 0;
+        return leftHeight(root.right) == h - 1  // 若右子树的左侧高度 = 整树的左侧高度-1，即左右子树的左侧高度相等，此时左子树完美，右子树不一定（test case 1,2）
+            ? (1 << h - 1) + countNodes5(root.right)  // 用公式得到左子树的节点数，再继续递归计算右子树
+    		: (1 << h - 2) + countNodes5(root.left);  // 若左右子树的左侧高度不相等，说明树的最后一个节点在左子树上，此时右子树完美，左子树不一定（test case 3,4）
+    }
+
+    private static int leftHeight(TreeNode root) {  // 计算树的左侧高度
+        return root == null ? 0 : 1 + leftHeight(root.left);
+    }
     public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6});
-        log(countNodes4(t1));
+        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6, 7});
+        log(countNodes5(t1));
+        /*
+         * expects 7.
+         *        1
+         *       / \
+         *      2   3
+         *     / \ / \
+         *    4  5 6  7
+         * */
+
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6});
+        log(countNodes5(t2));
         /*
          * expects 6.
          *        1
@@ -113,8 +140,8 @@ public class L222_CountCompleteTreeNodes {
          *    4  5 6
          * */
 
-        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5});
-        log(countNodes4(t2));
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5});
+        log(countNodes5(t3));
         /*
          * expects 5.
          *        1
@@ -124,13 +151,15 @@ public class L222_CountCompleteTreeNodes {
          *    4   5
          * */
 
-        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
-        log(countNodes4(t3));
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4});
+        log(countNodes5(t4));
         /*
          * expects 3.
          *        1
          *       / \
          *      2   3
+         *     /
+         *    4
          * */
     }
 }
