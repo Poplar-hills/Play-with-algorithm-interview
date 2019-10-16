@@ -54,15 +54,15 @@ public class L226_InvertBinaryTree {
     public static TreeNode invertTree3(TreeNode root) {
         if (root == null) return null;
         Stack<TreeNode> stack = new Stack<>();
-        stack.add(root);
+        stack.push(root);
 
         while (!stack.isEmpty()) {
             TreeNode node = stack.pop();
             TreeNode temp = node.left;
             node.left = node.right;
             node.right = temp;
-            if (node.left != null) stack.add(node.left);
-            if (node.right != null) stack.add(node.right);
+            if (node.left != null) stack.push(node.left);
+            if (node.right != null) stack.push(node.right);
         }
 
         return root;

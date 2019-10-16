@@ -58,7 +58,7 @@ public class L100_SameTree {
     public static boolean isSameTree3(TreeNode p, TreeNode q) {
         if (p == null && q == null) return true;
         Stack<Pair<TreeNode, TreeNode>> stack = new Stack<>();
-        stack.add(new Pair<>(p, q));
+        stack.push(new Pair<>(p, q));
 
         while (!stack.isEmpty()) {
             Pair<TreeNode, TreeNode> pair = stack.pop();
@@ -66,8 +66,8 @@ public class L100_SameTree {
             TreeNode n2 = pair.getValue();
             if (n1 == null && n2 == null) continue;
             if (n1 == null || n2 == null || n1.val != n2.val) return false;
-            stack.add(new Pair<>(n1.left, n2.left));
-            stack.add(new Pair<>(n1.right, n2.right));
+            stack.push(new Pair<>(n1.left, n2.left));
+            stack.push(new Pair<>(n1.right, n2.right));
         }
 
         return true;

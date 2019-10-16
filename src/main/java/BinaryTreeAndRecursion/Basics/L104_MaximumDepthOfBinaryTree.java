@@ -114,7 +114,7 @@ public class L104_MaximumDepthOfBinaryTree {
 
         int count = 0;
         Stack<Pair<TreeNode, Integer>> stack = new Stack<>();
-        stack.add(new Pair<>(root, 1));
+        stack.push(new Pair<>(root, 1));
 
         while (!stack.isEmpty()) {
             Pair<TreeNode, Integer> pair = stack.pop();
@@ -122,8 +122,8 @@ public class L104_MaximumDepthOfBinaryTree {
             int level = pair.getValue();
 
             count = Math.max(count, level);
-            if (node.left != null) stack.add(new Pair<>(node.left, level + 1));
-            if (node.right != null) stack.add(new Pair<>(node.right, level + 1));
+            if (node.left != null) stack.push(new Pair<>(node.left, level + 1));
+            if (node.right != null) stack.push(new Pair<>(node.right, level + 1));
         }
 
         return count;
@@ -133,7 +133,7 @@ public class L104_MaximumDepthOfBinaryTree {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
         log(maxDepth5(t1));
         /*
-         *  expects 3.
+         * expects 3.
          *      3
          *     / \
          *    9  20
@@ -144,7 +144,7 @@ public class L104_MaximumDepthOfBinaryTree {
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, null, null, 5});
         log(maxDepth5(t2));
         /*
-         *  expects 3.
+         * expects 3.
          *      1
          *     / \
          *    2   3

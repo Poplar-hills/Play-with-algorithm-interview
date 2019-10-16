@@ -58,13 +58,13 @@ public class L222_CountCompleteTreeNodes {
         if (root == null) return 0;
         int count = 0;
         Stack<TreeNode> stack = new Stack<>();
-        stack.add(root);
+        stack.push(root);
 
         while (!stack.isEmpty()) {
             TreeNode node = stack.pop();
             count++;
-            if (node.left != null) stack.add(node.left);
-            if (node.right != null) stack.add(node.right);
+            if (node.left != null) stack.push(node.left);
+            if (node.right != null) stack.push(node.right);
         }
 
         return count;
@@ -119,7 +119,7 @@ public class L222_CountCompleteTreeNodes {
     }
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6, 7});
-        log(countNodes5(t1));
+        log(countNodes3(t1));
         /*
          * expects 7.
          *        1
@@ -130,7 +130,7 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6});
-        log(countNodes5(t2));
+        log(countNodes3(t2));
         /*
          * expects 6.
          *        1
@@ -141,7 +141,7 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5});
-        log(countNodes5(t3));
+        log(countNodes3(t3));
         /*
          * expects 5.
          *        1
@@ -152,9 +152,9 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4});
-        log(countNodes5(t4));
+        log(countNodes3(t4));
         /*
-         * expects 3.
+         * expects 4.
          *        1
          *       / \
          *      2   3
