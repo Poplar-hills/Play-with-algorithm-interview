@@ -18,10 +18,7 @@ public class L110_BalancedBinaryTree {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced(TreeNode root) {
-        if (root == null) return true;
-        int left = height(root.left);
-        int right = height(root.right);
-        return left != -1 && right != -1 && Math.abs(left - right) <= 1;
+        return height(root) >= 0;
     }
 
     private static int height(TreeNode node) {
