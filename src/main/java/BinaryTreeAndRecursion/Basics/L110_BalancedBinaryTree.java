@@ -41,7 +41,7 @@ public class L110_BalancedBinaryTree {
      * 解法2：Iteration (post-order traversal)
      * - 思路：要知道一棵树是否平衡，需要先知道其左右子树的最大高度，即先访问左右子节点，再访问父节点，这本质上就是二叉树的后续
      *   遍历。因此需要做的就是在后续遍历的基础上将访问每个节点的逻辑替换成计算树的最大高度的逻辑即可。
-     * - 💎：该解法是二叉树后续遍历的典型应用。
+     * - 💎：该解法是二叉树后续遍历的典型应用（后续遍历的另一种方法 SEE: Play-with-data-structure/BST/BST.java）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced2(TreeNode root) {
