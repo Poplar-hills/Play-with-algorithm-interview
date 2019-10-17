@@ -53,5 +53,11 @@ public class L112_PathSum {
          *      /   / \
          *     11  13  4
          * */
+
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{});
+        log(hasPathSum(t3, 1));
+        /*
+         * expects false.
+         * */
     }
 }
