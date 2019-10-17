@@ -18,8 +18,15 @@ public class L112_PathSum {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean hasPathSum(TreeNode root, int sum) {
-        
-        return true;
+        if (root == null) return false;
+
+        boolean isLeafNode = root.left == null && root.right == null;
+        if (isLeafNode && sum == root.val) return true;
+        if ((isLeafNode && sum != root.val) && (!isLeafNode && sum == 0)) return false;
+
+        boolean foundInLeft = root.left != null && hasPathSum(root.left, sum - root.val);
+        boolean foundInRight = root.right != null && hasPathSum(root.right, sum - root.val);
+        return foundInLeft || foundInRight;
     }
 
     public static void main(String[] args) {
@@ -34,6 +41,17 @@ public class L112_PathSum {
          *     11  13  4
          *    /  \      \
          *   7    2      1
+         * */
+
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 4, 8, 11, null, 13, 4});
+        log(hasPathSum(t2, 9));
+        /*
+         * expects false. (5 -> 4 虽然和为9，但不是一条 root-to-leaf path)
+         *         5
+         *        / \
+         *       4   8
+         *      /   / \
+         *     11  13  4
          * */
     }
 }
