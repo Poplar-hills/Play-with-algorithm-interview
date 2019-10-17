@@ -3,13 +3,9 @@ package BinaryTreeAndRecursion.Basics;
 import static Utils.Helpers.*;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
-import java.util.function.Consumer;
 
-import javafx.util.Pair;
 import Utils.Helpers.TreeNode;
 
 /*
