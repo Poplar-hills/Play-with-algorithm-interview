@@ -1,9 +1,12 @@
 package BinaryTreeAndRecursion.Basics;
 
-import static Utils.Helpers.*;
+import static Utils.Helpers.createBinaryTreeBreadthFirst;
+import static Utils.Helpers.log;
 
 import java.util.LinkedList;
 import java.util.Queue;
+
+import Utils.Helpers.TreeNode;
 
 /*
  * Minimum Depth of Binary Tree
@@ -15,11 +18,16 @@ import java.util.Queue;
 public class L111_MinimumDepthOfBinaryTree {
     /*
      * 解法1：Recursion
+     * - 注意：列出单个节点的所有情况：
+     *   1. 若左右子树都没有，则该节点上的最小深度为1；
+     *   2. 若左右子树只有一边，则该节点上的最小深度由有子树的一边决定；
+     *   3. 若左右子树两遍都有，则该节点上的最小深度由两边深度更小的一边决定；
+     *   ∴ 递归的终止条件不能光是 root == null，否则情况2（即 test case 2）会挂。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int minDepth(TreeNode root) {
         if (root == null) return 0;
-        if (root.left == null) return 1 + minDepth(root.right);
+        if (root.left == null) return 1 + minDepth(root.right);  // 若左右子树只有一边时，最小深度由有子树的一边决定
         if (root.right == null) return 1 + minDepth(root.left);
         return 1 + Math.min(minDepth(root.left), minDepth(root.right));
     }
@@ -53,9 +61,9 @@ public class L111_MinimumDepthOfBinaryTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(minDepth2(t1));
+        log(minDepth(t1));
         /*
-         *  expects 2
+         *  expects 2.
          *      3
          *     / \
          *    9  20
@@ -64,9 +72,9 @@ public class L111_MinimumDepthOfBinaryTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2});
-        log(minDepth2(t2));
+        log(minDepth(t2));
         /*
-         *  expects 2
+         *  expects 2. (左右子树只有一边的情况)
          *      1
          *     /
          *    2
