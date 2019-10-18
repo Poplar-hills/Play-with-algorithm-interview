@@ -5,6 +5,7 @@ import static Utils.Helpers.log;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 import Utils.Helpers.TreeNode;
 
@@ -34,7 +35,7 @@ public class L404_SumOfLeftLeaves {
 
     /*
      * 解法2：Iteration (BFS, level-order traversal)
-     * - 思路：通过层序遍历，检查每层的第一个节点是否为叶子节点，若是则计入。
+     * - 思路：用层序遍历，检查每一层的所有节点的左子节点是否是叶子节点，若是则计入 sum。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int sumOfLeftLeaves2(TreeNode root) {
@@ -45,11 +46,11 @@ public class L404_SumOfLeftLeaves {
 
         while (!q.isEmpty()) {
             TreeNode node = q.poll();
-            TreeNode left = node.left;
-            if (left != null) {
-                q.offer(left);
-                if (left.left == null && left.right == null)
-                    sum += left.val;
+            TreeNode lChild = node.left;
+            if (lChild != null) {
+                q.offer(lChild);
+                if (lChild.left == null && lChild.right == null)  // 若是叶子节点，则计入 sum
+                    sum += lChild.val;
             }
             if (node.right != null) q.offer(node.right);
         }
@@ -57,9 +58,34 @@ public class L404_SumOfLeftLeaves {
         return sum;
     }
 
+    /*
+     * 解法3：Iteration (DFS)
+     * - 思路：思路与解法2一致，只是采用 DFS 遍历。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int sumOfLeftLeaves3(TreeNode root) {
+        if (root == null) return 0;
+        int sum = 0;
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.pop();
+            TreeNode lChild = node.left;
+            if (node.left != null) {
+                stack.push(lChild);
+                if (lChild.left == null && lChild.right == null)  // 若是叶子节点，则计入 sum
+                    sum += lChild.val;
+            }
+            if (node.right != null) stack.push(node.right);
+        }
+
+        return sum;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, null, 4, 5});
-        log(sumOfLeftLeaves(t1));
+        log(sumOfLeftLeaves3(t1));
         /*
          * expects 6. (2 + 4)
          *       1
@@ -70,7 +96,7 @@ public class L404_SumOfLeftLeaves {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, null, null, 5});
-        log(sumOfLeftLeaves(t2));
+        log(sumOfLeftLeaves3(t2));
         /*
          * expects 4. (4)
          *       1
@@ -81,7 +107,7 @@ public class L404_SumOfLeftLeaves {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, null, 5, 6});
-        log(sumOfLeftLeaves(t3));
+        log(sumOfLeftLeaves3(t3));
         /*
          * expects 9. (4 + 5)
          *       1
@@ -92,7 +118,7 @@ public class L404_SumOfLeftLeaves {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, null, 2});
-        log(sumOfLeftLeaves(t4));
+        log(sumOfLeftLeaves3(t4));
         /*
          * expects 0. (没有左叶子节点的情况)
          *      1
@@ -101,7 +127,7 @@ public class L404_SumOfLeftLeaves {
          * */
 
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1});
-        log(sumOfLeftLeaves(t5));
+        log(sumOfLeftLeaves3(t5));
         /*
          * expects 0. (根节点不是叶子节点，不能计入 sum)
          * */
