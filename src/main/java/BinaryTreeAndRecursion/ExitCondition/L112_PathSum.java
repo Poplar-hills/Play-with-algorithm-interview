@@ -18,10 +18,11 @@ import javafx.util.Pair;
 public class L112_PathSum {
     /*
      * 解法1：Recursion
-     * - 注意点：
+     * - 注意：
      *   1. 递归的终止条件很容易写成 if (root == null) return sum == 0; 但这样 test case 3 过不去，因此递归终止条件需要
      *      用叶子节点来判断。
      *   2. 递归过程中，若碰到非叶子节点上 sum == 0 的情况，不能就此返回 false，因为该路径后面可能还有+1再-1的情况，如 test case 2。
+     * - 👉 递归终止条件较复杂的还有 L111 的解法1，可以顺便看一下。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean hasPathSum(TreeNode root, int sum) {
