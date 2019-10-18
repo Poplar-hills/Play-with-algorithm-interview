@@ -40,7 +40,6 @@ public class L111_MinimumDepthOfBinaryTree {
      * */
     public static int minDepth2(TreeNode root) {
         if (root == null) return 0;
-
         int depth = 1;  // 根节点不为 null 则最小树高就是1
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
