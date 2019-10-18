@@ -27,9 +27,9 @@ public class L404_SumOfLeftLeaves {
     public static int sumOfLeftLeaves(TreeNode root) {
         if (root == null) return 0;
         TreeNode lChild = root.left;
-        return (lChild != null && lChild.left == null && lChild.right == null)
-            ? lChild.val + sumOfLeftLeaves(root.right)    // 若有左子节点，且左子节点是叶子节点（即满足条件1、2）则计入 sum
-            : sumOfLeftLeaves(root.left) + sumOfLeftLeaves(root.right);  // 否则跳过，继续往下递归
+        return (lChild != null && lChild.left == null && lChild.right == null)  // 判断是否有左子节点，且左子节点是叶子节点（即满足条件1、2）
+            ? lChild.val + sumOfLeftLeaves(root.right)                   // 是则将左子节点值计入 sum，只继续递归右子节点
+            : sumOfLeftLeaves(root.left) + sumOfLeftLeaves(root.right);  // 否则左右子节点都继续往下递归
     }
 
     /*
