@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import Utils.Helpers.TreeNode;
+import javafx.util.Pair;
 
 /*
  * Binary Tree Paths
@@ -59,14 +60,15 @@ public class L257_BinaryTreePaths {
 
 	/*
      * 解法3：Iteration (BFS)
-     * - 思路：类似 L70_ClimbingStairs 解法4。
+     * - 思路：与 L70_ClimbingStairs 解法4一致。
+     * - 同理：只需将 Queue 替换为 Stack 就得到了 DFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<String> binaryTreePaths3(TreeNode root) {
         List<String> res = new ArrayList<>();
         if (root == null) return res;
 
-        Queue<List<TreeNode>> q = new LinkedList<>();
+        Queue<List<TreeNode>> q = new LinkedList<>();  // 队列中每个元素：根节点到当前节点的节点列表
         List<TreeNode> initialPath = new ArrayList<>();
         initialPath.add(root);
         q.offer(initialPath);
@@ -103,9 +105,40 @@ public class L257_BinaryTreePaths {
         return builder.toString();
     }
 
+	/*
+     * 解法4：Iteration (BFS)
+     * - 思路：解法3的简化版，在遍历过程中持续拼接字符串。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<String> binaryTreePaths4(TreeNode root) {
+        List<String> res = new ArrayList<>();
+        if (root == null) return res;
+
+        Queue<Pair<TreeNode, String>> q = new LinkedList<>();  // 队列中每个元素：<节点, 根节点到该节点的 path 字符串>
+        q.offer(new Pair<>(root, ""));
+
+        while (!q.isEmpty()) {
+            Pair<TreeNode, String> pair = q.poll();
+            TreeNode node = pair.getKey();
+            String pathStr = pair.getValue();
+
+            if (node.left == null && node.right == null) {
+                res.add(pathStr + node.val);
+                continue;
+            }
+
+            if (node.left != null)
+                q.offer(new Pair<>(node.left, pathStr + node.val + "->"));
+            if (node.right != null)
+                q.offer(new Pair<>(node.right, pathStr + node.val + "->"));
+        }
+
+        return res;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 4});
-        log(binaryTreePaths2(t1));
+        log(binaryTreePaths4(t1));
         /*
          * expects ["1->2->4", "1->3"].
          *       1
@@ -116,7 +149,7 @@ public class L257_BinaryTreePaths {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 4, 5, 6, null, null, 7});
-        log(binaryTreePaths2(t2));
+        log(binaryTreePaths4(t2));
         /*
          * expects ["1->2->4", "1->3->5->7", "1->3->6"].
          *        1
