@@ -41,11 +41,28 @@ public class L257_BinaryTreePaths {
     }
 
     /*
-     * 解法2：Iteration (BFS)
+     * 解法2：Recursion
+     * - 思路：递归函数 f(n) 定义：生成以 n 为最后一个节点的 path 字符串，若该 path 已经到底则将其添加到结果列表 res 中。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    public static List<String> binaryTreePaths2(TreeNode root) {
+        List<String> res = new ArrayList<>();
+        if (root != null) helper2(root, "", res);
+        return res;
+    }
+
+    private static void helper2(TreeNode root, String path, List<String> res) {
+        if (root.left == null && root.right == null) res.add(path + root.val);  // 该 path 已经到底的情况
+        if (root.left != null) helper2(root.left, path + root.val + "->", res);
+        if (root.right != null) helper2(root.right, path + root.val + "->", res);
+	}
+
+	/*
+     * 解法3：Iteration (BFS)
      * - 思路：类似 L70_ClimbingStairs 解法4。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static List<String> binaryTreePaths2(TreeNode root) {
+    public static List<String> binaryTreePaths3(TreeNode root) {
         List<String> res = new ArrayList<>();
         if (root == null) return res;
 
