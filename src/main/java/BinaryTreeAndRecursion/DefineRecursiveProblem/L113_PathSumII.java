@@ -21,11 +21,27 @@ import javafx.util.Pair;
 public class L113_PathSumII {
     /*
      * 解法1：Recursion (DFS)
-     * - 思路：递归函数 f(n) 定义：将以 n 为根的二叉树上所有节点值之和为 sum 的 root-to-leaf path。
+     * - 思路：与 L257_BinaryTreePaths 解法1的思路一致。递归函数 f(n, sum) 定义为：返回以 n 为根的二叉树上的所有节点值之和
+     *   为 sum 的 root-to-leaf paths。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<List<Integer>> pathSum(TreeNode root, int sum) {
-        return null;
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        if (root.left == null && root.right == null && sum == root.val) {
+            List<Integer> path = new ArrayList<>();
+            path.add(root.val);
+            res.add(path);
+            return res;
+        }
+
+        List<List<Integer>> paths = pathSum(root.left, sum - root.val);  // 将左右子树返回的结果 concat 起来
+        paths.addAll(pathSum(root.right, sum - root.val));
+
+        return paths.stream().map(path -> {  // 向 concat 结果中的每个 path 头部添加当前节点值
+            path.add(0, root.val);
+            return path;
+        }).collect(Collectors.toList());
     }
 
     /*
@@ -99,7 +115,7 @@ public class L113_PathSumII {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 6, null, 5, -2, 2, 8, null, null, 7, 9});
-        log(pathSum2(t1, 9));
+        log(pathSum(t1, 9));
         /*
          * expects [[1,3,-2,7], [1,3,5]].（注意 [1,2,6] 不是）
          *        1
@@ -112,7 +128,7 @@ public class L113_PathSumII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(pathSum2(t2, 1));
+        log(pathSum(t2, 1));
         /*
          * expects [].
          * */
