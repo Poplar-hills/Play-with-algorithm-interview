@@ -28,7 +28,8 @@ public class L113_PathSumII {
     public static List<List<Integer>> pathSum(TreeNode root, int sum) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
-        if (root.left == null && root.right == null && sum == root.val) {
+
+        if (root.left == null && root.right == null && sum == root.val) {  // 叶子节点
             List<Integer> path = new ArrayList<>();
             path.add(root.val);
             res.add(path);
@@ -51,35 +52,56 @@ public class L113_PathSumII {
      * */
     public static List<List<Integer>> pathSum2(TreeNode root, int sum) {
         List<List<Integer>> res = new ArrayList<>();
-        if (root != null) {
-            List<Integer> path = new ArrayList<>();
-            path.add(root.val);
-            helper(root, sum, path, res);
-        }
+        helper2(root, sum, new ArrayList<>(), res);
         return res;
     }
 
-    private static void helper(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
-        if (root.left == null && root.right == null && root.val == sum) res.add(path);
-        if (root.left != null) {
-            List<Integer> newPath = new ArrayList<>(path);
-            newPath.add(root.left.val);
-            helper(root.left, sum - root.val, newPath, res);
+    private static void helper2(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
+        if (root == null) return;
+        path.add(root.val);
+
+        if (root.left == null && root.right == null && root.val == sum) {
+            res.add(path);
+            return;
         }
-        if (root.right != null) {
-            List<Integer> newPath = new ArrayList<>(path);
-            newPath.add(root.right.val);
-            helper(root.right, sum - root.val, newPath, res);
+        helper2(root.left, sum - root.val, new ArrayList<>(path), res);
+        helper2(root.right, sum - root.val, new ArrayList<>(path), res);
+	}
+
+    /*
+     * 解法3：Recursion (DFS) (解法2的简化版)
+     * - 思路：与解法2一致。
+     * - 实现：与解法2不同之处在于递归函数参数中的 path 从始至终都是复用的，只在确定该 path 符合要求时才会被复制进 res（这也是
+     *   该解法比其他解法快的原因）。而又因为递归是 DFS，会先往左下递归到底再返回上层递归右子树 ∴ 若要继续复用 path 对象，则需
+     *   在递归返回上一层时将 path 对象恢复原状（这也是理解 DFS 的关键）。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    public static List<List<Integer>> pathSum3(TreeNode root, int sum) {
+        List<List<Integer>> res = new ArrayList<>();
+        helper3(root, sum, new ArrayList<>(), res);
+        return res;
+    }
+
+    private static void helper3(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
+        if (root == null) return;
+        path.add(root.val);
+
+        if (root.left == null && root.right == null && root.val == sum)
+            res.add(new ArrayList<>(path));  // 若是符合要求的 path，则复制进 res 里
+        else {
+            helper3(root.left, sum - root.val, path, res);  // 复用 path
+            helper3(root.right, sum - root.val, path, res);
         }
+        path.remove(path.size() - 1);  // 在本层递归结束前需要将 path 恢复原状，把添加的节点值移除，这样回到调用栈上一层后才能继续正常对右子树进行递归
 	}
 
 	/*
-     * 解法3：Iteration (DFS) (解法2的迭代版)
+     * 解法4：Iteration (DFS) (解法2的迭代版)
      * - 思路：与 L257_BinaryTreePaths 解法3一致。
      * - 同理：只需将 Stack 替换为 Queue 就得到了 BFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static List<List<Integer>> pathSum3(TreeNode root, int sum) {
+    public static List<List<Integer>> pathSum4(TreeNode root, int sum) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
 
@@ -115,7 +137,7 @@ public class L113_PathSumII {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 6, null, 5, -2, 2, 8, null, null, 7, 9});
-        log(pathSum(t1, 9));
+        log(pathSum3(t1, 9));
         /*
          * expects [[1,3,-2,7], [1,3,5]].（注意 [1,2,6] 不是）
          *        1
@@ -128,7 +150,7 @@ public class L113_PathSumII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(pathSum(t2, 1));
+        log(pathSum3(t2, 1));
         /*
          * expects [].
          * */
