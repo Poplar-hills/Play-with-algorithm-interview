@@ -137,7 +137,7 @@ public class L113_PathSumII {
 
 	/*
      * 解法5：Iteration (DFS)
-     * - 思路：
+     * - 思路：类似 Play-with-data-structure/BST/BST.java 中 postorderTraverse 的逻辑。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> pathSum5(TreeNode root, int sum) {
