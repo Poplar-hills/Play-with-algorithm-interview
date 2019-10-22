@@ -135,9 +135,46 @@ public class L113_PathSumII {
         return res;
     }
 
+	/*
+     * 解法5：Iteration (DFS)
+     * - 思路：
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> pathSum5(TreeNode root, int sum) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+
+        int currSum = 0;
+        TreeNode prev = null, curr = root;
+
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) {  // 先往左遍历到最左节点（不一定是叶子节点），一路上入栈每个节点、记录路径、累加节点值
+                stack.push(curr);
+                path.add(curr.val);
+                currSum += curr.val;
+                curr = curr.left;
+            }
+            curr = stack.peek();    // 取栈顶节点
+            if (curr.right != null && curr.right != prev) {  // 若栈顶节点有右子树，且右子树没访问过
+                curr = curr.right;                           // 转向开始用同样的方式处理右子树
+                continue;
+            }
+            if (curr.left == null && curr.right == null && currSum == sum)  // 若到达叶子节点，将该路径放入结果集
+                res.add(new ArrayList<>(path));
+            prev = curr;                   // 访问完当前节点后，用 prev 标记其为已访问
+            stack.pop();                   // 将当前节点出栈
+            path.remove(path.size() - 1);  // 将 path 恢复到父节点的状态（因为要复用）
+            currSum -= curr.val;           // 将 currSum 也恢复到父节点的状态
+            curr = null;
+        }
+
+        return res;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 6, null, 5, -2, 2, 8, null, null, 7, 9});
-        log(pathSum3(t1, 9));
+        log(pathSum5(t1, 9));
         /*
          * expects [[1,3,-2,7], [1,3,5]].（注意 [1,2,6] 不是）
          *        1
@@ -150,7 +187,7 @@ public class L113_PathSumII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(pathSum3(t2, 1));
+        log(pathSum5(t2, 1));
         /*
          * expects [].
          * */
