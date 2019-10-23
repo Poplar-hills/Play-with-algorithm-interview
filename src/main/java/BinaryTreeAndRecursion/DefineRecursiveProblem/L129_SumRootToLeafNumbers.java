@@ -37,7 +37,7 @@ public class L129_SumRootToLeafNumbers {
      * 解法2：Iteration (DFS)
      * - 思路：使用 Stack 实现深度优先遍历，向下遍历的同时累加 pathSum。
      * - 同理：只需将 Stack 替换为 Queue 就得到了 BFS 解法。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int sumNumbers2(TreeNode root) {
         if (root == null) return 0;
@@ -50,19 +50,12 @@ public class L129_SumRootToLeafNumbers {
             TreeNode node = pair.getKey();
             int pathSum = pair.getValue();
 
-            if (node.left == null && node.right == null) {
+            if (node.left == null && node.right == null)
                 sum += pathSum;
-                continue;
-            }
-
-            if (node.left != null) {
-                int leftPathSum = pathSum * 10 + node.left.val;
-                stack.push(new Pair<>(node.left, leftPathSum));
-            }
-            if (node.right != null) {
-                int rightPathSum = pathSum * 10 + node.right.val;
-                stack.push(new Pair<>(node.right, rightPathSum));
-            }
+            if (node.left != null)
+                stack.push(new Pair<>(node.left, pathSum * 10 + node.left.val));
+            if (node.right != null)
+                stack.push(new Pair<>(node.right, pathSum * 10 + node.right.val));
         }
 
         return sum;
