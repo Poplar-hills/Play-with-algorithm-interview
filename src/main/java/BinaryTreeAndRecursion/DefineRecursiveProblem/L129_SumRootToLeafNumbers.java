@@ -48,14 +48,14 @@ public class L129_SumRootToLeafNumbers {
         while (!stack.isEmpty()) {
             Pair<TreeNode, Integer> pair = stack.pop();
             TreeNode node = pair.getKey();
-            int pathSum = pair.getValue();
+            int pathNum = pair.getValue();
 
             if (node.left == null && node.right == null)
-                sum += pathSum;
+                sum += pathNum;
             if (node.left != null)
-                stack.push(new Pair<>(node.left, pathSum * 10 + node.left.val));
+                stack.push(new Pair<>(node.left, pathNum * 10 + node.left.val));
             if (node.right != null)
-                stack.push(new Pair<>(node.right, pathSum * 10 + node.right.val));
+                stack.push(new Pair<>(node.right, pathNum * 10 + node.right.val));
         }
 
         return sum;
