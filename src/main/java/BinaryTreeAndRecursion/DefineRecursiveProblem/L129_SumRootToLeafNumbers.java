@@ -16,11 +16,18 @@ import Utils.Helpers.TreeNode;
 public class L129_SumRootToLeafNumbers {
     /*
      * 解法1：Recursion
-     * - 思路：递归函数 f(n) 定义：
+     * - 思路：递归函数 f(n) 定义：返回以 n 为根的二叉树的所有 root-to-leaf numbers 之和。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int sumNumbers(TreeNode root) {
-        return 0;
+        return helper(root, 0);
+    }
+
+    private static int helper(TreeNode root, int pathNum) {
+        if (root == null) return 0;
+        pathNum = pathNum * 10 + root.val;
+        if (root.left == null && root.right == null) return pathNum;
+        return helper(root.left, pathNum) + helper(root.right, pathNum);
     }
 
     public static void main(String[] args) {
