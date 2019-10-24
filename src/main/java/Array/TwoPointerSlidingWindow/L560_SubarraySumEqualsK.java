@@ -14,8 +14,8 @@ import static Utils.Helpers.log;
 
 public class L560_SubarraySumEqualsK {
     /*
-     * 解法1：双指针累加计数
-     * - 思路：通过双指针遍历 nums 中的所有 subarray，同时数出和为 k 的 subarray 个数即可。找到所有 subarry 的方法：
+     * 解法1：双指针 + 累加计数
+     * - 思路：通过双指针遍历 nums 中的所有 subarray，同时累加每个 subarray 的元素之和，并数出和为 k 的 subarray 个数。
      *   [4, 2, -1, 5]
      *    -
      *    ----
@@ -43,9 +43,9 @@ public class L560_SubarraySumEqualsK {
         return count;
     }
 /*
-     * 解法2：Saving cummulative sums
-     * - 思路：解法1中，每次累加的过程存在大量重复计算 ∴ 可以通过缓存 cummulative sums 的方式进行优化，即在数组的每个位置 i 处
-     *   缓存 nums[0..i] 之和。
+     * 解法2：双指针 + Saving cummulative sums
+     * - 思路：解法1中双指针的滑动过程其实可以通过将不同段的 sum 相加减来表达：sum[i..j] = sum[0..j] - sum[0..i]。因此另一
+     *   思路是先为每个位置 i 计算出 nums[0..i] 的和 sum[i]，然后通过双指针滑动来遍历该公式中的所有情况。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int subarraySum2(int[] nums, int k) {
