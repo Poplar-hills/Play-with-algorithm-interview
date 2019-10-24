@@ -64,7 +64,7 @@ public class L1_TwoSum {
     }
 
     public static void main(String[] args) {
-        log(twoSum(new int[]{2, 7, 15, 11}, 9));   // expects [0, 1]
-        log(twoSum(new int[]{2, 7, 15, 7}, 14));   // expects [1, 3]
+        log(twoSum(new int[]{2, 7, 15, 11}, 9));   // expects [0, 1]. (2+7)
+        log(twoSum(new int[]{2, 7, 15, 7}, 14));   // expects [1, 3]. (7+7)
     }
 }

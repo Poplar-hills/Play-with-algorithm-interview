@@ -2,6 +2,9 @@ package Array.TwoPointerSlidingWindow;
 
 import static Utils.Helpers.log;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /*
  * Subarray Sum Equals K
  *
@@ -46,7 +49,7 @@ public class L560_SubarraySumEqualsK {
 
     /*
      * 解法1：双指针 + 累加计数
-     * - 思路：超时解中的累加过程其实可以在移动右指针时同步进行，从而去掉最内从的循环，将复杂度降低一个次方。
+     * - 思路：超时解中的累加过程其实可以在移动右指针时同步进行，从而去掉最内从的循环，将时间复杂度降低一个次方。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static int subarraySum1(int[] nums, int k) {
@@ -65,8 +68,9 @@ public class L560_SubarraySumEqualsK {
 
     /*
      * 解法2：双指针 + Saving cummulative sums
-     * - 思路：解法1中双指针的滑动过程其实可以通过将不同段的 sum 相加减来表达：sum[i..j] = sum[0..j] - sum[0..i]。因此另一
-     *   思路是先为每个位置 i 计算出 nums[0..i] 的和 sum[i]，然后通过双指针滑动来遍历该公式中的所有情况。
+     * - 思路：解法1中通过双指针滑动来遍历所有 subarray 的过程其实可以通过将不同段的 sum 相减来表达：
+     *   sums[j..i] = sums[0..i] - sums[0..j]，这样一来只需每次查看 sum[j..i] 是否等于 k 即可。而要将遍历所有 subarray
+     *   的过程用 sum 来表达，需要先计算出每个位置 i 上的累加和 sums[i]，然后再通过移动双指针来实现该公式。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int subarraySum2(int[] nums, int k) {
@@ -86,19 +90,59 @@ public class L560_SubarraySumEqualsK {
     }
 
     /*
-     * 解法3：
-     *
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * 解法3：Map
+     * - 思路：在解法2中，我们通过双重循环挨个尝试是否存在 sums[0..i] - sums[0..j] == k。该过程是个典型的 Two Sum 问题，
+     *   可以通过 L1_TwoSum 中解法2的方式进行优化 —— 将所有 sums[0..j] 存储在 map 中，之后每次只需查询 sums[0..i] - k
+     *   是否存在于 map 中即可，通过这种方式又将时间复杂度降低一个次方。
+     *     nums = [4, 2, -1, 5, -5], k = 5
+     *             ↑                 sum=4, get(4-5)不存在, count=0, {0:1, 4:1}
+     *                ↑              sum=6, get(6-5)不存在, count=0, {0:1, 4:1, 6:1}
+     *                    ↑          sum=5,  get(5-5)=1    count=1, {0:1, 4:1, 6:1, 5:1}
+     *                       ↑       sum=10, get(10-5)=1,  count=2, {0:1, 4:1, 6:1, 5:1, 10:1}
+     *                           ↑   sum=5,  get(5-5)=1,   count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
+     * - 注意：代码里给 count 加上的是 map 里的 value，而不能是 count++。因为当 sum-k 存在于 map 中时，说明 nums 中存在
+     *   元素之和等于 k 的 subarray，但个数不一定只有一个（∵ nums 中有负数 ∴ 可能存在多个）。具体有几个这样的 subarray 是
+     *   记录在 map 的 value 上的，即 map.get(sum-k)，因此要把它加到 count 上。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum3(int[] nums, int k) {
-        return 0;
+        int count = 0, sum = 0;
+        Map<Integer, Integer> map = new HashMap<>();  // 存储 <sums[i], sums[i] 的出现次数>
+        map.put(0, 1);                                // 将0放入 map 中，值设为1
+
+        for (int n : nums) {
+            sum += n;                                 // 遍历过程中求 sums[i]
+            if (map.containsKey(sum - k))
+                count += map.get(sum - k);            // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
+            map.put(sum, map.getOrDefault(sum, 0) + 1);  // 将 sum 放入 map，若之前出现过，则个数+1
+        }
+
+        return count;
+    }
+
+    /*
+     * 解法4：解法3的代码简化版
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int subarraySum4(int[] nums, int k) {
+        int count = 0, sum = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+
+        for (int n : nums) {
+            sum += n;
+            count += map.getOrDefault(sum - k, 0);  // 不需要解法3中的 containsKey 检查
+            map.merge(sum, 1, (a, b) -> a + b);     // 若 map 中已有 sum，则相当于 map.put(sum, map.get(sum) + 1)，
+        }                                           // 若 map 中没有 sum，则相当于 map.put(sum, 1)
+
+        return count;
     }
 
     public static void main(String[] args) {
-        log(subarraySum(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
-        log(subarraySum(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
-        log(subarraySum(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
-        log(subarraySum(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
-        log(subarraySum(new int[]{4, 2, -1, 5, -5}, 5));         // expects 3. (4+2-1, 4+2-1+5-5, 5)
+        log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
+        log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
+        log(subarraySum4(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
+        log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
+        log(subarraySum4(new int[]{4, 2, -1, 5, -5}, 5));         // expects 3. (4+2-1, 4+2-1+5-5, 5)
     }
 }
