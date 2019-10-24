@@ -1,4 +1,4 @@
-package DP.DPBasics;
+package Array.TwoPointerSlidingWindow;
 
 import static Utils.Helpers.log;
 
@@ -47,11 +47,20 @@ public class L560_SubarraySumEqualsK {
         return count;
     }
 
+    /*
+     * 解法2：DP (Saving cummulative sums)
+     *
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
+    public static int subarraySum2(int[] nums, int k) {
+        return 0;
+    }
+
     public static void main(String[] args) {
-        log(subarraySum(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
-        log(subarraySum(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
-        log(subarraySum(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
-        log(subarraySum(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
-        log(subarraySum(new int[]{4, 2, -1, 5, -5}, 5));         // expects 3. (4+2-1, 4+2-1+5-5, 5)
+        log(subarraySum2(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
+        log(subarraySum2(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
+        log(subarraySum2(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
+        log(subarraySum2(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
+        log(subarraySum2(new int[]{4, 2, -1, 5, -5}, 5));         // expects 3. (4+2-1, 4+2-1+5-5, 5)
     }
 }
