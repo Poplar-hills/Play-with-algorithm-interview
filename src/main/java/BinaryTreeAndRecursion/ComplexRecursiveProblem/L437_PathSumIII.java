@@ -29,15 +29,15 @@ public class L437_PathSumIII {
      * */
     public static int pathSum(TreeNode root, int sum) {  // 定义：在以 root 为根的二叉树中计算目标路径个数（root 不在目标路径上）
         if (root == null) return 0;
-        int count = pathSumWith(root, sum);
-        count += pathSum(root.left, sum) + pathSum(root.right, sum);
+        int count = pathSumWith(root, sum);              // 计算有多少条目标路径包含节点 node
+        count += pathSum(root.left, sum) + pathSum(root.right, sum);  // 计算有多少目标路径不包含节点 node
         return count;
     }
 
     private static int pathSumWith(TreeNode root, int sum) {  // 定义：在以 root 为根的二叉树中计算目标路径个数（root 在目标路径上）
         int count = 0;
         if (root == null) return count;
-        if (root.val == sum) count++;  //
+        if (root.val == sum) count++;  // 找到一条目标路径，但不能就此 return ∵ 后面的路径上可能有正、负数节点值，加在一起又等于 sum
         count += pathSumWith(root.left, sum - root.val) + pathSumWith(root.right, sum - root.val);
         return count;
     }
