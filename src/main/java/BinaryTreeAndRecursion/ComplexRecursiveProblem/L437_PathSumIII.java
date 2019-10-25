@@ -50,7 +50,9 @@ public class L437_PathSumIII {
      * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，即本质上也是区间求和问题 ∴ 可以在二叉树上采用类似的思路，
      *   例如 test case 1 中 5->3 这条路径的和 = 10->5->3->3 这条路径的和 - 10 这条途径的和。根据这个思路，在对二叉树进行
      *   递归的过程中不断在 map 中记录 prefix sum（即根节点到当前节点的路径和），并检查 map 中是否存在 prefix sum 与目标值
-     *   sum 的差，若存在则说明找到了目标路径。
+     *   sum 的差，若存在则说明找到了目标路径，而找到的目标路径的条数即是 map 中 prefix sum 的频率（即 prefix sum 的出现次数）。
+     * - 更多解释 SEE：https://leetcode.com/problems/path-sum-iii/discuss/91878/17-ms-O(n)-java-Prefix-sum-method
+     *   中 kekezi 的评论。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int pathSum2(TreeNode root, int sum) {
