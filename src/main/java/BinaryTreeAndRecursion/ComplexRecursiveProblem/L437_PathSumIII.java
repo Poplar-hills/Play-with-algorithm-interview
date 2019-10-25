@@ -3,6 +3,9 @@ package BinaryTreeAndRecursion.ComplexRecursiveProblem;
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.log;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import Utils.Helpers.TreeNode;
 
 /*
@@ -42,9 +45,35 @@ public class L437_PathSumIII {
         return count;
     }
 
+    /*
+     * 解法2：Recursion (DFS) + Map
+     * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，即本质上也是区间求和问题 ∴ 可以在二叉树上采用类似的思路，
+     *   例如 test case 1 中 5->3 这条路径的和 = 10->5->3->3 这条路径的和 - 10 这条途径的和。根据这个思路，在对二叉树进行
+     *   递归的过程中不断在 map 中记录 prefix sum（即根节点到当前节点的路径和），并检查 map 中是否存在 prefix sum 与目标值
+     *   sum 的差，若存在则说明找到了目标路径。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int pathSum2(TreeNode root, int sum) {
+        Map<Integer, Integer> map = new HashMap<>();  // 存储 <prefixSum, frequency>
+        map.put(0, 1);
+        return helper2(root, 0, sum, map);
+    }
+
+    private static int helper2(TreeNode root, int preSum, int sum, Map<Integer, Integer> map) {
+        if (root == null) return 0;
+        preSum += root.val;                                // 得到 prefix sum
+        map.put(preSum, map.getOrDefault(preSum, 0) + 1);  // 在 map 中记录 prefix sum 或更新其频率
+
+        int count = map.getOrDefault(preSum - sum, 0);  // 若 map 中存在 currSum-sum，说明找到一条目标路径
+        count += helper2(root.left, preSum, sum, map) + helper2(root.right, preSum, sum, map);
+
+        map.put(preSum, map.get(preSum) - 1);           // 或 map.merge(currSum, 1, (a, b) -> a - b)
+        return count;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{10, 5, -3, 3, 2, null, 11, 3, -10, null, 1});
-        log(pathSum(t1, 8));
+        log(pathSum2(t1, 8));
         /*
          * expects 4. (5->3, 5->2->1, -3->11, 10->5->3->-10)
          *         10
@@ -57,7 +86,7 @@ public class L437_PathSumIII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{10, 8, -2});
-        log(pathSum(t2, 8));
+        log(pathSum2(t2, 8));
         /*
          * expects 2. (8, 10->-2)
          *         10
@@ -66,7 +95,7 @@ public class L437_PathSumIII {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(pathSum(t3, 0));
+        log(pathSum2(t3, 0));
         /*
          * expects 0.
          * */
