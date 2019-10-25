@@ -3,10 +3,6 @@ package BinaryTreeAndRecursion.ComplexRecursiveProblem;
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.log;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 import Utils.Helpers.TreeNode;
 
 /*
@@ -20,18 +16,30 @@ import Utils.Helpers.TreeNode;
 
 public class L437_PathSumIII {
     /*
-     * 解法1：Iteration
-     * - 思路：找到所有
+     * 解法1：Recursion (DFS)
+     * - 思路：在 L112_PathSum 和 L113_PathSumII 中，我们寻找符合条件的目标路径的方式是在递归过程中不断让 sum - node.val，
+     *   这其实隐含了“节点 node 一定在目标路径上”的信息。而本题中目标路径不一定是 root-to-leaf 的，所以有些节点（例如根节点）
+     *   不一定在目标路径上，因此需要分情况讨论：
+     *     1. 若 node 在目标路径上，则继续使用 L112、L113 中的方法，检查 sum - node.val 是否为0来确定目标路径；
+     *     2. 若 node 不在目标路径上，递归地在 node 的子树中寻找目标路径。
+     *   用公式表达：f(node, sum) = 包含 node 的目标路径数 + 不包含 node 的目标路径数
+     *                          = f2(node, sum) + f(node.left, sum) + f(node.right, sum)。
+     * - 💎总结：该解法的实现采用2套递归来分别计算2种不同情况下的结果，最后加在一起返回。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
-    public static int pathSum(TreeNode root, int sum) {
+    public static int pathSum(TreeNode root, int sum) {  // 定义：在以 root 为根的二叉树中计算目标路径个数（root 不在目标路径上）
         if (root == null) return 0;
-        Stack<List<TreeNode>> stack = new Stack<>();
-        List<TreeNode> initialList = new ArrayList<>();
-        initialList.add(root);
-        stack.push(initialList);
+        int count = pathSumWith(root, sum);
+        count += pathSum(root.left, sum) + pathSum(root.right, sum);
+        return count;
+    }
 
-        return 0;
+    private static int pathSumWith(TreeNode root, int sum) {  // 定义：在以 root 为根的二叉树中计算目标路径个数（root 在目标路径上）
+        int count = 0;
+        if (root == null) return count;
+        if (root.val == sum) count++;  //
+        count += pathSumWith(root.left, sum - root.val) + pathSumWith(root.right, sum - root.val);
+        return count;
     }
 
     public static void main(String[] args) {

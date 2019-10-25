@@ -17,7 +17,7 @@ import javafx.util.Pair;
 
 public class L112_PathSum {
     /*
-     * 解法1：Recursion
+     * 解法1：Recursion (DFS)
      * - 注意：
      *   1. 递归的终止条件很容易写成 if (root == null) return sum == 0; 但这样 test case 3 过不去，因此递归终止条件需要
      *      用叶子节点来判断。
@@ -32,8 +32,8 @@ public class L112_PathSum {
     }
 
     /*
-     * 解法2：Iteration
-     * - 思路：若采用非递归的解法，首先可以确定应使用 DFS ∴ 采用 stack 作为辅助数据结构。
+     * 解法2：Iteration (DFS)
+     * - 思路：采用 stack 作为辅助数据结构。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean hasPathSum2(TreeNode root, int sum) {
@@ -59,7 +59,7 @@ public class L112_PathSum {
     }
 
     /*
-     * 解法3：Iteration
+     * 解法3：Iteration (DFS)
      * - 思路：与解法2完全一致，只是采用两个 stack 实现。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
