@@ -98,13 +98,15 @@ public class Helpers {
         return true;
     }
 
-    public static class ListNode {  // The node class for linked list. Have to make the attributes and the method public
-        public int val;
+    // 链表节点类
+    public static class ListNode {
+        public int val;        // Have to make the attributes and the methods public
         public ListNode next;
         public ListNode(int x) { val = x; }
         public ListNode() { }
     }
 
+    // 从数组生成链表
     public static ListNode createLinkedListFromArray(int[] arr) {
         ListNode dummyHead = new ListNode();
         ListNode curr = dummyHead;
@@ -115,6 +117,7 @@ public class Helpers {
         return dummyHead.next;
     }
 
+    // 打印链表
     public static void printLinkedList(ListNode head) {
         StringBuilder s = new StringBuilder();
         while (head != null) {
@@ -126,12 +129,7 @@ public class Helpers {
         log(s.toString());
     }
 
-    public static class Node {
-        public Node left;
-        public Node right;
-        public int value;
-    }
-
+    // 二叉树节点类
     public static class TreeNode {
         public int val;
         public TreeNode left;
@@ -139,7 +137,8 @@ public class Helpers {
         TreeNode(int x) { val = x; }
     }
 
-    public static TreeNode createBinaryTreeDepthFirst(Integer[] arr) {  // 以深度优先的方式从数组生成二叉树
+    // 以深度优先的方式从数组生成二叉树
+    public static TreeNode createBinaryTreeDepthFirst(Integer[] arr) {
         return arr.length == 0 ? null : createBinaryTreeDepthFirst(arr, 0).getValue();
     }
 
@@ -160,7 +159,8 @@ public class Helpers {
         return new Pair<>(i, node);
     }
 
-    public static TreeNode createBinaryTreeBreadthFirst(Integer[] arr) {  // 以广度优先的方式从数组生成二叉树
+    // 以广度优先的方式从数组生成二叉树
+    public static TreeNode createBinaryTreeBreadthFirst(Integer[] arr) {
         if (arr == null || arr.length == 0 || arr[0] == null)
             return null;
 
@@ -168,13 +168,13 @@ public class Helpers {
         TreeNode tree = new TreeNode(arr[0]);
         q.offer(tree);
 
-        for (int i = 1; i < arr.length && !q.isEmpty(); i += 2) {
-            TreeNode curr = q.poll();
-            if (arr[i] != null) {                            // 添加左节点
+        for (int i = 1; i < arr.length && !q.isEmpty(); i += 2) {  // 遍历 arr，每次消费两个元素用于创建左右子节点
+            TreeNode curr = q.poll();                        // 得到父节点
+            if (arr[i] != null) {                            // 用 arr[i] 创建左子节点
                 curr.left = new TreeNode(arr[i]);
                 q.offer(curr.left);
             }
-            if (i + 1 < arr.length && arr[i + 1] != null) {  // 添加右节点
+            if (i + 1 < arr.length && arr[i + 1] != null) {  // 用 arr[i+1] 创建右子节点
                 curr.right = new TreeNode(arr[i + 1]);
                 q.offer(curr.right);
             }
@@ -182,6 +182,7 @@ public class Helpers {
         return tree;
     }
 
+    // 以深度优先的方式打印二叉树
     public static void printBinaryTreeDepthFirst(TreeNode root) {
         List<Integer> list = new ArrayList<>();
         if (root != null) collectDepthFirst(root, list);
@@ -198,6 +199,7 @@ public class Helpers {
         collectDepthFirst(node.right, list);
     }
 
+    // 以广度优先的方式打印二叉树
     public static void printBinaryTreeBreadthFirst(TreeNode root) {
         List<Integer> list = new ArrayList<>();
 

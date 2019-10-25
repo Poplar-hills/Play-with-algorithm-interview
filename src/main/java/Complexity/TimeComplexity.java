@@ -131,10 +131,10 @@ public class TimeComplexity {
     * 1. 因为会遍历所有节点，因此是 O(n)；
     * 2. 因为二叉树节点个数 n = 2^depth，因此要遍历每个节点就需 O(2^depth) = O(2^(logn)) = O(n)。
     * */
-    public int sum(Node node) {
+    public int sum(TreeNode node) {
         if (node == null)
             return 0;
-        return sum(node.left) + node.value + sum(node.right);
+        return sum(node.left) + node.val + sum(node.right);
     }
 
     /*
