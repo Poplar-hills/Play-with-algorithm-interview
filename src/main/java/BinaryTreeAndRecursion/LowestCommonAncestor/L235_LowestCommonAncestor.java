@@ -3,6 +3,8 @@ package BinaryTreeAndRecursion.LowestCommonAncestor;
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.log;
 
+import java.util.Stack;
+
 import Utils.Helpers.TreeNode;
 
 /*
@@ -32,9 +34,38 @@ public class L235_LowestCommonAncestor {
     /*
      * 解法2：Iteration (DFS)
      * - 思路：
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) return null;
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.pop();
+            if (p.val < node.val && q.val < node.val && node.left != null) stack.push(node.left);
+            else if (p.val > node.val && q.val > node.val && node.right != null) stack.push(node.right);
+            else return node;
+        }
+
+        return null;
+    }
+
+    /*
+     * 解法3：Iteration (DFS)（解法2的简化版，不借助辅助数据结构）
+     * - 思路：该题本质上就是一个简单的二分查找，若 BST 上某个节点使得 p 和 q 不再该节点同一边，则说明该节点就是 LCA 节点。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) return null;
+        TreeNode node = root;
+
+        while (node != null) {
+            if (p.val < node.val && q.val < node.val) node = node.left;
+            else if (p.val > node.val && q.val > node.val) node = node.right;
+            else return node;
+        }
+
         return null;
     }
 
@@ -50,9 +81,9 @@ public class L235_LowestCommonAncestor {
          *       3   5
          * */
 
-        log(lowestCommonAncestor(t1, new TreeNode(2), new TreeNode(8)));   // expects 6. (The LCA of nodes 2 and 8 is 6.)
-        log(lowestCommonAncestor(t1, new TreeNode(3), new TreeNode(7)));   // expects 6.
-        log(lowestCommonAncestor(t1, new TreeNode(2), new TreeNode(4)));   // expects 2.
-        log(lowestCommonAncestor(t1, new TreeNode(0), new TreeNode(5)));   // expects 2.
+        log(lowestCommonAncestor2(t1, new TreeNode(2), new TreeNode(8)));   // expects 6. (The LCA of nodes 2 and 8 is 6.)
+        log(lowestCommonAncestor2(t1, new TreeNode(3), new TreeNode(7)));   // expects 6.
+        log(lowestCommonAncestor2(t1, new TreeNode(2), new TreeNode(4)));   // expects 2.
+        log(lowestCommonAncestor2(t1, new TreeNode(0), new TreeNode(5)));   // expects 2.
     }
 }
