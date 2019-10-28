@@ -14,6 +14,9 @@ import Utils.Helpers.TreeNode;
  * - Note:
  *   1. All of the nodes' values will be unique.
  *   2. p and q are different and both values will exist in the BST.
+ *
+ * - Follow-up: 若 Note 中的第2条不成立（即 p 或 q 可能不在树上），则需再写一个 contains(root, node) 方法，并在递归开始
+ *   前检查 p 和 q 是否都在树上。
  * */
 
 public class L235_LowestCommonAncestor {
