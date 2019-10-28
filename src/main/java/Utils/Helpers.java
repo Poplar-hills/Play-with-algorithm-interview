@@ -15,9 +15,9 @@ public class Helpers {
 
     public static void log(boolean[] arr) { System.out.println(Arrays.toString(arr)); }
 
-    public static void log(Object[] arr) {
-        System.out.println(Arrays.toString(arr));
-    }
+    public static void log(Object[] arr) { System.out.println(Arrays.toString(arr)); }
+
+    public static void log(TreeNode node) { System.out.println(node.getVal()); }
 
     public static <E> void swap(E[] arr, int i, int j) {
         if (i < 0 || i >= arr.length || j < 0 || j >= arr.length)
@@ -134,7 +134,8 @@ public class Helpers {
         public int val;
         public TreeNode left;
         public TreeNode right;
-        TreeNode(int x) { val = x; }
+        public TreeNode(int x) { val = x; }
+        public int getVal() { return val; }
     }
 
     // 以深度优先的方式从数组生成二叉树
