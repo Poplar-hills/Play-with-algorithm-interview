@@ -57,8 +57,8 @@ public class L98_ValidateBinarySearchTree {
      *     - 节点3是合法的 ∵ 它 < 5；      - 节点7是合法的 ∵ 它 > 5；
      *     - 节点2是合法的 ∵ 它 < 3；      - 节点8是非法的 ∵ 它应该 < 7 且 > 5；
      *     - 节点4是合法的 ∵ 3 < 它 < 5；  - 节点6是非法的 ∵ 它应该 > 7；
-     *   可见每个节点值的上、下界是由上层及上上层节点决定的，这可以通过给递归函数传递上、下界参数来实现。而每层的递归函数可以定义
-     *   为：当前节点是否 > 下界，且 < 上界。
+     *   可见每个节点值的上、下界是由上层及上上层节点决定的，例如对于节点3来说，5是它的上界，而对于节点4来说5就变成了上界，而3是
+     *   它的下界。这可以通过给递归函数传递上、下界参数来实现。而每层的递归函数可以定义为：当前节点是否 > 下界，且 < 上界。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isValidBST2(TreeNode root) {
@@ -69,7 +69,8 @@ public class L98_ValidateBinarySearchTree {
         if (root == null) return true;
         if (lower != null && root.val <= lower) return false;
         if (upper != null && root.val >= upper) return false;
-        return withinBounds(root.left, lower, root.val) && withinBounds(root.right, root.val, upper);
+        return withinBounds(root.left, lower, root.val)    // 父节点的下界也是左子节点的下界，父节点本身是左子节点的上界
+            && withinBounds(root.right, root.val, upper);  // 父节点的上界也是右子节点的上界，父节点本身是右子节点的下界
     }
 
     /*
@@ -81,7 +82,6 @@ public class L98_ValidateBinarySearchTree {
         Stack<TreeNode> stack = new Stack<>();
         Stack<Integer> lowers = new Stack<>();
         Stack<Integer> uppers = new Stack<>();
-
         stack.push(root);
         lowers.push(null);
         uppers.push(null);
@@ -95,14 +95,14 @@ public class L98_ValidateBinarySearchTree {
             if (upper != null && node.val >= upper) return false;
 
             if (node.left != null) {
-                stack.push(node.left);
-                lowers.push(upper);
+                stack.push(node.left);  // 可以将这三个操作抽成方法，但前提是需要将 stack, lowers, uppers 作为类成员变量
+                lowers.push(lower);
                 uppers.push(node.val);
             }
             if (node.right != null) {
                 stack.push(node.right);
                 lowers.push(node.val);
-                uppers.push(lower);
+                uppers.push(upper);
             }
         }
 
@@ -119,8 +119,19 @@ public class L98_ValidateBinarySearchTree {
          *   1   3
          * */
 
-        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, 4, null, null, 3, 6});
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 5, 0, 2, 4, 6});
         log(isValidBST3(t2));
+        /*
+         * expects true.
+         *         3
+         *       /   \
+         *      1     5
+         *     / \   / \
+         *    0   2 4   6
+         * */
+
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, 4, null, null, 3, 6});
+        log(isValidBST3(t3));
         /*
          * expects false.
          *     5
@@ -130,8 +141,8 @@ public class L98_ValidateBinarySearchTree {
          *     3   6
          * */
 
-        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1});
-        log(isValidBST3(t3));
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 1});
+        log(isValidBST3(t4));
         /*
          * expects false. (等值节点的情况)
          *     1
@@ -139,8 +150,8 @@ public class L98_ValidateBinarySearchTree {
          *   1
          * */
 
-        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{10, 5, 15, null, null, 6, 20});
-        log(isValidBST3(t4));
+        TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{10, 5, 15, null, null, 6, 20});
+        log(isValidBST3(t5));
         /*
          * expects false. (跨层级的情况：6 < 10)
          *     10
