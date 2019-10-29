@@ -19,7 +19,7 @@ import Utils.Helpers.TreeNode;
  *   前检查 p 和 q 是否都在树上。
  * */
 
-public class L235_LowestCommonAncestor {
+public class L235_LCAOfBST {
     /*
      * 解法1：Recursion (DFS)
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
