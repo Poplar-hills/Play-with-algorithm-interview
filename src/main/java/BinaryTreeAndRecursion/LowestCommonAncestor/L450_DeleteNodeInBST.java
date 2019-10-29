@@ -27,15 +27,15 @@ public class L450_DeleteNodeInBST {
     }
 
     public static void main(String[] args) {
-      TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, 7});
-      log(deleteNode(t1, 7));
-      /*
-       * expects [5,4,6,2,null,null,7] or [5,2,6,null,4,null,7]
-       *       5                                5                  5
-       *      / \       After deleting         / \                / \
-       *     3   6     --------------->       4   6      or      2   6
-       *    / \   \       the node 3         /     \              \   \
-       *   2   4   7                        2       7              4   7
-       * */
+        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, 7});
+        log(deleteNode(t1, 7));
+        /*
+         * expects [5,4,6,2,null,null,7] or [5,2,6,null,4,null,7]
+         *       5                                5                  5
+         *      / \       After deleting         / \                / \
+         *     3   6     --------------->       4   6      or      2   6
+         *    / \   \       the node 3         /     \              \   \
+         *   2   4   7                        2       7              4   7
+         * */
     }
 }

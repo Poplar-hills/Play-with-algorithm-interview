@@ -26,25 +26,24 @@ public class L98_ValidateBinarySearchTree {
     }
 
     public static void main(String[] args) {
-      TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{2, 1, 3});
-      log(isValidBST(t1));
-      /*
-       * expects true.
-       *     2
-       *    / \
-       *   1   3
-       * */
+        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{2, 1, 3});
+        log(isValidBST(t1));
+        /*
+         * expects true.
+         *     2
+         *    / \
+         *   1   3
+         * */
 
-      TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, 4, null, null, 3, 6});
-      log(isValidBST(t2));
-      /*
-       * expects false.
-       *     5
-       *    / \
-       *   1   4
-       *      / \
-       *     3   6
-       * */
-
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, 4, null, null, 3, 6});
+        log(isValidBST(t2));
+        /*
+         * expects false.
+         *     5
+         *    / \
+         *   1   4
+         *      / \
+         *     3   6
+         * */
     }
 }
