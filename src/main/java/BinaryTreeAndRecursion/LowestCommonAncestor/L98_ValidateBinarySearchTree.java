@@ -3,6 +3,10 @@ package BinaryTreeAndRecursion.LowestCommonAncestor;
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.log;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import Utils.Helpers.TreeNode;
@@ -57,8 +61,8 @@ public class L98_ValidateBinarySearchTree {
      *     - 节点3是合法的 ∵ 它 < 5；      - 节点7是合法的 ∵ 它 > 5；
      *     - 节点2是合法的 ∵ 它 < 3；      - 节点8是非法的 ∵ 它应该 < 7 且 > 5；
      *     - 节点4是合法的 ∵ 3 < 它 < 5；  - 节点6是非法的 ∵ 它应该 > 7；
-     *   可见每个节点值的上、下界是由上层及上上层节点决定的，例如对于节点3来说，5是它的上界，而对于节点4来说5就变成了上界，而3是
-     *   它的下界。这可以通过给递归函数传递上、下界参数来实现。而每层的递归函数可以定义为：当前节点是否 > 下界，且 < 上界。
+     *   可见每个节点值的上、下界是由其父节点及祖父节点决定的，例如对于节点3来说，5是它的上界，而对于节点4来说5就变成了上界，而3
+     *   是它的下界。这可以通过给递归函数传递上、下界参数来实现。而每层的递归函数可以定义为：当前节点是否 > 下界，且 < 上界。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isValidBST2(TreeNode root) {
@@ -109,56 +113,107 @@ public class L98_ValidateBinarySearchTree {
         return true;
     }
 
+    /*
+     * 解法4：Iteration (中续遍历)
+     * - 思路：检查一棵树是否是 BST 可以利用 BST 最特别的性质 —— BST 中序遍历的顺序是从小到大。因此该题只需在中序遍历的基础上
+     *   检查每次后一个访问的节点是否 > 前一个访问的节点即可。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isValidBST4(TreeNode root) {
+        if (root == null) return true;
+        Integer prev = null;
+        Stack<TreeNode> stack = new Stack<>();
+        Set<TreeNode> set = new HashSet<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            while (stack.peek().left != null && !set.contains(stack.peek().left))
+                stack.push(stack.peek().left);                   // 向左走到最左，一路入栈没访问过的节点
+
+            TreeNode node = stack.pop();
+            if (prev != null && node.val <= prev) return false;  // 访问栈顶节点
+            prev = node.val;
+            set.add(node);                                       // 访问完后将其加入 set
+            if (node.right != null) stack.push(node.right);      // 入栈右子节点
+        }
+
+        return true;
+    }
+
+    /*
+     * 解法5：Iteration (中续遍历的另一种实现)
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isValidBST5(TreeNode root) {
+        if (root == null) return true;
+        Stack<TreeNode> stack = new Stack<>();
+        Integer prev = null;
+        TreeNode curr = root;
+
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) {  // 先向左走到最左，一路入栈节点
+                stack.push(curr);
+                curr = curr.left;
+            }
+            curr = stack.pop();     // 访问栈顶节点
+            if (prev != null && curr.val <= prev) return false;
+            prev = curr.val;
+            curr = curr.right;      // 转向右子节点，重新开始循环
+        }
+
+        return true;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{2, 1, 3});
-        log(isValidBST3(t1));
+        log(isValidBST5(t1));
         /*
          * expects true.
-         *     2
-         *    / \
-         *   1   3
+         *       2
+         *      / \
+         *     1   3
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 5, 0, 2, 4, 6});
-        log(isValidBST3(t2));
+        log(isValidBST5(t2));
         /*
          * expects true.
-         *         3
-         *       /   \
-         *      1     5
-         *     / \   / \
-         *    0   2 4   6
+         *       3
+         *     /   \
+         *    1     5
+         *   / \   / \
+         *  0   2 4   6
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, 4, null, null, 3, 6});
-        log(isValidBST3(t3));
+        log(isValidBST5(t3));
         /*
          * expects false.
-         *     5
-         *    / \
-         *   1   4
+         *       5
          *      / \
-         *     3   6
+         *     1   4
+         *        / \
+         *       3   6
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 1});
-        log(isValidBST3(t4));
+        log(isValidBST5(t4));
         /*
          * expects false. (等值节点的情况)
+         *       1
+         *      /
          *     1
-         *    /
-         *   1
          * */
 
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{10, 5, 15, null, null, 6, 20});
-        log(isValidBST3(t5));
+        log(isValidBST5(t5));
         /*
          * expects false. (跨层级的情况：6 < 10)
-         *     10
-         *    /  \
-         *   5   15
-         *      /  \
-         *     6   20
+         *      10
+         *     /  \
+         *    5   15
+         *       /  \
+         *      6   20
          * */
     }
 }
