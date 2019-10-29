@@ -31,17 +31,17 @@ public class L98_ValidateBinarySearchTree {
         return isValidBST(root.left) && isValidBST(root.right);
     }
 
-    private static boolean isMaxInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 > 以 root 为根的树上的所有节点
+    private static boolean isMaxInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 > root 上的所有节点
         if (root == null) return true;
         if (node.val <= root.val) return false;
-        return isMaxInBST(node, root.left) && isMaxInBST(node, root.right);
-    }
+        return isMaxInBST(node, root.right);  // 若 node > 右子树上的所有节点则说明 node > root 上的所有节点
+    }                                         // （右子树是否是 BST 交给 isValidBST 去检查）
 
-    private static boolean isMinInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 < 以 root 为根的树上的所有节点
+    private static boolean isMinInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 < root 上的所有节点
         if (root == null) return true;
         if (node.val >= root.val) return false;
-        return isMinInBST(node, root.left) && isMinInBST(node, root.right);
-    }
+        return isMinInBST(node, root.left);  // 若 node < 左子树上的所有节点则说明 node < root 上的所有节点
+    }                                         // （左子树是否是 BST 交给 isValidBST 去检查）
 
     /*
      * 解法2：Recursion
@@ -54,7 +54,7 @@ public class L98_ValidateBinarySearchTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{2, 1, 3});
-        log(isValidBST2(t1));
+        log(isValidBST(t1));
         /*
          * expects true.
          *     2
@@ -63,7 +63,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, 4, null, null, 3, 6});
-        log(isValidBST2(t2));
+        log(isValidBST(t2));
         /*
          * expects false.
          *     5
@@ -74,7 +74,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1});
-        log(isValidBST2(t3));
+        log(isValidBST(t3));
         /*
          * expects false. (等值节点的情况)
          *     1
@@ -83,7 +83,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{10, 5, 15, null, null, 6, 20});
-        log(isValidBST2(t4));
+        log(isValidBST(t4));
         /*
          * expects false. (跨层级的情况：6 < 10)
          *     10
