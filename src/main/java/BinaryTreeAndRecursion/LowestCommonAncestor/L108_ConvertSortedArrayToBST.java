@@ -2,6 +2,8 @@ package BinaryTreeAndRecursion.LowestCommonAncestor;
 
 import static Utils.Helpers.printBinaryTreeBreadthFirst;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 import Utils.Helpers.TreeNode;
@@ -55,21 +57,21 @@ public class L108_ConvertSortedArrayToBST {
         if (nums == null || nums.length == 0) return null;
         TreeNode root = new TreeNode(0);           // 先生成一个占位节点
         NodeCell rootCell = new NodeCell(root, 0, nums.length - 1);
-        Stack<NodeCell> stack = new Stack<>();
-        stack.push(rootCell);
+        Queue<NodeCell> q = new LinkedList<>();
+        q.offer(rootCell);
 
-        while (!stack.isEmpty()) {
-            NodeCell cell = stack.pop();           // 得到栈顶 NodeCell，为其确定节点值
+        while (!q.isEmpty()) {
+            NodeCell cell = q.poll();              // 得到栈顶 NodeCell，为其确定节点值
             int mid = (cell.upper - cell.lower) / 2 + cell.lower;
             cell.node.val = nums[mid];             // nums[mid] 即是该节点的真正节点值，替换原来的占位节点值
 
             if (cell.lower != mid) {               // 若 nums[mid] 左侧还有元素
                 cell.node.left = new TreeNode(0);  // 创建左子占位节点（主要是先创建两节点之间的连接关系，节点值后面再覆盖）
-                stack.push(new NodeCell(cell.node.left, cell.lower, mid - 1));
+                q.offer(new NodeCell(cell.node.left, cell.lower, mid - 1));
             }
             if (cell.upper != mid) {               // 若 nums[mid] 右侧还有元素
                 cell.node.right = new TreeNode(0);
-                stack.push(new NodeCell(cell.node.right, mid + 1, cell.upper));
+                q.offer(new NodeCell(cell.node.right, mid + 1, cell.upper));
             }
         }
 
