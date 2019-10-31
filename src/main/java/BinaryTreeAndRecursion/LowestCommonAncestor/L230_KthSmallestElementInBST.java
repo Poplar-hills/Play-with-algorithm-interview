@@ -22,8 +22,8 @@ import Utils.Helpers.TreeNode;
 public class L230_KthSmallestElementInBST {
     /*
      * 解法1：Recursion（中序遍历）
-     * - 思路：利用“BST 的中序遍历是从小到大遍历”这一性质
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * - 思路：利用“BST 的中序遍历会从小到大遍历节点”这一性质。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int kthSmallest(TreeNode root, int k) {
         List<Integer> arr = new ArrayList<>();
@@ -31,16 +31,44 @@ public class L230_KthSmallestElementInBST {
         return arr.get(k - 1);
     }
 
-    private static void inorder(TreeNode node, List<Integer> arr) {  // Q: Integer 作为参数不是传引用？？？
+    private static void inorder(TreeNode node, List<Integer> arr) {
         if (node == null) return;
         inorder(node.left, arr);
         arr.add(node.val);
         inorder(node.right, arr);
     }
 
+    /*
+     * 解法2：Recursion（解法1的统计性能优化版）
+     * - 思路：解法1会先中序遍历所有节点，最后再取第 k 大的，而该解法则是在遍历到第 k 大的节点时就返回，不再继续遍历 ∴ 性能优于解法1。
+     * - 实现：count 要实现为类成员变量。若实现为用 Integer 包装 count，并在函数中传递并不能达到传引用的效果 ∵ Integer 源码
+     *   中 value 是 final 的，即一旦 Integer 对象创建之后其值就不能被修改 ∴ count++ 时只会创建一个新对象。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    private int count = 0;  // 类成员变量
+
+    public int kthSmallest2(TreeNode root, int k) {
+        return inorder2(root, k);
+    }
+
+    private Integer inorder2(TreeNode node, int k) {
+        if (node == null) return null;
+
+        Integer res = inorder2(node.left, k);
+        if (res != null) return res;        // 若在左子树中找到了结果，则直接返回（不再往下执行）
+
+        if (++count == k) return node.val;  // 若在该节点就是第 k 大，则返回它
+
+        return inorder2(node.right, k);     // 若左子树中没有找到，同时也不是该节点，则一定在右子树中
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 4, null, 2});
         log(kthSmallest(t1, 1));
+
+        L230_KthSmallestElementInBST s1 = new L230_KthSmallestElementInBST();  // 解法2的调用方式
+        log(s1.kthSmallest2(t1, 1));
+
         /*
          * expects 1.
          *       3
@@ -52,6 +80,9 @@ public class L230_KthSmallestElementInBST {
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, null, 1});
         log(kthSmallest(t2, 3));
+
+        L230_KthSmallestElementInBST s2 = new L230_KthSmallestElementInBST();
+        log(s2.kthSmallest2(t2, 3));
         /*
          * expects 3.
          *          5
