@@ -40,11 +40,13 @@ public class L230_KthSmallestElementInBST {
     }
 
     /*
-     * 解法2：Recursion（解法1的统计性能优化版）
+     * 解法2：Recursion（解法1的性能优化版）
      * - 思路：解法1会先中序遍历所有节点，最后再取第 k 大的，而该解法则是在遍历到第 k 大的节点时就返回，不再继续遍历 ∴ 性能优于解法1。
      * - 实现：count 要实现为类成员变量。若实现为用 Integer 包装 count，并在函数中传递并不能达到传引用的效果 ∵ Integer 源码
      *   中 value 是 final 的，即一旦 Integer 对象创建之后其值就不能被修改 ∴ count++ 时只会创建一个新对象。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(h+k)，其中 h 是树高 ∵ 中序遍历在访问到第一个节点之前要先走到最左边的节点，该过程最大是 h 的时间，再加上
+     *   访问找到第 k 大节点 ∴ 整体是 O(h+k)，对于平衡树是 O(logn+k)，对于完全不平衡树则是 O(n+k)。
+     * - 空间复杂度 O(h)。
      * */
     private int count = 0;  // 类成员变量
 
@@ -66,7 +68,7 @@ public class L230_KthSmallestElementInBST {
     /*
      * 解法3：Iteration (DFS 中序遍历)
      * - 思路：中序遍历的非递归实现。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(h+k)，解释同 解法2；空间复杂度 O(h+k) ∵ stack 中最多有 h+k 个节点。
      * */
     public static int kthSmallest3(TreeNode root, int k) {
         Stack<TreeNode> stack = new Stack<>();
