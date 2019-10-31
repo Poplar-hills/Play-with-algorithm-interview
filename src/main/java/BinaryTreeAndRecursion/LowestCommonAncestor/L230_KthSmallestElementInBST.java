@@ -5,6 +5,7 @@ import static Utils.Helpers.log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import Utils.Helpers.TreeNode;
 
@@ -21,7 +22,7 @@ import Utils.Helpers.TreeNode;
 
 public class L230_KthSmallestElementInBST {
     /*
-     * 解法1：Recursion（中序遍历）
+     * 解法1：Recursion（DFS 中序遍历）
      * - 思路：利用“BST 的中序遍历会从小到大遍历节点”这一性质。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -62,9 +63,31 @@ public class L230_KthSmallestElementInBST {
         return inorder2(node.right, k);     // 若左子树中没有找到，同时也不是该节点，则一定在右子树中
     }
 
+    /*
+     * 解法3：Iteration (DFS 中序遍历)
+     * - 思路：中序遍历的非递归实现。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int kthSmallest3(TreeNode root, int k) {
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode curr = root;
+
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) {
+                stack.push(curr);
+                curr = curr.left;
+            }
+            TreeNode node = stack.pop();
+            if (--k == 0) return node.val;
+            curr = node.right;
+        }
+
+        throw new IllegalArgumentException("There's no kth node in this BST.");
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 4, null, 2});
-        log(kthSmallest(t1, 1));
+        log(kthSmallest3(t1, 1));
 
         L230_KthSmallestElementInBST s1 = new L230_KthSmallestElementInBST();  // 解法2的调用方式
         log(s1.kthSmallest2(t1, 1));
@@ -79,7 +102,7 @@ public class L230_KthSmallestElementInBST {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, null, 1});
-        log(kthSmallest(t2, 3));
+        log(kthSmallest3(t2, 3));
 
         L230_KthSmallestElementInBST s2 = new L230_KthSmallestElementInBST();
         log(s2.kthSmallest2(t2, 3));
