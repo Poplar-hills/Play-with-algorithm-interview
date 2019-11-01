@@ -137,8 +137,8 @@ public class Helpers {
         public TreeNode(int x) { val = x; }
         public int getVal() { return val; }
 
-        public TreeNode get(int val) { return get(this, val); }  // 在二叉树中找到并返回值为 val 的节点的引用（若存在
-                                                                 // 多个值为 val 的节点则返回找到的第一个节点）
+        public TreeNode get(int val) { return get(this, val); }  // 在二叉树中找到并返回值为 val 的节点的引用（SEE: L236_LCAOfBinaryTree）
+                                                                 // （若存在多个值为 val 的节点则返回找到的第一个节点）
         private TreeNode get(TreeNode root, int val) {
             if (root == null) return null;
             if (root.val == val) return root;

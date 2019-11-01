@@ -80,36 +80,39 @@ public class L236_LCAOfBinaryTree {
     }
 
     /*
-     * 解法3：Iteration (DFS)
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * 解法3：Iteration (DFS) + Map + Set
+     * - 思路：非常有意思的思路！利用多种数据结构，思路见下面分析。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null) return null;
-        Stack<TreeNode> stack = new Stack<>();
-        Map<TreeNode, TreeNode> parentMap = new HashMap<>();
+        Stack<TreeNode> stack = new Stack<>();                // 用于存储 p 节点的所有祖先节点
+        Map<TreeNode, TreeNode> parentMap = new HashMap<>();  // 用于存储<节点, 父节点>
         stack.push(root);
         parentMap.put(root, null);
 
-        while (!parentMap.containsKey(p) || !parentMap.containsKey(q)) {
-            TreeNode node = stack.pop();
+        // Step 1: 建立 parentMap
+        while (!parentMap.containsKey(p) || !parentMap.containsKey(q)) {  // 若 p、q 已经被收录进 Map 则说明他们的
+            TreeNode node = stack.pop();                                  // 所有祖先节点也都已被收录进 Map 中了
 
             if (node.left != null) {
-                parentMap.put(node.left, node);
+                parentMap.put(node.left, node);  // 收录节点
                 stack.push(node.left);
             }
             if (node.right != null) {
-                parentMap.put(node.right, node);
+                parentMap.put(node.right, node);  // 收录节点
                 stack.push(node.right);
             }
         }
 
-        Set<TreeNode> pParentSet = new HashSet<>();
+        // Step 2: 查询出 p 的所有祖先节点
+        Set<TreeNode> pParentSet = new HashSet<>();  // 当 Map 建立完毕后
         while (p != null) {
             pParentSet.add(p);
             p = parentMap.get(p);
         }
 
+        // Step 3: 从下往上依次查询 q 的每一个祖先节点是否在 pParentSet 中，找到的第一个就是 LSC
         while (!pParentSet.contains(q))
             q = parentMap.get(q);
 
