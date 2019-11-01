@@ -11,7 +11,7 @@ import Utils.Helpers.TreeNode;
  * Lowest Common Ancestor of a Binary Search Tree
  *
  * - Given a binary search tree (BST), find the lowest common ancestor (LCA) of two given nodes in the BST.
- * 
+ *
  * - Note:
  *   1. All of the nodes' values will be unique.
  *   2. p and q are different and both values will exist in the BST.
@@ -37,7 +37,7 @@ public class L235_LCAOfBST {
 
     /*
      * 解法2：Iteration (DFS)
-     * - 思路：
+     * - 思路：解法1的非递归版，若 BST 上某个节点使得 p 和 q 不再该节点同一边，则说明该节点就是 LCA 节点。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
@@ -47,27 +47,32 @@ public class L235_LCAOfBST {
 
         while (!stack.isEmpty()) {
             TreeNode node = stack.pop();
-            if (p.val < node.val && q.val < node.val && node.left != null) stack.push(node.left);
-            else if (p.val > node.val && q.val > node.val && node.right != null) stack.push(node.right);
-            else return node;
+            if (p.val < node.val && q.val < node.val && node.left != null)
+                stack.push(node.left);
+            else if (p.val > node.val && q.val > node.val && node.right != null)
+                stack.push(node.right);
+            else
+                return node;
         }
 
         return null;
     }
 
     /*
-     * 解法3：Iteration (DFS)（解法2的简化版，不借助辅助数据结构）
-     * - 思路：该题本质上就是一个简单的二分查找，若 BST 上某个节点使得 p 和 q 不再该节点同一边，则说明该节点就是 LCA 节点。
+     * 解法3：Iteration (DFS)
+     * - 思路：解法2的简化版，不借助辅助数据结构。
+     * - 实现：该题本质上就是一个 BST 上的二分查找，并不是树的遍历，不需要在树上上下折返，而是只要一路往下走就能得到结果，因此
+     *   并不需要借助 Stack 来实现，只需一个指针指向当前节点即可。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null) return null;
-        TreeNode node = root;
+        TreeNode curr = root;
 
-        while (node != null) {
-            if (p.val < node.val && q.val < node.val) node = node.left;
-            else if (p.val > node.val && q.val > node.val) node = node.right;
-            else return node;
+        while (curr != null) {
+            if (p.val < curr.val && q.val < curr.val) curr = curr.left;
+            else if (p.val > curr.val && q.val > curr.val) curr = curr.right;
+            else return curr;
         }
 
         return null;

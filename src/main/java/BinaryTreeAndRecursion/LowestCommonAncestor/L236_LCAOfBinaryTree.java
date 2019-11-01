@@ -38,7 +38,7 @@ public class L236_LCAOfBinaryTree {
     }
 
     /*
-     * 解法1：Recursion (DFS)
+     * 解法2：Recursion (DFS + Backtracking)
      * - 思路：使用回溯法 —— 先通过 DFS 遍历到叶子节点，在回去的路上，若节点是 p 或 q 则返回1。若某个节点的两个子节点都返回1，
      *   或一个返回1，且当前节点就是 p 或 q，则说明该节点就是 LCA。
      *           3                        2        - 在3节点处有 sum=2 ∴ LCA 是3节点
@@ -52,7 +52,7 @@ public class L236_LCAOfBinaryTree {
      *        5     4    --------->    2     0     - 在5节点处有 sum=2 ∴ LCA 是5节点（注意节点5处要 return 1
      *       / \                      / \            而不能是2，否则节点1会覆盖 lca）
      *      6   2                    0   1
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     private static TreeNode lca = null;
 
@@ -71,6 +71,17 @@ public class L236_LCAOfBinaryTree {
         int sum = left + right + mid;
         if (sum == 2) lca = node;
         return sum > 0 ? 1 : 0;
+    }
+
+    /*
+     * 解法3：Iteration (DFS)
+     * - 思路：
+     * - 时间复杂度 O()，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
+        // if (root == null) return null;
+        // TreeNode lca = null;
+        return null;
     }
 
     public static void main(String[] args) {
