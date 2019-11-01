@@ -81,7 +81,8 @@ public class L236_LCAOfBinaryTree {
 
     /*
      * 解法3：Iteration (DFS) + Map + Set
-     * - 思路：非常有意思的思路！利用多种数据结构，思路见下面分析。
+     * - 思路：非常有意思的思路！利用多种数据结构，思路见下面代码注释。
+     * - 👉 总结 ：Step 2、3实际上就是“找到两个链表交叉点”（L160_IntersectionOfTwoLinkedLists）的应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
