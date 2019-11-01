@@ -90,9 +90,9 @@ public class L235_LCAOfBST {
          *       3   5
          * */
 
-        log(lowestCommonAncestor2(t1, new TreeNode(2), new TreeNode(8)));   // expects 6. (The LCA of nodes 2 and 8 is 6.)
-        log(lowestCommonAncestor2(t1, new TreeNode(3), new TreeNode(7)));   // expects 6.
-        log(lowestCommonAncestor2(t1, new TreeNode(2), new TreeNode(4)));   // expects 2.
-        log(lowestCommonAncestor2(t1, new TreeNode(0), new TreeNode(5)));   // expects 2.
+        log(lowestCommonAncestor3(t1, t1.get(2), t1.get(8)));   // expects 6. (The LCA of nodes 2 and 8 is 6.)
+        log(lowestCommonAncestor3(t1, t1.get(3), t1.get(7)));   // expects 6.
+        log(lowestCommonAncestor3(t1, t1.get(2), t1.get(4)));   // expects 2.
+        log(lowestCommonAncestor3(t1, t1.get(0), t1.get(5)));   // expects 2.
     }
 }

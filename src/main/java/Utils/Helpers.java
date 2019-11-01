@@ -136,6 +136,18 @@ public class Helpers {
         public TreeNode right;
         public TreeNode(int x) { val = x; }
         public int getVal() { return val; }
+
+        public TreeNode get(int val) { return get(this, val); }  // 在二叉树中找到并返回值为 val 的节点的引用（若存在
+                                                                 // 多个值为 val 的节点则返回找到的第一个节点）
+        private TreeNode get(TreeNode root, int val) {
+            if (root == null) return null;
+            if (root.val == val) return root;
+            TreeNode left = get(root.left, val);
+            if (left != null) return left;
+            TreeNode right = get(root.right, val);
+            if (right != null) return right;
+            return null;
+        }
     }
 
     // 以深度优先的方式从数组生成二叉树

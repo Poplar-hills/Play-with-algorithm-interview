@@ -3,6 +3,12 @@ package BinaryTreeAndRecursion.LowestCommonAncestor;
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.log;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
 import Utils.Helpers.TreeNode;
 
 /*
@@ -33,7 +39,7 @@ public class L236_LCAOfBinaryTree {
 
     private static boolean contains(TreeNode root, TreeNode node) {  // O(n)
         if (root == null) return false;
-        if (root.val == node.val) return true;
+        if (root == node) return true;
         return contains(root.left, node) || contains(root.right, node);
     }
 
@@ -66,7 +72,7 @@ public class L236_LCAOfBinaryTree {
 
         int left = helper(node.left, p, q);
         int right = helper(node.right, p, q);
-        int mid = (node.val == p.val || node.val == q.val) ? 1 : 0;
+        int mid = (node == p || node == q) ? 1 : 0;
 
         int sum = left + right + mid;
         if (sum == 2) lca = node;
@@ -79,9 +85,35 @@ public class L236_LCAOfBinaryTree {
      * - 时间复杂度 O()，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
-        // if (root == null) return null;
-        // TreeNode lca = null;
-        return null;
+        if (root == null) return null;
+        Stack<TreeNode> stack = new Stack<>();
+        Map<TreeNode, TreeNode> parentMap = new HashMap<>();
+        stack.push(root);
+        parentMap.put(root, null);
+
+        while (!parentMap.containsKey(p) || !parentMap.containsKey(q)) {
+            TreeNode node = stack.pop();
+
+            if (node.left != null) {
+                parentMap.put(node.left, node);
+                stack.push(node.left);
+            }
+            if (node.right != null) {
+                parentMap.put(node.right, node);
+                stack.push(node.right);
+            }
+        }
+
+        Set<TreeNode> pParentSet = new HashSet<>();
+        while (p != null) {
+            pParentSet.add(p);
+            p = parentMap.get(p);
+        }
+
+        while (!pParentSet.contains(q))
+            q = parentMap.get(q);
+
+        return q;
     }
 
     public static void main(String[] args) {
@@ -96,9 +128,9 @@ public class L236_LCAOfBinaryTree {
          *       7   4
          * */
 
-        log(lowestCommonAncestor2(t1, new TreeNode(5), new TreeNode(1)));  // expects 3. (The LCA of nodes 5 and 1 is 3.)
-        log(lowestCommonAncestor2(t1, new TreeNode(7), new TreeNode(0)));  // expects 3.
-        log(lowestCommonAncestor2(t1, new TreeNode(5), new TreeNode(4)));  // expects 5.
-        log(lowestCommonAncestor2(t1, new TreeNode(4), new TreeNode(6)));  // expects 5.
+        log(lowestCommonAncestor3(t1, t1.get(5), t1.get(1)));  // expects 3. (The LCA of nodes 5 and 1 is 3.)
+        log(lowestCommonAncestor3(t1, t1.get(7), t1.get(0)));  // expects 3.
+        log(lowestCommonAncestor3(t1, t1.get(5), t1.get(4)));  // expects 5.
+        log(lowestCommonAncestor3(t1, t1.get(4), t1.get(6)));  // expects 5.
     }
 }
