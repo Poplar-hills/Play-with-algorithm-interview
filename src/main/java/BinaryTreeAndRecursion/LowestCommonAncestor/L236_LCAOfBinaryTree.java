@@ -45,22 +45,22 @@ public class L236_LCAOfBinaryTree {
 
     /*
      * 解法2：Recursion (DFS + Backtracking)
-     * - 思路：使用回溯法 —— 先通过 DFS 遍历到叶子节点，在回去的路上，若节点是 p 或 q 则返回1。若某个节点的两个子节点都返回1，
-     *   或一个返回1，且当前节点就是 p 或 q，则说明该节点就是 LCA。
-     *           3                        2        - 在3节点处有 sum=2 ∴ LCA 是3节点
-     *         /   \      p=6, q=4      /   \
-     *        5     4    --------->    1     1
-     *       / \                      / \
-     *      6   2                    1   0
+     * - 思路：使用回溯法 —— 先通过 DFS 遍历到叶子节点，之后在返回的路上，当前层的递归函数利用两个下层递归函数的返回值来判断当前
+     *   节点是否是 p 和 q 的 LCA 节点：
+     *           3                        2        - 节点3的 sum=2 ∴ LCA 是3节点
+     *         /   \      p=6, q=4      /   \                ↑
+     *        5     4    --------->    1     1     - 节点4就是 q ∴ 返回1；节点5处的 sum=1 ∴ 返回1
+     *       / \                      / \                    ↑
+     *      6   2                    1   0         - 节点6就是 p ∴ 返回1
      *
-     *           3                        1
-     *         /   \      p=5, q=2      /   \
-     *        5     4    --------->    2     0     - 在5节点处有 sum=2 ∴ LCA 是5节点（注意节点5处要 return 1
-     *       / \                      / \            而不能是2，否则节点1会覆盖 lca）
-     *      6   2                    0   1
+     *           3                        1        - 注意节点5处的返回值是1而不能是2，否则节点3处的 sum 也会是2，从而将 lca 节点覆盖
+     *         /   \      p=5, q=2      /   \                ↑
+     *        5     4    --------->    2     0     - 节点5就是 p ∴ sum=2 ∴ 该节点就是 LCA 节点
+     *       / \                      / \                    ↑
+     *      6   2                    0   1         - 节点2就是 q ∴ 返回1
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
-    private static TreeNode lca = null;
+    private static TreeNode lca = null;  // lca 节点的指针作为类成员变量
 
     public static TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
         helper(root, p, q);
