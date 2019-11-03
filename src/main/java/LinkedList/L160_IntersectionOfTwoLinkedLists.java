@@ -4,6 +4,9 @@ import Utils.Helpers.ListNode;
 
 import static Utils.Helpers.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /*
  * Intersection of Two Linked Lists
  *
@@ -18,12 +21,19 @@ import static Utils.Helpers.*;
 
 public class L160_IntersectionOfTwoLinkedLists {
     /*
-    * 解法1：
+    * 解法1：Set
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        Set<ListNode> set = new HashSet<>();
+        for (ListNode a = headA; a.next != null; a = a.next)
+        set.add(a);
 
-        return null;
+        ListNode b = headB;
+        while (!set.contains(b) && b != null)
+            b = b.next;
+
+        return b;
     }
 
     public static void main(String[] args) {
