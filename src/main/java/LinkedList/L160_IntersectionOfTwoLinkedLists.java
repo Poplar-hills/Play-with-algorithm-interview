@@ -40,12 +40,12 @@ public class L160_IntersectionOfTwoLinkedLists {
 
     /*
      * 解法2：双指针循环遍历
-     * - 思路：若两个链表 a、b 相交，则当指针 p1 遍历 a+b，指针 p2 遍历 b+a，p1 和 p2 一定会同时抵达相交节点。
+     * - 思路：若两个链表 a、b 交叉，则当指针 p1 遍历 a+b，指针 p2 遍历 b+a，p1 和 p2 一定会同时抵达交叉点。
      *   例如在 test case 2 中，a+b = [0 → 9 → 1 → 2 → 4] → [3 → 2 → 4]；
      *                      而 b+a = [3 → 2 → 4] → [0 → 9 → 1 → 2 → 4]；
      *   用指针 p1、p2 同时遍历这两个链表：
-     *     1. 若两个链表相交，则第一个使 p1 == p2 的节点就是相交节点2；
-     *     2. 若两个链表不相交，则第一个使 p1 == p2 的节点就是链表两个链表尾部的 null；
+     *     1. 若两个链表交叉，则第一个使 p1 == p2 的节点就是交叉点2；
+     *     2. 若两个链表不交叉，则第一个使 p1 == p2 的节点就是链表两个链表尾部的 null；
      * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
      * */
     public static ListNode getIntersectionNode2(ListNode headA, ListNode headB) {
