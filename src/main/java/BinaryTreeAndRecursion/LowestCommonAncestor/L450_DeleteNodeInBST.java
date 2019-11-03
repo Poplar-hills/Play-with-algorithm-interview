@@ -18,25 +18,26 @@ import Utils.Helpers.TreeNode;
 
 public class L450_DeleteNodeInBST {
     /*
-     * 解法1：
+     * 解法1：Recursion
      * - 思路：先分析删除操作涉及哪些节点：1.待删除节点 2.待删除的两个子节点  3.前驱/后继节点
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static TreeNode deleteNode(TreeNode root, int key) {
         if (root == null) return null;
-        if (root.val != key) {
+        if (key < root.val)
             root.left = deleteNode(root.left, key);
+        else if (key > root.val)
             root.right = deleteNode(root.right, key);
-            return root;
-        }
-        if (root.left == null && root.right == null) return null;
-        if (root.left == null) return root.right;
-        if (root.right == null) return root.left;
+        else {
+            if (root.left == null) return root.right;
+            if (root.right == null) return root.left;
 
-        TreeNode successor = getMin(root.right);
-        successor.right = removeMin(root.right);
-        successor.left = root.left;
-        return successor;
+            TreeNode successor = getMin(root.right);   // 若左右子树都有，则使用 Hibbard Deletion 方法
+            successor.right = removeMin(root.right);
+            successor.left = root.left;
+            root = successor;
+        }
+        return root;
     }
 
     private static TreeNode getMin(TreeNode node) {
