@@ -18,9 +18,9 @@ import Utils.Helpers.TreeNode;
 
 public class L450_DeleteNodeInBST {
     /*
-     * 解法1：Recursion
-     * - 思路：先分析删除操作涉及哪些节点：1.待删除节点 2.待删除的两个子节点  3.前驱/后继节点
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * 解法1：Recursion + Hibbard Deletion 方法
+     * - 思路：思路与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致。
+     * - 时间复杂度 O(logn)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode deleteNode(TreeNode root, int key) {
         if (root == null) return null;
