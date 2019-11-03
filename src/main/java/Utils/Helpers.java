@@ -104,6 +104,13 @@ public class Helpers {
         public ListNode next;
         public ListNode(int x) { val = x; }
         public ListNode() { }
+
+        public ListNode tail() {  // 找到并返回链表中的最后一个节点（SEE: L160_IntersectionOfTwoLinkedLists）
+            ListNode curr = this;
+            while (curr.next != null)
+                curr = curr.next;
+            return curr;
+        }
     }
 
     // 从数组生成链表
@@ -137,8 +144,8 @@ public class Helpers {
         public TreeNode(int x) { val = x; }
         public int getVal() { return val; }
 
-        public TreeNode get(int val) { return get(this, val); }  // 在二叉树中找到并返回值为 val 的节点的引用（SEE: L236_LCAOfBinaryTree）
-                                                                 // （若存在多个值为 val 的节点则返回找到的第一个节点）
+        public TreeNode get(int val) { return get(this, val); }  // 在二叉树中找到并返回第一个值为 val 的节点的引用（SEE: L236_LCAOfBinaryTree）
+
         private TreeNode get(TreeNode root, int val) {
             if (root == null) return null;
             if (root.val == val) return root;
