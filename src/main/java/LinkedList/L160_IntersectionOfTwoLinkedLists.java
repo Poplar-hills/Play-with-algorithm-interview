@@ -25,9 +25,11 @@ public class L160_IntersectionOfTwoLinkedLists {
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) return null;
+
         Set<ListNode> set = new HashSet<>();
-        for (ListNode a = headA; a.next != null; a = a.next)
-        set.add(a);
+        for (ListNode a = headA; a != null; a = a.next)
+            set.add(a);
 
         ListNode b = headB;
         while (!set.contains(b) && b != null)
@@ -44,7 +46,7 @@ public class L160_IntersectionOfTwoLinkedLists {
         l1Tail.next = l3;
         l2Tail.next = l3;
         ListNode res1 = getIntersectionNode(l1, l2);
-        log(res1.val + "; Equals to l3: " + (res1 == l3));  // expects 8, Equals to l3: true
+        log(res1.val + "; Equals to l3: " + (res1 == l3));  // expects 8, Equals to l3: true.
         /*
          *       4 → 1
          *             ↘
@@ -58,7 +60,7 @@ public class L160_IntersectionOfTwoLinkedLists {
         l4Tail.next = l6;
         l5Tail.next = l6;
         ListNode res2 = getIntersectionNode(l4, l5);
-        log(res2.val + "; Equals to l6: " + (res2 == l6));  // expects 2, Equals to l6: true
+        log(res2.val + "; Equals to l6: " + (res2 == l6));  // expects 2, Equals to l6: true.
         /*
          *   0 → 9 → 1
          *             ↘
@@ -71,6 +73,14 @@ public class L160_IntersectionOfTwoLinkedLists {
         /*
          *   0 → 6 → 4
          *   1 → 5
+         * */
+
+        ListNode l9 = createLinkedListFromArray(new int[]{1});
+        ListNode l10 = l9;
+        ListNode res4 = getIntersectionNode(l9, l10);
+        log(res4.val + "; Equals to l9: " + (res4 == l9));  // expects 1, Equals to l6: true.
+        /*
+         *   1
          * */
     }
 }
