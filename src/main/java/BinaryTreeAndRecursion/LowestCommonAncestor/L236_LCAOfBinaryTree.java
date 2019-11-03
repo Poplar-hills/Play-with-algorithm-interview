@@ -44,9 +44,10 @@ public class L236_LCAOfBinaryTree {
     }
 
     /*
-     * 解法2：Recursion (DFS + Backtracking)
-     * - 思路：使用回溯法 —— 先通过 DFS 遍历到叶子节点，之后在返回的路上，当前层的递归函数利用两个下层递归函数的返回值来判断当前
-     *   节点是否是 p 和 q 的 LCA 节点：
+     * 解法2：Recursion (DFS 后续遍历 + Backtracking)
+     * - 思路：
+     *   1. 本题是后续遍历的典型应用 —— 只有遍历过左、右子树后，才能确定当前节点是否符合条件；
+     *   2. 使用回溯法 —— 先通过后续遍历到达叶子节点，然后在递归返回的路上，用左右子树的递归函数返回值来判断当前节点是否是 LCA 节点：
      *           3                        2        - 节点3的 sum=2 ∴ LCA 是3节点
      *         /   \      p=6, q=4      /   \                ↑
      *        5     4    --------->    1     1     - 节点4就是 q ∴ 返回1；节点5处的 sum=1 ∴ 返回1
@@ -70,9 +71,9 @@ public class L236_LCAOfBinaryTree {
     private static int helper(TreeNode node, TreeNode p, TreeNode q) {
         if (node == null) return 0;
 
-        int left = helper(node.left, p, q);
+        int left = helper(node.left, p, q);          // 先遍历左右子树
         int right = helper(node.right, p, q);
-        int mid = (node == p || node == q) ? 1 : 0;
+        int mid = (node == p || node == q) ? 1 : 0;  // 再访问当前节点
 
         int sum = left + right + mid;
         if (sum == 2) lca = node;
