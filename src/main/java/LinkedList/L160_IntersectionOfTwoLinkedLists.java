@@ -22,6 +22,7 @@ import java.util.Set;
 public class L160_IntersectionOfTwoLinkedLists {
     /*
      * 解法1：HashTable (Set)
+     * - 思路：将链表 a 的所有节点放入一个 set 中，然后从头到尾遍历链表 b，第一个存在于 set 中的节点即是两链表的交叉点。
      * - 时间复杂度 O(m+n)，空间复杂度 O(m) or O(n)。
      * */
     public static ListNode getIntersectionNode(ListNode headA, ListNode headB) {
@@ -46,7 +47,7 @@ public class L160_IntersectionOfTwoLinkedLists {
      *   用指针 p1、p2 同时遍历这两个链表：
      *     1. 若两个链表交叉，则第一个使 p1 == p2 的节点就是交叉点2；
      *     2. 若两个链表不交叉，则第一个使 p1 == p2 的节点就是链表两个链表尾部的 null；
-     * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
+     * - 时间复杂度 O(m+n)，空间复杂度 O(1)，相比解法1，该解法最小化了空间开销。
      * */
     public static ListNode getIntersectionNode2(ListNode headA, ListNode headB) {
         if (headA == null || headB == null) return null;
