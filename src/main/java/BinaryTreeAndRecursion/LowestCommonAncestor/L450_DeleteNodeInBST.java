@@ -53,7 +53,7 @@ public class L450_DeleteNodeInBST {
      * 解法2：Iteration + Hibbard Deletion 方法
      * - 思路：解法1的非递归版，总体思路是：1. 先找到以待删除节点为根的子树；2. 删除其父节点。具体移动过程比较复杂，要画图来辅助思考。
      * - 👉 总结：二叉树操作的非递归实现通常都需要拿到：1. 待操作节点；2. 待操作节点的父节点。
-     * - 时间复杂度 O(logn)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * - 时间复杂度 O(logn)，空间复杂度 O(1)。
      * */
     public static TreeNode deleteNode2(TreeNode root, int key) {
         TreeNode prev = null, curr = root;
