@@ -17,12 +17,14 @@ import Utils.Helpers.TreeNode;
 
 public class L101_SymmetricTree {
     /*
-     * 解法1：Recursion
-     * - 思路：若一棵树是对称的，则其左右子树应互为镜像；若两棵树互为镜像，则：
-     *     1. 他们的根节点值相同；
+     * 解法1：Recursion (DFS)
+     * - 思路：若一棵树是对称的，则其左右子树应互为镜像。若两棵树互为镜像，则：
+     *     1. 他们的根节点的节点值相同；
      *     2. 树1的左子树和树2的右子树互为镜像；
-     *     3. 树1的右子树和树2的左子树互为镜像；
-     *   这是个递归定义 ∴ 可以很自然的用递归求解，递归函数的语义就是求两棵树是否互为镜像。
+     *     3. 树1的右子树和树2的左子树互为镜像。
+     *   这是个递归定义 ∴ 可以很自然的用递归求解，递归函数的语义就是求两棵树是否互为镜像。而这里“互为镜像”的含义是：
+     *     1. 两棵树上任意相同位置同时有或同时没有节点；
+     *     2. 若有节点，则节点值相同。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isSymmetric(TreeNode root) {
@@ -30,8 +32,8 @@ public class L101_SymmetricTree {
     }
 
     private static boolean isMirror(TreeNode t1, TreeNode t2) {  // 检查两棵树是否互为镜像
-        if (t1 == null && t2 == null) return true;
-        if (t1 == null || t2 == null) return false;
+        if (t1 == null && t2 == null) return true;               // 同时有节点
+        if (t1 == null || t2 == null) return false;              // 同时没有节点
         return t1.val == t2.val && isMirror(t1.left, t2.right) && isMirror(t1.right, t2.left);
     }
 
@@ -63,8 +65,8 @@ public class L101_SymmetricTree {
     }
 
     /*
-     * 解法3：Iteration (BFS)（解法2的空间优化版）
-     * - 思路：只使用一个 Queue。
+     * 解法3：Iteration (BFS)
+     * - 思路：使用一个 Queue 同时入队左右两棵子树的节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSymmetric3(TreeNode root) {
@@ -126,8 +128,19 @@ public class L101_SymmetricTree {
          *    3  4 4  3
          * */
 
-        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 3, 4});
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, null, null, 3});
         log(isSymmetric4(t2));
+        /*
+         * expects true.
+         *        1
+         *       / \
+         *      2   2
+         *     /     \
+         *    3       3
+         * */
+
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 3, 4});
+        log(isSymmetric4(t3));
         /*
          * expects false.
          *        1
@@ -137,8 +150,8 @@ public class L101_SymmetricTree {
          *    3  4 3  4
          * */
 
-        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, null, 3, null, 3});
-        log(isSymmetric4(t3));
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, null, 3, null, 3});
+        log(isSymmetric4(t4));
         /*
          * expects false.
          *        1
@@ -146,17 +159,6 @@ public class L101_SymmetricTree {
          *      2   2
          *       \   \
          *        3   3
-         * */
-
-        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, null, null, 3});
-        log(isSymmetric4(t4));
-        /*
-         * expects true.
-         *        1
-         *       / \
-         *      2   2
-         *     /     \
-         *    3       3
          * */
     }
 }
