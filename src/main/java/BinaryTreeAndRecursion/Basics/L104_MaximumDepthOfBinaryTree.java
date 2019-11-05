@@ -18,7 +18,7 @@ import javafx.util.Pair;
 
 public class L104_MaximumDepthOfBinaryTree {
     /*
-     * 解法1：Recursion
+     * 解法1：Recursion (DFS)
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int maxDepth(TreeNode root) {
@@ -33,7 +33,6 @@ public class L104_MaximumDepthOfBinaryTree {
      * */
     public static int maxDepth2(TreeNode root) {
         if (root == null) return 0;
-
         List<List<TreeNode>> res = new ArrayList<>();
         Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
         q.offer(new Pair<>(root, 0));
@@ -62,8 +61,7 @@ public class L104_MaximumDepthOfBinaryTree {
      * */
     public static int maxDepth3(TreeNode root) {
         if (root == null) return 0;
-
-        int count = 0;
+        int depth = 0;
         Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
         q.offer(new Pair<>(root, 1));
 
@@ -72,12 +70,12 @@ public class L104_MaximumDepthOfBinaryTree {
             TreeNode node = pair.getKey();
             int level = pair.getValue();
 
-            count = Math.max(count, level);
+            depth = Math.max(depth, level);
             if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
             if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
         }
 
-        return count;
+        return depth;
     }
 
     /*
@@ -86,8 +84,7 @@ public class L104_MaximumDepthOfBinaryTree {
      * */
     public static int maxDepth4(TreeNode root) {
         if (root == null) return 0;
-
-        int count = 0;
+        int depth = 0;
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
 
@@ -98,21 +95,22 @@ public class L104_MaximumDepthOfBinaryTree {
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
-            count++;               // 消费完一层的节点后就可以让 count++
+            depth++;               // 消费完一层的节点后就可以让 depth++
         }
 
-        return count;
+        return depth;
     }
 
     /*
      * 解法5：Iteration (DFS)
      * - 思路：∵ 深度优先遍历 ∴ 无法采用解法4的方式一次性将一层节点全部遍历完 ∴ 只能采用解法3的方式将层级信息携带在节点上。
+     *   跟解法3的区别只是采用了 Stack。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth5(TreeNode root) {
         if (root == null) return 0;
 
-        int count = 0;
+        int depth = 0;
         Stack<Pair<TreeNode, Integer>> stack = new Stack<>();
         stack.push(new Pair<>(root, 1));
 
@@ -121,12 +119,12 @@ public class L104_MaximumDepthOfBinaryTree {
             TreeNode node = pair.getKey();
             int level = pair.getValue();
 
-            count = Math.max(count, level);
+            depth = Math.max(depth, level);
             if (node.left != null) stack.push(new Pair<>(node.left, level + 1));
             if (node.right != null) stack.push(new Pair<>(node.right, level + 1));
         }
 
-        return count;
+        return depth;
     }
 
     public static void main(String[] args) {
