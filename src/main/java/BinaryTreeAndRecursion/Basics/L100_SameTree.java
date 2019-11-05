@@ -17,7 +17,7 @@ import javafx.util.Pair;
 
 public class L100_SameTree {
     /*
-     * 解法1：Recursion
+     * 解法1：Recursion (DFS)
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isSameTree(TreeNode p, TreeNode q) {
@@ -52,22 +52,27 @@ public class L100_SameTree {
 
     /*
      * 解法3：Iteration (DFS)
-     * - 思路：与解法2的逻辑一致，与 L226_InvertBinaryTree 解法3的思路一致。
+     * - 思路：与解法2的逻辑一致，与 L226_InvertBinaryTree 解法3的思路一致，不同点在于：
+     *   1. DFS 使用 Stack 实现。
+     *   2. 采用双 Stack<TreeNode> 而不是解法1中的一个 Stack<Pair<TreeNode, TreeNode>>。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSameTree3(TreeNode p, TreeNode q) {
         if (p == null && q == null) return true;
-        Stack<Pair<TreeNode, TreeNode>> stack = new Stack<>();
-        stack.push(new Pair<>(p, q));
+        Stack<TreeNode> pStack = new Stack<>();
+        Stack<TreeNode> qStack = new Stack<>();
+        pStack.push(p);
+        qStack.push(q);
 
-        while (!stack.isEmpty()) {
-            Pair<TreeNode, TreeNode> pair = stack.pop();
-            TreeNode n1 = pair.getKey();
-            TreeNode n2 = pair.getValue();
-            if (n1 == null && n2 == null) continue;
-            if (n1 == null || n2 == null || n1.val != n2.val) return false;
-            stack.push(new Pair<>(n1.left, n2.left));
-            stack.push(new Pair<>(n1.right, n2.right));
+        while (!pStack.isEmpty()) {
+            TreeNode pNode = pStack.pop();
+            TreeNode qNode = qStack.pop();
+            if (pNode == null && qNode == null) continue;
+            if (pNode == null || qNode == null || pNode.val != qNode.val) return false;
+            pStack.push(pNode.left);
+            pStack.push(pNode.right);
+            qStack.push(qNode.left);
+            qStack.push(qNode.right);
         }
 
         return true;
