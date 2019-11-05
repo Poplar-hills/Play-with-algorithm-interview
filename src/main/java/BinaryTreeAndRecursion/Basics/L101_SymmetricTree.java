@@ -66,7 +66,7 @@ public class L101_SymmetricTree {
 
     /*
      * 解法3：Iteration (BFS)
-     * - 思路：使用一个 Queue 同时入队左右两棵子树的节点。
+     * - 思路：与解法2思路一致，区别是在实现上使用一个 Queue 同时入队左右两棵子树的节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSymmetric3(TreeNode root) {
@@ -92,7 +92,7 @@ public class L101_SymmetricTree {
 
     /*
      * 解法4：Iteration (DFS)
-     * - 思路：对树同时从两个方向进行深度优先遍历（与解法3的差别只是数据结构不同）。
+     * - 思路：与解法3思路一致，区别是使用 DFS（只有数据结构改成了 Stack），即对树同时从左右两边进行 DFS。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSymmetric4(TreeNode root) {
