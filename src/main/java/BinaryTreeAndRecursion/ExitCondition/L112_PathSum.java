@@ -18,10 +18,8 @@ import javafx.util.Pair;
 public class L112_PathSum {
     /*
      * 解法1：Recursion (DFS)
-     * - 注意：
-     *   1. 递归的终止条件很容易写成 if (root == null) return sum == 0; 但这样 test case 3 过不去，因此递归终止条件需要
-     *      用叶子节点来判断。
-     *   2. 递归过程中，若碰到非叶子节点上 sum == 0 的情况，不能就此返回 false，因为该路径后面可能还有+1再-1的情况，如 test case 2。
+     * - 注意：递归过程中，若在非叶子节点上有 sum == 0，不能就此返回 true，因为这不是一条 root-to-leaf path。所以递归终止条
+     *   件不能写成 if (root == null) return sum == 0; 还需加入该节点是否是叶子节点的判断才行。
      * - 👉 递归终止条件较复杂的还有 L111 的解法1，可以顺便看一下。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -33,7 +31,7 @@ public class L112_PathSum {
 
     /*
      * 解法2：Iteration (DFS)
-     * - 思路：采用 stack 作为辅助数据结构。
+     * - 思路：stack 中除了记录节点用于遍历之外，还需记录路径的剩余 sum。遍历过程中若碰到能使剩余 sum 得0的叶子节点，则说明找到目标路径。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean hasPathSum2(TreeNode root, int sum) {
@@ -92,7 +90,7 @@ public class L112_PathSum {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1});
-        log(hasPathSum3(t1, 22));
+        log(hasPathSum(t1, 22));
         /*
          * expects true. (5 -> 4 -> 11 -> 2)
          *         5
@@ -105,7 +103,7 @@ public class L112_PathSum {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, -2, -3, 1, 3, -2, null, -1});
-        log(hasPathSum3(t2, -1));
+        log(hasPathSum(t2, -1));
         /*
          * expects true. (1 -> -2 -> 1 -> -1)
          *          1
@@ -118,7 +116,7 @@ public class L112_PathSum {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 4, 8, 11, null, 13, 4});
-        log(hasPathSum3(t3, 9));
+        log(hasPathSum(t3, 9));
         /*
          * expects false. (注意：5 -> 4 虽然和为9，但不是一条 root-to-leaf path)
          *         5
@@ -129,7 +127,7 @@ public class L112_PathSum {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(hasPathSum3(t4, 1));
+        log(hasPathSum(t4, 1));
         /*
          * expects false.
          * */
