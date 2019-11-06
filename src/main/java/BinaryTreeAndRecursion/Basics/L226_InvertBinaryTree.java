@@ -13,14 +13,22 @@ import java.util.Stack;
 public class L226_InvertBinaryTree {
     /*
      * 解法1：Recursion
+     * - 思路：观察 test cases 可知，要反转一棵二叉树实际上就要为树上的每个节点交换左右子树，例如：
+     *               4                    4                    4
+     *             /   \                /   \                /   \
+     *            2     7    ----->    2     7    ----->    7     2
+     *           / \   / \            / \   / \            / \   / \
+     *          1   3 6   9          3   1 9   6          9   6 3   1
+     *   上面过程中：1.先分别交换2的左右子树1、3，和7的左右子树6、9；
+     *             2.再交换4的左右子树2、7，得到最终结果。
+     *   ∴ 可见 Invert Binary Tree 是一个自然的递归操作，可用递归方式求解。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 n 为节点数，h 为树高。
      * */
     public static TreeNode invertTree(TreeNode root) {
         if (root == null) return null;
-        TreeNode left = root.left;
-        TreeNode right = root.right;
-        root.left = invertTree(right);
-        root.right = invertTree(left);
+        TreeNode temp = root.left;
+        root.left = invertTree(root.right);
+        root.right = invertTree(temp);
         return root;
     }
 
@@ -70,7 +78,7 @@ public class L226_InvertBinaryTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{4, 2, 7, 1, 3, 6, 9});
-        printBinaryTreeBreadthFirst(invertTree3(t1));
+        printBinaryTreeBreadthFirst(invertTree(t1));
         /*
          * expects [4, 7, 2, 9, 6, 3, 1].
          *         4                  4
@@ -81,7 +89,7 @@ public class L226_InvertBinaryTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2});
-        printBinaryTreeBreadthFirst(invertTree3(t2));
+        printBinaryTreeBreadthFirst(invertTree(t2));
         /*
          * expects [1, null, 2].
          *      1              1
