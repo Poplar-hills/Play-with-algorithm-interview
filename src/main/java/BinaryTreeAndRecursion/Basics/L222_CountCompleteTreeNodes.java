@@ -71,41 +71,37 @@ public class L222_CountCompleteTreeNodes {
      * */
     public static int countNodes3(TreeNode root) {
         if (root == null) return 0;
-        int leftDepth = getLeftDepth(root);
-        int rightDepth = getRightDepth(root);
+        int leftDepth = leftDepth(root);
+        int rightDepth = rightDepth(root);
         return leftDepth == rightDepth
             ? (1 << leftDepth) - 1                                   // 若是完美二叉树，则总节点数为 2^h-1
             : 1 + countNodes3(root.left) + countNodes3(root.right);  // 若不完美则递归左右子树（其中至少有一个是完美的）
     }
 
-    private static int getLeftDepth(TreeNode root) {
-        return (root == null) ? 0 : 1 + getLeftDepth(root.left);
+    private static int leftDepth(TreeNode root) {
+        return (root == null) ? 0 : 1 + leftDepth(root.left);
     }
 
-    private static int getRightDepth(TreeNode root) {
-        return (root == null) ? 0 : 1 + getRightDepth(root.right);
+    private static int rightDepth(TreeNode root) {
+        return (root == null) ? 0 : 1 + rightDepth(root.right);
     }
 
     /*
      * 解法4：Recursion
-     * - 思路：同样也是利用完全二叉树的性质进行优化，比解法3更精简，但逻辑也更绕一些。
+     * - 思路：也是利用上述的完全二叉树的两个性质进行优化，比解法3更精简，但逻辑也更绕一些。
      * - 时间复杂度 O(logn^2)，空间复杂度 O(logn)。
      * */
     public static int countNodes4(TreeNode root) {
-        int h = leftHeight(root);
+        int h = leftDepth(root);               // 先计算整棵树的左侧高度 h
         if (h == 0)	return 0;
-        return leftHeight(root.right) == h - 1  // 若右子树的左侧高度 = 整树的左侧高度-1，即左右子树的左侧高度相等，此时左子树完美，右子树不一定（test case 1,2）
+        return leftDepth(root.right) == h - 1  // 若右子树的左侧高度 = h-1，即左右子树的左侧高度相等，此时左子树一定完美，右子树不一定（test case 1,2）
             ? (1 << h - 1) + countNodes4(root.right)  // 用公式得到左子树的节点数，再继续递归计算右子树
-    		: (1 << h - 2) + countNodes4(root.left);  // 若左右子树的左侧高度不相等，说明树的最后一个节点在左子树上，此时右子树完美，左子树不一定（test case 3,4）
-    }
-
-    private static int leftHeight(TreeNode root) {  // 计算树的左侧高度
-        return root == null ? 0 : 1 + leftHeight(root.left);
-    }
+    		: (1 << h - 2) + countNodes4(root.left);  // 若左右子树的左侧高度不相等，说明树的最后一个节点在左子树上，此时
+    }                                                 // 右子树一定完美，左子树不一定（test case 3,4）
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6, 7});
-        log(countNodes3(t1));
+        log(countNodes4(t1));
         /*
          * expects 7.
          *        1
@@ -116,7 +112,7 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6});
-        log(countNodes3(t2));
+        log(countNodes4(t2));
         /*
          * expects 6.
          *        1
@@ -127,7 +123,7 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5});
-        log(countNodes3(t3));
+        log(countNodes4(t3));
         /*
          * expects 5.
          *        1
@@ -138,7 +134,7 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4});
-        log(countNodes3(t4));
+        log(countNodes4(t4));
         /*
          * expects 4.
          *        1
