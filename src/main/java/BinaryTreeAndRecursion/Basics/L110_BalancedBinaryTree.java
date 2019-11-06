@@ -79,7 +79,7 @@ public class L110_BalancedBinaryTree {
         Map<TreeNode, Integer> map = new HashMap<>();
         Stack<TreeNode> stack = new Stack<>();
         stack.push(root);
-        TreeNode prev = null, curr = root;
+        TreeNode lastVisited = null, curr = root;
 
         while (curr != null || !stack.isEmpty()) {
             while (curr != null) {
@@ -87,13 +87,13 @@ public class L110_BalancedBinaryTree {
                 curr = curr.left;
             }
             curr = stack.pop();
-            if (curr.right == null || curr.right == prev) {
-                int leftDepth = map.getOrDefault(curr.left, 0);
+            if (curr.right == null || curr.right == lastVisited) {
+                int leftDepth = map.getOrDefault(curr.left, 0);  // 对节点的访问逻辑是一样的
                 int rightDepth = map.getOrDefault(curr.right, 0);
                 if (Math.abs(leftDepth - rightDepth) > 1) return false;
                 map.put(curr, 1 + Math.max(leftDepth, rightDepth));
 
-                prev = curr;
+                lastVisited = curr;  // 访问完后将 curr 标记为已访问
                 curr = null;
             } else {
                 stack.push(curr);
