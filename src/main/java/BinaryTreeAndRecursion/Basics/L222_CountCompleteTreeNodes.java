@@ -34,7 +34,7 @@ public class L222_CountCompleteTreeNodes {
     /*
      * 解法2：Iteration (BFS, level-order traversal)
      * - 思路：采用层序遍历，边遍历边计数。
-     * - 变体：将 Queue 改为 Stack 即是相同思路下的 DFS 实现。
+     * - 实现：将 Queue 改为 Stack 即是相同思路下的 DFS 实现。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int countNodes2(TreeNode root) {
