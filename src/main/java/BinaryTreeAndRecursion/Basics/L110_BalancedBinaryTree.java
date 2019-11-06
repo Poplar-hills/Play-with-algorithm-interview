@@ -94,7 +94,7 @@ public class L110_BalancedBinaryTree {
                 map.put(curr, 1 + Math.max(leftDepth, rightDepth));
 
                 lastVisited = curr;  // 访问完后将 curr 标记为已访问
-                curr = null;
+                curr = null;         // 置空 curr，好在 stack.isEmpty() 时能退出 while 循环
             } else {
                 stack.push(curr);
                 curr = curr.right;
