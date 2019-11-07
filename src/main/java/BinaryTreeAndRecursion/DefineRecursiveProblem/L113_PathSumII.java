@@ -4,9 +4,7 @@ import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.log;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -143,8 +141,9 @@ public class L113_PathSumII {
     }
 
 	/*
-     * 解法5：Iteration (DFS)
-     * - 思路：类似 Play-with-data-structure/BST/BST.java 中 postorderTraverse 的逻辑。
+     * 解法5：Iteration (DFS, post-order traversal)
+     * - 思路：采用后续遍历的思路，在往下遍历的过程中形成 path，若到达叶子节点时 sum=0，则该该 path 有效，此时将 path 中的
+     *   最后一个元素去除，恢复 path 在父节点时的状态，转而去访问右子树。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> pathSum5(TreeNode root, int sum) {
@@ -179,27 +178,9 @@ public class L113_PathSumII {
         return res;
     }
 
-    public static List<List<Integer>> pathSum0(TreeNode root, int sum) {
-        List<List<Integer>> res = new ArrayList<>();
-        if (root == null) return res;
-        helper0(root, sum, new ArrayList<>(), res);
-        return res;
-    }
-
-    private static void helper0(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
-        if (root == null) return;
-        path.add(root.val);
-        if (sum == root.val && root.left == null && root.right == null) {
-            res.add(path);
-            return;
-        }
-        helper0(root.left, sum - root.val, new ArrayList<>(path), res);
-        helper0(root.right, sum - root.val, new ArrayList<>(path), res);
-    }
-
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 6, null, 5, -2, 2, 8, null, null, 7, 9});
-        log(pathSum0(t1, 9));
+        log(pathSum(t1, 9));
         /*
          * expects [[1,3,-2,7], [1,3,5]].（注意 [1,2,6] 不是）
          *        1
@@ -212,7 +193,7 @@ public class L113_PathSumII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(pathSum0(t2, 1));
+        log(pathSum(t2, 1));
         /*
          * expects [].
          * */
