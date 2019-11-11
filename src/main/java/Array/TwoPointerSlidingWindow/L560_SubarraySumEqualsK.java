@@ -18,7 +18,7 @@ import java.util.Map;
 public class L560_SubarraySumEqualsK {
     /*
      * 超时解：Brute-force
-     * - 思路：通过双指针遍历 nums 中的所有 subarray，并对每个 subarray 累加求 sum 并与 k 比较。遍历所有 subarray 过程：
+     * - 思路：找到 nums 中的所有 subarray，并求每个 subarray 的和与 k 比较。遍历所有 subarray 的过程如下：
      *   [4, 2, -1, 5]
      *    -
      *    ----
@@ -30,6 +30,9 @@ public class L560_SubarraySumEqualsK {
      *          --
      *          -----
      *              -
+     * - 实现：1. 求一个数组的所有 subarray：采用双指针遍历（i ∈ [0,n), j ∈ [i,n)）；
+     *        2. 求每个 subarray 的和：采用单指针遍历（k ∈ [start, end]）。
+     *        ∴ 整个过程使用三个指针、三重循环实现。
      * - 时间复杂度 O(n^3)，空间复杂度 O(1)。
      * */
     public static int subarraySum(int[] nums, int k) {
@@ -49,7 +52,7 @@ public class L560_SubarraySumEqualsK {
 
     /*
      * 解法1：双指针 + 累加计数
-     * - 思路：超时解中的累加过程其实可以在移动右指针时同步进行，从而去掉最内从的循环，将时间复杂度降低一个次方。
+     * - 思路：超时解中的累加其实可以与右移 j 的过程同步进行，从而去掉最内从的循环，将时间复杂度降低一个次方。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static int subarraySum1(int[] nums, int k) {
@@ -82,8 +85,8 @@ public class L560_SubarraySumEqualsK {
         for (int i = 1; i <= len; i++)
             preSums[i] = preSums[i - 1] + nums[i - 1];  // 填充 preSums
 
-        for (int i = 1; i <= len; i++)
-            for (int j = 0; j < i; j++)
+        for (int i = 1; i <= len; i++)     // i ∈ [1,len]
+            for (int j = 0; j < i; j++)    // j ∈ [0, i)
                 if (preSums[i] - preSums[j] == k)
                     count++;
 
@@ -92,8 +95,8 @@ public class L560_SubarraySumEqualsK {
 
     /*
      * 解法3：Map
-     * - 思路：在解法2中，我们通过双重循环挨个尝试是否存在 sum[0..i] - sum[0..j-1] == k。该过程是个典型的 Two Sum 问题，
-     *   因此可以通过 L1_TwoSum 中解法2的方式进行优化：将所有 sum[0..j-1] 存储在 map 中，之后每次只需查询 map 中是否存在
+     * - 思路：在解法2中，我们通过双重循环挨个尝试是否存在 sum[0..i] - sum[0..j-1] == k，该过程是个典型的 Two Sum 问题，
+     *   因此可以通过 L1_TwoSum 中解法4的方式进行优化：将所有 sum[0..j-1] 存储在 map 中，之后每次只需查询 map 中是否存在
      *   sums[0..i] - k 即可。通过这种方式又将时间复杂度降低一个次方。
      *     nums = [4, 2, -1, 5, -5], k = 5
      *             ↑                 sum=4, get(4-5)不存在, count=0, {0:1, 4:1}
@@ -101,21 +104,21 @@ public class L560_SubarraySumEqualsK {
      *                    ↑          sum=5,  get(5-5)=1    count=1, {0:1, 4:1, 6:1, 5:1}
      *                       ↑       sum=10, get(10-5)=1,  count=2, {0:1, 4:1, 6:1, 5:1, 10:1}
      *                           ↑   sum=5,  get(5-5)=1,   count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
-     * - 注意：代码里给 count 加上的是 map 里的 value，而不能是 count++。因为当 sum-k 存在于 map 中时，说明 nums 中存在
-     *   元素之和等于 k 的 subarray，但个数不一定只有一个（∵ nums 中有负数 ∴ 可能存在多个）。具体有几个这样的 subarray 是
-     *   记录在 map 的 value 上的，即 map.get(sum-k)，因此要把它加到 count 上。
+     * - 注意：代码中 count += 的是 map 里的 value，而不能是 count++，∵ 若 sum-k 存在于 map 中，说明 nums 中存在元素之和
+     *   等于 k 的 subarray，但个数不一定只有一个（∵ nums 中有负数 ∴ 可能存在多个）。具体有几个这样的 subarray 是记录在 map
+     *   的 value 上的，即 map.get(sum-k)，因此要把它加到 count 上。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum3(int[] nums, int k) {
         int count = 0, sum = 0;
-        Map<Integer, Integer> map = new HashMap<>();  // 存储 <prefixSum, frequency>
-        map.put(0, 1);                                // 将0放入 map 中，值设为1
+        Map<Integer, Integer> map = new HashMap<>();     // 存储 <prefixSum, frequency>
+        map.put(0, 1);                                   // 将0放入 map 中，值设为1
 
         for (int n : nums) {
-            sum += n;                                 // 遍历过程中求 prefix sum
+            sum += n;                                    // 遍历过程中求 prefix sum
             if (map.containsKey(sum - k))
-                count += map.get(sum - k);            // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
-            map.put(sum, map.getOrDefault(sum, 0) + 1);  // 将 sum 放入 map，若之前出现过，则个数+1
+                count += map.get(sum - k);               // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
+            map.put(sum, map.getOrDefault(sum, 0) + 1);  // 将 sum 放入 map，并记录频率
         }
 
         return count;
@@ -140,10 +143,10 @@ public class L560_SubarraySumEqualsK {
     }
 
     public static void main(String[] args) {
-        log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
-        log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
-        log(subarraySum4(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
-        log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
-        log(subarraySum4(new int[]{4, 2, -1, 5, -5}, 5));         // expects 3. (4+2-1, 4+2-1+5-5, 5)
+        log(subarraySum(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
+        log(subarraySum(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
+        log(subarraySum(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
+        log(subarraySum(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
+        log(subarraySum(new int[]{4, 2, -1, 5, -5}, 5));         // expects 3. (4+2-1, 4+2-1+5-5, 5)
     }
 }
