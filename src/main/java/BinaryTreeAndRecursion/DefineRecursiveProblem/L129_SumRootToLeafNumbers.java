@@ -19,9 +19,8 @@ import javafx.util.Pair;
 public class L129_SumRootToLeafNumbers {
     /*
      * 解法1：Recursion (DFS)
-     * - 思路：从根节点开始逐层累积 pathNum，直到叶子节点开始逐层返回，具体返回的是左、右子树的所有 pathNum 之和。根据该思路
-     *   需将每层累积的 pathNum 向下层递归函数传递。
-     * - 总结：该思路属于 pre-order traversal，
+     * - 思路：从根节点开始逐层累积当前 path 的 pathNum，直到叶子节点开始逐层返回，具体返回的是左、右子树的所有 pathNum 之和。
+     *   根据该思路，需将每层累积的 pathNum 当做参数传递给下层递归函数。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int sumNumbers(TreeNode root) {
