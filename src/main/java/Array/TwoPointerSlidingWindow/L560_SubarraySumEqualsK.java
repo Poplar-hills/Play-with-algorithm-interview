@@ -94,7 +94,7 @@ public class L560_SubarraySumEqualsK {
     }
 
     /*
-     * 解法3：Map
+     * 解法3：Prefix Sum + Map
      * - 思路：在解法2中，我们通过双重循环挨个尝试是否存在 sum[0..i] - sum[0..j-1] == k，该过程是个典型的 Two Sum 问题，
      *   因而可以采用 L1_TwoSum 解法4的思路求解 —— 在遍历过程中，一边累积 sum[0..i] 并插入到 Map 中，一边检查其 complement
      *   （sum[0..i] - k，即 sum[0..j-1]）是否存在于 Map 中。通过这种方式又将时间复杂度降低一个次方。
@@ -104,10 +104,10 @@ public class L560_SubarraySumEqualsK {
      *                      ↑             - sum=5,  get(5-5)=1    count=1, {0:1, 4:1, 6:1, 5:1}
      *                         ↑          - sum=10, get(10-5)=1,  count=2, {0:1, 4:1, 6:1, 5:1, 10:1}
      *                             ↑      - sum=5,  get(5-5)=1,   count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
-     *                                ↑   - sum=10, get(10-5)=2,  count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
-     * - 注意：代码中 count += 的是 map 里的 value，而不能是 count++ ∵ sum-k 存在于 map 中的意义就是有元素能使 sum
-     *   等于 k 的 subarray，但个数不一定只有一个（∵ nums 中有负数 ∴ 可能存在多个）。具体有几个这样的 subarray 是记录在 map
-     *   的 value 上的，即 map.get(sum-k)，因此要把它加到 count 上。
+     *                                 ↑  - sum=10, get(10-5)=2,  count=5, {0:1, 4:1, 6:1, 5:2, 10:2}
+     * - 注意：代码中 count += 的必须是 sum-k 的频率，而不能是 count++。举例说明：在👆最后一行中，get(10-5)=2 的意义是
+     *   “能让当前 sum[0..i] - sum[0..j-1] == k（即 10 - sum[0..j-1] == 5）的 subarray 一共有2个”（即 sum[0..2] 和
+     *   sum[0..4]）∴ 要把这个个数加到 count 上，而不能只++。
      * - 👉总结：该题与 L437_PathSumIII 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -139,17 +139,17 @@ public class L560_SubarraySumEqualsK {
         for (int n : nums) {
             sum += n;
             count += map.getOrDefault(sum - k, 0);  // 经验：map.containsKey + map.get = map.getOrDefault
-            map.merge(sum, 1, (a, b) -> a + b);     // 若 map 中已有 sum，则相当于 map.put(sum, map.get(sum) + 1)，
-        }                                           // 若 map 中没有 sum，则相当于 map.put(sum, 1)
+            map.merge(sum, 1, Integer::sum);        // 若 map 中已有 sum，则相当于更新操作：map.put(sum, map.get(sum) + 1)，
+        }                                           // 若 map 中没有 sum，则相当于插入操作：map.put(sum, 1)
 
         return count;
     }
 
     public static void main(String[] args) {
-        log(subarraySum(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
-        log(subarraySum(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
-        log(subarraySum(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
-        log(subarraySum(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
-        log(subarraySum(new int[]{4, 2, -1, 5, -5}, 5));         // expects 3. (4+2-1, 4+2-1+5-5, 5)
+        log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
+        log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
+        log(subarraySum4(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
+        log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
+        log(subarraySum4(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
     }
 }
