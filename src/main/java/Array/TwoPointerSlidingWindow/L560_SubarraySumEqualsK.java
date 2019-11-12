@@ -94,10 +94,10 @@ public class L560_SubarraySumEqualsK {
     }
 
     /*
-     * 解法3：Prefix Sum + Map
+     * 解法3：Prefix Sum + Memoization
      * - 思路：在解法2中，我们通过双重循环挨个尝试是否存在 sum[0..i] - sum[0..j-1] == k，该过程是个典型的 Two Sum 问题，
-     *   因而可以采用 L1_TwoSum 解法4的思路求解 —— 在遍历过程中，一边累积 sum[0..i] 并插入到 Map 中，一边检查其 complement
-     *   （sum[0..i] - k，即 sum[0..j-1]）是否存在于 Map 中。通过这种方式又将时间复杂度降低一个次方。
+     *   因而可以采用 L1_TwoSum 解法4的思路求解 —— 在遍历过程中累积 sum[0..i]，然后一边检查其 complement（sum[0..i] - k，
+     *   即 sum[0..j-1]）是否存在于 map 中，一边将 sum[0..i] 插入到 map 中。通过这种方式又将时间复杂度降低一个次方。
      *   对于 nums = [4, 2, -1, 5, -5, 5], k = 5：
      *               ↑                    - sum=4, get(4-5)不存在, count=0, {0:1, 4:1}
      *                  ↑                 - sum=6, get(6-5)不存在, count=0, {0:1, 4:1, 6:1}
@@ -121,7 +121,7 @@ public class L560_SubarraySumEqualsK {
             int complement = sum - k;
             if (map.containsKey(complement))
                 count += map.get(complement);            // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
-            map.put(sum, map.getOrDefault(sum, 0) + 1);  // 将 sum 放入 map，并记录频率
+            map.put(sum, map.getOrDefault(sum, 0) + 1);  // 将 sum 插入 map，并记录/更新其频率
         }
 
         return count;
@@ -139,8 +139,8 @@ public class L560_SubarraySumEqualsK {
         for (int n : nums) {
             sum += n;
             count += map.getOrDefault(sum - k, 0);  // 经验：map.containsKey + map.get = map.getOrDefault
-            map.merge(sum, 1, Integer::sum);        // 若 map 中已有 sum，则相当于更新操作：map.put(sum, map.get(sum) + 1)，
-        }                                           // 若 map 中没有 sum，则相当于插入操作：map.put(sum, 1)
+            map.merge(sum, 1, Integer::sum);        // 相当于 map.put(sum, map.getOrDefault(sum) + 1)
+        }
 
         return count;
     }

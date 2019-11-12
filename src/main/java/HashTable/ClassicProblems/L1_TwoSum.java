@@ -40,7 +40,7 @@ public class L1_TwoSum {
      *                     l     r        - nums[l] + nums[r] < target ∴ l++
      *                        l  r        - nums[l] + nums[r] == target
      *   但有一个问题：一旦对 nums 排序，其索引会被打乱而无法再次使用 ∴ 需要有一个数据结构在排序之前记录下元素和索引的对应关系。
-     *   而又因为 nums 中可能有重复元素 ∴ 无法采用 Map 记录这种对应关系，
+     *   而又因为 nums 中可能有重复元素 ∴ 无法采用 map 记录这种对应关系，
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum2(int[] nums, int target) {
@@ -62,9 +62,9 @@ public class L1_TwoSum {
     }
 
     /*
-     * 解法3：Map (Two-pass)
-     * - 思路：另一类思路是用 Map 来查找每个元素的 complement —— 先构建一个 Map 将 nums 中的元素存储成 <元素, 索引> 的形式，
-     *   然后在遍历 nums 的过程中查找 nums[i] 的 complement 是否存在于 Map 中，若存在则找到了结果。
+     * 解法3：Memoization (Two-pass)
+     * - 思路：另一类思路是用 map 来查找每个元素的 complement —— 先构建一个 map 将 nums 中的元素存储成 <元素, 索引> 的形式，
+     *   然后在遍历 nums 的过程中查找 nums[i] 的 complement 是否存在于 map 中，若存在则找到了结果。
      * - 注意：∵ test case 3 中存在 target - nums[0] = nums[0]（即 nums[0] 的 complement 还是 nums[0]）的情况，而本
      *   题要找的是“两个不同元素” ∴ 该情况不是有效解 ∴ 需要在查找 complement 时加入判断排除这种情况才行。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -84,10 +84,10 @@ public class L1_TwoSum {
     }
 
     /*
-     * 解法4：Map (One-pass) (解法2的时间优化版)
+     * 解法4：Memoization (One-pass) (解法2的时间优化版)
      * - 思路：在解法3的基础上进行优化，若 nums 中存在 nums[i] + complement == target，则在遍历 nums 的过程中一定会先后
-     *   遇到 nums[i] 和 complement ∴ 我们不需要像解法3中那样一次性将 nums 的所有元素放入 Map，只需一边向 Map 中插入
-     *   nums[i]，一边检查 nums[i] 的 complement 是否已经存在于 Map 中即可。
+     *   遇到 nums[i] 和 complement ∴ 我们不需要像解法3中那样一次性将 nums 的所有元素放入 map，一边检查 nums[i] 的
+     *   complement 是否已经存在于 map 中，只需一边向 map 中插入 nums[i] 即可。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int[] twoSum4(int[] nums, int target) {
@@ -95,9 +95,9 @@ public class L1_TwoSum {
 
         for (int i = 0; i < nums.length; i++) {
             int complement = target - nums[i];
-            if (map.containsKey(complement))
+            if (map.containsKey(complement))          // 先检查 complement 是否已存在
                 return new int[] {map.get(complement), i};
-            map.put(nums[i], i);
+            map.put(nums[i], i);                      // 再插入 nums[i]
         }
         throw new IllegalArgumentException("No two sum solution");
     }
