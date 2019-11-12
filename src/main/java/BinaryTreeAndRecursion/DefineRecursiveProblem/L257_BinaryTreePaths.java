@@ -53,9 +53,15 @@ public class L257_BinaryTreePaths {
     }
 
     private static void helper2(TreeNode root, String path, List<String> res) {
-        if (root.left == null && root.right == null) res.add(path + root.val);  // 该 path 已经到底的情况
-        if (root.left != null) helper2(root.left, path + root.val + "->", res);
-        if (root.right != null) helper2(root.right, path + root.val + "->", res);
+        if (root == null) return;
+        path += root.val;  // += 操作符对 String 同样有效
+
+        if (root.left == null && root.right == null) {  // 若当前 path 已经到底
+            res.add(path);
+            return;
+        }
+        helper2(root.left, path + "->", res);
+        helper2(root.right, path + "->", res);
 	}
 
 	/*
@@ -138,7 +144,7 @@ public class L257_BinaryTreePaths {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 4});
-        log(binaryTreePaths4(t1));
+        log(binaryTreePaths2(t1));
         /*
          * expects ["1->2->4", "1->3"].
          *       1
@@ -149,7 +155,7 @@ public class L257_BinaryTreePaths {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 4, 5, 6, null, null, 7});
-        log(binaryTreePaths4(t2));
+        log(binaryTreePaths2(t2));
         /*
          * expects ["1->2->4", "1->3->5->7", "1->3->6"].
          *        1
