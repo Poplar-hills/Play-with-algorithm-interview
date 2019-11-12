@@ -86,8 +86,8 @@ public class L1_TwoSum {
     /*
      * 解法4：Map (One-pass) (解法2的时间优化版)
      * - 思路：在解法3的基础上进行优化，若 nums 中存在 nums[i] + complement == target，则在遍历 nums 的过程中一定会先后
-     *   遇到 nums[i] 和 complement ∴ 我们不需要像解法3中那样一次性将 nums 的所有元素放入 Map，而只需边向 Map 中插入 nums[i]
-     *   边检查 nums[i] 的 complement 是否已经存在于 Map 中即可。
+     *   遇到 nums[i] 和 complement ∴ 我们不需要像解法3中那样一次性将 nums 的所有元素放入 Map，只需一边向 Map 中插入
+     *   nums[i]，一边检查 nums[i] 的 complement 是否已经存在于 Map 中即可。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int[] twoSum4(int[] nums, int target) {

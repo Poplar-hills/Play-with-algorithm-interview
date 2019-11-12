@@ -96,28 +96,31 @@ public class L560_SubarraySumEqualsK {
     /*
      * 解法3：Map
      * - 思路：在解法2中，我们通过双重循环挨个尝试是否存在 sum[0..i] - sum[0..j-1] == k，该过程是个典型的 Two Sum 问题，
-     *   因此可以通过 L1_TwoSum 中解法4的方式进行优化：将所有 sum[0..j-1] 存储在 map 中，之后每次只需查询 map 中是否存在
-     *   sums[0..i] - k 即可。通过这种方式又将时间复杂度降低一个次方。
-     *     nums = [4, 2, -1, 5, -5], k = 5
-     *             ↑                 sum=4, get(4-5)不存在, count=0, {0:1, 4:1}
-     *                ↑              sum=6, get(6-5)不存在, count=0, {0:1, 4:1, 6:1}
-     *                    ↑          sum=5,  get(5-5)=1    count=1, {0:1, 4:1, 6:1, 5:1}
-     *                       ↑       sum=10, get(10-5)=1,  count=2, {0:1, 4:1, 6:1, 5:1, 10:1}
-     *                           ↑   sum=5,  get(5-5)=1,   count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
-     * - 注意：代码中 count += 的是 map 里的 value，而不能是 count++，∵ 若 sum-k 存在于 map 中，说明 nums 中存在元素之和
+     *   因而可以采用 L1_TwoSum 解法4的思路求解 —— 在遍历过程中，一边累积 sum[0..i] 并插入到 Map 中，一边检查其 complement
+     *   （sum[0..i] - k，即 sum[0..j-1]）是否存在于 Map 中。通过这种方式又将时间复杂度降低一个次方。
+     *   对于 nums = [4, 2, -1, 5, -5, 5], k = 5：
+     *               ↑                    - sum=4, get(4-5)不存在, count=0, {0:1, 4:1}
+     *                  ↑                 - sum=6, get(6-5)不存在, count=0, {0:1, 4:1, 6:1}
+     *                      ↑             - sum=5,  get(5-5)=1    count=1, {0:1, 4:1, 6:1, 5:1}
+     *                         ↑          - sum=10, get(10-5)=1,  count=2, {0:1, 4:1, 6:1, 5:1, 10:1}
+     *                             ↑      - sum=5,  get(5-5)=1,   count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
+     *                                ↑   - sum=10, get(10-5)=2,  count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
+     * - 注意：代码中 count += 的是 map 里的 value，而不能是 count++ ∵ sum-k 存在于 map 中的意义就是有元素能使 sum
      *   等于 k 的 subarray，但个数不一定只有一个（∵ nums 中有负数 ∴ 可能存在多个）。具体有几个这样的 subarray 是记录在 map
      *   的 value 上的，即 map.get(sum-k)，因此要把它加到 count 上。
+     * - 👉总结：该题与 L437_PathSumIII 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum3(int[] nums, int k) {
         int count = 0, sum = 0;
         Map<Integer, Integer> map = new HashMap<>();     // 存储 <prefixSum, frequency>
-        map.put(0, 1);                                   // 将0放入 map 中，值设为1
+        map.put(0, 1);                                   // 需要先插入 <0, 1>
 
         for (int n : nums) {
             sum += n;                                    // 遍历过程中求 prefix sum
-            if (map.containsKey(sum - k))
-                count += map.get(sum - k);               // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
+            int complement = sum - k;
+            if (map.containsKey(complement))
+                count += map.get(complement);            // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
             map.put(sum, map.getOrDefault(sum, 0) + 1);  // 将 sum 放入 map，并记录频率
         }
 
@@ -135,7 +138,7 @@ public class L560_SubarraySumEqualsK {
 
         for (int n : nums) {
             sum += n;
-            count += map.getOrDefault(sum - k, 0);  // 不需要解法3中的 containsKey 检查
+            count += map.getOrDefault(sum - k, 0);  // 经验：map.containsKey + map.get = map.getOrDefault
             map.merge(sum, 1, (a, b) -> a + b);     // 若 map 中已有 sum，则相当于 map.put(sum, map.get(sum) + 1)，
         }                                           // 若 map 中没有 sum，则相当于 map.put(sum, 1)
 

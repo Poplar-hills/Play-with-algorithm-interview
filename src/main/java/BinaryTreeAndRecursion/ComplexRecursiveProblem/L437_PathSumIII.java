@@ -55,6 +55,7 @@ public class L437_PathSumIII {
      *   sum 的差，若存在则说明找到了目标路径，而找到的目标路径的条数即是 map 中 prefix sum 的频率（即 prefix sum 的出现次数）。
      * - 更多解释 SEE：https://leetcode.com/problems/path-sum-iii/discuss/91878/17-ms-O(n)-java-Prefix-sum-method
      *   中 kekezi 的评论。
+     * - 👉总结：该题与 L560_SubarraySumEqualsK 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int pathSum2(TreeNode root, int sum) {
