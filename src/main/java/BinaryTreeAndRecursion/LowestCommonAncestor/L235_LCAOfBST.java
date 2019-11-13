@@ -23,7 +23,8 @@ import Utils.Helpers.TreeNode;
 public class L235_LCAOfBST {
     /*
      * 解法1：Recursion (DFS)
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * - 思路：在从上到下遍历 BST 的过程中，第一个使得 p 和 q 不在同一边的节点就是 p 和 q 的 LCA 节点。
+     * - 时间复杂度 O(h)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null)
@@ -36,9 +37,8 @@ public class L235_LCAOfBST {
     }
 
     /*
-     * 解法2：Iteration (DFS)
-     * - 思路：解法1的非递归版，若 BST 上某个节点使得 p 和 q 不再该节点同一边，则说明该节点就是 LCA 节点。
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * 解法2：Iteration (DFS) (解法1的非递归版)
+     * - 时间复杂度 O(h)，空间复杂度 O(1)。
      * */
     public static TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null) return null;
@@ -47,9 +47,12 @@ public class L235_LCAOfBST {
 
         while (!stack.isEmpty()) {
             TreeNode node = stack.pop();
-            if (p.val < node.val && q.val < node.val && node.left != null)
+            boolean bothInTheLeft = p.val < node.val && q.val < node.val;
+            boolean bothInTheRight = p.val > node.val && q.val > node.val;
+
+            if (bothInTheLeft && node.left != null)
                 stack.push(node.left);
-            else if (p.val > node.val && q.val > node.val && node.right != null)
+            else if (bothInTheRight && node.right != null)
                 stack.push(node.right);
             else
                 return node;
@@ -59,10 +62,10 @@ public class L235_LCAOfBST {
     }
 
     /*
-     * 解法3：Iteration (DFS)
-     * - 思路：解法2的简化版，不借助辅助数据结构。
-     * - 实现：该题本质上就是一个 BST 上的二分查找，并不是树的遍历，不需要在树上上下折返，而是只要一路往下走就能得到结果，因此
-     *   并不需要借助 Stack 来实现，只需一个指针指向当前节点即可。
+     * 解法3：Iteration (DFS) (解法2的空间优化版)
+     * - 思路：与解法2一致。
+     * - 实现：该题本质上就是对 BST 的二分查找，而非树的遍历，即不需要在树上上下折返，只要一路往下走就能得到结果 ∴ 并不需要使用
+     *   栈来记录前面的节点，只需一个指针指向当前节点即可 ∴ 可以去除对 Stack 的依赖。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
@@ -70,16 +73,20 @@ public class L235_LCAOfBST {
         TreeNode curr = root;
 
         while (curr != null) {
-            if (p.val < curr.val && q.val < curr.val) curr = curr.left;
-            else if (p.val > curr.val && q.val > curr.val) curr = curr.right;
-            else return curr;
+            if (p.val < curr.val && q.val < curr.val)
+                curr = curr.left;
+            else if (p.val > curr.val && q.val > curr.val)
+                curr = curr.right;
+            else
+                return curr;
         }
 
         return null;
     }
 
+
     public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{6, 2, 8, 0, 4, 7, 9, null, null, 3, 5});
+        TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{6, 2, 8, 0, 4, 7, 9, null, null, 3, 5});
         /*
          *           6
          *        /     \
@@ -90,9 +97,9 @@ public class L235_LCAOfBST {
          *       3   5
          * */
 
-        log(lowestCommonAncestor3(t1, t1.get(2), t1.get(8)));   // expects 6. (The LCA of nodes 2 and 8 is 6.)
-        log(lowestCommonAncestor3(t1, t1.get(3), t1.get(7)));   // expects 6.
-        log(lowestCommonAncestor3(t1, t1.get(2), t1.get(4)));   // expects 2.
-        log(lowestCommonAncestor3(t1, t1.get(0), t1.get(5)));   // expects 2.
+        log(lowestCommonAncestor3(t, t.get(2), t.get(8)));   // expects 6. (The LCA of nodes 2 and 8 is 6.)
+        log(lowestCommonAncestor3(t, t.get(3), t.get(7)));   // expects 6.
+        log(lowestCommonAncestor3(t, t.get(2), t.get(4)));   // expects 2.
+        log(lowestCommonAncestor3(t, t.get(0), t.get(5)));   // expects 2.
     }
 }
