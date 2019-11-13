@@ -7,9 +7,9 @@ import java.util.Stack;
 import Utils.Helpers.TreeNode;
 
 /*
- * Delete Node in a BST
+ * Convert Sorted Array to Binary Search Tree
  *
- * - Given an array where elements are sorted in ascending order, convert it to a height-balanced BST.
+ * - Given an ascending array, convert it to a height-balanced BST.
  *
  * - For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the
  *   two subtrees of every node never differ by more than 1.
@@ -85,17 +85,28 @@ public class L108_ConvertSortedArrayToBST {
     }
 
     public static void main(String[] args) {
-      int[] arr1 = new int[]{-6, -4, -2, 0, 1, 3, 5};
-      printBinaryTreeBreadthFirst(sortedArrayToBST2(arr1));
-      /*
-       * expects [0,-4,3,-6,-2,1,5] or [-2,-4,3,-6,null,1,5,null,null,0] or others.
-       *                  0                           -2
-       *                /   \                        /  \
-       *              -4     3                     -4    3
-       *              / \   / \                    /    / \
-       *            -6  -2 1   5                 -6    1   5
-       *                                              /
-       *                                             0
-       * */
+        TreeNode t1 = sortedArrayToBST2(new int[]{-6, -4, -2, 0, 1, 3, 5});
+        printBinaryTreeBreadthFirst(t1);
+        /*
+         * expects [0,-4,3,-6,-2,1,5] or [-2,-4,3,-6,null,1,5,null,null,0] etc. (there are more valid solutions).
+         *                  0                           -2
+         *                /   \                        /  \
+         *              -4     3                     -4    3
+         *              / \   / \                    /    / \
+         *            -6  -2 1   5                 -6    1   5
+         *                                              /
+         *                                             0
+         * */
+
+        TreeNode t2 = sortedArrayToBST2(new int[]{-10, -3, 0, 5, 9});
+        printBinaryTreeBreadthFirst(t2);
+        /*
+         * expects [0,-3,5,-10,null,null,9] etc. (there are more valid solutions).
+         *                     0
+         *                    / \
+         *                  -3   5
+         *                  /     \
+         *                -10      9
+         * */
     }
 }
