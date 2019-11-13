@@ -23,30 +23,32 @@ import Utils.Helpers.TreeNode;
 public class L98_ValidateBinarySearchTree {
     /*
      * 解法1：Recursion
-     * - 思路：根据题中给出的 BST 设计递归函数：
+     * - 思路：根据题中给出的 BST 定义可知，树上任一节点都需满足以下4个条件才能算是 BST：
      *     1. 父节点 > 左子树中的所有节点；
      *     2. 父节点 < 右子树中的所有节点；
-     *     3. 左、右子树都是 BST。
-     *   因此递归函数可以定义为：检查当前节点是否 > 其左子树上的所有节点，且 < 其右子树上的所有节点。
+     *     3. 左子树是 BST；
+     *     4. 右子树是 BST。
+     *   ∴ 对于每个节点都需要进行这4项检查。其中在实现1、2项检查时可以先假设左、右子树已经是 BST 以简化代码（具体是否真的是 BST
+     *   交给3、4两项检查去验证即可）。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isValidBST(TreeNode root) {
         if (root == null) return true;
-        if (!isMaxInBST(root, root.left) || !isMinInBST(root, root.right)) return false;
-        return isValidBST(root.left) && isValidBST(root.right);
+        return isMaxInBST(root, root.left) && isMinInBST(root, root.right)
+            && isValidBST(root.left) && isValidBST(root.right);
     }
 
-    private static boolean isMaxInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 > root 上的所有节点
+    private static boolean isMaxInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 > root 树上的所有节点
         if (root == null) return true;
         if (node.val <= root.val) return false;
-        return isMaxInBST(node, root.right);  // 若 node > 右子树上的所有节点则说明 node > root 上的所有节点
-    }                                         // （右子树是否是 BST 交给 isValidBST 去检查）
+        return isMaxInBST(node, root.right);  // 右子树是否是 BST 交给 isValidBST 去检查，这里假设右子树是 BST ∴ 只要
+    }                                         // node > root 树上的最右侧节点即说明 node > root 树上的所有节点
 
-    private static boolean isMinInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 < root 上的所有节点
+    private static boolean isMinInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 < root 树上的所有节点
         if (root == null) return true;
         if (node.val >= root.val) return false;
-        return isMinInBST(node, root.left);  // 若 node < 左子树上的所有节点则说明 node < root 上的所有节点
-    }                                        // （左子树是否是 BST 交给 isValidBST 去检查）
+        return isMinInBST(node, root.left);
+    }
 
     /*
      * 解法2：Recursion
@@ -64,7 +66,7 @@ public class L98_ValidateBinarySearchTree {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isValidBST2(TreeNode root) {
-        return withinBounds(root, null, null);
+        return withinBounds(root, null, null);  // ∵ 节点值可能不在整型取值范围内 ∴ 不能使用 Integer.MIN_VALUE、Integer.MAX_VALUE
     }
 
     private static boolean withinBounds(TreeNode root, Integer lower, Integer upper) {
@@ -81,9 +83,9 @@ public class L98_ValidateBinarySearchTree {
      * */
     public static boolean isValidBST3(TreeNode root) {
         if (root == null) return true;
-        Stack<TreeNode> stack = new Stack<>();
-        Stack<Integer> lowers = new Stack<>();
-        Stack<Integer> uppers = new Stack<>();
+        Stack<TreeNode> stack = new Stack<>();  // 其实也可以只用一个栈：Stack<Triplet<节点, 节点下界, 节点上界>>
+        Stack<Integer> lowers = new Stack<>();  // 对应存储 stack 中每个节点的取值下界
+        Stack<Integer> uppers = new Stack<>();  // 对应存储 stack 中每个节点的取值上界
         stack.push(root);
         lowers.push(null);
         uppers.push(null);
@@ -112,40 +114,13 @@ public class L98_ValidateBinarySearchTree {
     }
 
     /*
-     * 解法4：Iteration (中续遍历)
-     * - 思路：检查一棵树是否是 BST 可以利用 BST 最特别的性质 —— BST 中序遍历的顺序是从小到大。因此该题只需在中序遍历的基础上
-     *   检查每次后一个访问的节点是否 > 前一个访问的节点即可。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
-     * */
-    public static boolean isValidBST4(TreeNode root) {
-        if (root == null) return true;
-        Integer prev = null;
-        Stack<TreeNode> stack = new Stack<>();
-        Set<TreeNode> set = new HashSet<>();
-        stack.push(root);
-
-        while (!stack.isEmpty()) {
-            while (stack.peek().left != null && !set.contains(stack.peek().left))
-                stack.push(stack.peek().left);                   // 向左走到最左，一路入栈没访问过的节点
-
-            TreeNode node = stack.pop();
-            if (prev != null && node.val <= prev) return false;  // 访问栈顶节点
-            prev = node.val;
-            set.add(node);                                       // 访问完后将其加入 set
-            if (node.right != null) stack.push(node.right);      // 入栈右子节点
-        }
-
-        return true;
-    }
-
-    /*
-     * 解法5：Iteration (中续遍历的另一种实现)
+     * 解法4：Iteration (DFS, In-order Traversal)
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isValidBST5(TreeNode root) {
         if (root == null) return true;
         Stack<TreeNode> stack = new Stack<>();
-        Integer prev = null;
+        Integer prev = null;        // ∵ 节点值可能不在整型取值范围内 ∴ 不能使用 Integer.MIN_VALUE
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {
@@ -156,7 +131,7 @@ public class L98_ValidateBinarySearchTree {
             curr = stack.pop();     // 访问栈顶节点
             if (prev != null && curr.val <= prev) return false;
             prev = curr.val;
-            curr = curr.right;      // 转向右子节点，重新开始循环
+            curr = curr.right;      // 转向右子节点，重新开始循环，若没有右子节点，则会跳过内层 while 出栈下一个节点
         }
 
         return true;
@@ -164,7 +139,7 @@ public class L98_ValidateBinarySearchTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{2, 1, 3});
-        log(isValidBST5(t1));
+        log(isValidBST(t1));
         /*
          * expects true.
          *       2
@@ -173,7 +148,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 5, 0, 2, 4, 6});
-        log(isValidBST5(t2));
+        log(isValidBST(t2));
         /*
          * expects true.
          *       3
@@ -184,7 +159,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, 4, null, null, 3, 6});
-        log(isValidBST5(t3));
+        log(isValidBST(t3));
         /*
          * expects false.
          *       5
@@ -195,7 +170,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 1});
-        log(isValidBST5(t4));
+        log(isValidBST(t4));
         /*
          * expects false. (等值节点的情况)
          *       1
@@ -204,7 +179,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{10, 5, 15, null, null, 6, 20});
-        log(isValidBST5(t5));
+        log(isValidBST(t5));
         /*
          * expects false. (跨层级的情况：6 < 10)
          *      10
