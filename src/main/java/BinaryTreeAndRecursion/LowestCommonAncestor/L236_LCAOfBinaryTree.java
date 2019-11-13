@@ -85,40 +85,41 @@ public class L236_LCAOfBinaryTree {
     /*
      * 解法3：Iteration (DFS) + Map + Set
      * - 思路：非常有意思的思路！利用多种数据结构，思路见下面代码注释。
+     * - 限制：∵ Map 无法插入多个相同的 key ∴ 只能用于 BST，而无法用于一般的二叉树。
      * - 👉 总结 ：Step 2、3实际上就是“找到两个链表交叉点”（L160_IntersectionOfTwoLinkedLists 解法1）的应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null) return null;
-        Stack<TreeNode> stack = new Stack<>();                // 用于存储 p 节点的所有祖先节点
-        Map<TreeNode, TreeNode> parentMap = new HashMap<>();  // 用于存储<节点, 父节点>
+        Stack<TreeNode> stack = new Stack<>();              // 用于存储 p 节点及其所有祖先节点
+        Map<TreeNode, TreeNode> treeMap = new HashMap<>();  // 用于存储 <节点, 父节点>（即用 map 表达 BST，类似 TreeMap）
         stack.push(root);
-        parentMap.put(root, null);
+        treeMap.put(root, null);
 
         // Step 1: 建立 parentMap
-        while (!parentMap.containsKey(p) || !parentMap.containsKey(q)) {  // 若 p、q 已经被收录进 Map 则说明他们的
-            TreeNode node = stack.pop();                                  // 所有祖先节点也都已被收录进 Map 中了
+        while (!treeMap.containsKey(p) || !treeMap.containsKey(q)) {  // 若 p、q 被收录进了 map 则说明他们的所
+            TreeNode node = stack.pop();                                  // 有祖先节点也都已被收录进了 map
 
             if (node.left != null) {
-                parentMap.put(node.left, node);  // 收录节点
+                treeMap.put(node.left, node);  // 收录子节点（∵ 要与其父节点配对 ∴ 只能在这里收录）
                 stack.push(node.left);
             }
             if (node.right != null) {
-                parentMap.put(node.right, node);  // 收录节点
+                treeMap.put(node.right, node);  // 收录子节点
                 stack.push(node.right);
             }
         }
 
-        // Step 2: 查出 p 的所有祖先节点并放入 Set
-        Set<TreeNode> pParentSet = new HashSet<>();  // 当 Map 建立完毕后
+        // Step 2: 将 p 节点及其所有祖先节点并放入 set
+        Set<TreeNode> pFamilySet = new HashSet<>();
         while (p != null) {
-            pParentSet.add(p);
-            p = parentMap.get(p);
+            pFamilySet.add(p);
+            p = treeMap.get(p);
         }
 
-        // Step 3: 从下往上依次查询 q 的每一个祖先节点是否在 pParentSet 中，找到的第一个就是 LSC
-        while (!pParentSet.contains(q))
-            q = parentMap.get(q);
+        // Step 3: 沿着 q 所在的路径从下往上依次查询每一个节点是否在 pFamilySet 中，在其中的第一个节点就是 LCA
+        while (!pFamilySet.contains(q))
+            q = treeMap.get(q);
 
         return q;
     }
