@@ -23,8 +23,8 @@ import Utils.Helpers.TreeNode;
 
 public class L236_LCAOfBinaryTree {
     /*
-     * 解法1：Recursion (DFS)
-     * - 思路：在每次进入下层递归之前先通过 contains 方法确定 p、q 在哪个子树上。
+     * 解法1：Recursion (DFS, Pre-order Traversal)
+     * - 思路：在每次进入下层递归之前先通过 contains 方法确定 p、q 在哪边的子树上。
      * - 时间复杂度 O(n^2)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
@@ -44,21 +44,23 @@ public class L236_LCAOfBinaryTree {
     }
 
     /*
-     * 解法2：Recursion (DFS 后续遍历 + Backtracking)
-     * - 思路：
-     *   1. 本题是后续遍历的典型应用 —— 只有遍历过左、右子树后，才能确定当前节点是否符合条件；
-     *   2. 使用回溯法 —— 先通过后续遍历到达叶子节点，然后在递归返回的路上，用左右子树的递归函数返回值来判断当前节点是否是 LCA 节点：
-     *           3                        2        - 节点3的 sum=2 ∴ LCA 是3节点
-     *         /   \      p=6, q=4      /   \                ↑
-     *        5     4    --------->    1     1     - 节点4就是 q ∴ 返回1；节点5处的 sum=1 ∴ 返回1
-     *       / \                      / \                    ↑
-     *      6   2                    1   0         - 节点6就是 p ∴ 返回1
+     * 解法2：Recursion (DFS Post-order Traversal + Backtracking)
+     * - 思路：解法1采用的是前序遍历，但 ∵ 每次要先对左、右子树进行搜索后才能对当前节点下结论 ∴ 时间复杂度较高。基于此，我们可以
+     *   采用更优也更自然的方式 —— 后续遍历 + 回溯法：
+     *   1. 后续遍历 —— 先遍历过左、右子树后再确定当前节点是否符合条件；
+     *   2. 回溯法 —— 先通过后续遍历到达叶子节点，然后在递归返回的路上，用左、右子树的递归返回值来判断当前节点是否是 LCA 节点：
+     *          3                       2        3). 节点3处的 sum=2 ∴ LCA 是3节点
+     *        /   \     p=6, q=4      /   \                ↑
+     *       5     4   --------->    1     1     2). 节点5处的 sum=1 ∴ 返回1；节点4就是 q ∴ 也返回1
+     *      / \                     / \                    ↑
+     *     6   2                   1   0         1). 节点6就是 p ∴ 返回1
      *
-     *           3                        1        - 注意节点5处的返回值是1而不能是2，否则节点3处的 sum 也会是2，从而将 lca 节点覆盖
-     *         /   \      p=5, q=2      /   \                ↑
-     *        5     4    --------->    2     0     - 节点5就是 p ∴ sum=2 ∴ 该节点就是 LCA 节点
-     *       / \                      / \                    ↑
-     *      6   2                    0   1         - 节点2就是 q ∴ 返回1
+     *          3                       1        3). 注意节点5处的返回值是1而不能是2，否则节点3处的 sum 也会是2，从而覆盖了 LCA
+     *        /   \     p=5, q=2      /   \                ↑
+     *       5     4   --------->    2     0     2). 节点5就是 p ∴ sum=2 ∴ 该节点就是 LCA 节点
+     *      / \                     / \                    ↑
+     *     6   2                   0   1         1). 节点2就是 q ∴ 返回1
+     *
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     private static TreeNode lca = null;  // lca 节点的指针作为类成员变量
@@ -71,11 +73,11 @@ public class L236_LCAOfBinaryTree {
     private static int helper(TreeNode node, TreeNode p, TreeNode q) {
         if (node == null) return 0;
 
-        int left = helper(node.left, p, q);          // 先遍历左右子树
+        int left = helper(node.left, p, q);           // 先遍历左、右子树
         int right = helper(node.right, p, q);
-        int mid = (node == p || node == q) ? 1 : 0;  // 再访问当前节点
 
-        int sum = left + right + mid;
+        int curr = (node == p || node == q) ? 1 : 0;  // 再访问当前节点
+        int sum = left + right + curr;
         if (sum == 2) lca = node;
         return sum > 0 ? 1 : 0;
     }
