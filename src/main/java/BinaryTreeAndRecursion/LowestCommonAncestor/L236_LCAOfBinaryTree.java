@@ -86,7 +86,7 @@ public class L236_LCAOfBinaryTree {
      * 解法3：Iteration (DFS) + Map + Set
      * - 思路：非常有意思的思路！利用多种数据结构，思路见下面代码注释。
      * - 限制：∵ Map 无法插入多个相同的 key ∴ 只能用于 BST，而无法用于一般的二叉树。
-     * - 👉 总结 ：Step 2、3实际上就是“找到两个链表交叉点”（L160_IntersectionOfTwoLinkedLists 解法1）的应用。
+     * - 👉 总结 ：Step 2、3实际上就是“找到两个链表交叉点”，即 L160_IntersectionOfTwoLinkedLists 解法1的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
@@ -96,7 +96,7 @@ public class L236_LCAOfBinaryTree {
         stack.push(root);
         treeMap.put(root, null);
 
-        // Step 1: 建立 parentMap
+        // Step 1: 建立 treetMap（即用 map 表达 tree）
         while (!treeMap.containsKey(p) || !treeMap.containsKey(q)) {  // 若 p、q 被收录进了 map 则说明他们的所
             TreeNode node = stack.pop();                                  // 有祖先节点也都已被收录进了 map
 
