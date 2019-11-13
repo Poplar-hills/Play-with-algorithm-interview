@@ -50,9 +50,9 @@ public class L437_PathSumIII {
     /*
      * 解法2：Recursion (DFS) + Memoization
      * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，本质上也是区间求和问题 ∴ 可以在二叉树上采用 Prefix Sum
-     *   的思路，例如 test case 1 中 5->3 的路径和 = 10->5->3->3 的路径和 - 10 的路径和。根据这个思路，在对二叉树进行递归
-     *   的过程中一边检查当前 prefix sum（即根节点到当前节点的路径和）的 complement（prefix sum - target sum）是否存在于
-     *   map 中，一边向 map 中插入该 prefix sum。
+     *   的思路，例如 test case 1 中 5->3 的路径和 = 10->5->3->3 的路径和 - 10 的路径和。基于这个思路，可通过递归遍历所有
+     *   节点，对每个节点累积 prefix sum（即根节点到当前节点的路径和），并用 map 检查是否有（以及有几个）其他的子路径和能使得
+     *   prefix sum - 子路径和 = target sum，记录这样的子路径和的个数。
      * - 更多解释 SEE：https://leetcode.com/problems/path-sum-iii/discuss/91878/17-ms-O(n)-java-Prefix-sum-method
      *   中 kekezi 的评论。
      * - 👉 总结：该题与 L560_SubarraySumEqualsK 都是 Prefix Sum 和 Two Sum 思想的经典应用。
@@ -67,7 +67,7 @@ public class L437_PathSumIII {
     private static int helper2(TreeNode root, int preSum, int sum, Map<Integer, Integer> map) {
         if (root == null) return 0;
 
-        preSum += root.val;                             // 得到当前节点上的 prefix sum
+        preSum += root.val;                             // 累积 prefix sum
         int count = map.getOrDefault(preSum - sum, 0);  // 检查 map 中 complement 的个数（即找出该路径上有几个子路径和能让 preSum - 子路径和 == sum）
         map.merge(preSum, 1, Integer::sum);             // 在 map 中插入 prefix sum 或更新其频率，相当于
                                                         // map.put(preSum, map.getOrDefault(preSum, 0) + 1);
