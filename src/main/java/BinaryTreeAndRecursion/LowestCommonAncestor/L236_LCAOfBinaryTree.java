@@ -83,10 +83,13 @@ public class L236_LCAOfBinaryTree {
     }
 
     /*
-     * 解法3：Iteration (DFS) + Map + Set
-     * - 思路：非常有意思的思路！利用多种数据结构，思路见下面代码注释。
+     * 解法3：Iteration (DFS) + Map + Set (非常有意思的思路！利用多种数据结构)
+     * - 思路：两个节点的 LCA 其实就是两节点所在路径的第一个交叉点 ∴ 该题可以转化为求两链表的交叉点（即
+     *   L160_IntersectionOfTwoLinkedLists）。但树与链表不同，无法从子节点走到父节点 ∴ 需要一个能够记录这种子节点 -> 父节点
+     *   的数据结构作为辅助。Map 刚好可以满足这个需求 ∴ 总体逻辑就是：1. 先遍历树上节点建立这样一个 map；2. 再根据 map 求出
+     *   p、q 两条路径的第一个交叉点。
+     * - 实现：Step 2、3就是在求两个链表的交叉点，即 L160_IntersectionOfTwoLinkedLists 解法1的经典应用。
      * - 限制：∵ Map 无法插入多个相同的 key ∴ 只能用于 BST，而无法用于一般的二叉树。
-     * - 👉 总结 ：Step 2、3实际上就是“找到两个链表交叉点”，即 L160_IntersectionOfTwoLinkedLists 解法1的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
