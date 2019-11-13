@@ -74,7 +74,7 @@ public class L560_SubarraySumEqualsK {
      * - 思路：解法1中通过双指针滑动来遍历所有 subarray 的过程还可以通过区间和的方式来表达：sum[j..i] = sum[0..i] - sum[0..j-1]。
      *   这样一来只需滑动 i、j 两个指针即可用通过区间和相减得到所有的 subarray 之和（即 sum[j..i]）。而要方便的计算任意 i、j
      *   之间的区间和，需要先计算 prefix sum，即每个位置 i 上的累加和 sums[i]。
-     * - 💎经验：Prefix Sum 本质是为每个位置缓存累加和（cummulative sums），是在求解区间求和问题时的一种常用技巧。
+     * - 💎 经验：Prefix Sum 本质是为每个位置缓存累加和（cummulative sums），是求解“区间求和”类问题时的常用技巧。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int subarraySum2(int[] nums, int k) {
@@ -99,29 +99,29 @@ public class L560_SubarraySumEqualsK {
      *   因而可以采用 L1_TwoSum 解法4的思路求解 —— 在遍历过程中累积 sum[0..i]，然后一边检查其 complement（sum[0..i] - k，
      *   即 sum[0..j-1]）是否存在于 map 中，一边将 sum[0..i] 插入到 map 中。通过这种方式又将时间复杂度降低一个次方。
      *   对于 nums = [4, 2, -1, 5, -5, 5], k = 5：
-     *               ↑                    - sum=4, get(4-5)不存在, count=0, {0:1, 4:1}
-     *                  ↑                 - sum=6, get(6-5)不存在, count=0, {0:1, 4:1, 6:1}
-     *                      ↑             - sum=5,  get(5-5)=1    count=1, {0:1, 4:1, 6:1, 5:1}
-     *                         ↑          - sum=10, get(10-5)=1,  count=2, {0:1, 4:1, 6:1, 5:1, 10:1}
-     *                             ↑      - sum=5,  get(5-5)=1,   count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
-     *                                 ↑  - sum=10, get(10-5)=2,  count=5, {0:1, 4:1, 6:1, 5:2, 10:2}
+     *               ↑                    - preSum=4, get(4-5)不存在, count=0, {0:1, 4:1}
+     *                  ↑                 - preSum=6, get(6-5)不存在, count=0, {0:1, 4:1, 6:1}
+     *                      ↑             - preSum=5,  get(5-5)=1    count=1, {0:1, 4:1, 6:1, 5:1}
+     *                         ↑          - preSum=10, get(10-5)=1,  count=2, {0:1, 4:1, 6:1, 5:1, 10:1}
+     *                             ↑      - preSum=5,  get(5-5)=1,   count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
+     *                                 ↑  - preSum=10, get(10-5)=2,  count=5, {0:1, 4:1, 6:1, 5:2, 10:2}
      * - 注意：代码中 count += 的必须是 sum-k 的频率，而不能是 count++。举例说明：在👆最后一行中，get(10-5)=2 的意义是
-     *   “能让当前 sum[0..i] - sum[0..j-1] == k（即 10 - sum[0..j-1] == 5）的 subarray 一共有2个”（即 sum[0..2] 和
-     *   sum[0..4]）∴ 要把这个个数加到 count 上，而不能只++。
-     * - 👉总结：该题与 L437_PathSumIII 都是 Prefix Sum 和 Two Sum 思想的经典应用。
+     *   “能与当前 prefix sum 相减等于 k（即 10 - sum[0..j-1] == 5）的 subarray 一共有2个”（sum[0..2] 和 sum[0..4]）
+     *   ∴ 要把这个个数加到 count 上，而不能只++。
+     * - 👉 总结：该题与 L437_PathSumIII 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum3(int[] nums, int k) {
-        int count = 0, sum = 0;
-        Map<Integer, Integer> map = new HashMap<>();     // 存储 <prefixSum, frequency>
-        map.put(0, 1);                                   // 需要先插入 <0, 1>
+        int count = 0, preSum = 0;
+        Map<Integer, Integer> map = new HashMap<>();  // 存储 <prefix sum, frequency>
+        map.put(0, 1);                                // 需要先插入 <0,1> 用于 preSum == k 的情况（例如👆get(5-5) 的情况）
 
         for (int n : nums) {
-            sum += n;                                    // 遍历过程中求 prefix sum
-            int complement = sum - k;
+            preSum += n;                              // 累积 prefix sum
+            int complement = preSum - k;
             if (map.containsKey(complement))
-                count += map.get(complement);            // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
-            map.put(sum, map.getOrDefault(sum, 0) + 1);  // 将 sum 插入 map，并记录/更新其频率
+                count += map.get(complement);         // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
+            map.put(preSum, map.getOrDefault(preSum, 0) + 1);  // 将 sum 插入 map，并记录/更新其频率
         }
 
         return count;
@@ -132,14 +132,14 @@ public class L560_SubarraySumEqualsK {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum4(int[] nums, int k) {
-        int count = 0, sum = 0;
+        int count = 0, preSum = 0;
         Map<Integer, Integer> map = new HashMap<>();
         map.put(0, 1);
 
         for (int n : nums) {
-            sum += n;
-            count += map.getOrDefault(sum - k, 0);  // 经验：map.containsKey + map.get = map.getOrDefault
-            map.merge(sum, 1, Integer::sum);        // 相当于 map.put(sum, map.getOrDefault(sum) + 1)
+            preSum += n;
+            count += map.getOrDefault(preSum - k, 0);  // 经验：map.containsKey + map.get = map.getOrDefault
+            map.merge(preSum, 1, Integer::sum);        // 相当于 map.put(sum, map.getOrDefault(sum) + 1)
         }
 
         return count;
