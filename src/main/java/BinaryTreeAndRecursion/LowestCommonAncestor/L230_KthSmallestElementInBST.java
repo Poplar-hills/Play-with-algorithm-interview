@@ -23,8 +23,8 @@ import Utils.Helpers.TreeNode;
 
 public class L230_KthSmallestElementInBST {
     /*
-     * 解法1：Recursion（DFS 中序遍历）
-     * - 思路：利用“BST 的中序遍历会从小到大遍历节点”这一性质。
+     * 解法1：Recursion（DFS, In-order Traversal）
+     * - 思路：∵ BST 的中序遍历是从小到大遍历节点的 ∴ 只要返回中序遍历结果列表中的第 k 个元素即可。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int kthSmallest(TreeNode root, int k) {
@@ -57,19 +57,16 @@ public class L230_KthSmallestElementInBST {
 
     private Integer inorder2(TreeNode node, int k) {
         if (node == null) return null;
-
         Integer res = inorder2(node.left, k);
         if (res != null) return res;        // 若在左子树中找到了结果，则直接返回（不再往下执行）
-
         if (++count == k) return node.val;  // 若在该节点就是第 k 大，则返回它
-
         return inorder2(node.right, k);     // 若左子树中没有找到，同时也不是该节点，则一定在右子树中
     }
 
     /*
-     * 解法3：Iteration (DFS 中序遍历)
-     * - 思路：中序遍历的非递归实现。
-     * - 时间复杂度 O(h+k)，解释同 解法2；空间复杂度 O(h+k) ∵ stack 中最多有 h+k 个节点。
+     * 解法3：Iteration (DFS, In-order Traversal) (解法2的非递归实现)
+     * - 时间复杂度 O(h+k)，解释同解法2；
+     * - 空间复杂度 O(h+k) ∵ stack 中最多有 h+k 个节点。
      * */
     public static int kthSmallest3(TreeNode root, int k) {
         Stack<TreeNode> stack = new Stack<>();
