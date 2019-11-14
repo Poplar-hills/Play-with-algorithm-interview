@@ -3,7 +3,9 @@ package RecursionAndBackTracking;
 import static Utils.Helpers.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /*
  * Letter Combinations of a Phone Number
@@ -70,12 +72,12 @@ public class L17_LetterCombinationsOfPhoneNumber {
     /*
      * 解法2：Iteration (解法1的非递归版)
      * - 思路：纯用循环遍历实现：对于 digits="23" 来说：
-     *                       res = [""]
+     *                       res = [""]                 - 将 res 中的每一个元素与"2"对应的每一个字母组合
      *            / "a"  ->  ""+"a" -> temp=["a"]
      *        "2" - "b"  ->  ""+"b" -> temp=["a", "b"]
      *            \ "c"  ->  ""+"c" -> temp=["a", "b", "c"]
      *
-     *                       res = ["a", "b", "c"]
+     *                       res = ["a", "b", "c"]      - 将 res 中的每一个元素与"3"对应的每一个字母组合
      *                  /->  "a"+"d" -> temp=["ad"]
      *            / "d" -->  "b"+"d" -> temp=["ad", "bd"]
      *           /      \->  "c"+"d" -> temp=["ad", "bd", "cd"]
@@ -107,16 +109,27 @@ public class L17_LetterCombinationsOfPhoneNumber {
     }
 
     /*
-     * 解法3：
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * 解法3：Iteration (解法2的简化版)
+     * - 思路：解法2通过一个临时列表 temp 实现了对 res 中的元素进行加工和添加的功能，而这个过程其实可以采用 Queue 来化简。
+     * - 时间复杂度 O(3^n * 4^m)，空间复杂度 O(3^n * 4^m)。
      * */
     public static List<String> letterCombinations3(String digits) {
-        return null;
+        Queue<String> q = new LinkedList<>();
+        if (digits.isEmpty()) return new ArrayList<>();
+        q.offer("");
+
+        while (q.peek().length() != digits.length()) {  // 若队首元素长度 = digits 长度，说明所有组合都已找到
+            String combo = q.poll();                    // 出队下一个代加工的组合
+            String letterStr = letterMap[digits.charAt(combo.length()) - '0'];  // 根据该组合的长度找到加工原料
+            for (char l : letterStr.toCharArray())      // 加工
+                q.offer(combo + l);
+        }
+
+        return new ArrayList<>(q);
     }
 
     public static void main(String[] args) {
-        log(letterCombinations2("23"));  // expects ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
-        log(letterCombinations2(""));    // expects []
+        log(letterCombinations3("23"));  // expects ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+        log(letterCombinations3(""));    // expects []
     }
 }
