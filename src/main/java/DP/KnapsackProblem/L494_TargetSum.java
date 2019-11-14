@@ -14,8 +14,7 @@ import static Utils.Helpers.*;
 
 public class L494_TargetSum {
     /*
-     * 解法1：Back-tracking（即 DFS，而没有 memoization 的 DFS 就是 Brute force)
-     * - TODO: Brute force 与 Back-tracking 与 DFS 的关系？？？
+     * 解法1：Recursion + Backtracking（即 DFS，而没有 memoization 的 DFS 就是 Brute force)
      * - 思路：∵ nums 中的每个元素都有 + 或 - 两种选择 ∴ 每个选择都会产生两条路径。比如对 nums=[1,2,3], S=0 来说：
      *                          0
      *                    +1/       \-1
@@ -24,7 +23,7 @@ public class L494_TargetSum {
      *            3       -1        1       -3
      *        +3/ -3\  +3/ -3\  +3/ -3\  +3/ -3\
      *        6     0  2    -4   4   -2   0    -6
-     *   可见形成了一个树形结构，而树天然具有递归性，因此可采用回溯法（即 DFS）求解。
+     *   所有可能的路径形成树形结构，而树天然具有递归性 ∴ 可采用递归+回溯求解（类似 L17_LetterCombinationsOfPhoneNumber）。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int findTargetSumWays(int[] nums, int S) {
