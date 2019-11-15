@@ -3,6 +3,7 @@ package RecursionAndBackTracking;
 import static Utils.Helpers.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -51,10 +52,35 @@ public class L93_RestoreIPAddresses {
         }
     }
 
+    /*
+     * 解法2：Iteration
+     * - 时间复杂度 O()，空间复杂度 O()，其中 n 为 s 的长度（注：O(2^n) 只是量级，并不精确）。
+     * */
+    public static List<String> restoreIpAddresses2(String s) {
+        List<String> res = new ArrayList<String>();
+        int len = s.length();
+        for (int i = 1; i < 4 && i < len - 2; i++) {
+            for (int j = i + 1; j < i + 4 && j < len - 1; j++) {
+                for (int k = j + 1; k < j + 4 && k < len; k++) {
+                    String s1 = s.substring(0, i), s2 = s.substring(i, j), s3 = s.substring(j, k), s4 = s.substring(k, len);
+                    if (isValid(s1) && isValid(s2) && isValid(s3) && isValid(s4))
+                        res.add(String.join(".", Arrays.asList(s1, s2, s3, s4)));
+                }
+            }
+        }
+        return res;
+    }
+
+    private static boolean isValid(String comp) {
+        return !(comp.length() > 3
+            || (comp.length() > 1 && comp.startsWith("0"))
+            || Integer.parseInt(comp) > 255);
+    }
+
     public static void main(String[] args) {
-        log(restoreIpAddresses("25525511135"));  // expects ["255.255.11.135", "255.255.111.35"]
-        log(restoreIpAddresses("123456789"));    // expects ["123.45.67.89"]
-        log(restoreIpAddresses("12345"));        // expects ["1.2.3.45", "1.2.34.5", "1.23.4.5", "12.3.4.5"]
-        log(restoreIpAddresses("02095"));        // expects ["0.2.0.95", "0.20.9.5"]
+        log(restoreIpAddresses2("25525511135"));  // expects ["255.255.11.135", "255.255.111.35"]
+        log(restoreIpAddresses2("123456789"));    // expects ["123.45.67.89"]
+        log(restoreIpAddresses2("12345"));        // expects ["1.2.3.45", "1.2.34.5", "1.23.4.5", "12.3.4.5"]
+        log(restoreIpAddresses2("02095"));        // expects ["0.2.0.95", "0.20.9.5"]
     }
 }
