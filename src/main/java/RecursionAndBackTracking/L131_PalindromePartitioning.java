@@ -32,6 +32,7 @@ public class L131_PalindromePartitioning {
      * */
     public static List<List<String>> partition(String s) {
         List<List<String>> res = new ArrayList<>();
+        if (s.equals("")) return res;
         dfs(s, 0, new ArrayList<>(), res);
         return res;
     }
@@ -67,6 +68,7 @@ public class L131_PalindromePartitioning {
      * */
     public static List<List<String>> partition2(String s) {
         List<List<String>> res = new ArrayList<>();
+        if (s.equals("")) return res;
         dfs2(s, 0, new ArrayList<>(), res);
         return res;
     }
@@ -89,43 +91,45 @@ public class L131_PalindromePartitioning {
     /*
      * 解法3：Double DP
      * - 思路：观察解法1中的树，可见：
-     *     1. 对于"bb"的切分出现了两次，而且切分结果都是 ["b","b"]、["bb"] ∴ 可以采用 dp 的思路进行优化，避免重复计算；
-     *     2. 对于每一次切分尝试都要执行一次 isPalindrome() 的检查 ∴ 同样可以使用 dp 的思路进行优化，避免重复检查。
+     *   1. 对于"bb"的切分出现了两次，而且切分结果都是 ["b","b"]、["bb"] ∴ 可以采用 dp 的思路进行优化，避免重复计算；
+     *   2. 对于每一次切分尝试都要执行一次 isPalindrome() 的检查 ∴ 同样可以使用 dp 的思路进行优化，避免重复检查。
      * - 实现：
-     *     1. dp[i] 表示 s[0..i] 上的切分结果，即 s[0..i] 上的所有回文子串列表；
-     *        状态转移方程：TODO: ???
-     *     2. palChecks[j][i] 表示 s[j..i] 是否是 palindrome（通过 palChecks[j+1][i-1] 递推出来），
-     *        状态转移方程：g(j,i) = (s[i] == s[j]) && (i-j<=1 || g(j+1, i-1))（例："ab" -> "aabb"）。
-     *   据此，有 dp 的状态转移方程 f(i)
+     *   1. dp[i] 表示 s[0..i) 上的切分结果（即 s 前 i 个字符上的解），其状态转移方程为：TODO: ????
+     *   2. palChecks[j][i] 表示 s[j..i] 是否是 palindrome（通过 palChecks[j+1][i-1] 递推出来），其状态转移方程为：
+     *      g(j, i) = (s[i] == s[j]) && (i-j<=1 || g(j+1, i-1))（例："ab" -> "aabb"）。
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static List<List<String>> partition3(String s) {
+        if (s.equals("")) return new ArrayList<>();
         int len = s.length();
-		List<List<String>>[] dp = new List[len + 1];    // dp[i] 记录 s[0..i] 上的解（注意创建列表数组的语法）
-        boolean[][] palChecks = new boolean[len][len];  // palChecks[j][i] 记录 s[j..i] 是否是一个回文串
+		List<List<String>>[] dp = new List[len + 1];     // dp[i] 记录 s[0..i) 上的解（注意创建列表数组的语法）
+        boolean[][] palChecks = new boolean[len][len];   // palChecks[j][i] 记录 s[j..i] 是否是一个回文串
 
 		dp[0] = new ArrayList<>();
 		dp[0].add(new ArrayList<>());
 
-		for (int i = 0; i < s.length(); i++) {
-			dp[i + 1] = new ArrayList<>();
-			for (int j = 0; j <= i; j++) {
+		for (int i = 0; i < s.length(); i++) {           // i 为子串的右边界
+			dp[i + 1] = new ArrayList<>();               // 初始化 dp[i+1] 处的列表（即 s[0..i] 上的解列表）
+			for (int j = 0; j <= i; j++) {               // j 为子串的左边界
 				if ((s.charAt(j) == s.charAt(i)) && (i - j <= 1 || palChecks[j + 1][i - 1])) { // 递推 s[j..i] 是否是回文串
 					palChecks[j][i] = true;
-					String str = s.substring(j, i + 1);  // 获得子串 s[j..i]
-					for (List<String> list : dp[j]) {    // 给 s[0..j] 的解中的每个列表都添加子串 s[j..i]（通过 dp[j] 递推 dp[i]）
+					String str = s.substring(j, i + 1);  // 获得回文串 s[j..i]
+					for (List<String> list : dp[j]) {    // dp[j] 中每个列表都是 s[0..j) 上的一个解
 						List<String> newList = new ArrayList<>(list);
 						newList.add(str);
-						dp[i + 1].add(newList);
+						dp[i + 1].add(newList);          // 复制 s[0..j) 上的每一个解，追加上面获得的回文子串后再放入 dp[i+1] 中
 					}
 				}
 			}
 		}
-		return dp[len];
+		return dp[len];  // ∵ dp[i] 记录的是 s 的前 i 个字符 s[0..i) 上的解 ∴ 这里返回的是 dp[len]
     }
 
     public static void main(String[] args) {
         log(partition3("aab"));   // expects [["aa","b"], ["a","a","b"]]
         log(partition3("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
+        log(partition3("zz"));    // expects [["z","z"], ["zz"]]
+        log(partition3("zzz"));   // expects [["z","z","z"], ["z","zz"], ["zz","z"], ["zzz"]]
+        log(partition3(""));      // expects []
     }
 }
