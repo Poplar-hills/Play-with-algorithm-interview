@@ -3,7 +3,6 @@ package RecursionAndBackTracking;
 import static Utils.Helpers.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -15,8 +14,8 @@ import java.util.List;
 public class L93_RestoreIPAddresses {
     /*
      * 解法1：Recursion + Backtracking
-     * - 思路：采用类似 L17_LetterCombinationsOfPhoneNumber 解法1的回溯法，设置指针 i 在 s 上滑动，∵ 每次滑动可以有3种
-     *   不同情况（滑动1~3位）∴ 分别对这3种情况进行分支，递归下去检查是否能得到有效 ip。
+     * - 思路：该题是一个组合问题 ∴ 可转化为树形问题求解，具体来说可采用类似 L17 解法1的回溯法。设置指针 i 在 s 上滑动 ∵ 每次
+     *   滑动可以有3种不同情况（滑动1~3位）∴ 分别对这3种情况进行分支，递归下去检查是否能得到有效 ip：
      *                                  ""
      *                    /             |            \
      *              "1"                "12"            "123"

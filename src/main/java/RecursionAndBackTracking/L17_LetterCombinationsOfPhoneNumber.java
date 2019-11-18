@@ -43,8 +43,9 @@ public class L17_LetterCombinationsOfPhoneNumber {
      *         d/ e| f\   d/ e| f\   d/ e| f\
      *        ad  ae  af bd  be  bf cd  ce  cf
      *
-     * - 时间复杂度 O(3^n * 4^m)，其中 digits 里能映射为3个字母的数字个数为 n，能映射为4个字母的数字个数为 m。该解的时间复杂
-     *   度就相当于所有不同组合的个数，例如 digits="237"，其中"2"、"3"各有3种取值，"7"有4种取值 ∴ 一共有 3*3*4 种组合方式。
+     * - 时间复杂度 O(2^n) 级别（具体为 O(3^n * 4^m)），其中 n 为 digits 中能映射为3个字母的数字个数，m 为能映射为4个字母
+     *   的数字个数。该解的时间复杂度就相当于所有不同组合的个数，例如 digits="237"，其中"2"、"3"各有3种取值，"7"有4种取值
+     *   ∴ 一共有 3*3*4 种组合方式。
      * - 空间复杂度 O(len(digits))。
      * */
     private static final String[] letterMap =     // 用数组实现映射表最方便（前两个空字符串是为了便于随机访问）
