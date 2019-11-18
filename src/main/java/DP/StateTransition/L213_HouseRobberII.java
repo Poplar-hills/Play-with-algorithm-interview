@@ -3,21 +3,21 @@ package DP.StateTransition;
 import static Utils.Helpers.log;
 
 /*
-* House Robber II
-*
-* - 基本与 L198_HouseRobber 中的条件一样，只是本题中的街道为环形，即给定的数组 nums 中的最后一个元素和第一个元素相邻。问在该
-*   街道中，在不触发警报的情况下，最多能盗取多少财产。
-* */
+ * House Robber II
+ *
+ * - 基本与 L198_HouseRobber 中的条件一样，只是本题中的街道为环形，即给定的数组 nums 中的最后一个元素和第一个元素相邻。问在该
+ *   街道中，在不触发警报的情况下，最多能盗取多少财产。
+ * */
 
 public class L213_HouseRobberII {
     /*
-    * 解法1：DP
-    * - 思路：This problem can simply be decomposed into two L198_HouseRobber problems. Since house 0 and n-1
-    *   are now neighbors and we can't rob them together, the solution is now the maximum of robbing houses
-    *   [0..n-2] and robbing houses [1..n-1].
-    * - 实现：采用 L198_HouseRobber 解法3，状态转移方程：f(i) = max(nums[i] + f(i - 2), f(i - 1))。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：DP
+     * - 思路：This problem can simply be decomposed into two L198_HouseRobber problems. Since house 0 and n-1
+     *   are now neighbors and we can't rob them together, the solution is now the maximum of robbing houses
+     *   [0..n-2] and robbing houses [1..n-1].
+     * - 实现：采用 L198_HouseRobber 解法3，状态转移方程：f(i) = max(nums[i] + f(i - 2), f(i - 1))。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static int rob(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
         int n = nums.length;
@@ -42,13 +42,13 @@ public class L213_HouseRobberII {
     }
 
     /*
-    * 解法2：DP（另一种子问题定义方式）
-    * - 思路：同解法1。
-    * - 实现：采用 L198_HouseRobber 解法4，状态转移方程：
-    *        1. y(i) = nums[i] + n(i - 1)；
-    *        2. n(i) = max(y(i - 1), n(i - 1))。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
+     * 解法2：DP（另一种子问题定义方式）
+     * - 思路：同解法1。
+     * - 实现：采用 L198_HouseRobber 解法4，状态转移方程：
+     *        1. y(i) = nums[i] + n(i - 1)；
+     *        2. n(i) = max(y(i - 1), n(i - 1))。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static int rob2(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
         int n = nums.length;

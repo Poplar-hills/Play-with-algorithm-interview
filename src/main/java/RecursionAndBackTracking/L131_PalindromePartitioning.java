@@ -9,7 +9,7 @@ import java.util.List;
  * Palindrome Partitioning
  *
  * - Given a string s, partition s such that every substring of the partition is a palindrome. Return all
- *   possible palindrome partitioning of s.
+ *   possible palindrome partitioning of s (找出能组成 s 的所有回文子串列表).
  * */
 
 public class L131_PalindromePartitioning {
@@ -86,8 +86,46 @@ public class L131_PalindromePartitioning {
         }
     }
 
+    /*
+     * 解法3：Double DP
+     * - 思路：观察解法1中的树，可见：
+     *     1. 对于"bb"的切分出现了两次，而且切分结果都是 ["b","b"]、["bb"] ∴ 可以采用 dp 的思路进行优化，避免重复计算；
+     *     2. 对于每一次切分尝试都要执行一次 isPalindrome() 的检查 ∴ 同样可以使用 dp 的思路进行优化，避免重复检查。
+     * - 实现：
+     *     1. dp[i] 表示 s[0..i] 上的切分结果，即 s[0..i] 上的所有回文子串列表；
+     *        状态转移方程：???
+     *     2. palChecks[j][i] 表示 s[j..i] 是否是 palindrome（通过 palChecks[j+1][i-1] 递推出来），
+     *        状态转移方程：g(j,i) = (s[i] == s[j]) && (i-j<=1 || g(j+1, i-1))（例："ab" -> "aabb"）。
+     *   据此，有 dp 的状态转移方程 f(i)
+     * - 时间复杂度 O()，空间复杂度 O()。
+     * */
+    public static List<List<String>> partition3(String s) {
+        int len = s.length();
+		List<List<String>>[] dp = new List[len + 1];    // dp[i] 记录 s[0..i] 上的解（注意创建列表数组的语法）
+        boolean[][] palChecks = new boolean[len][len];  // palChecks[j][i] 记录 s[j..i] 是否是一个回文串
+
+		dp[0] = new ArrayList<>();
+		dp[0].add(new ArrayList<>());
+
+		for (int i = 0; i < s.length(); i++) {
+			dp[i + 1] = new ArrayList<>();
+			for (int j = 0; j <= i; j++) {
+				if ((s.charAt(j) == s.charAt(i)) && (i - j <= 1 || palChecks[j + 1][i - 1])) { // 递推 s[j..i] 是否是回文串
+					palChecks[j][i] = true;
+					String str = s.substring(j, i + 1);  // 获得子串 s[j..i]
+					for (List<String> list : dp[j]) {    // 给 s[0..j] 的解中的每个列表都添加子串 s[j..i]（通过 dp[j] 递推 dp[i]）
+						List<String> newList = new ArrayList<>(list);
+						newList.add(str);
+						dp[i + 1].add(newList);
+					}
+				}
+			}
+		}
+		return dp[len];
+    }
+
     public static void main(String[] args) {
-        log(partition2("aab"));   // expects [["aa","b"], ["a","a","b"]]
-        log(partition2("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
+        log(partition3("aab"));   // expects [["aa","b"], ["a","a","b"]]
+        log(partition3("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
     }
 }
