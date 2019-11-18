@@ -26,7 +26,7 @@ public class L131_PalindromePartitioning {
      *         |
      *        "b"
      * - 时间复杂度 O(n)：一个长度为 n 的字符串有 n-1 个间隔，而在每个间隔上都有2种选择：切分或不切分 ∴ 该字符串共有 2^(n-1)
-     *   种切分方式，即需要 2^(n-1) 次递归 ∴ 是 O(2^n) 量级的复杂度。而每次递归需要复制一遍字符串 + 运行 isPalindrome（都是
+     *   种切分方式，即需要 2^(n-1) 次递归 ∴ 是 O(2^n) 量级的复杂度。而每次递归需要复制字符串列表 + 执行 isPalindrome（都是
      *   O(n) 操作） ∴ 总复杂度为 O(2^n * n^2)。
      * - 空间复杂度 O(n)。
      * */
@@ -36,15 +36,15 @@ public class L131_PalindromePartitioning {
         return res;
     }
 
-    private static void dfs(String s, int i, List<String> path, List<List<String>> res) {
+    private static void dfs(String s, int i, List<String> list, List<List<String>> res) {
         if (i == s.length()) {
-            res.add(path);
+            res.add(list);
             return;
         }
         for (int j = i + 1; j <= s.length(); j++) {
             String str = s.substring(i, j);
             if (isPalindrome(str)) {
-                List<String> newPath = new ArrayList<>(path);
+                List<String> newPath = new ArrayList<>(list);  // 复制字符串列表
                 newPath.add(str);
                 dfs(s, j, newPath, res);  // 注意继续往下递归时的起点为 j（∵ 要继续递归的对象是剩下没处理的字符串）
             }
