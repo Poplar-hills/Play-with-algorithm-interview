@@ -93,7 +93,7 @@ public class L131_PalindromePartitioning {
      *     2. 对于每一次切分尝试都要执行一次 isPalindrome() 的检查 ∴ 同样可以使用 dp 的思路进行优化，避免重复检查。
      * - 实现：
      *     1. dp[i] 表示 s[0..i] 上的切分结果，即 s[0..i] 上的所有回文子串列表；
-     *        状态转移方程：???
+     *        状态转移方程：TODO: ???
      *     2. palChecks[j][i] 表示 s[j..i] 是否是 palindrome（通过 palChecks[j+1][i-1] 递推出来），
      *        状态转移方程：g(j,i) = (s[i] == s[j]) && (i-j<=1 || g(j+1, i-1))（例："ab" -> "aabb"）。
      *   据此，有 dp 的状态转移方程 f(i)
