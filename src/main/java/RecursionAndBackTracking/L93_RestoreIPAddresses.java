@@ -28,7 +28,9 @@ public class L93_RestoreIPAddresses {
      *     - 若一个 ip 中的 component 个数 < 3，但 i 已到达 s 末尾，则该 ip 无效；
      *     - 若一个 component 大于1位但以"0"开头，则该 component 无效；
      *     - 若一个 component 大于255，则该 component 无效。
-     * - 时间复杂度 O(2^n)，空间复杂度 O(n)，其中 n 为 s 的长度（注：O(2^n) 只是量级，可以以任意常数为底，并不精确）。
+     * - 时间复杂度 O(2^n)：一个长度为 n 的字符串有 n-1 个间隔，而每个间隔上都有2种选择：切分或不切分 ∴ 该字符串共有 2^(n-1)
+     *   种切分方式，即需要 2^(n-1) 次递归 ∴ 总体是 O(2^n) 量级的复杂度。
+     * - 空间复杂度 O(n)。
      * */
     public static List<String> restoreIpAddresses(String s) {
         List<String> res = new ArrayList<>();
