@@ -1,4 +1,4 @@
-package RecursionAndBackTracking;
+package RecursionAndBackTracking.Basics;
 
 import static Utils.Helpers.*;
 
