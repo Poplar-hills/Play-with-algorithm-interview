@@ -3,7 +3,9 @@ package RecursionAndBackTracking.Permutations;
 import static Utils.Helpers.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /*
  * Permutations
@@ -51,18 +53,33 @@ public class L46_Permutations {
     }
 
     /*
-     * 解法2：
-     * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路
+     * 解法2：Iteration (解法1的简化版)
+     * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法1中对 res 中元素加工和添加的过程。
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static List<List<Integer>> permute2(int[] nums) {
-        return null;
+        Queue<List<Integer>> q = new LinkedList<>();
+        if (nums.length == 0) return new ArrayList<>();
+        q.offer(new ArrayList<>());
+
+        for (int i = 0; i < nums.length; i++) {
+            while (q.peek().size() == i) {
+                List<Integer> list = q.poll();
+                for (int j = 0; j <= list.size(); j++) {
+                    List<Integer> newList = new ArrayList<>(list);
+                    newList.add(j, nums[i]);
+                    q.offer(newList);
+                }
+            }
+        }
+
+        return new ArrayList<>(q);
     }
 
     public static void main(String[] args) {
-        log(permute(new int[]{1, 2, 3}));  // expects [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
-        log(permute(new int[]{1, 2}));     // expects [[1,2], [2,1]]
-        log(permute(new int[]{1}));        // expects [[1]]
-        log(permute(new int[]{}));         // expects []
+        log(permute2(new int[]{1, 2, 3}));  // expects [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+        log(permute2(new int[]{1, 2}));     // expects [[1,2], [2,1]]
+        log(permute2(new int[]{1}));        // expects [[1]]
+        log(permute2(new int[]{}));         // expects []
     }
 }
