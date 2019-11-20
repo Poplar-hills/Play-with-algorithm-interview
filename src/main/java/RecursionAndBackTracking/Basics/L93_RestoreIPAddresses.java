@@ -34,11 +34,11 @@ public class L93_RestoreIPAddresses {
      * */
     public static List<String> restoreIpAddresses(String s) {
         List<String> res = new ArrayList<>();
-        dfs(s, 0, "", 0, res);
+        backtrack(s, 0, "", 0, res);
         return res;
     }
 
-    private static void dfs(String s, int i, String restoredIp, int count, List<String> res) {
+    private static void backtrack(String s, int i, String restoredIp, int count, List<String> res) {
         if (count > 4) return;
         if (count == 4 && i == s.length()) res.add(restoredIp);
 
@@ -49,7 +49,7 @@ public class L93_RestoreIPAddresses {
             if ((comp.startsWith("0") && comp.length() > 1) || Integer.parseInt(comp) > 255) continue;
 
             String newIp = restoredIp + comp + (count == 3 ? "" : ".");
-            dfs(s, i + n, newIp, count + 1, res);
+            backtrack(s, i + n, newIp, count + 1, res);
         }
     }
 

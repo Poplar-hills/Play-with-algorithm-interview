@@ -33,11 +33,11 @@ public class L131_PalindromePartitioning {
     public static List<List<String>> partition(String s) {
         List<List<String>> res = new ArrayList<>();
         if (s.equals("")) return res;
-        dfs(s, 0, new ArrayList<>(), res);
+        backtrack(s, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void dfs(String s, int i, List<String> list, List<List<String>> res) {
+    private static void backtrack(String s, int i, List<String> list, List<List<String>> res) {
         if (i == s.length()) {
             res.add(list);
             return;
@@ -47,7 +47,7 @@ public class L131_PalindromePartitioning {
             if (isPalindrome(str)) {
                 List<String> newPath = new ArrayList<>(list);  // 复制字符串列表
                 newPath.add(str);
-                dfs(s, j, newPath, res);  // ∵ 要继续递归的对象是剩下没处理的字符串 ∴ 继续往下递归时的起点为 j
+                backtrack(s, j, newPath, res);  // ∵ 要继续递归的对象是剩下没处理的字符串 ∴ 继续往下递归时的起点为 j
             }
         }
     }

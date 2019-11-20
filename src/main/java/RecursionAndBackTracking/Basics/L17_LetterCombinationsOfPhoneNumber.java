@@ -53,11 +53,11 @@ public class L17_LetterCombinationsOfPhoneNumber {
 
     public static List<String> letterCombinations(String digits) {
         List<String> res = new ArrayList<>();
-        dfs(digits, 0, "", res);
+        backtrack(digits, 0, "", res);
         return res;
     }
 
-    public static void dfs(String digits, int i, String combo, List<String> res) {
+    public static void backtrack(String digits, int i, String combo, List<String> res) {
         if (digits.isEmpty()) return;
         String letterStr = letterMap[digits.charAt(i) - '0'];  // 将 char 转换为 int（'5'-'0'的结果为5）
 
@@ -66,7 +66,7 @@ public class L17_LetterCombinationsOfPhoneNumber {
             if (i == digits.length() - 1)         // 若到达叶子节点则将组合放入结果集中
                 res.add(newCombo);
             else                                  // 否则继续递归
-                dfs(digits, i + 1, newCombo, res);
+                backtrack(digits, i + 1, newCombo, res);
         }
     }
 
