@@ -85,11 +85,15 @@ public class L46_Permutations {
      *              [1]            [2]            [3]
      *           2/    3\       1/    3\        1/    2\
      *        [1,2]   [1,3]   [2,1]   [2,3]   [3,1]   [3,2]
-     *         1|      2|      3|      1|      2|      1|
+     *         3|      2|      3|      1|      2|      1|
      *       [1,2,3] [1,3,2] [2,1,3] [2,3,1] [3,1,2] [3,2,1]
      *
      *   但这种方式需要在添加时判断待添加的元素是否已经在列表中 ∴ 需要一个辅助数据结构来对此进行高效查询。
-     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n^n)：
+     *   - 若不考虑 if (!used[i]) 的判断，则该解法相当于遍历一棵 n 叉树（n-ary）∵ 二叉树的节点个数为 2^h，三叉树为 3^h，
+     *     n 叉树为 n^h ∴ 遍历 n 叉树的复杂度为 O(n^h)，而该题中树高 h 又与叉数 n 相等 ∴ 总体复杂度为 O(n^n)。
+     *   - 若考虑 if (!used[i]) 的判断，则每递归一层都会减少一个分支，TODO: 如何计算该复杂度？？？？
+     * - 空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permute3(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
@@ -103,12 +107,12 @@ public class L46_Permutations {
             res.add(new ArrayList<>(list));  // 递归到底时 list 才是一个完整的排列 ∴ 此时再将其加入 res
             return;
         }
-        for (int i = 0; i < nums.length; i++) {     // 选择 nums 中的不同元素添加进 list 里
-            if (!used[i]) {                         // 前提是 list 中还没有该元素
+        for (int i = 0; i < nums.length; i++) {     // 每次递归中都要遍历 nums 以找到可以添加进 list 的元素
+            if (!used[i]) {                         // list 中没有的元素是可以添加的
                 list.add(nums[i]);
                 used[i] = true;
                 backtrack3(nums, list, used, res);  // 继续往下递归
-                list.remove(list.size() - 1);       // 在返回上一层递归前将 list 恢复原状（这也是回溯的内涵之一）（若每次复制 list，则这里无需 remove）
+                list.remove(list.size() - 1);       // 在返回上一层递归前将 list 恢复原状（这是回溯的特征之一，但若每次复制 list，则无需恢复）
                 used[i] = false;                    // used[i] 也要回复原状
             }
         }
