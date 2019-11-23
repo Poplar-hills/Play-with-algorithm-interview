@@ -15,7 +15,7 @@ import java.util.Queue;
 
 public class L46_Permutations {
     /*
-     * 解法1：
+     * 解法1：Iteration
      * - 思路：采用类似 L17_LetterCombinationsOfPhoneNumber 解法2的思路，对于 nums 中的每个元素，都放到 res 中的每个列表
      *   里的每个插入点上，生成一个新的排列。例如，对于 [1,2,3] 来说：
      *                           /--> [3,2,1]
