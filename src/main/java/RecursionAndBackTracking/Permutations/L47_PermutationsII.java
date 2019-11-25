@@ -96,7 +96,7 @@ public class L47_PermutationsII {
     }
 
     /*
-     * 解法4：Recursion + Backtracking + Sort
+     * 解法4：Recursion + Backtracking + Inner Set
      * - 思路：不同于解法1、2、3，该解法不使用 Set 去重，而是先观察 test case，例如对于 nums=[1,2,1] 来说：
      *                              []
      *                  1/          2|          1\
@@ -106,14 +106,13 @@ public class L47_PermutationsII {
      *          1|      2|      1|      1|      2|      1|
      *        [1,2,1] [1,1,2] [2,1,1] [2,1,1] [1,1,2] [1,2,1]
      *
-     *   可见在对 []、[2] 进行
-     *
-     * - 时间复杂度 O(nlogn + n!)，空间复杂度 O(n)。
+     *   可见在对 []、[2] 进行分支时，都出现了重复的分支 ∴ 需要一种能消除重复的分支的方法。而消除重复分支的关键在于判断 nums
+     *   中的重复元素 ∴ 可以采用 Set 实现。
+     * - 时间复杂度 O(n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permuteUnique4(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums.length == 0) return res;
-        Arrays.sort(nums);  // 先排序，后面才能跳过 nums[i] == nums[i-1] 的元素
         helper4(nums, new ArrayList<>(), new boolean[nums.length], res);
         return res;
     }
@@ -123,9 +122,40 @@ public class L47_PermutationsII {
             res.add(new ArrayList<>(list));
             return;
         }
+        Set<Integer> set = new HashSet<>();                  // 创建 Set 用于
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i] || set.contains(nums[i])) continue;  // 这里通过 Set 识别 nums 中的重复元素
+            set.add(nums[i]);
+            list.add(nums[i]);
+            used[i] = true;
+            helper4(nums, list, used, res);
+            list.remove(list.size() - 1);
+            used[i] = false;
+        }
+    }
+
+    /*
+     * 解法5：Recursion + Backtracking + Sort
+     * - 思路：与解法4完全相同。
+     * - 实现：不同于解法4中采用 Set 识别 nums 中的重复元素，该解法先对 nums 排序，再通过判断前后两个元素是否相等的方式去重。
+     * - 时间复杂度 O(nlogn + n!)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> permuteUnique5(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums.length == 0) return res;
+        Arrays.sort(nums);    // 这里要先排序，后面才能进行 nums[i] == nums[i-1] 的判断
+        helper5(nums, new ArrayList<>(), new boolean[nums.length], res);
+        return res;
+    }
+
+    private static void helper5(int[] nums, List<Integer> list, boolean[] used, List<List<Integer>> res) {
+        if (list.size() == nums.length) {
+            res.add(new ArrayList<>(list));
+            return;
+        }
         for (int i = 0; i < nums.length; i++) {
             if (used[i]) continue;
-            if (i > 0 && nums[i] == nums[i - 1] && used[i - 1]) continue;  // 跳过重复元素（不添加到 list 中）
+            if (i > 0 && nums[i] == nums[i - 1] && used[i - 1]) continue;  // 通过比较前后两个元素来识别重复
             list.add(nums[i]);
             used[i] = true;
             helper4(nums, list, used, res);
@@ -135,10 +165,11 @@ public class L47_PermutationsII {
     }
 
     public static void main(String[] args) {
-        log(permuteUnique4(new int[]{1, 1, 2}));  // expects [[1,1,2], [1,2,1], [2,1,1]]
-        log(permuteUnique4(new int[]{1, 2, 1}));  // expects [[1,1,2], [1,2,1], [2,1,1]]
-        log(permuteUnique4(new int[]{1, 2}));     // expects [[1,2], [2,1]]
-        log(permuteUnique4(new int[]{1}));        // expects [[1]]
-        log(permuteUnique4(new int[]{}));         // expects []
+        log(permuteUnique4(new int[]{1, 1, 2}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
+        log(permuteUnique4(new int[]{1, 2, 1}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
+        log(permuteUnique4(new int[]{1, 1, 2, 1}));  // expects [[1,1,1,2], [1,1,2,1], [1,2,1,1], [2,1,1,1]]
+        log(permuteUnique4(new int[]{1, 2}));        // expects [[1,2], [2,1]]
+        log(permuteUnique4(new int[]{1}));           // expects [[1]]
+        log(permuteUnique4(new int[]{}));            // expects []
     }
 }
