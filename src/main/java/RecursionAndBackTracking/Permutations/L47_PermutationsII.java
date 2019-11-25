@@ -158,18 +158,47 @@ public class L47_PermutationsII {
             if (i > 0 && nums[i] == nums[i - 1] && used[i - 1]) continue;  // 通过比较前后两个元素来识别重复
             list.add(nums[i]);
             used[i] = true;
-            helper4(nums, list, used, res);
+            helper5(nums, list, used, res);
             list.remove(list.size() - 1);
             used[i] = false;
         }
     }
 
+    /*
+     * 解法6：Recursion + In-place swap + Inner Set
+     * - 思路：将解法3与解法4的思路相结合。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> permuteUnique6(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums.length == 0) return res;
+        helper6(nums, 0, res);
+        return res;
+    }
+
+    private static void helper6(int[] nums, int i, List<List<Integer>> res) {
+        if (i == nums.length) {
+            List<Integer> list = new ArrayList<>();
+            for (int n : nums) list.add(n);
+            res.add(list);
+            return;
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int j = i; j < nums.length; j++) {
+            if (set.contains(nums[j])) continue;  // 若 nums[j] 已经在 set 中了（已经与其余元素 swap 过了）则跳过
+            set.add(nums[j]);
+            swap(nums, i, j);
+            helper6(nums, i + 1, res);
+            swap(nums, i, j);
+        }
+    }
+
     public static void main(String[] args) {
-        log(permuteUnique4(new int[]{1, 1, 2}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
-        log(permuteUnique4(new int[]{1, 2, 1}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
-        log(permuteUnique4(new int[]{1, 1, 2, 1}));  // expects [[1,1,1,2], [1,1,2,1], [1,2,1,1], [2,1,1,1]]
-        log(permuteUnique4(new int[]{1, 2}));        // expects [[1,2], [2,1]]
-        log(permuteUnique4(new int[]{1}));           // expects [[1]]
-        log(permuteUnique4(new int[]{}));            // expects []
+        log(permuteUnique6(new int[]{1, 1, 2}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
+        log(permuteUnique6(new int[]{1, 2, 1}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
+        log(permuteUnique6(new int[]{1, 1, 2, 1}));  // expects [[1,1,1,2], [1,1,2,1], [1,2,1,1], [2,1,1,1]]
+        log(permuteUnique6(new int[]{1, 2}));        // expects [[1,2], [2,1]]
+        log(permuteUnique6(new int[]{1}));           // expects [[1]]
+        log(permuteUnique6(new int[]{}));            // expects []
     }
 }
