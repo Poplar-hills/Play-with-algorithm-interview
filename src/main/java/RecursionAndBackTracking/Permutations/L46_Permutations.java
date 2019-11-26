@@ -11,6 +11,8 @@ import java.util.Queue;
  * Permutations
  *
  * - Given a collection of distinct integers, return all possible permutations (求 n 个数字的全排列).
+ *
+ * - 💎 总结：排列问题（Permutation）通常可以转化为树形问题，并通过回溯法解决。
  * */
 
 public class L46_Permutations {
