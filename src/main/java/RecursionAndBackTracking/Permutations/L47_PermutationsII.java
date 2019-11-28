@@ -97,7 +97,8 @@ public class L47_PermutationsII {
 
     /*
      * 解法4：Recursion + Backtracking + Inner Set
-     * - 思路：不同于解法1、2、3，该解法不使用 Set 去重，而是先观察 test case，例如对于 nums=[1,2,1] 来说：
+     * - 思路：不同于解法1、2、3使用 Set 对结果集进行去重，本解法根本根本不产生重复解。具体来说，先观察 test case，例如，
+     *   对于 nums = [1,2,1] 来说：
      *                              []
      *                  1/          2|          1\
      *               [1]            [2]            [1]
