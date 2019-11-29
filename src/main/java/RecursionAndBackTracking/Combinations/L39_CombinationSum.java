@@ -61,7 +61,7 @@ public class L39_CombinationSum {
     }
 
     /*
-     * 解法2：Recursion + Backtracking +
+     * 解法2：Recursion + Backtracking + sort + 剪枝
      * - 思路：解法1是在找到所有解之后再进行去重，而更优的做法是根本不产生重复的解，即需要对树进行剪枝以避免进入产生重复解的分支。
      *   根据该思路，可以采用 L77_Combinations 解法1中的方式 —— 让每个节点在遍历 candidates 时不回头，只遍历 >= 当前分支
      *   的 candidates ∴ 解法1中的树会被剪成这样：
@@ -97,10 +97,42 @@ public class L39_CombinationSum {
         }
     }
 
+    /*
+     * 解法2：DP
+     * - 思路：
+     * - 时间复杂度 O()，空间复杂度 O()。
+     * */
+    public static List<List<Integer>> combinationSum3(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>>[] dp = new List[target + 1];  // dp[i] 保存所有和为 i 的组合（∴ 最后返回 dp[target] 即可）
+
+        for (int i = 0; i <= target; i++) {
+            List<List<Integer>> comboList = new ArrayList<>();
+
+            for (int j = 0; j < candidates.length && candidates[j] <= i; j++) {  // 找到所有和为 i 的组合
+                int c = candidates[j];
+                if (c == i) comboList.add(Arrays.asList(c));     // c == i 的情况需特殊处理
+                else {
+                    for (List<Integer> combo : dp[i - c]) {      // 遍历 dp[i-c] 中的每一个组合
+                        if (c >= combo.get(combo.size() - 1)) {
+                            List<Integer> newCombo = new ArrayList<>(combo);
+                            newCombo.add(c);
+                            comboList.add(newCombo);
+                        }
+                    }
+                }
+            }
+            dp[i] = comboList;
+        }
+
+        return dp[target];
+    }
+
     public static void main(String[] args) {
-        log(combinationSum2(new int[]{2, 3, 6, 7}, 7));  // expects [[7], [2,2,3]]
-        log(combinationSum2(new int[]{2, 7, 3, 6}, 7));  // expects [[7], [2,2,3]]
-        log(combinationSum2(new int[]{2, 3, 5}, 8));     // expects [[2,2,2,2], [2,3,3], [3,5]]
-        log(combinationSum2(new int[]{3}, 8));           // expects []
+        log(combinationSum3(new int[]{2, 3, 6, 7}, 7));  // expects [[7], [2,2,3]]
+        log(combinationSum3(new int[]{2, 7, 3, 6}, 7));  // expects [[7], [2,2,3]]
+        log(combinationSum3(new int[]{2, 3, 5}, 8));     // expects [[2,2,2,2], [2,3,3], [3,5]]
+        log(combinationSum3(new int[]{2, 3, 5}, 5));     // expects [[2,3], [5]]
+        log(combinationSum3(new int[]{3}, 8));           // expects []
     }
 }
