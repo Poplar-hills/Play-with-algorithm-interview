@@ -10,7 +10,7 @@ import java.util.Arrays;
  * - Given an integer array with all positive numbers and no duplicates, find the number of possible
  *   combinations that add up to a positive integer target. (与 L39_CombinationSum 的不同之处在于：1. 只返回解的
  *   个数即可；2. 解中元素是顺序相关的，见 Notes 第2点)。
-
+ *
  * - Notes：
  *   1. 数组中的整数可被重复使用；
  *   2. 结果是顺序相关的，即 112 和 211 是两种不同组合。
@@ -24,7 +24,9 @@ public class L377_CombinationSumIV {
      *                   2/        3|       4\
      *                   4          3         2
      *               2/ 3| 4\    2/  3\      2|
-     *               2   1   0   1    0       0
+     *               2   1   0   1    0       0        - 找到解 2+4, 3+3, 4+2
+     *              2|
+     *               0                                 - 找到解 2+2+2
      *
      *   形式化的表达：f(6) = f(6-2) + f(6-3) + f(6-4)
      *                    = f(4) + f(3) + f(2)
@@ -46,45 +48,45 @@ public class L377_CombinationSumIV {
 
     /*
      * 解法1：Recursion + Memoization (DFS with cache)
-     * - 思路：基于以上分析，该问题满足最优子结构、重叠子问题性质，因此可以采用 Memoization 优化上面的地归解。
+     * - 思路：在超时解中，可以看到其中存在重叠子问题（如 f(2) 被计算了两次）∴ 可以采用 Memoization 进行优化。
      * - 时间复杂度 O(n*target)，空间复杂度 O(target)。
      * */
     public static int combinationSum1(int[] nums, int target) {
         if (target <= 0 || nums == null || nums.length == 0) return 0;
         int[] cache = new int[target + 1];
         Arrays.fill(cache, -1);
-        return combinationSum1(nums, target, cache);
+        return helper1(nums, target, cache);
     }
 
-    public static int combinationSum1(int[] nums, int i, int[] cache) {
-        if (i == 0) return 1;    // The base case 最基本问题，即上面的 f(0) = 1
-        if (cache[i] != -1) return cache[i];
+    public static int helper1(int[] nums, int target, int[] cache) {
+        if (target == 0) return 1;                 // The base case 最基本问题，即上面的 f(0) = 1
+        if (cache[target] != -1) return cache[target];
 
         int count = 0;
         for (int n : nums)
-            if (i - n >= 0)
-                count += combinationSum1(nums, i - n, cache);
+            if (target - n >= 0)
+                count += helper1(nums, target - n, cache);
 
-        return cache[i] = count;
+        return cache[target] = count;
     }
 
     /*
      * 解法2：DP
-     * - 思路：基于超时解中的递归过程，可总结出：
-     *   - 定义子问题：f(i) 表示“用 nums 中的元素凑出 i 的方法数”；
+     * - 思路：基于超时解中的递归过程，可知：
+     *   - 定义子问题：f(i) 表示“用 nums 中的元素凑出 i 的方法个数”；
      *   - 状态转移方程：f(i) = sum(f(i - nums[j]))，其中 j ∈ [0, nums.length) && i >= nums[j]。
      * - 时间复杂度 O(n*target)，空间复杂度 O(target)。
      * */
     public static int combinationSum2(int[] nums, int target) {
         if (target <= 0 || nums == null || nums.length == 0) return 0;
 
-        int[] dp = new int[target + 1];
+        int[] dp = new int[target + 1];    // dp[i] 表示用 nums 中的元素凑出 i 的方法个数（∵ 最后要取 dp[target] ∴ 这里开辟 target+1 的空间）
         dp[0] = 1;                         // 解决 i=0 时的 base case
 
-        for (int i = 1; i <= target; i++)  // 循环从 i=1 开始，对每个 i 都遍历一遍 nums 中的元素
+        for (int i = 1; i <= target; i++)  // 循环从1开始，为每个 i 都遍历一遍 nums 中的元素
             for (int n : nums)
                 if (i >= n)
-                    dp[i] += dp[i - n];    // dp[i-n] 表示能凑成 i-n 的方法数
+                    dp[i] += dp[i - n];
 
         return dp[target];
     }
