@@ -9,7 +9,7 @@ import java.util.List;
  * Combination Sum III
  *
  * - Find all possible combinations of k numbers that add up to a number n, given that only numbers from 1 to
- *   9 can be used and each combination should be a unique set of numbers. (从1-9中选出 k 个数字，使他们的和为 n)
+ *   9 can be used and each combination should be a unique set of numbers. (从 1-9 中选出 k 个数字，使他们的和为 n)
  *
  * - Notes:
  *   1. All numbers will be positive integers.
@@ -19,7 +19,8 @@ import java.util.List;
 public class L216_CombinationSumIII {
     /*
      * 解法1：Recursion + Backtracking
-     * - 时间复杂度 << O(n^9)，空间复杂度 O(n)。
+     * - 时间复杂度 O(C(9,k))：从 1-9 中选出 k 个数，即 C(9,k) = A(9,k) / k! = (9! / (9-k)!) / k! = 9! / (k! * (9-k)!)；
+     * - 空间复杂度 O(k)：递归深度为 k。
      * */
     public static List<List<Integer>> combinationSum(int k, int n) {
         List<List<Integer>> res = new ArrayList<>();
