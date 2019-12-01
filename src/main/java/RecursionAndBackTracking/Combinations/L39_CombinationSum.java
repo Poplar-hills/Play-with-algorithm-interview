@@ -12,7 +12,7 @@ import java.util.Set;
  * Combination Sum
  *
  * - Given a set of unique candidate numbers and a target number, find all the unique combinations in the
- *   candidate numbers that sums to the target number.
+ *   candidate where the candidates sums to the target. (注意不同于 L40，candidates 中的元素是无重复的)
  *
  * - Notes:
  *   1. The same repeated number may be chosen from candidates unlimited number of times.
@@ -99,7 +99,7 @@ public class L39_CombinationSum {
 
     /*
      * 解法2：DP
-     * - 思路：
+     * - 思路：TODO: ????
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static List<List<Integer>> combinationSum3(int[] candidates, int target) {
@@ -129,10 +129,9 @@ public class L39_CombinationSum {
     }
 
     public static void main(String[] args) {
-        log(combinationSum3(new int[]{2, 3, 6, 7}, 7));  // expects [[7], [2,2,3]]
-        log(combinationSum3(new int[]{2, 7, 3, 6}, 7));  // expects [[7], [2,2,3]]
-        log(combinationSum3(new int[]{2, 3, 5}, 8));     // expects [[2,2,2,2], [2,3,3], [3,5]]
-        log(combinationSum3(new int[]{2, 3, 5}, 5));     // expects [[2,3], [5]]
-        log(combinationSum3(new int[]{3}, 8));           // expects []
+        log(combinationSum3(new int[]{2, 7, 3, 6}, 7));     // expects [[7], [2,2,3]]
+        log(combinationSum3(new int[]{2, 3, 5}, 8));        // expects [[2,2,2,2], [2,3,3], [3,5]]
+        log(combinationSum3(new int[]{2, 3, 5}, 5));        // expects [[2,3], [5]]
+        log(combinationSum3(new int[]{3}, 8));              // expects []
     }
 }
