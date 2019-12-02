@@ -24,22 +24,23 @@ public class L78_Subsets {
      *            [1,2] [1,3]  [2,3]
      *             3|
      *           [1,2,3]
-     *   可见：
+     *   由此可见：
      *     - 在填充过程中得到的所有中间结果和最终结果都是有效解；
      *     - 递归填充过程的结束时机是到达3，即 nums 的最后一个元素。
      *
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * - 时间复杂度 O(2^n)：C(n,1) + C(n,2) + ... + C(n,n) = 2^n - C(n,0) = O(2^n)；
+     * - 空间复杂度 O(n)。
      * */
     public static List<List<Integer>> subsets(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length == 0) return res;
-        res.add(new ArrayList<>());
+        res.add(new ArrayList<>());          // 空列表解
         helper(nums, 0, new ArrayList<>(), res);
         return res;
     }
 
     private static void helper(int[] nums, int i, List<Integer> list, List<List<Integer>> res) {
-        if (i == nums.length) return;
+        if (i == nums.length) return;        // 到达 nums 尾部时递归结束
         for (int j = i; j < nums.length; j++) {
             list.add(nums[j]);
             res.add(new ArrayList<>(list));  // 收集所有填充结果
