@@ -49,7 +49,39 @@ public class L78_Subsets {
         }
     }
 
+    /*
+     * 解法2：Iteration
+     * - 思路：对于 nums 中的每个元素都可以选用或不选用：
+     *     1. 若选用，则将该元素追加到所有已找到的 subset 中；
+     *     2. 若不选用，则所有已找到的 subset 不变。
+     *   例如对于 [1,2,3] 来说，最初有空集解 []，之后：
+     *     - 若选用1，则将1追加到 [] 中的每个里，得到解 [1]；若不选用1，则还是 []；
+     *       将两个解合并得到 [[],[1]]。
+     *     - 若选用2，则将2追加到 [[],[1]] 中的每个里，得到解 [[2],[1,2]]；若不选用2，则还是 [[],[1]]；
+     *       将两个解合并得到 [[],[1],[2],[1,2]]。
+     *     - 若选用3，则将3追加到 [[],[1],[2],[1,2]] 中的每个里，得到解 [[3],[1,3],[2,3],[1,2,3]]；若不选用2，则还是
+     *       [[],[1],[2],[1,2]]；将两个解合并得到 [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]。
+     * - 时间复杂度 O(n * 2^n)：遍历 nums 中的元素是 O(n)，对其中每个元素都 double the size of the results ∴ 是 O(2^n)。
+     * - 空间复杂度 O(1)。
+     * */
+    public static List<List<Integer>> subsets2(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums == null || nums.length == 0) return res;
+        res.add(new ArrayList<>());
+
+        for (int n : nums) {
+            for (int i = 0, size = res.size(); i < size; i++) {    // 遍历 res 中的每个 subset
+                List<Integer> list = new ArrayList<>(res.get(i));  // 复制 subset，并往里追加 n
+                list.add(n);
+                res.add(list);
+            }
+        }
+
+        return res;
+    }
+
     public static void main(String[] args) {
-        log(subsets(new int[]{1, 2, 3}));  // expects [[3], [1], [2], [1,2,3], [1,3], [2,3], [1,2], []]
+        log(subsets2(new int[]{1, 2, 3}));  // expects [[3], [1], [2], [1,2,3], [1,3], [2,3], [1,2], []]
+        log(subsets2(new int[]{3, 2, 1}));  // expects [[3], [1], [2], [1,2,3], [1,3], [2,3], [1,2], []]
     }
 }
