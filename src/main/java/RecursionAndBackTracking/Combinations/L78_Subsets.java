@@ -8,7 +8,7 @@ import java.util.List;
 /*
  * Subsets
  *
- * - Given a set of distinct integers, nums, return all possible subsets (the power set).
+ * - Given a set of distinct integers, return all possible subsets (the power set).
  *
  * - Note: The solution set must not contain duplicate subsets (e.g. [1,2] and [2,1] are duplicate subsets).
  * */
@@ -61,7 +61,8 @@ public class L78_Subsets {
      *       将两个解合并得到 [[],[1],[2],[1,2]]。
      *     - 若选用3，则将3追加到 [[],[1],[2],[1,2]] 中的每个里，得到解 [[3],[1,3],[2,3],[1,2,3]]；若不选用2，则还是
      *       [[],[1],[2],[1,2]]；将两个解合并得到 [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]。
-     * - 时间复杂度 O(n * 2^n)：遍历 nums 中的元素是 O(n)，对其中每个元素都 double the size of the results ∴ 是 O(2^n)。
+     * - 时间复杂度 O(n * 2^n)：从上面分析可知，对 nums 中的每个元素都有“选用”或“不选用”两种选择，且每个元素都会把解的个数
+     *   翻倍 ∴ 复杂度是 O(2^n)。
      * - 空间复杂度 O(1)。
      * */
     public static List<List<Integer>> subsets2(int[] nums) {
