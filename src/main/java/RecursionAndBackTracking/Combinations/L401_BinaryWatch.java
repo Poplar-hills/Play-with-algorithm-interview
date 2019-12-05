@@ -43,7 +43,7 @@ public class L401_BinaryWatch {
      *          1|    1|
      *          11     7                  - 选取3个数字时的解为 [11,7]（最多也只能选取3个数 ∵ 选取4个会 > 12）
      *
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * - 时间复杂度 O(num * (C(4, n) + C(6, n) + n^2))，空间复杂度 O(num)。
      * */
 
     final static int[] hours = {8, 4, 2, 1};
@@ -60,7 +60,7 @@ public class L401_BinaryWatch {
     }
 
     private static List<Integer> select(int[] nums, int n, int max) {  // 从 nums 中选出 n 个数，且数值要 < max
-        List<Integer> res = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();                         // 复杂度为 O(C(len(nums), n))
         helper(nums, n, max, 0, 0, res);
         return res;
     }
@@ -78,11 +78,11 @@ public class L401_BinaryWatch {
     private static void combine(List<Integer> hours, List<Integer> minutes, List<String> res) {
         for (int h : hours)
             for (int m : minutes)
-                res.add(String.format("%d:%02d", h, m));
-    }
+                res.add(h + ":" + (m < 10 ? "0" + m : m));  // 使用 String.format("%d:%02d", h, m) 也行，但效率低
+    }                                                       // "%02d" 表示保留2位数，不足2位数则前面补0
 
     public static void main(String[] args) {
-        // log(readBinaryWatch(1));
+        log(readBinaryWatch(1));
         // expects ["1:00", "2:00", "4:00", "8:00", "0:01", "0:02", "0:04", "0:08", "0:16", "0:32"]
 
         log(readBinaryWatch(2));
