@@ -81,11 +81,24 @@ public class L401_BinaryWatch {
                 res.add(h + ":" + (m < 10 ? "0" + m : m));  // 使用 String.format("%d:%02d", h, m) 也行，但效率低
     }                                                       // "%02d" 表示保留2位数，不足2位数则前面补0
 
+    /*
+     * 解法2：Iteration
+     * - 时间复杂度 O(12 * 60)，空间复杂度 O(1)。
+     * */
+    public static List<String> readBinaryWatch2(int num) {
+        List<String> res = new ArrayList<>();
+        for (int i = 0; i < 12; i++)
+            for (int j = 0; j < 60; j++)
+                if (Integer.bitCount(i) + Integer.bitCount(j) == num)
+                    res.add(String.format("%d:%02d", i, j));
+        return res;
+    }
+
     public static void main(String[] args) {
-        log(readBinaryWatch(1));
+        log(readBinaryWatch2(1));
         // expects ["1:00", "2:00", "4:00", "8:00", "0:01", "0:02", "0:04", "0:08", "0:16", "0:32"]
 
-        log(readBinaryWatch(2));
+        log(readBinaryWatch2(2));
         // expects ["0:03","0:05","0:06","0:09","0:10","0:12","0:17","0:18","0:20","0:24","0:33","0:34","0:36",
         // "0:40","0:48","1:01","1:02","1:04","1:08","1:16","1:32","2:01","2:02","2:04","2:08","2:16","2:32",
         // "3:00","4:01","4:02","4:04","4:08","4:16","4:32","5:00","6:00","8:01","8:02","8:04","8:08","8:16",
