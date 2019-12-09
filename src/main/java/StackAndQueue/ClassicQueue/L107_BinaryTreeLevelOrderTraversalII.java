@@ -1,7 +1,5 @@
 package StackAndQueue.ClassicQueue;
 
-import javafx.util.Pair;
-
 import java.util.*;
 
 import static Utils.Helpers.*;

@@ -1,12 +1,10 @@
 package StackAndQueue.BFSAndGraphShortestPath;
 
-import javafx.util.Pair;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static Utils.Helpers.log;
+import static Utils.Helpers.*;
 
 /*
 * Perfect Squares

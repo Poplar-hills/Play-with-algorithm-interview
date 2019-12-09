@@ -1,8 +1,8 @@
 package StackAndQueue.BFSAndGraphShortestPath;
 
-import javafx.util.Pair;
-
 import java.util.*;
+
+import Utils.Helpers.Pair;
 
 import static Utils.Helpers.log;
 

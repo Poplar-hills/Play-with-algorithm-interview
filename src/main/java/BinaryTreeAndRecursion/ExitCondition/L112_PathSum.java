@@ -1,12 +1,11 @@
 package BinaryTreeAndRecursion.ExitCondition;
 
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
-import static Utils.Helpers.log;
+import static Utils.Helpers.*;
 
 import java.util.Stack;
 
 import Utils.Helpers.TreeNode;
-import javafx.util.Pair;
 
 /*
  * Path Sum

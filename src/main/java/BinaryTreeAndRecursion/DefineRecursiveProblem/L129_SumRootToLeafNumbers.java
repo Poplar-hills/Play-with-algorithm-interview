@@ -1,12 +1,11 @@
 package BinaryTreeAndRecursion.DefineRecursiveProblem;
 
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
-import static Utils.Helpers.log;
+import static Utils.Helpers.*;
 
 import java.util.Stack;
 
 import Utils.Helpers.TreeNode;
-import javafx.util.Pair;
 
 /*
  * Sum Root to Leaf Numbers

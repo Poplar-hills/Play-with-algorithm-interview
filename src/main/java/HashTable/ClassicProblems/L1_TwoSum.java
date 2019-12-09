@@ -1,13 +1,11 @@
 package HashTable.ClassicProblems;
 
-import javafx.util.Pair;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import static Utils.Helpers.log;
+import static Utils.Helpers.*;
 
 /*
  * Two Sum
