@@ -68,14 +68,6 @@ public class L79_WordSearch {
         return m >= 0 && m < l && n >= 0 && n < w;
     }
 
-    /*
-     * 解法2：DP - 思路：f() - 时间复杂度 O()，空间复杂度 O()。
-     */
-    public static boolean exist2(char[][] board, String word) {
-
-        return true;
-    }
-
     public static void main(String[] args) {
         char[][] board1 = {
           {'A', 'B', 'C', 'E'},
