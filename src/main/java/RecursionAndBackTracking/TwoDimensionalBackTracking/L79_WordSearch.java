@@ -33,8 +33,8 @@ public class L79_WordSearch {
 
     private static int w, l;
     private static boolean[][] visited;
-    private static int[][] directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
-
+    private static int[][] directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};  // 位移数组（💎平面搜索问题中的常用技巧，但要注意对搜索
+                                                                             // 方向的顺序性是否有要求，如顺时针、只往右下搜索等限制）
     public static boolean exist(char[][] board, String word) {
         if (word == null || word.isEmpty() || board == null || board.length == 0) return false;
         l = board.length;
