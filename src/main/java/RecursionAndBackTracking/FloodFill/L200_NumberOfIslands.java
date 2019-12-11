@@ -24,7 +24,12 @@ public class L200_NumberOfIslands {
      *           1
      *   可见，当所有分支都走到头时相当于找到了一个完整的 island，此时一次 Flood Fill 结束，再继续在 grid 上搜索下一个
      *   还未填充过的1，并从那里开始新一轮 Flood Fill。
-     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     *
+     * - 时间复杂度 O(l*w)：时间复杂度可以用3个极端情况来估算：
+     *     1. 所有格子都是'1'：此时外层遍历耗时 l*w，floodFill 方法耗时 l*w ∴ 总时间复杂度 O(2*l*w)，即 O(l*w)；
+     *     2. 所有格子都是'0'：此时只有外层遍历耗时 l*w ∴ 总时间复杂度 O(l*w)；
+     *     3. 整个 grid 由'1'和'0'相间：与情况1相同，也是 O(l*w)。
+     * - 空间复杂度 O(l*w)。
      * */
 
     private static int l, w;
