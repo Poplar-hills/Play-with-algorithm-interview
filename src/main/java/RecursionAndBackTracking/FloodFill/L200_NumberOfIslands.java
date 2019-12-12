@@ -25,6 +25,9 @@ public class L200_NumberOfIslands {
      *   可见，当所有分支都走到头时相当于找到了一个完整的 island，此时一次 Flood Fill 结束，再继续在 grid 上搜索下一个
      *   还未填充过的1，并从那里开始新一轮 Flood Fill。
      *
+     * - 实现：∵ 不能重复填充格子 ∴ 需要单独创建一个 boolean[][] 来记录已填充过的格子。而另一种实现是 in-place modification，
+     *   即每次到达一个格子，就将这个 grid 中的这个格子标记为'0'，这样就不再需要单独创建 boolean[][] 了。
+     *
      * - 时间复杂度 O(l*w)：时间复杂度可以用3个极端情况来估算：
      *     1. 所有格子都是'1'：此时外层遍历耗时 l*w，floodFill 方法耗时 l*w ∴ 总时间复杂度 O(2*l*w)，即 O(l*w)；
      *     2. 所有格子都是'0'：此时只有外层遍历耗时 l*w ∴ 总时间复杂度 O(l*w)；
@@ -40,7 +43,7 @@ public class L200_NumberOfIslands {
         if (grid == null || grid.length == 0) return 0;
         l = grid.length;
         w = grid[0].length;
-        filled = new boolean[l][w];
+        filled = new boolean[l][w];  // 用于记录哪些格子已经填充过
         int count = 0;
 
         for (int m = 0; m < l; m++) {
@@ -68,28 +71,50 @@ public class L200_NumberOfIslands {
         return m >= 0 && m < l && n >= 0 && n < w;
     }
 
+    /*
+     * 解法2：
+     * - 思路：
+     * - 时间复杂度 O(l*w)，空间复杂度 O()。
+     * */
+    public static int numIslands2(char[][] grid) {
+        if (grid == null || grid.length == 0) return 0;
+        l = grid.length;
+        w = grid[0].length;
+        int count = 0;
+
+        for (int m = 0; m < l; m++) {
+            for (int n = 0; n < w; n++) {
+                if (grid[m][n] == '1') {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
     public static void main(String[] args) {
-        log(numIslands(new char[][] {            // expects 3
+        log(numIslands2(new char[][] {  // expects 3
             {'1', '1', '0', '0', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '1', '0', '0'},
             {'0', '0', '0', '1', '1'},
         }));
 
-        log(numIslands(new char[][] {            // expects 1
+        log(numIslands2(new char[][] {  // expects 1
             {'1', '1', '1', '1', '0'},
             {'1', '1', '0', '1', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '0', '0', '0'},
         }));
 
-        log(numIslands(new char[][] {            // expects 2
+        log(numIslands2(new char[][] {  // expects 2
             {'0', '0', '0'},
             {'0', '1', '1'},
             {'1', '0', '0'},
         }));
 
-        log(numIslands(new char[][] {            // expects 1
+        log(numIslands2(new char[][] {  // expects 1
             {'1'},
         }));
     }
