@@ -18,8 +18,8 @@ public class L200_NumberOfIslands {
     /*
      * 解法1：Recursion + Backtracking (DFS)
      * - 思路：该题是经典的 Flood Fill 场景，而 Flood Fill 算法其实非常简单，就是从单一的一个格子开始往各个方向填充（fill），
-     *   直到各个方向都走到头为止 ∴ Flood Fill 本质上就是基于回溯的 DFS ∴ 该解整体思路与 L79 类似。例如 test case 1：尝试
-     *   对 grid 上的每个格子进行 Flood Fill，其中从 [0, 0] 开使的 Flood Fill 如下：
+     *   直到各个方向都走到头为止 ∴ Flood Fill 本质上就是 DFS ∴ 该解整体思路与 L79 类似。例如 test case 1：尝试对 grid
+     *   上的每个格子进行 Flood Fill，其中从 [0, 0] 开使的 Flood Fill 如下：
      *              1
      *           ↓/  →\     - 只有 ↓、→ 两个方向可以填充
      *           1     1
@@ -27,6 +27,8 @@ public class L200_NumberOfIslands {
      *           1
      *   可见，当所有分支都走到头时相当于找到了一个完整的 island，此时一次 Flood Fill 结束，再继续在 grid 上搜索下一个
      *   还未填充过的1，并从那里开始新一轮 Flood Fill。
+     *
+     * - Flood Fill 本质上是 DFS，而它是否是回溯法则见仁见智（可以算也可以不算），不用太纠结。
      *
      * - 时间复杂度 O(l*w)：时间复杂度可以用3个极端情况来估算：
      *     1. 所有格子都是'1'：此时外层遍历耗时 l*w，floodFill 方法耗时 l*w ∴ 总时间复杂度 O(2*l*w)，即 O(l*w)；
@@ -48,7 +50,7 @@ public class L200_NumberOfIslands {
 
         for (int m = 0; m < l; m++) {
             for (int n = 0; n < w; n++) {
-                if (grid[m][n] == '1' && !filled[m][n]) {  // 找到下一个还未填充过的 island
+                if (grid[m][n] == '1' && !filled[m][n]) {  // 找到下一个还未填充过的 land
                     count++;                               // 此时就让 island 个数 +1（或放到下一句后面，即 Flood Fill 结束的地方也一样）
                     floodFill(grid, m, n);                 // 再从这里开始 Flood Fill
                 }
@@ -116,28 +118,46 @@ public class L200_NumberOfIslands {
         }
     }
 
+    /*
+     * 解法3：Union Find（并查集）
+     * - 思路：该问题可以建模为一个联通性问题，即 grid 中的所有 land 是否两两联通，若联通则属于同一个 island。由此问题转化为
+     *   求 grid 上任意两个是 land 的格子是否联通，而 Union Find 是专门解决连通性问题的数据结构 ∴ 在该思路下可设计程序：
+     *     1. 初始化并查集；
+     *     2. 遍历 grid 上的每个 land 格子；
+     *     3. 将每个 land 格子与其相邻的 land 格子进行 union 操作（使它们在并查集中共享一个 island 编号）
+     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     * */
+    public static int numIslands3(char[][] grid) {
+        if (grid == null || grid.length == 0) return 0;
+        l = grid.length;
+        w = grid[0].length;
+        int count = 0;
+
+        return count;
+    }
+
     public static void main(String[] args) {
-        log(numIslands2(new char[][] {  // expects 3
+        log(numIslands3(new char[][] {  // expects 3
             {'1', '1', '0', '0', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '1', '0', '0'},
             {'0', '0', '0', '1', '1'},
         }));
 
-        log(numIslands2(new char[][] {  // expects 1
+        log(numIslands3(new char[][] {  // expects 1
             {'1', '1', '1', '1', '0'},
             {'1', '1', '0', '1', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '0', '0', '0'},
         }));
 
-        log(numIslands2(new char[][] {  // expects 2
+        log(numIslands3(new char[][] {  // expects 2
             {'0', '0', '0'},
             {'0', '1', '1'},
             {'1', '0', '0'},
         }));
 
-        log(numIslands2(new char[][] {  // expects 1
+        log(numIslands3(new char[][] {  // expects 1
             {'1'},
         }));
     }
