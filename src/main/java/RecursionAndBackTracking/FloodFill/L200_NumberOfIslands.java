@@ -3,6 +3,9 @@ package RecursionAndBackTracking.FloodFill;
 
 import static Utils.Helpers.*;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
  * Number of Islands
  *
@@ -13,7 +16,7 @@ import static Utils.Helpers.*;
 
 public class L200_NumberOfIslands {
     /*
-     * 解法1：Recursion + Backtracking
+     * 解法1：Recursion + Backtracking (DFS)
      * - 思路：该题是经典的 Flood Fill 场景，而 Flood Fill 算法其实非常简单，就是从单一的一个格子开始往各个方向填充（fill），
      *   直到各个方向都走到头为止 ∴ Flood Fill 本质上就是基于回溯的 DFS ∴ 该解整体思路与 L79 类似。例如 test case 1：尝试
      *   对 grid 上的每个格子进行 Flood Fill，其中从 [0, 0] 开使的 Flood Fill 如下：
@@ -24,9 +27,6 @@ public class L200_NumberOfIslands {
      *           1
      *   可见，当所有分支都走到头时相当于找到了一个完整的 island，此时一次 Flood Fill 结束，再继续在 grid 上搜索下一个
      *   还未填充过的1，并从那里开始新一轮 Flood Fill。
-     *
-     * - 实现：∵ 不能重复填充格子 ∴ 需要单独创建一个 boolean[][] 来记录已填充过的格子。而另一种实现是 in-place modification，
-     *   即每次到达一个格子，就将这个 grid 中的这个格子标记为'0'，这样就不再需要单独创建 boolean[][] 了。
      *
      * - 时间复杂度 O(l*w)：时间复杂度可以用3个极端情况来估算：
      *     1. 所有格子都是'1'：此时外层遍历耗时 l*w，floodFill 方法耗时 l*w ∴ 总时间复杂度 O(2*l*w)，即 O(l*w)；
@@ -72,9 +72,13 @@ public class L200_NumberOfIslands {
     }
 
     /*
-     * 解法2：
-     * - 思路：
-     * - 时间复杂度 O(l*w)，空间复杂度 O()。
+     * 解法2：Iteration (BFS)
+     * - 思路：与解法1一致。
+     * - 实现：与解法1有两处不同：
+     *     1. 解法1中的 floodFill 方法采用的回溯本质上是 DFS，而该解法中 floodFill2 方法采用 BFS 实现；
+     *     2. 解法1中单独创建了 boolean[][] 用于记录哪些格子已被填充，而该解法中采用 in-place modification，即每到达一个
+     *        格子，就在 grid 中将这个格子标记为'0'，从而也能达到不重复填充的目的。
+     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     public static int numIslands2(char[][] grid) {
         if (grid == null || grid.length == 0) return 0;
@@ -86,11 +90,30 @@ public class L200_NumberOfIslands {
             for (int n = 0; n < w; n++) {
                 if (grid[m][n] == '1') {
                     count++;
+                    floodFill2(grid, m, n);
                 }
             }
         }
 
         return count;
+    }
+
+    private static void floodFill2(char[][] grid, int m, int n) {
+        grid[m][n] = '0';                      // ∵ 后面只会将相邻的格子置'0' ∴ 这里要先将起始格子置'0'
+        Queue<Pair<Integer, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(m, n));
+
+        while (!q.isEmpty()) {
+            Pair<Integer, Integer> pair = q.poll();
+            int oldM = pair.getKey(), oldN = pair.getValue();
+            for (int[] d : directions) {
+                int newM = oldM + d[0], newN = oldN + d[1];
+                if (validPos(newM, newN) && grid[newM][newN] == '1') {
+                    q.offer(new Pair<>(newM, newN));
+                    grid[newM][newN] = '0';    // 先将四周相邻的格子入队，而不是马上访问（BFS 与 DFS 的关键区别）
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
