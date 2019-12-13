@@ -125,7 +125,7 @@ public class L200_NumberOfIslands {
      *     1. 初始化并查集（此时并查集中每个 land 格子都是一个 island）；
      *     2. 遍历 grid 上的每个 land 格子；
      *     3. 不断将相邻的 land 格子 union 起来（让他们在并查集中共享一个 island id）。
-     * - 实现：该实现中没有
+     * - 改进：UnionFind 有很多优化策略：基于树大小、基于树高、基于路径压缩等方式，具体 SEE: play-with-data-structure/UnionFind
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     private static class UnionFind {
