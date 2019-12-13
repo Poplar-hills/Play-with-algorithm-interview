@@ -161,7 +161,8 @@ public class L200_NumberOfIslands {
 
     public static int numIslands3(char[][] grid) {
         if (grid == null || grid.length == 0) return 0;
-        int l = grid.length, w = grid[0].length;
+        l = grid.length;
+        w = grid[0].length;
         UnionFind uf = new UnionFind(grid);       // 初始化并查集
 
         for (int m = 0; m < l; m++) {
