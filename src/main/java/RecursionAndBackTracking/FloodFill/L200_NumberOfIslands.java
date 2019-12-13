@@ -129,7 +129,7 @@ public class L200_NumberOfIslands {
      * */
     private static class UnionFind {
         private int[] parents;
-        private int count;                     //
+        private int count;                     // 并查集中维护 island 的个数
 
         UnionFind(char[][] grid) {
             int l = grid.length, w = grid[0].length;
@@ -151,7 +151,7 @@ public class L200_NumberOfIslands {
             int qRoot = find(q);
             if (pRoot == qRoot) return;
             parents[pRoot] = qRoot;
-            count--;                 //
+            count--;                 // 若成功 union 两块 land 之后，island 的个数要 -1
         }
 
         private int find(int p) {
@@ -177,7 +177,7 @@ public class L200_NumberOfIslands {
             }
         }
 
-        return uf.count;
+        return uf.count;  // 最后返回并查集中的 count
     }
 
     public static void main(String[] args) {
