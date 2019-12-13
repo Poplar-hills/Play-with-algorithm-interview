@@ -127,13 +127,56 @@ public class L200_NumberOfIslands {
      *     3. 将每个 land 格子与其相邻的 land 格子进行 union 操作（使它们在并查集中共享一个 island 编号）
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
+    private static class UnionFind {
+        private int[] parents;
+        private int count;                     //
+
+        UnionFind(char[][] grid) {
+            int l = grid.length, w = grid[0].length;
+            parents = new int[l * w];          //
+
+            for (int m = 0; m < l; m++) {
+                for (int n = 0; n < w; n++) {
+                    if (grid[m][n] == '1') {
+                        int id = m * w + n;    //
+                        parents[id] = id;
+                        count++;
+                    }
+                }
+            }
+        }
+
+        public void union(int p, int q) {
+            int pRoot = find(p);
+            int qRoot = find(q);
+            if (pRoot == qRoot) return;
+            parents[pRoot] = qRoot;
+            count--;                 //
+        }
+
+        private int find(int p) {
+            return p == parents[p] ? p : find(parents[p]);
+        }
+    }
+
     public static int numIslands3(char[][] grid) {
         if (grid == null || grid.length == 0) return 0;
-        l = grid.length;
-        w = grid[0].length;
-        int count = 0;
+        int l = grid.length, w = grid[0].length;
+        UnionFind uf = new UnionFind(grid);       // 初始化并查集
 
-        return count;
+        for (int m = 0; m < l; m++) {
+            for (int n = 0; n < w; n++) {
+                if (grid[m][n] == '1') {          // 遍历 grid 上的每个 land 格子
+                    for (int[] d : directions) {  // 将每个 land 格子与其相邻的 land 格子进行 union
+                        int newM = m + d[0], newN = n + d[1];
+                        if (validPos(newM, newN) && grid[newM][newN] == '1')
+                            uf.union(m * w + n, newM * w + newN);  // 对格子 [m,n] 和 [newM,newN] 进行编码
+                    }
+                }
+            }
+        }
+
+        return uf.count;
     }
 
     public static void main(String[] args) {
