@@ -121,10 +121,11 @@ public class L200_NumberOfIslands {
     /*
      * 解法3：Union Find（并查集）
      * - 思路：该问题可以建模为一个联通性问题，即 grid 中的所有 land 是否两两联通，若联通则属于同一个 island。由此问题转化为
-     *   求 grid 上任意两个是 land 的格子是否联通，而 Union Find 是专门解决连通性问题的数据结构 ∴ 在该思路下可设计程序：
-     *     1. 初始化并查集；
+     *   求 grid 上任意两个是 land 的格子是否联通，而 Union Find 是专门解决连通性问题的数据结构 ∴ 根据该思路可设计程序：
+     *     1. 初始化并查集（此时并查集中每个 land 格子都是一个 island）；
      *     2. 遍历 grid 上的每个 land 格子；
-     *     3. 将每个 land 格子与其相邻的 land 格子进行 union 操作（使它们在并查集中共享一个 island 编号）
+     *     3. 不断将相邻的 land 格子 union 起来（让他们在并查集中共享一个 island id）。
+     * - 实现：该实现中没有
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     private static class UnionFind {
@@ -133,14 +134,14 @@ public class L200_NumberOfIslands {
 
         UnionFind(char[][] grid) {
             int l = grid.length, w = grid[0].length;
-            parents = new int[l * w];          //
+            parents = new int[l * w];          // parents 的大小即 grid 的大小
 
             for (int m = 0; m < l; m++) {
                 for (int n = 0; n < w; n++) {
-                    if (grid[m][n] == '1') {
-                        int id = m * w + n;    //
-                        parents[id] = id;
-                        count++;
+                    if (grid[m][n] == '1') {   // 初始化时给每个 land 格子一个唯一的 id
+                        int id = m * w + n;    // id 的生成公式（∵ m ∈ [0,l)，n ∈ [0,w) ∴ m*w+n ∈ [0,l*w)，正好是 parents 的大小）
+                        parents[id] = id;      // 💎 相当于通过 m*w+n 这个公式，把二维平面映射到了一维数组上
+                        count++;               // 初始化时每个 land 格子都是一个 island（之后再把相邻的 land 不断 union 起来）
                     }
                 }
             }
