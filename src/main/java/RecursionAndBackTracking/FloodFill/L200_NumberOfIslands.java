@@ -119,7 +119,7 @@ public class L200_NumberOfIslands {
     }
 
     /*
-     * 解法3：Union Find（并查集）
+     * 解法3：Flood Fill + Union Find
      * - 思路：该问题可以建模为一个联通性问题，即 grid 中的所有 land 是否两两联通，若联通则属于同一个 island。由此问题转化为
      *   求 grid 上任意两个是 land 的格子是否联通，而 Union Find 是专门解决连通性问题的数据结构 ∴ 根据该思路可设计程序：
      *     1. 初始化并查集（此时并查集中每个 land 格子都是一个 island）；

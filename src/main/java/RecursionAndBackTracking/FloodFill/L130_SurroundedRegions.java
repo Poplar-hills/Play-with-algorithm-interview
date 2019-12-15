@@ -86,7 +86,7 @@ public class L130_SurroundedRegions {
     }
 
     /*
-     * 超时解：Flood Fill + Iteration (BFS)
+     * 解法2：Flood Fill + Iteration (BFS)
      * - 思路：与 L200_NumberOfIslands 解法2一致。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
@@ -133,7 +133,7 @@ public class L130_SurroundedRegions {
     }
 
     /*
-     * 解法2：Flood Fill + Iteration (BFS) + Replace boundaries
+     * 解法3：Flood Fill + Iteration (BFS) + Replace boundaries
      * - 思路：另一种聪明的思路是，从 board 边界上的 'O' 开始 Flood Fill，将这些无效的 region 用特殊符号 '*' 填充。当所有
      *   的无效 region 被填充完之后，board 上剩余的 'O' 就都是有效的 region 了 ∴ 只需再将所有的 'O' flip 成 'X'，最后再
      *   将所有的 '*' 替换回 'O' 即可。
@@ -172,6 +172,84 @@ public class L130_SurroundedRegions {
         }
     }
 
+    /*
+     * 解法4：Union Find
+     * - 思路：
+     *     1. 与 L200_NumberOfIslands 类似，该问题也是连通性问题 ∴ 同样可以使用并查集求解；
+     *     2. 程序的总体思路借鉴解法3，即先标记出无效的 'O'（与边界联通的 'O'），而剩下的 'O' 就都是有效的、需要被 flip 的了。
+     *   结合1、2得到具体思路：在并查集中将所有无效的 'O' 连接到一个虚拟节点上，之后遍历 board 上的所有 'O'，若它与虚拟节点不
+     *   联通，则说明是有效的 'O'，从而需要 flip。
+     * - 时间复杂度 O()，空间复杂度 O()。
+     * */
+    private static class UnionFind {
+        private int[] parents;
+        private int dummyId;  // 作为属性是为了便于引用
+
+        UnionFind(char[][] board) {
+            int l = board.length, w = board[0].length;
+            parents = new int[l * w + 1];      // 多开辟1的空间存放虚拟节点
+            dummyId = parents[l * w] = l * w;  // 虚拟节点的 id
+
+            for (int m = 0; m < l; m++) {
+                for (int n = 0; n < w; n++) {
+                    if (board[m][n] == 'O') {
+                        int id = m * w + n;
+                        parents[id] = id;
+                    }
+                }
+            }
+        }
+
+        public void union(int m1, int n1, int m2, int n2) {
+            int pRoot = find(m1 * w + n1);
+            int qRoot = find(m2 * w + n2);
+            if (pRoot == qRoot) return;
+            parents[pRoot] = parents[qRoot];
+        }
+
+        public void unionWithDummy(int m, int n) {
+            int pRoot = find(m * w + n);
+            parents[pRoot] = dummyId;
+        }
+
+        public int find(int p) {
+            return (parents[p] == p || parents[p] == dummyId)
+                ? parents[p]
+                : find(parents[p]);
+        }
+
+        public boolean isConnectedToDummy(int m, int n) {
+            return find(m * w + n) == dummyId;
+        }
+    }
+
+    public static void solve4(char[][] board) {
+        if (board == null || board.length == 0 || board[0].length == 0) return;
+        l = board.length;
+        w = board[0].length;
+        UnionFind uf = new UnionFind(board);
+
+        for (int m = 0; m < l; m++) {       // 遍历 board 上所有的 'O'
+            for (int n = 0; n < w; n++) {
+                if (board[m][n] != 'O') continue;
+                if (m == 0 || m == l - 1 || n == 0 || n == w - 1)  // 若是边界上的 'O'，则连接到虚拟节点上
+                    uf.unionWithDummy(m, n);
+                else {  // 若非边界上的 'O'，则将其四周相邻的 'O' 连接到该 'O' 上（注意不是将该 'O' 连到四周的 'O' 上）
+                    for (int[] d : directions) {
+                        int newM = m + d[0], newN = n + d[1];
+                        if (board[newM][newN] == 'O')
+                            uf.union(m, n, newM, newN);
+                    }
+                }
+            }
+        }
+
+        for (int m = 1; m < l - 1; m++)  // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
+            for (int n = 1; n < w - 1; n++)
+                if (!uf.isConnectedToDummy(m, n))
+                    board[m][n] = 'X';
+    }
+
     public static void main(String[] args) {
         char[][] board1 = {
             {'X', 'X', 'X', 'X'},
@@ -179,7 +257,7 @@ public class L130_SurroundedRegions {
             {'X', 'X', 'O', 'X'},
             {'X', 'O', 'X', 'X'}
         };
-        solve3(board1);
+        solve4(board1);
         log(board1);
         /*
          * expects:
@@ -196,7 +274,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'O', 'X', 'O'}
         };
-        solve3(board2);
+        solve4(board2);
         log(board2);
         /*
          * expects: (nothing changes)
@@ -213,7 +291,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'X', 'X', 'O'}   // 该行第2个元素与 board2 中不同
         };
-        solve3(board3);
+        solve4(board3);
         log(board3);
         /*
          * expects: (nothing changes)
