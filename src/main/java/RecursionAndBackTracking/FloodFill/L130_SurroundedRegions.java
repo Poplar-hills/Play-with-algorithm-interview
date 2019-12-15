@@ -3,7 +3,9 @@ package RecursionAndBackTracking.FloodFill;
 import static Utils.Helpers.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /*
  * Surrounded Regions
@@ -54,8 +56,8 @@ public class L130_SurroundedRegions {
         for (int m = 0; m < l; m++) {
             for (int n = 0; n < w; n++) {
                 if (board[m][n] == 'O' && !filled[m][n]) {
-                    List<Pair<Integer, Integer>> list = new ArrayList<>();  // 用于记录当前 region
-                    if (validRegion(board, m, n, list))        // 若是有效 region 则 flip 该 region 中的所有格子
+                    List<Pair<Integer, Integer>> list = new ArrayList<>();  // 用于暂存当前 region 的所有格子
+                    if (validRegion(board, m, n, list))        // 若该 region 有效，则 flip 该其中的所有 'O'
                         for (Pair<Integer, Integer> p : list)
                             board[p.getKey()][p.getValue()] = 'X';
                 }
@@ -66,21 +68,68 @@ public class L130_SurroundedRegions {
     private static boolean validRegion(char[][] board, int m, int n, List<Pair<Integer, Integer>> list) {
         filled[m][n] = true;
         list.add(new Pair<>(m, n));
-        boolean res = true;   // ∵ 要一次性遍历完当前 region，不能发现无效就中途 return ∴ 采用变量记录该 region 是否有效
+        boolean isValid = true;  // ∵ 要一次性遍历完当前 region，不能发现无效就中途 return ∴ 采用变量记录该 region 是否有效
 
         for (int[] d : directions) {
             int newM = m + d[0], newN = n + d[1];
-            if (!validPos(newM, newN)) res = false;  // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效
+            if (!validPos(newM, newN)) isValid = false;  // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效
             else if (board[newM][newN] == 'O' && !filled[newM][newN])
                 if (!validRegion(board, newM, newN, list))
-                    res = false;
+                    isValid = false;
         }
 
-        return res;  // 遍历完后再该 region 是否有效的信息返回
+        return isValid;  // 遍历完后再该 region 是否有效的信息返回
     }
 
     private static boolean validPos(int m, int n) {
         return m >= 0 && m < l && n >= 0 && n < w;
+    }
+
+    /*
+     * 超时解：Flood Fill + Recursion (BFS)
+     * - 思路：与 L200_NumberOfIslands 解法2一致。
+     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     * */
+    public static void solve2(char[][] board) {
+        if (board == null || board.length == 0 || board[0].length == 0) return;
+        l = board.length;
+        w = board[0].length;
+        filled = new boolean[l][w];
+        List<Pair<Integer, Integer>> list = new ArrayList<>();  // 用于暂存当前 region 的所有格子
+
+        for (int m = 0; m < l; m++) {
+            for (int n = 0; n < w; n++) {
+                if (board[m][n] == 'O' && !filled[m][n]) {
+                    list.clear();                               // 每次使用前先清空
+                    if (validRegion2(board, m, n, list))        // 若该 region 有效，则 flip 该其中的所有 'O'
+                        for (Pair<Integer, Integer> p : list)
+                            board[p.getKey()][p.getValue()] = 'X';
+                }
+            }
+        }
+    }
+
+    private static boolean validRegion2(char[][] board, int m, int n, List<Pair<Integer, Integer>> list) {
+        boolean isValid = true;
+        Queue<Pair<Integer, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(m, n));
+
+        while (!q.isEmpty()) {
+            Pair<Integer, Integer> pair = q.poll();
+            int oldM = pair.getKey(), oldN = pair.getValue();
+            list.add(new Pair<>(oldM, oldN));
+            filled[oldM][oldN] = true;
+
+            for (int[] d : directions) {
+                int newM = oldM + d[0], newN = oldN + d[1];
+                if (!validPos(newM, newN))
+                    isValid = false;
+                else if (board[newM][newN] == 'O' && !filled[newM][newN])
+                    q.offer(new Pair<>(newM, newN));
+            }
+        }
+
+        return isValid;
     }
 
     public static void main(String[] args) {
@@ -90,7 +139,7 @@ public class L130_SurroundedRegions {
             {'X', 'X', 'O', 'X'},
             {'X', 'O', 'X', 'X'}
         };
-        solve(board1);
+        solve2(board1);
         log(board1);
         /*
          * expects:
@@ -107,7 +156,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'O', 'X', 'O'}
         };
-        solve(board2);
+        solve2(board2);
         log(board2);
         /*
          * expects: (nothing changes)
@@ -124,7 +173,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'X', 'X', 'O'}   // 该行第2个元素与 board2 中不同
         };
-        solve(board3);
+        solve2(board3);
         log(board3);
         /*
          * expects: (nothing changes)
