@@ -16,7 +16,7 @@ import java.util.Queue;
 
 public class L200_NumberOfIslands {
     /*
-     * 解法1：Recursion + Backtracking (DFS)
+     * 解法1：Flood Fill + Recursion (DFS)
      * - 思路：该题是经典的 Flood Fill 场景，而 Flood Fill 算法其实非常简单，就是从单一的一个格子开始往各个方向填充（fill），
      *   直到各个方向都走到头为止 ∴ Flood Fill 本质上就是 DFS ∴ 该解整体思路与 L79 类似。例如 test case 1：尝试对 grid
      *   上的每个格子进行 Flood Fill，其中从 [0, 0] 开使的 Flood Fill 如下：
@@ -42,7 +42,7 @@ public class L200_NumberOfIslands {
     private static int[][] directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
 
     public static int numIslands(char[][] grid) {
-        if (grid == null || grid.length == 0) return 0;
+        if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;
         l = grid.length;
         w = grid[0].length;
         filled = new boolean[l][w];  // 用于记录哪些格子已经填充过
@@ -74,7 +74,7 @@ public class L200_NumberOfIslands {
     }
 
     /*
-     * 解法2：Iteration (BFS)
+     * 解法2：Flood Fill + Iteration (BFS)
      * - 思路：与解法1一致。
      * - 实现：与解法1有两处不同：
      *     1. 解法1中的 floodFill 方法采用的回溯本质上是 DFS，而该解法中 floodFill2 方法采用 BFS 实现；
@@ -83,7 +83,7 @@ public class L200_NumberOfIslands {
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     public static int numIslands2(char[][] grid) {
-        if (grid == null || grid.length == 0) return 0;
+        if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;
         l = grid.length;
         w = grid[0].length;
         int count = 0;
@@ -161,7 +161,7 @@ public class L200_NumberOfIslands {
     }
 
     public static int numIslands3(char[][] grid) {
-        if (grid == null || grid.length == 0) return 0;
+        if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;
         l = grid.length;
         w = grid[0].length;
         UnionFind uf = new UnionFind(grid);       // 初始化并查集

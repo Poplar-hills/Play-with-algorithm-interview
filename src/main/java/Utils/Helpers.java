@@ -15,6 +15,16 @@ public class Helpers {
 
     public static void log(Object[] arr) { System.out.println(Arrays.toString(arr)); }
 
+    public static void log(char[][] twoDArr) {
+        StringBuilder sb = new StringBuilder();
+        for (char[] arr : twoDArr) {
+            for (char c : arr)
+                sb.append(c + " ");
+            sb.append("\n");
+        }
+        System.out.println(sb.toString());
+    }
+
     public static void log(TreeNode node) { System.out.println(node == null ? null : node.getVal()); }
 
     public static <E> void swap(E[] arr, int i, int j) {
