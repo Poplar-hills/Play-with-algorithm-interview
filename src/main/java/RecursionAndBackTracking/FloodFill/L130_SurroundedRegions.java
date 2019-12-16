@@ -182,25 +182,42 @@ public class L130_SurroundedRegions {
      * - 实现：
      *     1. 并查集的实现比较标准，没有做过多改变，需要的修改（如二维坐标到一维的映射）都放到主逻辑中，从而让并查集保持纯粹；
      *     2. 并查集若不做优化则会 Time Limit Exceeded ∴ 加入 path compression 优化，和基于 rank 的优化。
+     * - 👉 理解：该解法是真正理解并查集（及其优化方式）的极好题目，一定要下断点跟踪 parents 每一步的变化来加深理解。
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
-    private static class UnionFind {  //
+    private static class UnionFind {
         private int [] parents;
+        private int [] ranks;
 
-        public UnionFind(int size) {  // 无需传入整个 board，只需其 size 即可（从而免去了再次遍历 board 的复杂度）
+        public UnionFind(int size) {  // 对比 L200 中的并查集，该并查集的构造方法无需传入整个 board，只需其 size 即可
             parents = new int[size];
-            for (int i = 0; i < size; i++)
+            ranks = new int[size];
+            for (int i = 0; i < size; i++) {
                 parents[i] = i;
+                ranks[i] = 1;
+            }
         }
 
         public void union(int p, int q) {
             int pRoot = find(p), qRoot = find(q);
             if (pRoot == qRoot) return;
-            parents[pRoot] = qRoot;
+
+            if (ranks[pRoot] < ranks[qRoot])  // rank-based 优化，每次将 rank 小的 root 连接到 rank 大的 root 上
+                parents[pRoot] = qRoot;
+            else if (ranks[pRoot] > ranks[qRoot])
+                parents[qRoot] = pRoot;
+            else {
+                parents[qRoot] = pRoot;
+                ranks[pRoot] += 1;
+            }
         }
 
         public int find(int p) {
-            return parents[p] == p ? p : find(parents[p]);
+            while (parents[p] != p) {
+                parents[p] = parents[parents[p]];  // path compression 优化，不断将 p 连接到祖父节点上（与父节点同层）
+                p = parents[p];
+            }
+            return p;
         }
 
         public boolean isConnected(int p, int q) {
@@ -215,12 +232,12 @@ public class L130_SurroundedRegions {
         UnionFind uf = new UnionFind(l * w + 1);  // 最后多开辟1的空间存放虚拟节点
         int dummyNode = l * w;
 
-        for (int m = 0; m < l; m++) {  // 遍历 board 上所有的 'O'
+        for (int m = 0; m < l; m++) {             // 遍历 board 上所有的 'O'
             for (int n = 0; n < w; n++) {
                 if (board[m][n] != 'O') continue;
                 if (m == 0 || m == l - 1 || n == 0 || n == w - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
                     uf.union(node(m, n), dummyNode);
-                else {                // 若 'O' 不在边界上，则将与四周相邻的 'O' 连通
+                else {                            // 若 'O' 不在边界上，则将与四周相邻的 'O' 连通
                     for (int[] d : directions) {
                         int newM = m + d[0], newN = n + d[1];
                         if (board[newM][newN] == 'O')
