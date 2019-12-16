@@ -179,47 +179,32 @@ public class L130_SurroundedRegions {
      *     2. 程序的总体思路借鉴解法3，即先标记出无效的 'O'（与边界联通的 'O'），而剩下的 'O' 就都是有效的、需要被 flip 的了。
      *   结合1、2得到具体思路：在并查集中将所有无效的 'O' 连接到一个虚拟节点上，之后遍历 board 上的所有 'O'，若它与虚拟节点不
      *   联通，则说明是有效的 'O'，从而需要 flip。
+     *
+     * - 实现：
+     *
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
-    private static class UnionFind {
-        private int[] parents;
-        private int dummyId;  // 作为属性是为了便于引用
+    private static class UnionFind {  // 并查集的实现比较标准，没有做过多改变（二维坐标到一维的映射放到主逻辑中，保存并查集的纯粹）
+        private int [] parents;
 
-        UnionFind(char[][] board) {
-            int l = board.length, w = board[0].length;
-            parents = new int[l * w + 1];      // 多开辟1的空间存放虚拟节点
-            dummyId = parents[l * w] = l * w;  // 虚拟节点的 id
-
-            for (int m = 0; m < l; m++) {
-                for (int n = 0; n < w; n++) {
-                    if (board[m][n] == 'O') {
-                        int id = m * w + n;
-                        parents[id] = id;
-                    }
-                }
-            }
+        public UnionFind(int size) {  // 无需传入整个 board，只需其 size 即可（从而免去了再次遍历 board 的复杂度）
+            parents = new int[size];
+            for (int i = 0; i < size; i++)
+                parents[i] = i;
         }
 
-        public void union(int m1, int n1, int m2, int n2) {
-            int pRoot = find(m1 * w + n1);
-            int qRoot = find(m2 * w + n2);
+        public void union(int p, int q) {
+            int pRoot = find(p), qRoot = find(q);
             if (pRoot == qRoot) return;
-            parents[pRoot] = parents[qRoot];
-        }
-
-        public void unionWithDummy(int m, int n) {
-            int pRoot = find(m * w + n);
-            parents[pRoot] = dummyId;
+            parents[pRoot] = qRoot;
         }
 
         public int find(int p) {
-            return (parents[p] == p || parents[p] == dummyId)
-                ? parents[p]
-                : find(parents[p]);
+            return parents[p] == p ? p : find(parents[p]);
         }
 
-        public boolean isConnectedToDummy(int m, int n) {
-            return find(m * w + n) == dummyId;
+        public boolean isConnected(int p, int q) {
+            return find(p) == find(q);
         }
     }
 
@@ -227,18 +212,19 @@ public class L130_SurroundedRegions {
         if (board == null || board.length == 0 || board[0].length == 0) return;
         l = board.length;
         w = board[0].length;
-        UnionFind uf = new UnionFind(board);
+        UnionFind uf = new UnionFind(l * w + 1);  // 多开辟1的空间存放虚拟节点
+        int dummyNode = l * w;
 
-        for (int m = 0; m < l; m++) {       // 遍历 board 上所有的 'O'
+        for (int m = 0; m < l; m++) {  // 遍历 board 上所有的 'O'
             for (int n = 0; n < w; n++) {
                 if (board[m][n] != 'O') continue;
                 if (m == 0 || m == l - 1 || n == 0 || n == w - 1)  // 若是边界上的 'O'，则连接到虚拟节点上
-                    uf.unionWithDummy(m, n);
-                else {  // 若非边界上的 'O'，则将其四周相邻的 'O' 连接到该 'O' 上（注意不是将该 'O' 连到四周的 'O' 上）
+                    uf.union(node(m, n), dummyNode);
+                else {                // 若非边界上的 'O'，则将其四周相邻的 'O' 连接到该 'O' 上
                     for (int[] d : directions) {
                         int newM = m + d[0], newN = n + d[1];
                         if (board[newM][newN] == 'O')
-                            uf.union(m, n, newM, newN);
+                            uf.union(node(m, n), node(newM, newN));
                     }
                 }
             }
@@ -246,8 +232,12 @@ public class L130_SurroundedRegions {
 
         for (int m = 1; m < l - 1; m++)  // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
             for (int n = 1; n < w - 1; n++)
-                if (!uf.isConnectedToDummy(m, n))
+                if (!uf.isConnected(node(m, n), dummyNode))
                     board[m][n] = 'X';
+    }
+
+    private static int node(int i, int j) {
+        return i * w + j;
     }
 
     public static void main(String[] args) {
