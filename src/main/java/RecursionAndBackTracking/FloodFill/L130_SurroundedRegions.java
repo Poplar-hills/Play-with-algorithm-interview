@@ -179,12 +179,12 @@ public class L130_SurroundedRegions {
      *     2. 程序的总体思路借鉴解法3，即先标记出无效的 'O'（与边界联通的 'O'），而剩下的 'O' 就都是有效的、需要被 flip 的了。
      *   结合1、2得到具体思路：在并查集中将所有无效的 'O' 连接到一个虚拟节点上，之后遍历 board 上的所有 'O'，若它与虚拟节点不
      *   联通，则说明是有效的 'O'，从而需要 flip。
-     *
      * - 实现：
-     *
+     *     1. 并查集的实现比较标准，没有做过多改变，需要的修改（如二维坐标到一维的映射）都放到主逻辑中，从而让并查集保持纯粹；
+     *     2. 并查集若不做优化则会 Time Limit Exceeded ∴ 加入 path compression 优化，和基于 rank 的优化。
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
-    private static class UnionFind {  // 并查集的实现比较标准，没有做过多改变（二维坐标到一维的映射放到主逻辑中，保存并查集的纯粹）
+    private static class UnionFind {  //
         private int [] parents;
 
         public UnionFind(int size) {  // 无需传入整个 board，只需其 size 即可（从而免去了再次遍历 board 的复杂度）
@@ -212,15 +212,15 @@ public class L130_SurroundedRegions {
         if (board == null || board.length == 0 || board[0].length == 0) return;
         l = board.length;
         w = board[0].length;
-        UnionFind uf = new UnionFind(l * w + 1);  // 多开辟1的空间存放虚拟节点
+        UnionFind uf = new UnionFind(l * w + 1);  // 最后多开辟1的空间存放虚拟节点
         int dummyNode = l * w;
 
         for (int m = 0; m < l; m++) {  // 遍历 board 上所有的 'O'
             for (int n = 0; n < w; n++) {
                 if (board[m][n] != 'O') continue;
-                if (m == 0 || m == l - 1 || n == 0 || n == w - 1)  // 若是边界上的 'O'，则连接到虚拟节点上
+                if (m == 0 || m == l - 1 || n == 0 || n == w - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
                     uf.union(node(m, n), dummyNode);
-                else {                // 若非边界上的 'O'，则将其四周相邻的 'O' 连接到该 'O' 上
+                else {                // 若 'O' 不在边界上，则将与四周相邻的 'O' 连通
                     for (int[] d : directions) {
                         int newM = m + d[0], newN = n + d[1];
                         if (board[newM][newN] == 'O')
@@ -229,14 +229,13 @@ public class L130_SurroundedRegions {
                 }
             }
         }
-
-        for (int m = 1; m < l - 1; m++)  // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
+        for (int m = 1; m < l - 1; m++)      // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
             for (int n = 1; n < w - 1; n++)
                 if (!uf.isConnected(node(m, n), dummyNode))
                     board[m][n] = 'X';
     }
 
-    private static int node(int i, int j) {
+    private static int node(int i, int j) {  // 将二维坐标映射到一维数组索引上
         return i * w + j;
     }
 
