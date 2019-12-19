@@ -16,7 +16,7 @@ import java.util.Queue;
 
 public class L130_SurroundedRegions {
     /*
-     * 解法1：Flood Fill + Recursion (DFS)
+     * 解法1：Inside-out Flood Fill + Recursion (DFS)
      * - 思路：首先一眼可知该题属于连通性问题，而连通性问题可用 Flood Fill 或 Union Find 求解。只是在不同于
      *   L200_NumberOfIslands，该题中对有效 region 的定义是四周都是 'X' 的 'O'，而与边界相邻的 'O' 则是无效的 region。
      *      -> 如此一来，程序的主体仍然可以是 Flood Fill，只需要在遍历 'O' 的邻居时加入对边界的判断 —— 若该 'O' 与边界相邻
@@ -85,7 +85,7 @@ public class L130_SurroundedRegions {
     }
 
     /*
-     * 解法2：Flood Fill + Iteration (BFS)
+     * 解法2：Inside-out Flood Fill + Iteration (BFS)
      * - 思路：与 L200_NumberOfIslands 解法2一致。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
@@ -132,13 +132,14 @@ public class L130_SurroundedRegions {
     }
 
     /*
-     * 解法3：Flood Fill + Iteration (BFS) + Replace boundaries
+     * 解法3：Outside-in Flood Fill + Recursion (DFS)
      * - 思路：另一种聪明的思路是，从 board 边界上的 'O' 开始 Flood Fill，将这些无效的 region 用特殊符号 '*' 填充。当所有
      *   的无效 region 被填充完之后，board 上剩余的 'O' 就都是有效的 region 了 ∴ 只需再将所有的 'O' flip 成 'X'，最后再
      *   将所有的 '*' 替换回 'O' 即可。
-     * - 总结：相比解法1、2，该解法更加简洁，原因是：
-     *     1. ∵ 先处理的是无效的 'O' ∴ 只需使用标准的 Flood Fill 即可，无需任何修改；
-     *     2. ∵ 将遍历过的 'O' 替换成了 '*' ∴ 有 '*' 的格子即是被访问过的，无需再单独开辟 boolean[][]；
+     * - 实现：相比解法1、2，该解法更加简洁，原因是：
+     *     1. 先处理无效的 'O' ∴ 只需使用标准的 Flood Fill 即可，无需任何修改；
+     *     2. 将遍历过的 'O' 替换成了 '*' ∴ 有 '*' 的格子即是被访问过的，无需再单独开辟 boolean[][]；
+     * - 总结：与解法1、2对比，该解法其实是从边界开始向内陆进行 Flood Fill，即 outside-in，而解法1、2是 inside-out。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)，时空复杂度也比解法1、2更优。
      * */
     public static void solve3(char[][] board) {

@@ -25,7 +25,7 @@ import java.util.Set;
 
 public class L417_PacificAtlanticWaterFlow {
     /*
-     * 解法1：Flood Fill + Recursion (DFS)
+     * 解法1：Inside-out Flood Fill + Recursion (DFS)
      * - 思路：首先一眼可知该题属于连通性问题，而连通性问题可用 Flood Fill 或 Union Find 求解。而不同于 L130 和 L200，
      *   该题中对”联通”的限制为：
      *     1. 联通的标志是要能到达左/上边界以及右/下边界；
@@ -74,21 +74,62 @@ public class L417_PacificAtlanticWaterFlow {
 
         for (int[] d : directions) {
             int newM = m + d[0], newN = n + d[1];
-            if (canFlowTo(matrix, m, n, newM, newN) && !filled[newM][newN]) {
+            if (validPos(matrix, newM, newN) && matrix[m][n] >= matrix[newM][newN] && !filled[newM][newN]) {
                 reachSeas(matrix, newM, newN, set, filled);
                 if (set.size() == 2) return;        // 若已经找到解则提前退出遍历
             }
         }
     }
 
-    private static boolean canFlowTo(int[][] matrix, int m, int n, int newM, int newN) {
-        return newM >= 0 && newM < l
-            && newN >= 0 && newN < w
-            && matrix[m][n] >= matrix[newM][newN];
+    private static boolean validPos(int[][] matrix, int m, int n) {
+        return m >= 0 && m < l && n >= 0 && n < w;
+    }
+
+    /*
+     * 解法2：Outside-in Flood Fill + Recursion (DFS)
+     * - 思路：类似 L130_SurroundedRegions 解法3的思路，从边界向内陆进行 Flood Fill。具体来说，从 Pacific 的两边进行
+     *   Flood Fill，将与 Pacific 连通的格子进行标记，然后再从 Atlantic 的两边进行 Flood Fill，同样将与 Atlantic 连通
+     *   的格子进行标记，若同一个格子被标记过两次，则说明该格子是一个解。
+     * - 时间复杂度 O(l*w)：∵ reachPacific 和 reachAtlantic 充当了 filled 数组 ∴ 相当于只遍历了 matrix 两遍，相比解法1有极大性能提升；
+     * - 空间复杂度 O(l*w)。
+     * */
+    public static List<List<Integer>> pacificAtlantic2(int[][] matrix) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return res;
+        l = matrix.length;
+        w = matrix[0].length;
+        boolean[][] reachPacific = new boolean[l][w];
+        boolean[][] reachAtlantic = new boolean[l][w];
+
+        for (int m = 0; m < l; m++) {
+            floodFill(matrix, m, 0, reachPacific);       // 第一列
+            floodFill(matrix, m, w - 1, reachAtlantic);  // 最后一列
+        }
+
+        for (int n = 0; n < w; n++) {
+            floodFill(matrix, 0, n, reachPacific);       // 第一行
+            floodFill(matrix, l - 1, n, reachAtlantic);  // 最后一行
+        }
+
+        for (int m = 0; m < l; m++)
+            for (int n = 0; n < w; n++)
+                if (reachPacific[m][n] && reachAtlantic[m][n])
+                    res.add(Arrays.asList(m, n));
+
+        return res;
+    }
+
+    private static void floodFill(int[][] matrix, int m, int n, boolean[][] filled) {
+        filled[m][n] = true;
+        for (int[] d : directions) {
+            int newM = m + d[0], newN = n + d[1];
+            if (validPos(matrix, newM, newN) && matrix[m][n] <= matrix[newM][newN] && !filled[newM][newN])
+                floodFill(matrix, newM, newN, filled);  // 注意上面判断条件是由低水位流向高水位 ∵ 是从边界向内陆 Flood Fill
+        }
     }
 
     public static void main(String[] args) {
-        log(pacificAtlantic(new int[][] {
+        log(pacificAtlantic2(new int[][] {
           {1, 2, 2, 3, 5},
           {3, 2, 3, 4, 4},
           {2, 4, 5, 3, 1},
@@ -107,7 +148,7 @@ public class L417_PacificAtlanticWaterFlow {
          *          -   -   -   -   - Atlantic
          * */
 
-        log(pacificAtlantic(new int[][] {
+        log(pacificAtlantic2(new int[][] {
             {2, 9, 5, 3, 7},
             {5, 7, 2, 4, 3},
             {6, 6, 6, 8, 4}
