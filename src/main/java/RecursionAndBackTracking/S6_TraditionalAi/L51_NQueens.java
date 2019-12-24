@@ -2,6 +2,8 @@ package RecursionAndBackTracking.S6_TraditionalAi;
 
 import static Utils.Helpers.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -14,7 +16,7 @@ import java.util.List;
  *   distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an
  *   empty space respectively.
  *
- * - 👉 总结：回溯搜索是传统人工智能的基础 —— 在机器学习流行之前，人工智能算法很大程度上就是回溯搜索（当然搜索过程中有很多技巧）。
+ * - 👉总结：回溯搜索是传统人工智能的基础 —— 在机器学习流行之前，人工智能算法很大程度上就是回溯搜索（当然搜索过程中有很多技巧）。
  * */
 
 public class L51_NQueens {
@@ -44,7 +46,7 @@ public class L51_NQueens {
      *   至此总体思路已经形成，剩下要解决的问题是如何能快速对树进行剪枝，即判断出一个格子是否可以放置皇后，即在一个格子的横、竖、斜
      *   四个方向上判断是否还有其他皇后存在：
      *     - 横：∵ 每行只会放一个皇后，放置之后就进入下一行 ∴ 无需额外逻辑进行判断；
-     *     - 竖：可使用一个4位数组 col[i] 来记录第 i 列是否已有皇后；
+     *     - 竖：可使用一个 n 位数组 col[i] 来记录第 i 列是否已有皇后；
      *     - 斜：若也想用数组 dia1[i]、dia2[i] 来分别记录两个对角方向上第 i 条对角线上是否有皇后，则需知道：
      *            1. 共有多少条对角线（即 dia 数组大小）；
      *            2. 如何标记一条对角线（即如何访问 dia 中元素）。
@@ -53,10 +55,48 @@ public class L51_NQueens {
      *            - 对于 / 方向，每条对角线经过的格子的横纵坐标之和都相同，分别是0，1，2，3，4，5，6 ∴ 可将 i+j 作为索引使用；
      *            - 对于 \ 方向，每条对角线经过的格子的横纵坐标之差都相同，分别是-3，-2，-1，0，1，2，3 ∴ 可将 i-j 加上偏移量 n-1 作为索引使用。
      *
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
+    private static List<List<String>> res;
+    private static boolean[] col, dia1, dia2;
+
     public static List<List<String>> solveNQueens(int n) {
-        return null;
+        res = new ArrayList<>();
+        if (n == 0) return res;
+
+        col = new boolean[n];           // col[i] 表示第 i 列是否已有皇后
+        dia1 = new boolean[2 * n - 1];  // dia1[i] 表示第 i 根 / 对角线上是否已有皇后
+        dia2 = new boolean[2 * n - 1];  // dia2[i] 表示第 i 根 \ 对角线上是否已有皇后
+
+        putQueen(n, 0, new ArrayList<>());
+        return res;
+    }
+
+    private static void putQueen(int n, int i, List<Integer> pos) {  // 尝试在第 i 行中放置皇后，pos 记录放置的位置
+        if (i == n) {                                                // （pos[i]=k 表示第 i 行的皇后放在了第 k 列上）
+            res.add(generateSolution(pos));  // i == n 说明 0 ~ n-1 行都成功放置了皇后，即找到了一个有效解
+            return;
+        }
+        for (int j = 0; j < n; j++) {                                // 遍历该行中的每一列
+            if (!col[j] && !dia1[i + j] && !dia2[i - j + n - 1]) {   // 若3个方向上都没有皇后则可以放置
+                pos.add(j);                                          // 将列索引放到 pos[i] 上以表示皇后位置为 [i,j]
+                col[j] = dia1[i + j] = dia2[i - j + n - 1] = true;
+                putQueen(n, i + 1, pos);
+                col[j] = dia1[i + j] = dia2[i - j + n - 1] = false;  // 返回上一层递归之前要恢复原状态
+                pos.remove(pos.size() - 1);
+            }
+        }
+    }
+
+    private static List<String> generateSolution(List<Integer> pos) {  // 将 pos 转为真正的解
+        List<String> solution = new ArrayList<>();
+        for (int i = 0; i < pos.size(); i++) {
+            char[] chars = new char[pos.size()];  // java 中用相同字符生成字符串的方式
+            Arrays.fill(chars, '.');
+            chars[pos.get(i)] = 'Q';              // 用 'Q' 标记皇后的位置（pos.get(i) 是列索引）
+            solution.add(new String(chars));
+        }
+        return solution;
     }
 
     public static void main(String[] args) {
