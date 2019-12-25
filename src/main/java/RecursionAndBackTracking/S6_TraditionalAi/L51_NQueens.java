@@ -16,8 +16,8 @@ import java.util.List;
  *   distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an
  *   empty space respectively.
  *
- * - 👉总结：回溯搜索是传统人工智能的基础 —— 在机器学习流行之前，人工智能算法很大程度上就是回溯搜索（当然搜索过程中有很多技巧），
- *     很多类似的智力游戏（如 L37 的数独）都可以采用递归 + 回溯的方式求解。
+ * - 👉 总结：回溯搜索是传统人工智能的基础 —— 在机器学习流行之前，人工智能算法很大程度上就是回溯搜索（当然搜索过程中有很多技巧），
+ *      很多类似的智力游戏（如 L37 的数独）都可以采用递归 + 回溯的方式求解。
  * */
 
 public class L51_NQueens {
