@@ -16,7 +16,7 @@ import static Utils.Helpers.*;
 public class L37_SudokuSolver {
     /*
      * 解法1：Recursion + Backtracking
-     * - 思路：Very straight-forward solution. 唯一比较难懂的是根据一个坐标 [m,n] 找到其所在的 3*3 block 里的所有坐标。
+     * - 思路：Very straight-forward solution.
      * - 时间复杂度 O(9^c)，其中 c 为 board 填充前空格的个数：c 个空格需要填充，而个格都要尝试9个数字 ∴ 是 O(9^c)；
      * - 空间复杂度 O(9*9)。
      * */
