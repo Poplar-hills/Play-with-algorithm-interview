@@ -2,8 +2,6 @@ package RecursionAndBackTracking.S6_TraditionalAi;
 
 import static Utils.Helpers.*;
 
-import java.util.List;
-
 /*
  * N Queens
  *
