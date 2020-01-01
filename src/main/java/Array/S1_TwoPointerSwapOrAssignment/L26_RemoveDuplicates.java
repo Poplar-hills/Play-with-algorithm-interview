@@ -21,24 +21,28 @@ public class L26_RemoveDuplicates {
     * - 时间复杂度 O(n)，空间复杂度 O(1)。
     * */
     public static int removeDuplicates(int[] arr) {
-        int j = 1;                       // j 指向数组头部下一个待赋值的位置
+        int nextValidIdx = 1;              // 下一个可容纳非重复元素的位置索引
         for (int i = 1; i < arr.length; i++) {
-            if (arr[i] != arr[i - 1]) {  // ∵ 有序数组中重复元素都挨在一起 ∴ 可以这样判断当前元素是否是重复元素
-                if (i != j)
-                    arr[j] = arr[i];
-                j++;
+            if (arr[i] != arr[i - 1]) {    // ∵ 有序数组中重复元素都挨在一起 ∴ 可这样判断当前元素是否重复
+                if (i != nextValidIdx)     // 若至今还没发现重复元素则不需要复制（test case 2 中在第二个4以前都不需要复制元素）
+                    arr[nextValidIdx] = arr[i];
+                nextValidIdx++;
             }
         }
-        return j;
+        return nextValidIdx;
     }
 
     public static void main(String[] args) {
         int[] arr1 = new int[]{1, 1, 2};
         log(removeDuplicates(arr1));  // expects 2
-        log(arr1);                    // expects [1, 2 ...] (It doesn't matter what's left beyond the returned length)
+        log(arr1);                    // expects [1, 2, 2] (It doesn't matter what's left beyond the returned length)
 
-        int[] arr2 = new int[]{0, 0, 1, 1, 1, 2, 2, 3, 3, 4};
+        int[] arr2 = new int[]{1, 2, 3, 4, 4, 5};
         log(removeDuplicates(arr2));  // expects 5
-        log(arr2);                    // expects [0, 1, 2, 3, 4 ...]
+        log(arr2);                    // expects [1, 2, 3, 4, 5, 5]
+
+        int[] arr3 = new int[]{0, 0, 1, 1, 1, 2, 2, 3, 3, 4};
+        log(removeDuplicates(arr3));  // expects 5
+        log(arr3);                    // expects [0, 1, 2, 3, 4, 2, 2, 3, 3, 4]
     }
 }
