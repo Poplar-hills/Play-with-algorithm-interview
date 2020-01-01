@@ -17,7 +17,7 @@ public class L37_SudokuSolver {
     /*
      * 解法1：Recursion + Backtracking
      * - 思路：Very straight-forward solution.
-     * - 时间复杂度 O(9^n)，其中 n 为 board 填充前空格的个数：n 个空格需要填充，而个格都要尝试9个数字 ∴ 是 O(9^n)；
+     * - 时间复杂度 O(9^n)，其中 n 为 board 填充前空格的个数：n 个空格需要填充，每个格都要尝试9个数字 ∴ 是 O(9^n)；
      * - 空间复杂度 O(9*9)。
      * */
     public static void solveSudoku(char[][] board) {
@@ -52,19 +52,18 @@ public class L37_SudokuSolver {
     }
 
     /*
-     * 解法2：Recursion + Backtracking (时间复杂度优化版)
-     * - 思路：整体思路与解法1一致，仍然采用回溯搜索求解。
-     * - 实现：解法1用 isValid 方法判断某一数字 c 是否能填入某一格子 [i,j]，具体检查方式为遍历 [i,j] 所在的行、列、block。
-     *   若借鉴 L51_NQueens 解法1中的3个 boolean[]，可以对该检查过程进行优化，通过空间换时间的方式以 O(1) 的复杂度完成检查。
-     *   但具体实现不同于 L51，该问题中需要对每行、每列、每个 block 都维护单独的 boolean[] 以保证他们各自中都没有重复 ∴ 需要
-     *   创建的是3个 9*9 的二维数组：
-     *     1. row[i][n] 表示第 i 行里是否已有数字 n，其中 i ∈ [0,8], n ∈ [1,9]；
-     *     2. col[i][n] 表示第 i 列里是否已有数字 n，其中 i ∈ [0,8], n ∈ [1,9]；
-     *     3. block[i][n] 表示第 i 个 block 里是否已有数字 n，其中 i ∈ [0,8], n ∈ [1,9]。
+     * 解法2：Recursion + Backtracking (时间优化版)
+     * - 思路：大体思路与解法1一致，仍然采用回溯搜索求解。
+     * - 实现：解法1用 isValid 方法实时判断某一数字 c 是否能填入某一格 [i,j]。而若借鉴 L51_NQueens 解法1中的3个 boolean[]，
+     *   则可以对该检查过程进行优化，通过空间换时间的方式以 O(1) 的复杂度完成检查。但具体实现不同于 L51，该问题中需要对每行、
+     *   每列、每个 block 都维护单独的 boolean[] 以保证他们各自中都没有重复 ∴ 需要创建的是3个 9*9 的二维数组：
+     *     1. row[i][n] 表示第 i 行中是否已有数字 n，其中 i ∈ [0,8], n ∈ [1,9]；
+     *     2. col[i][n] 表示第 i 列中是否已有数字 n，其中 i ∈ [0,8], n ∈ [1,9]；
+     *     3. block[i][n] 表示第 i 个 block 中是否已有数字 n，其中 i ∈ [0,8], n ∈ [1,9]。
      *   基于该思路可得到程序的整体逻辑：
      *     1. 先遍历 board 上已有的数字，并将 row、col、block 对应的位置置为 true；
      *     2. 再用解法1中的方式，对 board 上的空格进行回溯填充。
-     * - 时间复杂度 O(9^c)，其中 c 为 board 填充前空格的个数：c 个空格需要填充，而个格都要尝试9个数字 ∴ 是 O(9^c)；
+     * - 时间复杂度 O(9^n)，其中 n 为 board 填充前空格的个数（与解法一在量级上相同，但实际效率高很多）；
      * - 空间复杂度 O(9*9)。
      * */
     private static boolean[][] row, col, block;
@@ -77,8 +76,8 @@ public class L37_SudokuSolver {
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (board[i][j] != '.') {
-                    int n = board[i][j] - '0';  // 将 char 转化为 int（'5' - '0' = 5）
+                if (board[i][j] != '.') {       // 先遍历 board 上已有的数字
+                    int n = board[i][j] - '0';  // 将 char 转化为 int（'5'-'0' = 5，即在 ASCII 中 '5' 与 5 相差48）
                     row[i][n] = true;
                     col[j][n] = true;
                     block[i / 3 * 3 + j / 3][n] = true;  // i/3 ∈ [0,1,2]；i/3*3 ∈ [0,3,6]；i/3*3+j/3 ∈ [0,1,2,3,4,5,6,7,8]
@@ -86,12 +85,11 @@ public class L37_SudokuSolver {
             }
         }
 
-        dfs(board, 0);
+        dfs(board, 0);  // 再次遍历 board，对空格进行回溯填充
     }
 
     private static boolean dfs(char[][] board, int cellIdx) {
-        if (cellIdx == 81)
-            return true;
+        if (cellIdx == 81) return true;
         int i = cellIdx / 9;
         int j = cellIdx % 9;
         int k = i / 3 * 3 + j / 3;
@@ -101,7 +99,7 @@ public class L37_SudokuSolver {
 
         for (int n = 1; n <= 9; n++) {
             if (!row[i][n] && !col[j][n] && !block[k][n]) {
-                board[i][j] = (char) n;
+                board[i][j] = (char) (n + '0');  // 将 int 转化为 char（不能直接强转，需要加 '0'，即 ASCII 中 5 与 '5' 相差 48）
                 row[i][n] = col[j][n] = block[k][n] = true;
                 if (dfs(board, cellIdx + 1)) return true;
                 board[i][j] = '.';
