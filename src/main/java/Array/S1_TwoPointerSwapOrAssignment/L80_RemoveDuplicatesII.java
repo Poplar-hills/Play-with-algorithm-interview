@@ -11,10 +11,10 @@ import static Utils.Helpers.log;
 
 public class L80_RemoveDuplicatesII {
     /*
-    * 解法1：Copy and paste
-    * - 思路：与 L26_RemoveDuplicates 一致，只是判断条件不同。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
+     * 解法1：Copy and paste
+     * - 思路：与 L26_RemoveDuplicates 一致，只是判断条件不同。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static int removeDuplicates(int[] arr) {
         int nextValidIdx = 2;
         for (int i = 2; i < arr.length; i++) {     // 从第3个元素开始遍历
