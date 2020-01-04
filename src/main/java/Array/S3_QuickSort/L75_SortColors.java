@@ -3,6 +3,7 @@ package Array.S3_QuickSort;
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /*
@@ -60,17 +61,42 @@ public class L75_SortColors {
     }
 
     /*
-     * 解法2：Merge sort - 思路：标准归并排序。 - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
-     */
+     * 解法2：Merge sort
+     * - 思路：标准归并排序。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+     * */
     private static void sortColors2(int[] arr) {
+        if (arr == null || arr.length == 0) return;
+        mergeSort(arr, 0, arr.length - 1);
+    }
 
+    private static void mergeSort(int[] arr, int l, int r) {
+        if (l >= r) return;
+        int mid = (r - l) / 2 + l;
+        mergeSort(arr, l, mid);       // 先不断进行二分，直到每个元素被单独分为一组
+        mergeSort(arr, mid + 1, r);
+        if (arr[mid] > arr[mid + 1])  // 若分解完之后 [l,r] 还不是有序的则进行归并，否则跳过归并
+            merge(arr, l, mid, r);    // 对 [l,mid] 和 [mid+1,r] 两部分进行归并
+    }
+
+    private static void merge(int[] arr, int l, int mid, int r) {
+        int[] copy = Arrays.copyOfRange(arr, l, r + 1);  // 将 arr[l,r] 中的元素复制出来，用于比较
+        int i = l, j = mid + 1;
+        for (int k = l; k <= r; k++) {  // 遍历 arr[l,r] 中的所有元素
+            if (i > mid)                // 先讨论越界情况
+                arr[k] = copy[j++ - l];
+            else if (j > r)
+                arr[k] = copy[i++ - l];
+            else if (copy[i - l] < copy[j - l])  // 再讨论未越界的情况
+                arr[k] = copy[i++ - l];
+            else
+                arr[k] = copy[j++ - l];
+        }
     }
 
     /*
-     * 解法3：Counting sort（计数排序）
-     * - 时间复杂度 O(2n)，遍历数组2遍；
-     * - 空间复杂度 O(1)。
-     * */
+     * 解法3：Counting sort（计数排序） - 时间复杂度 O(2n)，遍历数组2遍； - 空间复杂度 O(1)。
+     */
     private static void sortColors3(int[] arr) {
         int[] buckets = new int[3];               // 构造 bucket 数组，三个位置分别存储 arr 中0，1，2的个数（计数过程）
         for (int i = 0; i < arr.length; i++) {    // 遍历 arr 填充 bucket
@@ -103,11 +129,11 @@ public class L75_SortColors {
 
     public static void main(String[] args) {
         int[] arr1 = new int[]{2, 0, 2, 1, 1, 0};
-        sortColors(arr1);
+        sortColors2(arr1);
         log(arr1);  // expects [0, 0, 1, 1, 2, 2]
 
         int[] arr2 = new int[]{0, 1, 2, 2, 1, 0};
-        sortColors(arr2);
+        sortColors2(arr2);
         log(arr2);  // expects [0, 0, 1, 1, 2, 2]
     }
 }
