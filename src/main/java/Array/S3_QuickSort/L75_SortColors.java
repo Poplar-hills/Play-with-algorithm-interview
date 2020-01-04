@@ -25,28 +25,30 @@ import static Utils.Helpers.swap;
 public class L75_SortColors {
     /*
      * 解法1：计数排序
-     * - 时间复杂度 O(2n)，遍历数组2遍。
+     * - 时间复杂度 O(2n)，遍历数组2遍；
+     * - 空间复杂度 O(1)。
      * */
     private static void sortColors(int[] arr) {
-        int[] buckets = new int[3];               // 构造 bucket 数组，其三个位置分别存储 arr 中 0，1，2 的个数（计数过程）
-        for (int i = 0; i < arr.length; i++) {    // 遍历 arr
-            assert(arr[i] >= 0 && arr[i] <= 2);   // 检验 arr 中的元素的有效性
+        int[] buckets = new int[3];               // 构造 bucket 数组，三个位置分别存储 arr 中0，1，2的个数（计数过程）
+        for (int i = 0; i < arr.length; i++) {    // 遍历 arr 填充 bucket
+            assert(arr[i] >= 0 && arr[i] <= 2);   // 在赋值之前先检元素的有效性
             buckets[arr[i]]++;
         }
         int i = 0;
-        for (int b = 0; b < buckets.length; b++)  // 遍历 bucket，反向填充 arr
+        for (int b = 0; b < buckets.length; b++)  // 遍历 bucket，根据0，1，2的个数重新填充 arr
             for (int n = 0; n < buckets[b]; n++)
                 arr[i++] = b;
     }
 
     /*
      * 解法2：三路快速排序
-     * - 时间复杂度 O(n)，只遍历数组1遍。
+     * - 时间复杂度 O(n)，只遍历数组1遍；
+     * - 空间复杂度 O(1)。
      * */
     private static void sortColors2(int[] arr) {
         int last0Index = -1;                  // 指向最后一个等于0的元素
         int first2Index = arr.length;         // 指向第一个等于2的元素
-        for (int i = 0; i < first2Index; ) {  // 手动控制 i 的自增（因为 == 2 时 i 不需要自增）
+        for (int i = 0; i < first2Index; ) {  // 手动控制 i 的自增（∵ arr[i] == 2 时 i 不需要自增）
             if (arr[i] == 0)
                 swap(arr, i++, ++last0Index);
             else if (arr[i] == 2)
@@ -57,12 +59,11 @@ public class L75_SortColors {
 
     public static void main(String[] args) {
         int[] arr1 = new int[]{2, 0, 2, 1, 1, 0};
-        int[] arr2 = new int[]{2, 2, 2, 1, 1, 0};
-
         sortColors(arr1);
         log(arr1);  // expects [0, 0, 1, 1, 2, 2]
 
+        int[] arr2 = new int[]{0, 1, 2, 2, 1, 0};
         sortColors(arr2);
-        log(arr2);  // expects [0, 1, 1, 2, 2, 2]
+        log(arr2);  // expects [0, 0, 1, 1, 2, 2]
     }
 }
