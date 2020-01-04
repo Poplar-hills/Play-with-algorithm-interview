@@ -6,30 +6,34 @@ import static Utils.Helpers.log;
  * Merge Sorted Array
  *
  * - Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
- * - The number of elements initialized in nums1 and nums2 are m and n respectively.
- * - You may assume that nums1 has enough space (size that is greater or equal to m + n) to hold elements from nums2.
+ *
+ * - Notes:
+ *   1. The number of elements initialized in nums1 and nums2 are m and n respectively.
+ *   2. Assume nums1 has enough space to hold elements from nums2 (nums1.length ≥ m + n).
  * */
 
 public class L88_MergeSortedArray {
     /*
-     * 解法1：merge sort
+     * 解法1：Merge sort
      * - 思路：要将两个有序数组合二为一，并且需要排序，因此整体思路是归并排序。
      * - 时间复杂度为 O(m+n)。
      * */
     private static void merge(int[] nums1, int m, int[] nums2, int n) {
-        int[] aux = new int[m + n];  // 开辟辅助空间
+        int[] aux = new int[m + n];             // 开辟辅助空间
         int i = 0, j = 0;
 
         for (int k = 0; k < aux.length; k++) {  // 遍历第1遍
-            if (i >= m)
+            if (i >= m)                         // 先讨论 num1, num2 越界的情况
                 aux[k] = nums2[j++];
-            else if (j >= n || nums1[i] < nums2[j])
+            else if (j >= n)
+                aux[k] = nums1[i++];
+            else if (nums1[i] < nums2[j])       // 再讨论没越界时的情况
                 aux[k] = nums1[i++];
             else
                 aux[k] = nums2[j++];
         }
 
-        for (int l = 0; l < aux.length; l++)  // 遍历第2遍，将 aux 中的值逐个赋给 nums1
+        for (int l = 0; l < aux.length; l++)    // 遍历第2遍，将 aux 中的值逐个赋给 nums1
             nums1[l] = aux[l];
     }
 
@@ -52,16 +56,14 @@ public class L88_MergeSortedArray {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[] {1, 2, 3, 8, 0, 0, 0};  // nums1 的有效元素比 nums2 多
-        int[] arr2 = new int[] {2, 5, 6};
-
-        int[] arr3 = new int[] {1, 3, 6, 0, 0, 0, 0};
-        int[] arr4 = new int[] {2, 3, 6, 7};  // nums2 的有效元素比 nums1 多
-
+        int[] arr1 = new int[]{1, 2, 3, 8, 0, 0, 0};  // nums1 的有效元素比 nums2 多
+        int[] arr2 = new int[]{2, 5, 6};
         merge(arr1, 4, arr2, 3);
-        log(arr1);  // expects [1, 2, 2, 3, 5, 6, 8]
+        log(arr1);                                    // expects [1, 2, 2, 3, 5, 6, 8]
 
+        int[] arr3 = new int[]{1, 3, 6, 0, 0, 0, 0};
+        int[] arr4 = new int[]{2, 3, 6, 7};           // nums2 的有效元素比 nums1 多
         merge(arr3, 3, arr4, 4);
-        log(arr3);  // expects [1, 2, 3, 3, 6, 6, 7]
+        log(arr3);                                    // expects [1, 2, 3, 3, 6, 6, 7]
     }
 }
