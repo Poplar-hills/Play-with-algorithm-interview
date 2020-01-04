@@ -13,18 +13,18 @@ import java.util.ArrayList;
 
 public class L283_MoveZeroes {
     /*
-    * 解法1：Extra space
-    * - 时间复杂度 O(n)，空间复杂度 O(n)
-    * */
+     * 解法1：Extra space
+     * - 时间复杂度 O(n)，空间复杂度 O(n)
+     * */
     public static void moveZeros(int[] arr) {
         int[] aux = new int[arr.length];  // 辅助空间
 
         int nextIdx = 0;
-        for (int i = 0; i < arr.length; i++)
+        for (int i = 0; i < arr.length; i++)  // 第一次遍历将所有非零元素复制到辅助数组头部（尾部默认为0）
             if (arr[i] != 0)
-                aux[nextIdx++] = arr[i];  // 将非零元素顺序放入辅助空间中，后面未放值的位置默认为零
+                aux[nextIdx++] = arr[i];
 
-        for (int i = 0; i < arr.length; i++)
+        for (int i = 0; i < arr.length; i++)  // 第二次遍历用 aux 替换 arr 中的所有元素
             arr[i] = aux[i];
     }
 
@@ -35,11 +35,11 @@ public class L283_MoveZeroes {
     public static void moveZeros2(int[] arr) {
         int nextIdx = 0;
 
-        for (int i = 0; i < arr.length; i++)  // 将所有非零元素复制到数组前部
+        for (int i = 0; i < arr.length; i++)  // 第一次遍历将所有非零元素复制到数组前部
             if (arr[i] != 0)
                 arr[nextIdx++] = arr[i];
 
-        for (int i = nextIdx; i < arr.length; i++)  // 后面补零
+        for (int i = nextIdx; i < arr.length; i++)  // 第二次遍历在后面补零
             arr[i] = 0;
     }
 
