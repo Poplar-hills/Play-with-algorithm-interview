@@ -17,7 +17,7 @@ public class L283_MoveZeroes {
      * - 时间复杂度 O(n)，空间复杂度 O(n)
      * */
     public static void moveZeros(int[] arr) {
-        int[] aux = new int[arr.length];  // 辅助空间
+        int[] aux = new int[arr.length];      // 开辟辅助空间
 
         int nextIdx = 0;
         for (int i = 0; i < arr.length; i++)  // 第一次遍历将所有非零元素复制到辅助数组头部（尾部默认为0）
