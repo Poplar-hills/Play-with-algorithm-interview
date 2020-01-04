@@ -95,8 +95,10 @@ public class L75_SortColors {
     }
 
     /*
-     * 解法3：Counting sort（计数排序） - 时间复杂度 O(2n)，遍历数组2遍； - 空间复杂度 O(1)。
-     */
+     * 解法3：Counting sort（计数排序）
+     * - 时间复杂度 O(2n)，遍历数组2遍；
+     * - 空间复杂度 O(1)。
+     * */
     private static void sortColors3(int[] arr) {
         int[] buckets = new int[3];               // 构造 bucket 数组，三个位置分别存储 arr 中0，1，2的个数（计数过程）
         for (int i = 0; i < arr.length; i++) {    // 遍历 arr 填充 bucket
