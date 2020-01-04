@@ -16,7 +16,7 @@ public class L88_MergeSortedArray {
     /*
      * 解法1：Merge sort
      * - 思路：要将两个有序数组合二为一，并且需要排序，因此整体思路是归并排序。
-     * - 时间复杂度为 O(m+n)。
+     * - 时间复杂度为 O(m+n)，空间复杂度 O(m+n)。
      * */
     private static void merge(int[] nums1, int m, int[] nums2, int n) {
         int[] aux = new int[m + n];             // 开辟辅助空间
@@ -27,7 +27,7 @@ public class L88_MergeSortedArray {
                 aux[k] = nums2[j++];
             else if (j >= n)
                 aux[k] = nums1[i++];
-            else if (nums1[i] < nums2[j])       // 再讨论没越界时的情况
+            else if (nums1[i] <= nums2[j])      // 再讨论没越界时的情况
                 aux[k] = nums1[i++];
             else
                 aux[k] = nums2[j++];
@@ -38,17 +38,27 @@ public class L88_MergeSortedArray {
     }
 
     /*
-     * 解法2：
-     * - 思路：解法1中之所以需要辅助空间是因为如果在 nums1 中原地排序，若 nums2[j] < nums1[i]，则需要 nums1[k] = nums2[j]，
-     *   从冲掉了 nums1 中还未处理的元素，导致排序错误。但题目中说了 nums1 的空间是足够的，即 nums1 的尾部是有额外空间的，因此
-     *   可以直接利用这个空间，不需要再额外开辟。但因为是在尾部，所以需要从后往前填充（即从大到小），又因为两个数组已经各自有序，
-     *   所以需要从后往前遍历两个数组。
-     * - 时间复杂度 O(m)。
+     * 解法2：Merge sort（解法1的时空优化版）
+     * - 思路：与解法1一致，都是归并排序。
+     * - 实现：解法1中之所以需要辅助空间是因为若在 nums1 中原地排序，当 nums1[i] > nums2[j] 时，需 nums1[k] = nums2[j]，
+     *   从而可能冲掉了还未处理的元素 nums1[k]，导致排序错误。但该题中说了 nums1 尾部有足够空间 ∴ 可以直接利用尾部空间而不再
+     *   额外开辟新空间。而 ∵ 是尾部空间 ∴ 需要从后往前填充（即从大到小填充），又 ∵ 两个数组各自有序 ∴ 只需从后往前遍历即可：
+     *
+     *   对于 num1 = [1, 2, 3, 8, 0, 0, 0], num2 = [2, 5, 6]：
+     *       -> 8 > 6 ∴ [1, 2, 3, 8, 0, 0, 8]
+     *       -> 6 > 3 ∴ [1, 2, 3, 8, 0, 6, 8]
+     *       -> 5 > 3 ∴ [1, 2, 3, 8, 5, 6, 8]
+     *       -> 3 > 2 ∴ [1, 2, 3, 3, 5, 6, 8]
+     *       -> 2 = 2 ∴ [1, 2, 2, 3, 5, 6, 8]
+     *       -> 2 > 1 ∴ [1, 2, 2, 3, 5, 6, 8]
+     *       -> just 1 ∴ [1, 2, 2, 3, 5, 6, 8]
+     *
+     * - 时间复杂度 O(m)，空间复杂度 O(1)。
      * */
     private static void merge2(int[] nums1, int m, int[] nums2, int n) {
         int i = m - 1, j = n - 1;
-        for (int k = nums1.length - 1; k >= 0 && j >= 0; k--) {  // 即若 nums2 中的元素都被处理完了，则整个归并排序已完成（即 nums1 中剩下的元素都小于 nums2 中的最小元素，因此位置不用变）
-            if (i >= 0 && nums1[i] > nums2[j])
+        for (int k = nums1.length - 1; k >= 0 && j >= 0; k--) {  // 条件 j>=0 是指若 nums2 中的元素都处理完了，则整个排序已完成
+            if (i >= 0 && nums1[i] > nums2[j])                   // （即 nums1 中剩下的元素都小于 nums2 中的最小元素 ∴ 位置不用变）
                 nums1[k] = nums1[i--];
             else
                 nums1[k] = nums2[j--];
