@@ -19,11 +19,10 @@ public class L283_MoveZeroes {
     public static void moveZeros(int[] arr) {
         int[] aux = new int[arr.length];  // 辅助空间
 
-        int j = 0;
-        for (int i = 0; i < arr.length; i++) {
+        int nextIdx = 0;
+        for (int i = 0; i < arr.length; i++)
             if (arr[i] != 0)
-                aux[j++] = arr[i];  // 将非零元素顺序放入辅助空间中，后面未放值的位置默认为零
-        }
+                aux[nextIdx++] = arr[i];  // 将非零元素顺序放入辅助空间中，后面未放值的位置默认为零
 
         for (int i = 0; i < arr.length; i++)
             arr[i] = aux[i];
@@ -31,16 +30,16 @@ public class L283_MoveZeroes {
 
     /*
      * 解法2：Copy and paste + 补零
-     * - 时间复杂度 O(n)，空间复杂度 O(1)
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static void moveZeros2(int[] arr) {
-        int j = 0;
+        int nextIdx = 0;
 
         for (int i = 0; i < arr.length; i++)  // 将所有非零元素复制到数组前部
             if (arr[i] != 0)
-                arr[j++] = arr[i];
+                arr[nextIdx++] = arr[i];
 
-        for (int i = j; i < arr.length; i++)  // 后面补零
+        for (int i = nextIdx; i < arr.length; i++)  // 后面补零
             arr[i] = 0;
     }
 
@@ -50,14 +49,14 @@ public class L283_MoveZeroes {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static void moveZeros3(int[] arr) {
-        int j = 0;
+        int nextIdx = 0;
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] != 0) {
-                if (i != j) {
-                    arr[j] = arr[i];
+                if (i != nextIdx) {
+                    arr[nextIdx] = arr[i];
                     arr[i] = 0;
                 }
-                j++;
+                nextIdx++;
             }
         }
     }
@@ -68,12 +67,12 @@ public class L283_MoveZeroes {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static void moveZeros4(int[] arr) {
-        int j = 0;
+        int nextIdx = 0;
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] != 0) {
-                if (i != j)
-                    swap(arr, i, j);
-                j++;
+                if (i != nextIdx)
+                    swap(arr, i, nextIdx);
+                nextIdx++;
             }
         }
     }
