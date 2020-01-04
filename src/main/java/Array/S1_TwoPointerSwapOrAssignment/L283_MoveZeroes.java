@@ -3,6 +3,8 @@ package Array.S1_TwoPointerSwapOrAssignment;
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;
 
+import java.util.ArrayList;
+
 /*
 * Move Zeroes
 *
@@ -12,9 +14,9 @@ import static Utils.Helpers.swap;
 public class L283_MoveZeroes {
     /*
     * 解法1：Extra space
-    * - 时间复杂度为 O(n)，空间复杂度为 O(n)
+    * - 时间复杂度 O(n)，空间复杂度 O(n)
     * */
-    public static void moveZerosV1(int[] arr) {
+    public static void moveZeros(int[] arr) {
         int[] aux = new int[arr.length];  // 辅助空间
 
         int j = 0;
@@ -28,11 +30,11 @@ public class L283_MoveZeroes {
     }
 
     /*
-     * 解法2：In-place modification
-     * - 时间复杂度为 O(n)，空间复杂度为 O(1)
+     * 解法2：Copy and paste + 补零
+     * - 时间复杂度 O(n)，空间复杂度 O(1)
      * */
-    public static void moveZerosV2(int[] arr) {
-        int j = 0;  // 指向下一个非零元素应该放的位置
+    public static void moveZeros2(int[] arr) {
+        int j = 0;
 
         for (int i = 0; i < arr.length; i++)  // 将所有非零元素复制到数组前部
             if (arr[i] != 0)
@@ -43,15 +45,33 @@ public class L283_MoveZeroes {
     }
 
     /*
-    * 解法3：In-place modification - swap
-    * - 不需要解法2中的补零操作。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
-    public static void moveZerosV3(int[] arr) {
-        int j = 0;                              // 指向下一个非零元素应该放的位置
-        for (int i = 0; i < arr.length; i++) {  // 遍历过程中只要碰到非零元素就跟 j 位置上的 0 swap
+     * 解法3：Copy and paste（解法2的时间优化版）
+     * - 思路：在解法2上进行改进，只遍历 arr 一次，同时进行复制与置零操作。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static void moveZeros3(int[] arr) {
+        int j = 0;
+        for (int i = 0; i < arr.length; i++) {
             if (arr[i] != 0) {
-                if (i != j)  // 如果数组中都是非零元素（i == j），则不进行这个判断会让元素自己跟自己交换，造成浪费
+                if (i != j) {
+                    arr[j] = arr[i];
+                    arr[i] = 0;
+                }
+                j++;
+            }
+        }
+    }
+
+    /*
+     * 解法4：Swap
+     * - 思路：类似 L27_RemoveElement 解法2。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static void moveZeros4(int[] arr) {
+        int j = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != 0) {
+                if (i != j)
                     swap(arr, i, j);
                 j++;
             }
@@ -60,19 +80,19 @@ public class L283_MoveZeroes {
 
     public static void main(String[] args) {
         int[] arr1 = new int[]{0, 1, 4, 0, 0, 0, 3, 8};
-        moveZerosV3(arr1);
+        moveZeros(arr1);
         log(arr1);  // expects [1, 4, 3, 8, 0, 0, 0, 0]
 
         int[] arr2 = new int[]{0, 1};
-        moveZerosV3(arr2);
+        moveZeros(arr2);
         log(arr2);  // expects [1, 0]
 
         int[] arr3 = new int[]{1, 0};
-        moveZerosV3(arr3);
+        moveZeros(arr3);
         log(arr3);  // expects [1, 0]
 
         int[] arr4 = new int[]{1, 5, 6};
-        moveZerosV3(arr4);
+        moveZeros(arr4);
         log(arr4);  // expects [1, 5, 6]
     }
 }
