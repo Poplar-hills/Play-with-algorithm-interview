@@ -3,6 +3,8 @@ package Array.S3_QuickSort;
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;
 
+import java.util.Random;
+
 /*
  * Sort Colors
  *
@@ -28,14 +30,38 @@ public class L75_SortColors {
      * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     private static void sortColors(int[] arr) {
+        if (arr == null || arr.length == 0) return;
+        quickSort(arr, 0, arr.length - 1);
+    }
 
+    private static void quickSort(int[] arr, int l, int r) {
+        if (l >= r) return;
+        int[] ps = partition(arr, l, r);
+        quickSort(arr, l, ps[0]);
+        quickSort(arr, ps[1], r);
+    }
+
+    private static int[] partition(int[] arr, int l, int r) {
+        int vIndex = new Random().nextInt(r - l + 1) + l;  // 随机选取 [l,r] 中的值作为 pivot index
+        swap(arr, l, vIndex);                // 将 pivot 换到数组第0位上
+
+        int v = arr[l], lt = l, gt = r + 1;  // v 即是 pivot；lt 指向 < v 的最后一个元素；gt 指向 > v 的第一个元素
+        for (int i = l + 1; i < gt; ) {      // 从 l+1 开始遍历（∵ arr[l] 是 pivot ∴ 跳过）
+            if (arr[i] < v)
+                swap(arr, i++, ++lt);
+            else if (arr[i] > v)
+                swap(arr, i, --gt);
+            else
+                i++;
+        }
+        swap(arr, l, lt);             // 再将 pivot 放到正确的位置上（即所有 < v 的元素之后，在所有 == v 的元素之前）
+        lt--;                         // ∵ 把 pivot 放到了 lt 上 ∴ lt 需要 -1 才能继续指向 < v 的最后一个元素
+        return new int[]{lt, gt};
     }
 
     /*
-     * 解法2：Merge sort
-     * - 思路：标准归并排序。
-     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
-     * */
+     * 解法2：Merge sort - 思路：标准归并排序。 - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+     */
     private static void sortColors2(int[] arr) {
 
     }
