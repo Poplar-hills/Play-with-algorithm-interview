@@ -82,10 +82,10 @@ public class L75_SortColors {
     private static void merge(int[] arr, int l, int mid, int r) {
         int[] copy = Arrays.copyOfRange(arr, l, r + 1);  // 将 arr[l,r] 中的元素复制出来，用于比较
         int i = l, j = mid + 1;
-        for (int k = l; k <= r; k++) {  // 遍历 arr[l,r] 中的所有元素
-            if (i > mid)                // 先讨论越界情况
+        for (int k = l; k <= r; k++) {    // 遍历 arr[l,r] 中的所有元素
+            if (i > mid)                  // 先讨论越界情况（左半部分已处理完）
                 arr[k] = copy[j++ - l];
-            else if (j > r)
+            else if (j > r)               // 越界情况（右半部分已处理完）
                 arr[k] = copy[i++ - l];
             else if (copy[i - l] < copy[j - l])  // 再讨论未越界的情况
                 arr[k] = copy[i++ - l];
