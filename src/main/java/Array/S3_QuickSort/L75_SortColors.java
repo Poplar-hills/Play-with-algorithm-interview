@@ -26,8 +26,7 @@ import java.util.Random;
 
 public class L75_SortColors {
     /*
-     * 解法1：3-way quick sort
-     * - 思路：标准三路快排。
+     * 解法1：Standard 3-way quick sort
      * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     private static void sortColors(int[] arr) {
@@ -55,14 +54,13 @@ public class L75_SortColors {
             else
                 i++;
         }
-        swap(arr, l, lt);             // 再将 pivot 放到正确的位置上（即所有 < v 的元素之后，在所有 == v 的元素之前）
-        lt--;                         // ∵ 把 pivot 放到了 lt 上 ∴ lt 需要 -1 才能继续指向 < v 的最后一个元素
+        swap(arr, l, lt);          // 再将 pivot 放到正确的位置上（即所有 < v 的元素之后、所有 == v 的元素之前）
+        lt--;                      // ∵ 把 pivot 放到了 lt 上 ∴ lt 需要-1才能继续指向 < v 的最后一个元素
         return new int[]{lt, gt};
     }
 
     /*
-     * 解法2：Merge sort
-     * - 思路：标准归并排序。
+     * 解法2：Standard merge sort
      * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     private static void sortColors2(int[] arr) {
@@ -112,7 +110,7 @@ public class L75_SortColors {
     }
 
     /*
-     * 解法4：Single round 3-way quick sort（单遍三路快排）
+     * 解法4：One-pass 3-way quick sort（单次遍历的三路快排）
      * - 思路：∵ arr 中只有三种值 ∴ 三路快排只需遍历一遍就可以完成排序，无需对每个分区进行递归。
      * - 时间复杂度 O(n) ∵ 没有递归过程 ∴ 只遍历数组1遍 ∴ 复杂度是 O(n)；
      * - 空间复杂度 O(1)。
