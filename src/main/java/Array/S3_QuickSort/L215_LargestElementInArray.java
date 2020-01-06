@@ -16,8 +16,7 @@ import static Utils.Helpers.swap;
  *   1. 先对数组进行整体排序，再取 k 个元素，若使用快排 or 归并 or 堆排序。
  *   2. 不对数组进行整体排序，而是使用最小堆，在往堆中添加元素的过程中，让堆大小一直保持在 k，只要大小一超过 k 就让最小的元素出堆，
  *      而让大的元素保留在堆中。这样当遍历结束后，堆中保留的就是数组中最大的 k 个元素，而堆顶元素就是第 k 大的元素。
- *   3. 采用三路快排的思路对数组不断进行分组（每次只需对 k 所在的分组进行递归），直到分组索引 == k 时即找到了第 k 大元素。
- *   更多解法 SEE：SortingAdvanced - Exercise_KthSmallestElement（注意是 Smallest 不是本题中的 Largest）
+ *   3. 采用三路快排的思路对数组不断进行递归分组（每次只需关注 k 所在的分组即可），直到 k 落在 ==v 的分组里时即找到了第 k 大元素。
  * */
 
 public class L215_LargestElementInArray {
@@ -50,10 +49,11 @@ public class L215_LargestElementInArray {
     }
 
     /*
-     * 解法3：快排思路
-     * - 该快排是从大到小排序，这样才能满足"第几大"的需求（如果是从小到大排序，就只能找到"第几小"）
-     * - 要从大到小排序，则需要：[v|--- > v ---|--- == v ---|...|--- < v ---]
-     *                         l           gt             i   lt        r
+     * 解法3：Quick sort partition
+     * - 思路：上面分析的思路3。
+     * - 注意：该快排是从大到小排序，这样才能满足"第几大"的需求（如果是从小到大排序，就只能找到"第几小"）
+     *   要从大到小排序，则需要：[v|--- >v ---|--- ==v ---|.....|--- <v ---]
+     *                        l          gt            i     lt       r
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static int kthLargest3(int[] nums, int k) {
@@ -63,11 +63,11 @@ public class L215_LargestElementInArray {
     private static int quickSelect(int[] nums, int l, int r, int k) {
         if (l == r) return nums[l];
         int[] ps = partition(nums, l, r);
-        if (k <= ps[0])
+        if (k <= ps[0])                             // 若 k ∈ [l,gt]，则对 nums[l,gt] 进行排序
             return quickSelect(nums, l, ps[0], k);
-        if (k >= ps[1])
+        if (k >= ps[1])                             // 若 k ∈ [lt,r]，则对 nums[lt,r] 进行排序
             return quickSelect(nums, ps[1], r, k);
-        return nums[k];
+        return nums[k];                             // 若 k ∈ (gt,lt)，则
     }
 
     private static int[] partition(int[] nums, int l, int r) {
@@ -88,11 +88,43 @@ public class L215_LargestElementInArray {
         return new int[]{gt, lt};
     }
 
+    /*
+     * 解法4：Quick sort partition（解法3的简化版）
+     * - 思路：基于两路快排的 partition，同样是从大到小排序
+     *   [v|--- >v ---|--- <v ---|.....]
+     *    l            lt         i   r      [l,lt) 位置上的元素 > v，[lt,i) 位置上的元素 < v
+     * - 时间复杂度 O(n)，空间复杂度 O(logn)。
+     * */
+    public static int kthLargest4(int[] nums, int k) {
+        return quickSelect4(nums, 0, nums.length - 1, k - 1);
+    }
+
+    private static int quickSelect4(int[] nums, int l, int r, int k) {
+        if (l == r) return nums[l];
+        int p = partition4(nums, l, r);
+        if (k < p) return quickSelect4(nums, l, p - 1, k);
+        if (k > p) return quickSelect4(nums, l, p + 1, k);
+        return nums[p];  // 若 k == p，则
+    }
+
+    private static int partition4(int[] nums, int l, int r) {
+        int vIndex = new Random().nextInt(r - l + 1) + l;
+        swap(nums, l, vIndex);
+
+        int v = nums[l], lt = l + 1;
+        for (int i = l + 1; i <= r; i++)
+            if (nums[i] > v)
+                swap(nums, i, lt++);
+
+        swap(nums, l, lt - 1);
+        return lt - 1;
+    }
+
     public static void main(String[] args) {
         int[] arr1 = new int[]{3, 2, 1, 5, 6, 4};
-        log(kthLargest(arr1, 2));  // expects 5
+        log(kthLargest4(arr1, 2));  // expects 5
 
         int[] arr2 = new int[]{6, -2, 8, 10, -4, 0};
-        log(kthLargest(arr2, 4));  // expects 0
+        log(kthLargest4(arr2, 4));  // expects 0
     }
 }
