@@ -7,17 +7,19 @@ import static Utils.Helpers.log;
 import static Utils.Helpers.swap;
 
 /*
-* Kth Largest Element in an Array
-*
-* - 该问题有多种解法，下面实现两种。
-* - 更多解法 SEE：SortingAdvanced - Exercise_KthSmallestElement（注意是 Smallest 不是本题中的 Largest）
-* */
+ * Kth Largest Element in an Array
+ *
+ * - Find the kth largest element in an unsorted array.
+ *
+ * - 该问题有多种解法，下面实现两种。更多解法 SEE：SortingAdvanced - Exercise_KthSmallestElement（注意是 Smallest 不是本题中的 Largest）
+ * */
 
 public class L215_LargestElementInArray {
     /*
-    * 解法1：堆排序
-    * - 使用最大堆，extractMax n-k 次，总复杂度为 O((2n-k)logn)
-    * */
+     * 解法1：Heap sort（堆排序）
+     * - 思路：使用最大堆，extractMax n-k 次，
+     * - 时间复杂度 O((2n-k)logn)
+     * */
     public static int kthLargest1(int[] nums, int k) {
         PriorityQueue<Integer> pq = new PriorityQueue<>(k + 1);
         for (int n : nums) {
@@ -29,11 +31,11 @@ public class L215_LargestElementInArray {
     }
 
     /*
-    * 解法2：快排思路
-    * - 该快排是从大到小排序，这样才能满足"第几大"的需求（如果是从小到大排序，就只能找到"第几小"）
-    * - 要从大到小排序，则需要：[v|--- > v ---|--- == v ---|...|--- < v ---]
-    *                         l           gt             i   lt        r
-    * */
+     * 解法2：快排思路
+     * - 该快排是从大到小排序，这样才能满足"第几大"的需求（如果是从小到大排序，就只能找到"第几小"）
+     * - 要从大到小排序，则需要：[v|--- > v ---|--- == v ---|...|--- < v ---]
+     *                         l           gt             i   lt        r
+     * */
     public static int kthLargest2(int[] nums, int k) {
         return quickSelect(nums, 0, nums.length - 1, k - 1);  // k-1 是为了让语义更自然（"第1小"就是最小，"第2小"就是第2小，没有"第0小"）
     }
@@ -71,16 +73,16 @@ public class L215_LargestElementInArray {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[] {3, 2, 1, 5, 6, 4};
+        int[] arr1 = new int[]{3, 2, 1, 5, 6, 4};
         log(kthLargest1(arr1, 2));  // expects 5
 
-        int[] arr2 = new int[] {3, 2, 3, 1, 2, 4, 5, 5, 6};
+        int[] arr2 = new int[]{3, 2, 3, 1, 2, 4, 5, 5, 6};
         log(kthLargest1(arr2, 4));  // expects 4
 
-        int[] arr3 = new int[] {3, 2, 1, 5, 6, 4};
+        int[] arr3 = new int[]{3, 2, 1, 5, 6, 4};
         log(kthLargest2(arr3, 2));  // expects 5
 
-        int[] arr4 = new int[] {3, 2, 3, 1, 2, 4, 5, 5, 6};
+        int[] arr4 = new int[]{3, 2, 3, 1, 2, 4, 5, 5, 6};
         log(kthLargest2(arr4, 4));  // expects 4
     }
 }
