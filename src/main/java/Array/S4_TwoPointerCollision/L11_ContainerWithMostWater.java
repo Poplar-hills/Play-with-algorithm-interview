@@ -25,18 +25,18 @@ public class L11_ContainerWithMostWater {
     /*
      * 解法1：指针对撞
      * - 思路：
-     *   - 面积取决于两个因素：1.两个元素的间距 2.两个元素本身的大小。
-     *   - 在两个指针不断靠近的过程中，只有不断寻找更大的元素才有可能获得更大的面积，对撞的过程就是在不断补短板的过程 —— 看左、右两边
-     *     哪边是短板，让短的一边向对面移动一步，看是否能获得更大的面积。
+     *   - 先思考影响面积大小的因素 —— 1. 两条线的间距；2. 两条线的高度；3. 两条线的高度差。
+     *   - 在两个指针不断靠近的过程中，两条线的间距是在不断缩小的 ∴ 只有让两条线更高才有可能得到更大的面积，并且还要尽可能让两
+     *     条线的高度差尽量小 ∴ 在对撞过程中要不断补短板，看左、右两边哪边是短板，让短的一边向对面移动一步，看是否能获得更大的面积。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxArea(int[] arr) {
         assert arr.length >= 2;
         int maxArea = 0;
-        for (int i = 0, j = arr.length - 1; i < j; ) {
-            maxArea = Math.max(maxArea, calcArea(arr, i, j));
-            if (arr[i] < arr[j]) i++;  // 若 arr[i] < arr[j] 则 i 是短板，i++
-            else j--;
+        for (int l = 0, r = arr.length - 1; l < r; ) {
+            maxArea = Math.max(maxArea, calcArea(arr, l, r));
+            if (arr[l] < arr[r]) l++;
+            else r--;
         }
         return maxArea;
     }
@@ -54,14 +54,14 @@ public class L11_ContainerWithMostWater {
     public static int maxArea2(int[] arr) {
         assert arr.length >= 2;
         int maxArea = 0;
-        for (int i = 0, j = arr.length - 1; i < j; ) {
-            maxArea = Math.max(maxArea, calcArea(arr, i, j));
-            if (arr[i] < arr[j]) {
-                int oldI = i;
-                while (i < j && arr[i] <= arr[oldI]) i++;  // 直到找到比当前这块板子还长的新板子位置
+        for (int l = 0, r = arr.length - 1; l < r; ) {
+            maxArea = Math.max(maxArea, calcArea(arr, l, r));
+            if (arr[l] < arr[r]) {
+                int oldL = l;
+                while (l < r && arr[l] <= arr[oldL]) l++;  // 直到找到比当前这块板子还长的新板子位置
             } else {
-                int oldJ = j;
-                while (j > i && arr[j] <= arr[oldJ]) j--;  // 同上
+                int oldR = r;
+                while (r > l && arr[r] <= arr[oldR]) r--;  // 同上
             }
         }
         return maxArea;
