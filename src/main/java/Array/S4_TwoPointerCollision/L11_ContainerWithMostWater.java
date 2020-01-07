@@ -33,7 +33,7 @@ public class L11_ContainerWithMostWater {
     public static int maxArea(int[] arr) {
         assert arr.length >= 2;
         int maxArea = 0;
-        for (int l = 0, r = arr.length - 1; l < r; ) {
+        for (int l = 0, r = arr.length - 1; l < r; ) {  // 不同于 L125 该指针对撞不能同时移动 l, r
             maxArea = Math.max(maxArea, calcArea(arr, l, r));
             if (arr[l] < arr[r]) l++;
             else r--;
