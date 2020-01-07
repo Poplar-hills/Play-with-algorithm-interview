@@ -7,6 +7,8 @@ import static Utils.Helpers.log;
  *
  * - Find two lines, which together with x-axis forms a container that contains the most water.
  *
+ * - For example: [1, 8, 6, 2, 5, 4, 8, 3, 7]
+ *
  *         |                   |
  *         |                   |       |
  *         |   |               |       |
@@ -15,7 +17,7 @@ import static Utils.Helpers.log;
  *         |   |       |   |   |   |   |
  *         |   |   |   |   |   |   |   |
  *     |   |   |   |   |   |   |   |   |
- *   --------------------------------------   line 1 and line 8 forms the largest container (49 units)
+ *   --------------------------------------   line 1 and line 8 forms the largest container ((8-1) * 7 = 49 units)
  *     0   1   2   3   4   5   6   7   8
  * */
 
@@ -66,7 +68,7 @@ public class L11_ContainerWithMostWater {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[] {1, 8, 6, 2, 5, 4, 8, 3, 7};
+        int[] arr1 = new int[]{1, 8, 6, 2, 5, 4, 8, 3, 7};
         log(maxArea2(arr1));  // expects 49. （第一个8和最后一个7所组成的面积最大）
     }
 }
