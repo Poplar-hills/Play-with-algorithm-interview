@@ -3,23 +3,23 @@ package Array.S4_TwoPointerCollision;
 import static Utils.Helpers.log;
 
 /*
-* Two Sum II - Input array is sorted
-*
-* - 在一个有序数组中找到两个不同元素之和等于给定的值，返回这两个元素各自的元素序号（从1开始）。
-*
-* - 提示：条件中说了是数组是"序数"的，因此联想：
-*   - 是否应用分治、递归思路？
-*   - 是否可以使用二分查找？
-*   - 是否可以构建一棵搜索树？
-* */
+ * Two Sum II
+ *
+ * - 在一个有序数组中找到两个不同元素之和等于给定的值，返回这两个元素各自的元素序号（从1开始）。
+ *
+ * - 提示：条件中说了是数组是"有序"的，由此可联想：
+ *   - 是否可使用分治、递归思路？
+ *   - 是否可使用二分查找？
+ *   - 是否可构建一棵搜索树？
+ * */
 
 public class L167_TowSumII {
     /*
-    * 解法1：二分查找
-    * - 思路：遍历数组，对于每个元素 nums[i]，若数组中包含值为 target - nums[i] 的元素，则说明有解，返回它们的序号即可。而要查找
-    *   有序数组中是否包含某个值，二分查找是最快的。因此只要在遍历数组的过程中，对每个 target - nums[i] 进行二分查找即可。
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(logn)。
-    * */
+     * 解法1：二分查找
+     * - 思路：遍历数组，对于每个元素 nums[i]，若数组中包含值为 target - nums[i] 的元素，则说明有解，返回它们的序号即可。而要查找
+     *   有序数组中是否包含某个值，二分查找是最快的。因此只要在遍历数组的过程中，对每个 target - nums[i] 进行二分查找即可。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(logn)。
+     * */
     public static int[] twoSum(int[] nums, int target) {
         for (int i = 0; i < nums.length; i++) {
             int p = binarySearch(nums, target - nums[i], i + 1, nums.length - 1);  // 从 i 之后的元素中进行二分查找即可
@@ -37,10 +37,10 @@ public class L167_TowSumII {
     }
 
     /*
-    * 解法2：指针对撞
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * - 注：两路、三路快排实际上也是指针对撞的一种应用
-    * */
+     * 解法2：指针对撞
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * - 注：两路、三路快排实际上也是指针对撞的一种应用
+     * */
     public static int[] twoSum2(int[] nums, int target) {
         int i = 0, j = nums.length - 1;
         while (i != j) {
@@ -53,9 +53,9 @@ public class L167_TowSumII {
     }
 
     /*
-    * 解法3：解法2的简化版
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    */
+     * 解法3：解法2的简化版
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static int[] twoSum3(int[] nums, int target) {
         int i = 0, j = nums.length - 1;
         while (nums[i] + nums[j] != target) {
