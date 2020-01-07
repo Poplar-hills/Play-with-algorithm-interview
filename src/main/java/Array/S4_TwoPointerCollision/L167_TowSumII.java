@@ -3,27 +3,28 @@ package Array.S4_TwoPointerCollision;
 import static Utils.Helpers.log;
 
 /*
- * Two Sum II
+ * Two Sum II - Input array is sorted
  *
  * - 在一个有序数组中找到两个不同元素之和等于给定的值，返回这两个元素各自的元素序号（从1开始）。
  *
- * - 提示：条件中说了是数组是"有序"的，由此可联想：
- *   - 是否可使用分治、递归思路？
+ * - 💎套路：条件中说了是数组是"有序"的，由此可联想：
  *   - 是否可使用二分查找？
+ *   - 是否可使用分治、递归思路？
  *   - 是否可构建一棵搜索树？
  * */
 
 public class L167_TowSumII {
     /*
      * 解法1：二分查找
-     * - 思路：遍历数组，对于每个元素 nums[i]，若数组中包含值为 target - nums[i] 的元素，则说明有解，返回它们的序号即可。而要查找
-     *   有序数组中是否包含某个值，二分查找是最快的。因此只要在遍历数组的过程中，对每个 target - nums[i] 进行二分查找即可。
+     * - 思路：遍历数组，对于每个元素 nums[i]，若数组中包含值为 target - nums[i] 的元素，则说明有解。而要查找有序数组中是否
+     *   包含某个值，二分查找是最快的 ∴ 只需在遍历数组的过程中，不断二分查找 target - nums[i]，直到找到或遍历结束即可。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(logn)。
      * */
     public static int[] twoSum(int[] nums, int target) {
         for (int i = 0; i < nums.length; i++) {
-            int p = binarySearch(nums, target - nums[i], i + 1, nums.length - 1);  // 从 i 之后的元素中进行二分查找即可
-            if (p != -1) return new int[] {i + 1, p + 1};
+            int p = binarySearch(nums, target - nums[i], i + 1, nums.length - 1);  // 只需在 nums(i..] 范围中进行查找即可
+            if (p != -1)
+                return new int[]{i + 1, p + 1};
         }
         return null;
     }
@@ -68,5 +69,6 @@ public class L167_TowSumII {
     public static void main(String[] args) {
         log(twoSum(new int[]{2, 7, 11, 15}, 9));  // expects [1, 2]（注意返回的是从1开始的元素序号）
         log(twoSum(new int[]{2, 3, 4}, 6));       // expects [1, 3]
+        log(twoSum(new int[]{-3, -2, 2, 3}, 0));  // expects [1, 4]
     }
 }
