@@ -46,7 +46,7 @@ public class L75_SortColors {
         swap(arr, l, vIndex);                // 将 pivot 换到数组第0位上
 
         int v = arr[l], lt = l, gt = r + 1;  // v 即是 pivot；lt 指向 < v 的最后一个元素；gt 指向 > v 的第一个元素
-        for (int i = l + 1; i < gt; ) {      // 从 l+1 开始遍历（∵ arr[l] 是 pivot ∴ 跳过）
+        for (int i = l + 1; i < gt; ) {      // 遍历 [l+1, gt)（注意 gt 是动态的，另外 ∵ arr[l] 是 pivot ∴ 跳过）
             if (arr[i] < v)
                 swap(arr, i++, ++lt);
             else if (arr[i] > v)

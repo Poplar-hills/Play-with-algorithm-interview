@@ -79,7 +79,7 @@ public class L215_LargestElementInArray {
         swap(nums, l, vIndex);
         int v = nums[l], lt = r + 1, gt = l;
 
-        for (int i = l + 1; i < lt; ) {
+        for (int i = l + 1; i < lt; ) {    // 遍历 [l+1, lt)，注意 lt 是动态的
             if (nums[i] < v)
                 swap(nums, i, --lt);
             else if (nums[i] > v)
@@ -95,11 +95,12 @@ public class L215_LargestElementInArray {
     /*
      * 解法4：Quick sort（解法3的简化版）
      * - 思路：基于两路快排的 partition，同样是从大到小排序
-     *   [v|--- >v ---|--- <v ---|.....]
+     *   [v|--- >v ---|--- ≤v ---|.....]
      *    l            lt         i   r      [l,lt) 位置上的元素 > v，[lt,i) 位置上的元素 < v
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
      * */
     public static int kthLargest4(int[] nums, int k) {
+        assert (k >= 1 && k <= nums.length);
         return quickSelect4(nums, 0, nums.length - 1, k - 1);
     }
 
@@ -107,28 +108,31 @@ public class L215_LargestElementInArray {
         if (l == r) return nums[l];
         int p = partition4(nums, l, r);
         if (k < p) return quickSelect4(nums, l, p - 1, k);
-        if (k > p) return quickSelect4(nums, l, p + 1, k);
-        return nums[p];  // 若 k == p，则
+        if (k > p) return quickSelect4(nums, p + 1, r, k);
+        return nums[p];  // 若 k == p，说明刚才 partition 中的 pivot 就是第 k 大元素，并被移到了 k 位上 ∴ 直接返回即可
     }
 
     private static int partition4(int[] nums, int l, int r) {
         int vIndex = new Random().nextInt(r - l + 1) + l;
         swap(nums, l, vIndex);
-
         int v = nums[l], lt = l + 1;
-        for (int i = l + 1; i <= r; i++)
+
+        for (int i = l + 1; i <= r; i++)  // 遍历 [l+1, r]
             if (nums[i] > v)
                 swap(nums, i, lt++);
 
-        swap(nums, l, lt - 1);
+        swap(nums, l, lt - 1);  // 将 pivot 放到正确的位置上
         return lt - 1;
     }
 
     public static void main(String[] args) {
         int[] arr1 = new int[]{3, 2, 1, 5, 6, 4};
-        log(kthLargest3(arr1, 2));  // expects 5
+        log(kthLargest4(arr1, 2));  // expects 5
 
         int[] arr2 = new int[]{0, -2, 4, 4 -2, 0};
-        log(kthLargest3(arr2, 3));  // expects 0
+        log(kthLargest4(arr2, 3));  // expects 0
+
+        int[] arr3 = new int[]{0, -2, 4, 4 -2, 0};
+        log(kthLargest4(arr3, 4));  // expects 0
     }
 }
