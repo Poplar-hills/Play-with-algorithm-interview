@@ -7,16 +7,16 @@ import java.util.Set;
 import static Utils.Helpers.log;
 
 /*
-* Reverse Vowels of a String
-*
-* - Write a function that takes a string as input and reverse only the vowels of a string.
-* */
+ * Reverse Vowels of a String
+ *
+ * - Write a function that takes a string as input and reverse only the vowels of a string.
+ * */
 
 public class L345_ReverseVowelsOfString {
     /*
-    * 解法1：指针对撞
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
+     * 解法1：指针对撞
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static String reverseVowels(String s) {
         char[] arr = s.toCharArray();
         for (int i = 0, j = arr.length - 1; i < j; i++, j--) {
@@ -39,8 +39,8 @@ public class L345_ReverseVowelsOfString {
     }
 
     /*
-    * 解法2：解法1的优化版
-    * */
+     * 解法2：解法1的优化版
+     * */
     public static String reverseVowels2(String s) {
         Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));  // 使用 Set 代替解法1中的 isVowel 方法
         char[] arr = s.toCharArray();

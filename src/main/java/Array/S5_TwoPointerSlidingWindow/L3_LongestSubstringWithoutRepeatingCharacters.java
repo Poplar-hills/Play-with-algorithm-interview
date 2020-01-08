@@ -5,22 +5,22 @@ import java.util.*;
 import static Utils.Helpers.log;
 
 /*
-* Longest Substring Without Repeating Characters
-*
-* - Given a string, find the length of the longest substring without repeating characters.
-* - 注意：是 substring（子串），而非 subsequence（子序列）—— 子串是连续的，子序列可以不连续，如 "pwke"是"pwwkew"的子序列，但不是其子串。
-*
-* - 解法1最简单明了，解法3最精巧。
-* */
+ * Longest Substring Without Repeating Characters
+ *
+ * - Given a string, find the length of the longest substring without repeating characters.
+ * - 注意：是 substring（子串），而非 subsequence（子序列）—— 子串是连续的，子序列可以不连续，如 "pwke"是"pwwkew"的子序列，但不是其子串。
+ *
+ * - 解法1最简单明了，解法3最精巧。
+ * */
 
 public class L3_LongestSubstringWithoutRepeatingCharacters {
     /*
-    * 解法1：滑动窗口
-    * - 思路：窗口初始宽度为0（不包含任何元素），每次检查 r+1 处的字符是否存在于窗口中，若不存在则窗口右边界右滑，否则窗口左边界
-    *   右滑收窄一步，且每次窗口长度变化时都与之前的最长记录想比较。
-    * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
-    * - 心得：对于这种找连续子串的问题，滑动窗口是最常用的解法，即根据题中条件来不断改变窗口的两个边界 l 和 r 找到所需子串。
-    * */
+     * 解法1：滑动窗口
+     * - 思路：窗口初始宽度为0（不包含任何元素），每次检查 r+1 处的字符是否存在于窗口中，若不存在则窗口右边界右滑，否则窗口左边界
+     *   右滑收窄一步，且每次窗口长度变化时都与之前的最长记录想比较。
+     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
+     * - 心得：对于这种找连续子串的问题，滑动窗口是最常用的解法，即根据题中条件来不断改变窗口的两个边界 l 和 r 找到所需子串。
+     * */
     public static int lengthOfLongestSubstring(String s) {
         if (s == null)
             throw new IllegalArgumentException("Illegal Arguments");
