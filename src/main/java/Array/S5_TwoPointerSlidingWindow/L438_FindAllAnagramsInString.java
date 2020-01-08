@@ -6,19 +6,19 @@ import java.util.List;
 import static Utils.Helpers.log;
 
 /*
-* Find All Anagrams in a String
-*
-* - Given a string s and a non-empty string p, find all the start indices of p's anagrams (由颠倒字母顺序而构成的词) in s.
-* - Strings consists of lowercase English letters only.
-* - The order of output does not matter.
-* */
+ * Find All Anagrams in a String
+ *
+ * - Given a string s and a non-empty string p, find all the start indices of p's anagrams (由颠倒字母顺序而构成的词) in s.
+ * - Strings consists of lowercase English letters only.
+ * - The order of output does not matter.
+ * */
 
 public class L438_FindAllAnagramsInString {
     /*
-    * 解法1：滑动窗口
-    * - 思路：类似 L76_MinimumWindowSubstring 的解法1。
-    * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
-    * */
+     * 解法1：滑动窗口
+     * - 思路：类似 L76_MinimumWindowSubstring 的解法1。
+     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
+     * */
     public static List<Integer> findAnagrams(String s, String p) {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;
@@ -47,10 +47,10 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-    * 解法2：滑动窗口（更简洁但更费解一点）
-    * - 注：该方法中 l 可能会大于 r，这也是该解法的费解之处。总的来说解法1更加可读。
-    * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
-    * */
+     * 解法2：滑动窗口（更简洁但更费解一点）
+     * - 注：该方法中 l 可能会大于 r，这也是该解法的费解之处。总的来说解法1更加可读。
+     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
+     * */
     public static List<Integer> findAnagrams2(String s, String p) {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;

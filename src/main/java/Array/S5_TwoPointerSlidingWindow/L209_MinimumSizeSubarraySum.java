@@ -3,21 +3,21 @@ package Array.S5_TwoPointerSlidingWindow;
 import static Utils.Helpers.log;
 
 /*
-* Minimum Size Subarray Sum
-*
-* - Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous subarray
-*   (连续子数组) of which the sum ≥ s. If there isn't one, return 0 instead.
-*
-* - 题中要求找到元素之和 ≥ s 的最短子串，即对于子串 nums[l...r] 来说，需要在 sum(l...r) ≥ s 的基础上找到最小的 r-l+1。
-*   可见本题需要通过改变 l 和 r 来找到符合要求的子串。
-* */
+ * Minimum Size Subarray Sum
+ *
+ * - Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous subarray
+ *   (连续子数组) of which the sum ≥ s. If there isn't one, return 0 instead.
+ *
+ * - 题中要求找到元素之和 ≥ s 的最短子串，即对于子串 nums[l...r] 来说，需要在 sum(l...r) ≥ s 的基础上找到最小的 r-l+1。
+ *   可见本题需要通过改变 l 和 r 来找到符合要求的子串。
+ * */
 
 public class L209_MinimumSizeSubarraySum {
     /*
-    * 解法1：brute force
-    * - 时间复杂度 O(n^3)，空间复杂度 O(1)。
-    * - 思路是用双重循环遍历 l 和 r 的所有组合，从而遍历所有子串，再对每个子串中的所有元素求和。
-    * */
+     * 解法1：brute force
+     * - 时间复杂度 O(n^3)，空间复杂度 O(1)。
+     * - 思路是用双重循环遍历 l 和 r 的所有组合，从而遍历所有子串，再对每个子串中的所有元素求和。
+     * */
     public static int minSubArrayLen(int s, int[] nums) {
         if(s <= 0 || nums == null)
             throw new IllegalArgumentException("Illegal Arguments");
@@ -37,10 +37,10 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-    * 解法2：optimised brute force
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * - 思路是通过空间换时间，将元素之和按索引缓存起来，从而加速解法1中的"求每个子串中的元素之和"这一步（这在子串求和问题中是个常见策略）。
-    * */
+     * 解法2：optimised brute force
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 思路是通过空间换时间，将元素之和按索引缓存起来，从而加速解法1中的"求每个子串中的元素之和"这一步（这在子串求和问题中是个常见策略）。
+     * */
     public static int minSubArrayLen2(int s, int[] nums) {
         if (s <= 0 || nums == null)
             throw new IllegalArgumentException("Illegal Arguments");
@@ -60,10 +60,10 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-    * 解法3：窗口滑动
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * - 因为要找的是连续子串，因此可以让两个边界 l 和 r 在数组中从前向后不断滑动，每次滑动一个边界后判断当前子串之和是否 ≥ s。
-    * */
+     * 解法3：窗口滑动
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * - 因为要找的是连续子串，因此可以让两个边界 l 和 r 在数组中从前向后不断滑动，每次滑动一个边界后判断当前子串之和是否 ≥ s。
+     * */
     public static int minSubArrayLen3(int s, int[] nums) {
         if (s <= 0 || nums == null)
             throw new IllegalArgumentException("Illegal Arguments");
@@ -84,9 +84,9 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-    * 解法4：窗口滑动的另一实现
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
+     * 解法4：窗口滑动的另一实现
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static int minSubArrayLen4(int s, int[] nums) {
         if (s <= 0 || nums == null)
             throw new IllegalArgumentException("Illegal Arguments");
