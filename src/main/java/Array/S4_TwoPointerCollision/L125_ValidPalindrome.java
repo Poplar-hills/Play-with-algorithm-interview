@@ -12,6 +12,7 @@ import static Utils.Helpers.log;
 public class L125_ValidPalindrome {
     /*
      * 解法1：指针对撞
+     * - 思路：整体思路与 L345_ReverseVowelsOfString 解法1类似。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     private static boolean validPalindrome(String s) {

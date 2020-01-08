@@ -21,9 +21,9 @@ import static Utils.Helpers.swap;
 public class L345_ReverseVowelsOfString {
     /*
      * 解法1：指针对撞
-     * - 思路：将字符串中的元音字母反向其实就是在 L344_ReverseString 的基础上加入对元音字母的判断即可 ∴ 总体逻辑还是指针对撞，
-     *   代码外层循环让 l、r 同步移动，但 l、r 移动之后不一定指向的就是元音字母 ∴ 内层需要2个 while 循环让 l、r 移动到下一个
-     *   元音字母的位置上。
+     * - 思路：整体思路与 L345_ReverseVowelsOfString 解法1类似。具体来说，将字符串中的元音字母反向其实就是在
+     *   L344_ReverseString 的基础上加入对元音字母的判断即可 ∴ 总体逻辑还是指针对撞，代码外层循环让 l、r 同步移动，但 l、r
+     *   移动之后不一定指向的就是元音字母 ∴ 内层需要2个 while 循环让 l、r 移动到下一个元音字母的位置上。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static String reverseVowels(String s) {
@@ -43,12 +43,16 @@ public class L345_ReverseVowelsOfString {
 
     /*
      * 解法2：解法1的优化版
+     * - 思路：在解法1基础上加入2点优化：
+     *   1. 使用 Set 代替解法1中的 isVowel 方法；
+     *   2. 在检查是否是元音之前先进行 toLowerCase 处理。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static String reverseVowels2(String s) {
-        Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));  // 使用 Set 代替解法1中的 isVowel 方法
+        Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));  // 从列表生成 Set
         char[] chars = s.toCharArray();
         for (int i = 0, j = s.length() - 1; i < j; i++, j--) {
-            while (i < j && !vowels.contains(Character.toLowerCase(chars[i]))) i++;  // 在检查是否是元音之前先 toLowerCase
+            while (i < j && !vowels.contains(Character.toLowerCase(chars[i]))) i++;
             while (i < j && !vowels.contains(Character.toLowerCase(chars[j]))) j--;
             if (i != j) swap(chars, i, j);
         }
