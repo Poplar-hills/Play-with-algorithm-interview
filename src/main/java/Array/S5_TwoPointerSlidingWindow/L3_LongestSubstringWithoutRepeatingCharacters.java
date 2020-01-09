@@ -104,7 +104,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         for (int r = 0; r < chars.length; r++) {
             Integer prevIndex = indexMap.put(chars[r], r);
             if (prevIndex != null)
-                l = prevIndex + 1;
+                l = Math.max(l, prevIndex + 1);
             maxLen = Math.max(maxLen, r - l + 1);
         }
 
@@ -115,6 +115,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         log(lengthOfLongestSubstring0("abcabcbb"));  // expects 3 ("abc" or "bca" or "cab")
         log(lengthOfLongestSubstring0("pwwkew"));    // expects 3 ("wke")
         log(lengthOfLongestSubstring0("cdd"));       // expects 2 ("cd")
+        log(lengthOfLongestSubstring0("abba"));      // expects 2 ("ab" or "ba")
         log(lengthOfLongestSubstring0("bbbbba"));    // expects 2 ("ba")
         log(lengthOfLongestSubstring0("bbbbb"));     // expects 1 ("b")
         log(lengthOfLongestSubstring0(""));          // expects 0
