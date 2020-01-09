@@ -70,13 +70,34 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
      * */
     public static int lengthOfLongestSubstring3(String s) {
         if (s == null) return 0;
+        char[] chars = s.toCharArray();
+        int maxLen = 0, l = 0, r = 0;
+        Set<Character> set = new HashSet<>();
+
+        while (r < chars.length) {
+            while (r < chars.length && !set.contains(chars[r]))  // 右移 r 直到找到重复元素（并停在重复元素上）
+                set.add(chars[r++]);
+
+            maxLen = Math.max(maxLen, r - l);            // 计算窗口长度
+
+            if (r < chars.length)                        // 若 r 已到达末尾则不用再移动 l
+                while (l < r && set.contains(chars[r]))  // 右移 l 直到窗口内没有重复元素（l 最后与 r 重合）
+                    set.remove(chars[l++]);
+        }
+
+        return maxLen;
+    }
+
+    public static int lengthOfLongestSubstring0(String s) {
+        if (s == null) return 0;
         int maxLen = 0, l = 0, r = -1;
         int[] freq = new int[256];
 
         while (r < s.length() - 1) {
             while (r < s.length() - 1 && freq[s.charAt(r + 1)] == 0)
                 freq[s.charAt(++r)]++;
-            maxLen = Math.max(maxLen, r - l + 1);  // 这句只能放在这里，不能放在最后
+
+            maxLen = Math.max(maxLen, r - l + 1);  // 当 r 右移完毕
 
             if (r < s.length() - 1) {              // 这部分逻辑和上面部分是串行关系（都会执行），不像解法1中是分支关系
                 freq[s.charAt(++r)]++;             // 此处 r++ 后窗口右边界才有重复元素进入
@@ -89,38 +110,14 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     /*
-     * 解法4：滑动窗口的另一实现（最优解）
-     * - 思路：该解法不再记录每个字符的出现频率，而是记录每个字符的索引，从而在发现右侧有重复元素进入时，让 l 直接跳过上一个重复元素。
-     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
-     * - 虽然和前两种解法的复杂度是一个量级的，但该解的优势在于：
-     *   1. 当窗口中出现重复元素时，l 不再是一点一点向右滑动，而是取得重复元素的索引，直接跳到该索引+1的位置，从而去除了重复元素。
-     *   2. 因为 l 是跳跃的，只有 r 在滑动，因此整个 s 只遍历了一遍（前两种解法中 l 和 r 都在滑动，实际上遍历了 s 两遍）。
-     * - 劣势：需要遍历 charIndexes 将每个元素初始化为 -1。
-     * */
-    public static int lengthOfLongestSubstring4(String s) {
-        if (s == null) return 0;
-        int maxLen = 0, l = 0, r = -1;
-        int[] charIndexes = new int[256];  // 保存每个字符在 s 中的索引（重复元素只保存最大索引）
-        Arrays.fill(charIndexes, -1);      // 填充-1（不能再用默认值0了），这里多遍历了一遍
-
-        while (r < s.length() - 1) {
-            if (charIndexes[s.charAt(++r)] != -1)  // 与解法1、2不同，r 在这里会先右滑，即使 r+1 已存在与窗口中
-                l = Math.max(l, charIndexes[s.charAt(r)] + 1);
-            charIndexes[s.charAt(r)] = r;          // 若 r 上的元素在窗口中不存在则记录下来，若已存在则更新其索引
-            maxLen = Math.max(maxLen, r - l + 1);
-        }
-
-        return maxLen;
-    }
-
-    /*
-     * 解法5：解法3的简化版（使用 Map）
-     * - 思路：与解法3一致。
-     * - 实现：使用 Map 代替数组从而简化代码；其中使用了 map.put(k, v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，
-     *   否则返回 null）简化对 l 的更新。
+     * 解法4：滑动窗口 + Map 记录字符索引（最优解）
+     * - 思路：该解法使用 Map 记录每个字符的索引，当窗口中出现重复元素时，l 不再是一步一步右移来越过重复元素，而是从 indexMap
+     *   中取得重复元素的索引，并直接跳到该索引+1的位置，从而快速去除了重复元素。该思路与前3种解法的最大不同就是，l 是跳跃的，
+     *   只有 r 在滑动。
+     * - 实现：使用了 map.put(k, v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，否则返回 null）简化对 l 的更新。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int lengthOfLongestSubstring5(String s) {
+    public static int lengthOfLongestSubstring4(String s) {
         if (s == null) return 0;
         char[] chars = s.toCharArray();
         Map<Character, Integer> indexMap = new HashMap<>();
@@ -129,7 +126,30 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         for (int r = 0; r < chars.length; r++) {
             Integer prevIndex = indexMap.put(chars[r], r);
             if (prevIndex != null)
-                l = Math.max(l, prevIndex + 1);
+                l = Math.max(l, prevIndex + 1);  // 取 Math.max 是为了确保 test case 4（"abba"）
+            maxLen = Math.max(maxLen, r - l + 1);
+        }
+
+        return maxLen;
+    }
+
+    /*
+     * 解法5：解法4的 int[256] 版
+     * - 思路：与解法4一致。
+     * - 实现：用 int[256] 代替 Map 来记录每个字符的索引。缺点是需要遍历 int[256] 来将每个字符的索引初始化为-1。
+     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
+     * */
+    public static int lengthOfLongestSubstring5(String s) {
+        if (s == null) return 0;
+        int maxLen = 0, l = 0;
+        int[] indexes = new int[256];
+        Arrays.fill(indexes, -1);              // 将每个字符的索引初始化为-1（∵ 不能用默认值0）
+
+        for (int r = 0; r < s.length(); r++) {
+            char rc = s.charAt(r);
+            if (indexes[rc] != -1)             // 若 r 处的字符存在于窗口中
+                l = Math.max(l, indexes[rc] + 1);
+            indexes[rc] = r;                   // 在数组中记录 r 处字符的索引（∵ 数组没有 Map.put 返回旧值的功能 ∴ 只能在用完旧值之后再覆盖）
             maxLen = Math.max(maxLen, r - l + 1);
         }
 
@@ -137,12 +157,12 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     public static void main(String[] args) {
-        log(lengthOfLongestSubstring("abcabcbb"));  // expects 3 ("abc" or "bca" or "cab")
-        log(lengthOfLongestSubstring("pwwkew"));    // expects 3 ("wke")
-        log(lengthOfLongestSubstring("cdd"));       // expects 2 ("cd")
-        log(lengthOfLongestSubstring("abba"));      // expects 2 ("ab" or "ba")
-        log(lengthOfLongestSubstring("bbbbba"));    // expects 2 ("ba")
-        log(lengthOfLongestSubstring("bbbbb"));     // expects 1 ("b")
-        log(lengthOfLongestSubstring(""));          // expects 0
+        log(lengthOfLongestSubstring3("abcabcbb"));  // expects 3 ("abc" or "bca" or "cab")
+        log(lengthOfLongestSubstring3("pwwkew"));    // expects 3 ("wke")
+        log(lengthOfLongestSubstring3("cdd"));       // expects 2 ("cd")
+        log(lengthOfLongestSubstring3("abba"));      // expects 2 ("ab" or "ba")
+        log(lengthOfLongestSubstring3("bbbbba"));    // expects 2 ("ba")
+        log(lengthOfLongestSubstring3("bbbbb"));     // expects 1 ("b")
+        log(lengthOfLongestSubstring3(""));          // expects 0
     }
 }
