@@ -91,8 +91,8 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     /*
      * 解法4：解法3的简化版（使用 Map）
      * - 思路：与解法3一致。
-     * - 实现：1. 使用 Map 代替数组从而简化代码；
-     *        2. 利用 map.put(k, v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，否则返回 null）简化对 l 的更新。
+     * - 实现：使用 Map 代替数组从而简化代码；其中使用了 map.put(k, v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，
+     *   否则返回 null）简化对 l 的更新。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring0(String s) {
