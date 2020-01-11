@@ -11,6 +11,8 @@ import static Utils.Helpers.log;
  *
  * - 注意：本题中求的是 substring（子串）而非 subsequence（子序列）—— 子串是连续的，子序列可以不连续，例如"pwke"是"pwwkew"
  *   的子序列，但不是其子串。
+ *
+ * - 💎心得：对于这种找连续子串的问题，滑动窗口是最常用的解法，即根据题中条件来不断改变窗口的左右界，从而找到所需子串。
  * */
 
 public class L3_LongestSubstringWithoutRepeatingCharacters {
@@ -20,7 +22,6 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
      *   l++，且每次窗口长度变化时都与之前的最长记录比较。
      * - 实现：1. 借助 Set 检查 r 处的字符是否位于窗口中；
      *        2. 计算当前窗口长度时要用 r-l（而非 r-l+1）∵ r 每次会指向下一个待进入窗口的字符，而非当前窗口中的最后一个字符。
-     * - 💎心得：对于这种找连续子串的问题，滑动窗口是最常用的解法，即根据题中条件来不断改变窗口的左右界，从而找到所需子串。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring(String s) {
