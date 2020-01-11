@@ -39,18 +39,21 @@ public class L76_MinimumWindowSubstring {
         char[] chars = s.toCharArray();
 
         while (r < s.length()) {
-            // 先扩展窗口，减小 r 处字符在频谱中的频率
-            if (freq.get(chars[r]) != null && freq.get(chars[r]) > 0) matchCount++;  // chars[r] 的频率 >0 表示 r 处的字符是待匹配字符
-            freq.merge(chars[r], -1, Integer::sum);    // 相当于 freq.put(c, freq.get(c) - 1);
+            // 先扩展窗口（该过程中减小 r 处字符在频谱中的频率）
+            if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0)  // chars[r] 的频率 >0 表示 r 处的字符是待匹配字符
+                matchCount++;
+            freq.merge(chars[r], -1, Integer::sum);    // 相当于 freq.put(c, freq.get(c)-1);
             r++;
 
-            // 当窗口中包含了 t 中的所有字符时再开始收缩窗口，增大 l 处字符在频谱中的频率
+            // 当窗口中包含了 t 中的所有字符时再开始收缩窗口（该过程中增大 l 处字符在频谱中的频率）
             while (matchCount == t.length()) {
-                if (r - l < minLen) {                  // 每收缩一下都查看一次当前的窗口是否比之前的更短
-                    minLen = r - l;
-                    start = l;
+                if (freq.get(chars[l]) == 0) {  // 若该字符的频率为0，说明 t 中所有的该字符已经都被匹配上了
+                    matchCount--;
+                    if (r - l < minLen) {       // 此时为 minLen、start 赋值
+                        minLen = r - l;
+                        start = l;
+                    }
                 }
-                if (freq.get(chars[l]) == 0) matchCount--;  // 若该字符的频率为0，说明 t 中的该字符已经都被匹配上了
                 freq.merge(chars[l], 1, Integer::sum);
                 l++;
             }
@@ -61,7 +64,7 @@ public class L76_MinimumWindowSubstring {
     /*
      * 解法2：解法1的 int[256] 版
      * - 思路：与解法1一致。
-     * - 实现：采用 int[256] 代替解法1中的 Map，并化简合并某些过程。
+     * - 实现：采用 int[256] 代替解法1中的 Map，从而得以简化一些语句。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
     public static String minWindow2(String s, String t) {
@@ -72,12 +75,12 @@ public class L76_MinimumWindowSubstring {
         int minLen = s.length() + 1, start = -1;
 
         while (r < s.length()) {
-            if (freq[s.charAt(r++)]-- > 0)  // 若 r 处的字符存在于 t 中且之前没有遇到过，则 matchCount++（之前遇到过的字符的 freq <= 0）
+            if (freq[s.charAt(r++)]-- > 0)
                 matchCount++;
-            while (matchCount == t.length()) {  // 若窗口中已经包含了 t 中的所有字符，则可以开始收缩窗口
-                if (r - l < minLen)             // 只要窗口包含所有 t 中的字符，每收缩一下都查看一次当前的窗口是否比之前的更短
+            while (matchCount == t.length()) {
+                if (r - l < minLen)
                     minLen = r - (start = l);
-                if (freq[s.charAt(l++)]++ == 0)  // 若 l 处的字符存在于 t 中，则 matchCount--（只有存在于 t 中的字符在经过上面 freq[..]-- 后能 == 0，其他的都 < 0）
+                if (freq[s.charAt(l++)]++ == 0)
                     matchCount--;
             }
         }
@@ -85,10 +88,10 @@ public class L76_MinimumWindowSubstring {
     }
 
     public static void main(String[] args) {
-        log(minWindow("ABAACBAB", "ABC"));       // expects "ACB"
-        log(minWindow("ADOBECODEBANC", "ABC"));  // expects "BANC"（可以有多余的字符）
-        log(minWindow("TT", "TT"));              // expects "TT"（若 t 中有重复字符，则解中也需要包含重复字符）
-        log(minWindow("S", "SS"));               // expects ""
-        log(minWindow("YYZ", "ZY"));             // expects "YZ"
+        log(minWindow2("ABAACBAB", "ABC"));       // expects "ACB"
+        log(minWindow2("ADOBECODEBANC", "ABC"));  // expects "BANC"（可以有多余的字符）
+        log(minWindow2("TT", "TT"));              // expects "TT"（若 t 中有重复字符，则解中也需要包含重复字符）
+        log(minWindow2("S", "SS"));               // expects ""
+        log(minWindow2("YYZ", "ZY"));             // expects "YZ"
     }
 }
