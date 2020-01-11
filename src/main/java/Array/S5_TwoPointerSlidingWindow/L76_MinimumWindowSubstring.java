@@ -40,7 +40,7 @@ public class L76_MinimumWindowSubstring {
 
         while (r < s.length()) {
             // 先扩展窗口，减小 r 处字符在频谱中的频率
-            if (freq.get(chars[r]) > 0) matchCount++;  // chars[r] 的频率 >0 表示 r 处的字符是待匹配字符（存在于 t 中且出现次数没有超过 t 中该字符的个数）
+            if (freq.get(chars[r]) != null && freq.get(chars[r]) > 0) matchCount++;  // chars[r] 的频率 >0 表示 r 处的字符是待匹配字符
             freq.merge(chars[r], -1, Integer::sum);    // 相当于 freq.put(c, freq.get(c) - 1);
             r++;
 
