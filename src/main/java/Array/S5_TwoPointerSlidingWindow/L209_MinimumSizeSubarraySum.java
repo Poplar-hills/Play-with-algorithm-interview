@@ -5,8 +5,8 @@ import static Utils.Helpers.log;
 /*
  * Minimum Size Subarray Sum
  *
- * - Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous subarray
- *   (连续子数组) of which the sum ≥ s. If there isn't one, return 0 instead.
+ * - Given an array of positive integers and a positive integer s, find the minimal length of a contiguous
+ *   subarray (连续子数组) of which the sum ≥ s. If there isn't one, return 0 instead.
  *
  * - 题中要求找到元素之和 ≥ s 的最短子串，即对于子串 nums[l...r] 来说，需要在 sum(l...r) ≥ s 的基础上找到最小的 r-l+1。
  *   可见本题需要通过改变 l 和 r 来找到符合要求的子串。
@@ -110,7 +110,10 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     public static void main(String[] args) {
-        int[] nums = new int[] {2, 3, 1, 2, 4, 3};
-        log(minSubArrayLen4(7, nums));  // expects 2. The subarray [4,3] has the minimal length
+        log(minSubArrayLen4(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
+        log(minSubArrayLen4(6, new int[]{1, 2, 3, 5}));        // expects 2. [3, 5]
+        log(minSubArrayLen4(6, new int[]{1, 2, 3, 5, 7}));     // expects 1. [7]
+        log(minSubArrayLen4(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
+        log(minSubArrayLen4(8, new int[]{1, 2, 3}));           // expects 0.
     }
 }
