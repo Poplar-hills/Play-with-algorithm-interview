@@ -25,23 +25,23 @@ public class L438_FindAllAnagramsInString {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;
 
-        int[] freq = new int[256];
-        for (char c : p.toCharArray()) freq[c]++;  // 将 p 中每个字符的出现频次初始化为1
+        Map<Character, Integer> freq = new HashMap<>();  // 频谱中初始只有 p 中的字符（但开始遍历之后还会加入属于 s 但不属于 p 的字符）
+        for (char c : p.toCharArray())
+            freq.merge(c, 1, Integer::sum);  // 将 p 中每个字符的出现频次初始化为1，相当于 freq.put(c, freq.get(c)+1);
 
-        int l = 0, r = 0;
-        int matchCount = 0;  // 记录窗口中出现了多少个 p 中的字符
+        int matchCount = 0, l = 0, r = 0;
+        char[] chars = s.toCharArray();
 
         while (r < s.length()) {
-            if (freq[s.charAt(r)] > 0) matchCount++;
-            freq[s.charAt(r)]--;
-            r++;
+            if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0)
+                matchCount++;
+            freq.merge(chars[r++], -1, Integer::sum);
 
             if (matchCount == p.length()) res.add(l);
 
             if (r - l == p.length()) {  // 若窗口中的元素个数比 p 的长度多1，则开始让左界右滑，缩窄窗口
-                if (freq[s.charAt(l)] == 0) matchCount--;
-                freq[s.charAt(l)]++;
-                l++;
+                if (freq.get(chars[l]) == 0) matchCount--;
+                freq.merge(chars[l++], 1, Integer::sum);
             }
         }
 
@@ -49,16 +49,58 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法2：滑动窗口（更简洁但更费解一点）
-     * - 思路：∵ 是求最小子串 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case 可得到窗口滑动
-     *   的控制方式：在遍历过程中第一次遇到 p 中的字符时将 l 指向该位置，若后面的字符依然是 p 中字符，且出现次数还未到达其在 p
-     *   中的出现次数，则继续扩展窗口
-     * - 注：该方法中以下两点这会有些费解（但其实很巧妙），需要单步调试才能更好理解：
-     *   - matchCount 可能为负（test case 1）；
-     *   - l 可能会大于 r。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * 解法2：解法1的 int[256] 版
+     * - 思路：与解法1一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
     public static List<Integer> findAnagrams2(String s, String p) {
+        List<Integer> res = new ArrayList<>();
+        if (s == null || p == null) return res;
+
+        int[] freq = new int[256];
+        for (char c : p.toCharArray()) freq[c]++;  // 将 p 中每个字符的出现频次初始化为1
+
+        int matchCount = 0, l = 0, r = 0;
+
+        while (r < s.length()) {
+            if (freq[s.charAt(r)] > 0) matchCount++;
+            freq[s.charAt(r++)]--;
+
+            if (matchCount == p.length()) res.add(l);
+
+            if (r - l == p.length()) {  // 若窗口中的元素个数比 p 的长度多1，则开始让左界右滑，缩窄窗口
+                if (freq[s.charAt(l)] == 0) matchCount--;
+                freq[s.charAt(l++)]++;
+            }
+        }
+
+        return res;
+    }
+
+    /*
+     * 解法3：滑动窗口（比解法1、2更简洁但也更费解）
+     * - 思路：∵ 是求最小子串 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case 可得到窗口
+     *   滑动的控制方式：在遍历过程中第一次遇到 p 中的字符时将 l 指向该位置，若后面的字符依然是 p 中字符，且出现次数还未到达其在
+     *   p 中的出现次数，则继续扩展窗口
+     *        "e  e  c  b  a  e  b  a  b  a  c  d"
+     *         lr                                   - {a:1, b:1, c:1}, matchCount=0
+     *         r  l                                 - {a:1, b:1, c:1, e:1}, matchCount=-1
+     *            lr                                - {a:1, b:1, c:1, e:0}, matchCount=0
+     *            r  l                              - {a:1, b:1, c:1, e:1}, matchCount=-1
+     *               lr                             - {a:1, b:1, c:1, e:0}, matchCount=0
+     *               l  r                           - {a:1, b:1, c:0, e:0}, matchCount=1
+     *               l     r                        - {a:1, b:0, c:0, e:0}, matchCount=2
+     *               l        r                     - {a:0, b:0, c:0, e:0}, matchCount=3
+     *                  l     r                     - {a:0, b:0, c:1, e:0}, matchCount=2
+     *                     l  r                     - {a:0, b:1, c:1, e:0}, matchCount=1
+     *                        lr                    - {a:1, b:1, c:1, e:0}, matchCount=0
+     *                        r  l                  - {a:1, b:1, c:1, e:1}, matchCount=-1
+     *
+     * - 注：该方法中 matchCount 可能为负、l 可能会大于 r（见 test case 1 中的 "ee"）因此会有点反直觉（但其实很巧妙），需要
+     *   单步调试才能更好理解。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<Integer> findAnagrams3(String s, String p) {
         List<Integer> res = new ArrayList<>();
         if (s == null || s.length() == 0) return res;
 
@@ -75,7 +117,7 @@ public class L438_FindAllAnagramsInString {
                 matchCount++;
             } else {                                      // 若 r 处字符不在频谱中
                 freq.merge(chars[l++], 1, Integer::sum);  // 则将其加入频谱，并向右收缩窗口
-                matchCount--;                             
+                matchCount--;
             }
             if (matchCount == p.length())                 // 匹配的字符数 == p 中的字符数，即找到了一个 anagram
                 res.add(l);
@@ -85,11 +127,11 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法3：解法2的 int[256] 版
-     * - 思路：与解法2一致。
+     * 解法4：解法3的 int[256] 版
+     * - 思路：与解法3一致。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
-    public static List<Integer> findAnagrams3(String s, String p) {
+    public static List<Integer> findAnagrams4(String s, String p) {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;
 
