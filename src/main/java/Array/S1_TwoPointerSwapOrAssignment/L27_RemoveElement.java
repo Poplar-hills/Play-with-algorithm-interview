@@ -16,7 +16,7 @@ import static Utils.Helpers.swap;
 
 public class L27_RemoveElement {
     /*
-     * 解法1：Copy and paste
+     * 解法1：Assignment
      * - 思路：与 L26_RemoveDuplicates、L283_MoveZeros 的思路一致，从前往后遍历，跳过不符合条件的元素，将符合条件的元素
      *   复制到数组前面。
      * - 时间复杂度为 O(n)，空间复杂度为 O(1)。

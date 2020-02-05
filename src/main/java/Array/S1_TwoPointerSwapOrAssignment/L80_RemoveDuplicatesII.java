@@ -5,20 +5,20 @@ import static Utils.Helpers.log;
 /*
  * Remove Duplicates II
  *
- * - Given a sorted array, remove the duplicates in-place such that duplicates appeared at most twice and return
- *   the new length (对数组去重，每个元素最多出现两次).
+ * - Given a sorted array, remove the duplicates in-place such that duplicates appeared at most twice and
+ *   return the new length (为有序数组去重，每个元素最多出现两次).
  * */
 
 public class L80_RemoveDuplicatesII {
     /*
-     * 解法1：Copy and paste
+     * 解法1：Assignment
      * - 思路：与 L26_RemoveDuplicates 一致，只是判断条件不同。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int removeDuplicates(int[] arr) {
         int nextValidIdx = 2;
         for (int i = 2; i < arr.length; i++) {     // 从第3个元素开始遍历
-            if (arr[i] > arr[nextValidIdx - 2]) {  // 在有序数组中判断一个元素出现了3次的方法
+            if (arr[i] > arr[nextValidIdx - 2]) {  // 在有序数组中判断一个元素是否连续出现3次的方法（与上上个元素作比较）
                 arr[nextValidIdx] = arr[i];
                 nextValidIdx++;
             }

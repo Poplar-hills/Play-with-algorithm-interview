@@ -3,13 +3,11 @@ package Array.S1_TwoPointerSwapOrAssignment;
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;
 
-import java.util.ArrayList;
-
 /*
-* Move Zeroes
-*
-* - Given an array, move all 0's to the end of the array while maintaining the relative order of others.
-* */
+ * Move Zeroes
+ *
+ * - Given an array, move all 0's to the end of the array while maintaining the relative order of others.
+ * */
 
 public class L283_MoveZeroes {
     /*
@@ -20,31 +18,31 @@ public class L283_MoveZeroes {
         int[] aux = new int[arr.length];      // 开辟辅助空间
 
         int nextIdx = 0;
-        for (int i = 0; i < arr.length; i++)  // 第一次遍历将所有非零元素复制到辅助数组头部（尾部默认为0）
+        for (int i = 0; i < arr.length; i++)  // 第1次遍历，将所有非零元素复制到辅助数组头部（尾部默认为0）
             if (arr[i] != 0)
                 aux[nextIdx++] = arr[i];
 
-        for (int i = 0; i < arr.length; i++)  // 第二次遍历用 aux 替换 arr 中的所有元素
+        for (int i = 0; i < arr.length; i++)  // 第2次遍历，将 aux 中的元素赋给 arr
             arr[i] = aux[i];
     }
 
     /*
-     * 解法2：Copy and paste + 补零
+     * 解法2：Assignment + 补零
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static void moveZeros2(int[] arr) {
         int nextIdx = 0;
 
-        for (int i = 0; i < arr.length; i++)  // 第一次遍历将所有非零元素复制到数组前部
+        for (int i = 0; i < arr.length; i++)  // 第1次遍历，将数组中所有非零元素复制到数组头部
             if (arr[i] != 0)
                 arr[nextIdx++] = arr[i];
 
-        for (int i = nextIdx; i < arr.length; i++)  // 第二次遍历在后面补零
+        for (int i = nextIdx; i < arr.length; i++)  // 第2次遍历，为 nextIdx 到数组末尾区间补零
             arr[i] = 0;
     }
 
     /*
-     * 解法3：Copy and paste（解法2的时间优化版）
+     * 解法3：Assignment（解法2的时间优化版）
      * - 思路：在解法2上进行改进，只遍历 arr 一次，同时进行复制与置零操作。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
