@@ -15,17 +15,21 @@ import static Utils.Helpers.log;
 public class L88_MergeSortedArray {
     /*
      * 解法1：Merge sort
-     * - 思路：要将两个有序数组合二为一，并且需要排序，因此整体思路是归并排序。
+     * - 思路：要将两个有序数组合二为一，并且结果也要有序 ∴ 整体思路是归并排序。
+     * - 实现：基本的归并排序的实现有3个要点：
+     *   1. 要开辟辅助空间；
+     *   2. 遍历的是该辅助空间里的每个位置，而非遍历待合并数组；
+     *   3. 遍历过程中先讨论越界情况，再讨论没越界情况。
      * - 时间复杂度为 O(m+n)，空间复杂度 O(m+n)。
      * */
     private static void merge(int[] nums1, int m, int[] nums2, int n) {
         int[] aux = new int[m + n];             // 开辟辅助空间
         int i = 0, j = 0;
 
-        for (int k = 0; k < aux.length; k++) {  // 遍历第1遍
-            if (i >= m)                         // 先讨论 num1, num2 越界的情况
+        for (int k = 0; k < aux.length; k++) {  // 第1次遍历
+            if (i >= m)                         // 先讨论越界的情况（左半部分已处理完）
                 aux[k] = nums2[j++];
-            else if (j >= n)
+            else if (j >= n)                    // 越界情况（右半部分已处理完）
                 aux[k] = nums1[i++];
             else if (nums1[i] <= nums2[j])      // 再讨论没越界时的情况
                 aux[k] = nums1[i++];
@@ -33,7 +37,7 @@ public class L88_MergeSortedArray {
                 aux[k] = nums2[j++];
         }
 
-        for (int l = 0; l < aux.length; l++)    // 遍历第2遍，将 aux 中的值逐个赋给 nums1
+        for (int l = 0; l < aux.length; l++)    // 第2次遍历，将 aux 中的值逐个赋给 nums1
             nums1[l] = aux[l];
     }
 
@@ -59,7 +63,7 @@ public class L88_MergeSortedArray {
      * */
     private static void merge2(int[] nums1, int m, int[] nums2, int n) {
         int i = m - 1, j = n - 1;
-        for (int k = nums1.length - 1; k >= 0 && j >= 0; k--) {  // 加上条件 j>=0 就是要在 nums2 中的元素全部处理完时，让整个排序结束
+        for (int k = nums1.length - 1; k >= 0 && j >= 0; k--) {  // 加上条件 j>=0 就是要在 nums2 中的元素全部处理完时结束整个排序
             if (i >= 0 && nums1[i] >= nums2[j])
                 nums1[k] = nums1[i--];
             else
@@ -68,13 +72,13 @@ public class L88_MergeSortedArray {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[]{1, 2, 3, 8, 0, 0, 0};  // nums1 的有效元素比 nums2 多
+        int[] arr1 = new int[]{1, 2, 3, 8, 0, 0, 0};  // nums1 的有效元素比 nums2 多的情况
         int[] arr2 = new int[]{2, 5, 6};
         merge(arr1, 4, arr2, 3);
         log(arr1);                                    // expects [1, 2, 2, 3, 5, 6, 8]
 
         int[] arr3 = new int[]{1, 3, 6, 0, 0, 0, 0};
-        int[] arr4 = new int[]{2, 3, 6, 7};           // nums2 的有效元素比 nums1 多
+        int[] arr4 = new int[]{2, 3, 6, 7};           // nums2 的有效元素比 nums1 多的情况
         merge(arr3, 3, arr4, 4);
         log(arr3);                                    // expects [1, 2, 3, 3, 6, 6, 7]
     }
