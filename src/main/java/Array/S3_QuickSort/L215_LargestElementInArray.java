@@ -12,20 +12,22 @@ import static Utils.Helpers.swap;
  *
  * - Find the kth largest element in an unsorted array（注意 k 取值从1开始，例如 k=1 时就是求数组中的最大元素）.
  *
- * - 分析：该问题也是个排序问题 ∴ 思路可以有：
+ * - 分析：该问题本质上也是个排序问题 ∴ 思路可以有：
  *   1. 先对数组进行整体排序，再取 k 个元素。
- *   2. 不对数组进行整体排序，而是使用最小堆，通过让堆大小保持在 k，使得最终从堆顶获得第 k 大的元素。
- *   3. 基于快速排序的思路。
+ *   2. 不对数组进行整体排序，而是使用最小堆，并让堆大小保持在 k，用于获得数组中前 k 大的元素，最终堆顶的就是第 k 大元素。
+ *   3. 基于快排思路的 Quick Select：不断对 k 所在的分区进行 partition，直到第 k 大的元素成为 pivot，并被移动到 k-1 的位置
+ *      上，此时 nums[k-1] 即是第 k 大元素。
  * */
 
 public class L215_LargestElementInArray {
     /*
      * 解法1：Heap sort（堆排序）
-     * - 思路：上面分析中的思路1，先对数组进行整体排序，再取 k 个元素，具体的排序算法可选任意选取（该解法中选择堆排序）。
+     * - 思路：基于上面分析中的思路1，先对数组进行整体排序，再取 k 个元素，该解法中选择堆排序作为具体的排序算法。
+     * - 实现：∵ 要取的是第 k 大的元素 ∴ 使用最大堆。
      * - 时间复杂度 O((n+k)logn)，空间复杂度 O(n)。
      * */
     public static int kthLargest(int[] nums, int k) {
-        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());  // 最大堆
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());  // 最大堆（PriorityQueue 默认是最小堆）
         for (int n : nums) pq.add(n);            // ∵ PriorityQueue 没有 heapify 方法 ∴ 需要手动添加
         for (int i = 1; i < k; i++) pq.poll();   // 将最大的 k-1 个元素从堆中移除
         return pq.poll();
@@ -49,12 +51,12 @@ public class L215_LargestElementInArray {
     }
 
     /*
-     * 解法3：Quick sort
+     * 解法3：Quick Select
      * - 思路：上面分析的思路3。∵ 快排的核心逻辑（partition 方法）就是每次从数组中选择一个元素作为 pivot 并把它移动到正确的
      *   位置上（即将第 n 大的元素移动到 n-1 位置上，-1是因为索引从0开始）。这个逻辑刚好符合该题需求 ∴ 只要将第 k 大元素移动到
      *   k-1 位置上，那 nums[k-1] 就是第 k 大元素 ∴ 我们只需不断对 k 所在的分区进行 partition，直到第 k 大的元素成为 pivot，
      *   并被移动到 k-1 的位置上即可。
-     * - 注意：∵ 要求的是"第几大"的元素（而非"第几小"）∴ 要从大到小排序排序，即分区 (l,gt] 中都是 >v 的；[lt,r] 中都是<v 的；
+     * - 注意：∵ 题中要求的是"第几大"（而非"第几小"）∴ 要从大到小排序排序，即分区 (l,gt] 中都是 >v 的；[lt,r] 中都是 <v 的；
      *   (gt,i) 中都是 ==v 的：[v|--- >v ---|--- ==v ---|.....|--- <v ---]
      *                        l          gt            i     lt       r
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
@@ -64,7 +66,7 @@ public class L215_LargestElementInArray {
         return quickSelect(nums, 0, nums.length - 1, k - 1);  // k-1 是为了让 k 的取值从0开始，与索引从0开始相一致
     }
 
-    private static int quickSelect(int[] nums, int l, int r, int k) {
+    private static int quickSelect(int[] nums, int l, int r, int k) {  // Quick Select 就是基于快排，选择出第 k 大/小的元素
         if (l == r) return nums[l];
         int[] ps = partition(nums, l, r);  // partition 的返回值 {gl,lt} 表示 {大于 pivot 的最后一个位置, 小于 pivot 的第一个位置}
         if (k <= ps[0])                    // 若 k ∈ [l,gt]，则继续对该分区进行快排（∵ 该分区内的元素还是无序的，第 k 大元素还不在 k 位置上）
@@ -93,10 +95,10 @@ public class L215_LargestElementInArray {
     }
 
     /*
-     * 解法4：Quick sort（解法3的简化版）
-     * - 思路：基于两路快排的 partition，同样是从大到小排序
+     * 解法4：Quick Select（解法3的简化版）
+     * - 思路：基于两路快排的 partition，同样是从大到小排序：
      *   [v|--- >v ---|--- ≤v ---|.....]
-     *    l            lt         i   r      [l,lt) 位置上的元素 > v，[lt,i) 位置上的元素 < v
+     *    l            lt         i   r      - [l,lt) 位置上的元素 >v，[lt,i) 位置上的元素 <v
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
      * */
     public static int kthLargest4(int[] nums, int k) {
