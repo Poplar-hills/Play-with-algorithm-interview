@@ -40,15 +40,15 @@ public class L76_MinimumWindowSubstring {
 
         while (r < s.length()) {
             // 先扩展窗口（该过程中减小 r 处字符在频谱中的频次）
-            if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0)  // 的频次 >0 表示是待匹配字符
+            if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0)  // 频次 >0 表示是待匹配字符
                 matchCount++;
-            freq.merge(chars[r++], -1, Integer::sum);  // 扩展窗口、chars[r] 频次-1
+            freq.merge(chars[r++], -1, Integer::sum);  // 扩展窗口、r 处字符频次-1
 
             // 当窗口中包含了 t 中的所有字符时开始收缩窗口（该过程中增大 l 处字符在频谱中的频次）
             while (matchCount == t.length()) {
-                if (freq.get(chars[l]) == 0) {   // 频次为0说明经过上面的过程 t 中所有的该字符已经都被匹配上了 ∴
-                    matchCount--;
-                    if (r - l < minLen) {        // 当所有该字符都已匹配上 & 当前窗口宽度比之前的更小，则覆盖 minLen、start 的值
+                if (freq.get(chars[l]) == 0) {   // l 处字符频次为0说明 t 中所有的该字符已经刚好被匹配完了，此时要记录 minLen
+                    matchCount--;                // （若匹配过多则频次会 <0，说明是冗余字符，可以不需记录 minLen 而直接收缩窗口）
+                    if (r - l < minLen) {        // 当所有该字符都已匹配上 & 窗口宽度比之前的更小时，更新 minLen、start
                         minLen = r - l;
                         start = l;
                     }
@@ -73,7 +73,7 @@ public class L76_MinimumWindowSubstring {
         int minLen = s.length() + 1, start = -1;
 
         while (r < s.length()) {
-            if (freq[s.charAt(r++)]-- > 0)
+            if (freq[s.charAt(r++)]-- > 0)  // 这一个条件在解法1中需要两个条件才能实现 ∵ int[256] 为所有字符都设了初值0
                 matchCount++;
             while (matchCount == t.length()) {
                 if (r - l < minLen)
@@ -86,10 +86,10 @@ public class L76_MinimumWindowSubstring {
     }
 
     public static void main(String[] args) {
-        log(minWindow("ABAACBAB", "ABC"));       // expects "ACB"
-        log(minWindow("ADOBECODEBANC", "ABC"));  // expects "BANC"（可以有多余的字符）
-        log(minWindow("TT", "TT"));              // expects "TT"（若 t 中有重复字符，则解中也需要包含重复字符）
-        log(minWindow("S", "SS"));               // expects ""
-        log(minWindow("YYZ", "ZY"));             // expects "YZ"
+        log(minWindow("ABAACBAB", "ABC"));  // expects "ACB"
+        log(minWindow("BCAACBAB", "BBC"));  // expects "CBAB" (t 中也可能存在重复字符)
+        log(minWindow("TT", "TT"));         // expects "TT"
+        log(minWindow("S", "SS"));          // expects ""
+        log(minWindow("YYZ", "ZY"));        // expects "YZ"
     }
 }
