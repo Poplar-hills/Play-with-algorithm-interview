@@ -1,4 +1,4 @@
-package Array.S5_TwoPointerSlidingWindow;
+package Array.S5_SlidingWindow;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package Array.S5_TwoPointerSlidingWindow;
+package Array.S5_SlidingWindow;
 
 import static Utils.Helpers.log;
 
@@ -46,7 +46,7 @@ public class L76_MinimumWindowSubstring {
 
             // 当窗口中包含了 t 中的所有字符时开始收缩窗口（该过程中增大 l 处字符在频谱中的频次）
             while (matchCount == t.length()) {
-                if (freq.get(chars[l]) == 0) {   // 频次为0说明经过上面的过程 t 中所有的该字符已经都被匹配上了 ∴ 
+                if (freq.get(chars[l]) == 0) {   // 频次为0说明经过上面的过程 t 中所有的该字符已经都被匹配上了 ∴
                     matchCount--;
                     if (r - l < minLen) {        // 当所有该字符都已匹配上 & 当前窗口宽度比之前的更小，则覆盖 minLen、start 的值
                         minLen = r - l;
