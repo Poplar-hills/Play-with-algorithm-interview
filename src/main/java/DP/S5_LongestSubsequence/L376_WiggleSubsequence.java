@@ -67,7 +67,7 @@ public class L376_WiggleSubsequence {
     private static int helper0(int[] nums, int i, boolean isPeak) {
         if (i == nums.length) return 0;            // 递归到底时返回0
         int maxLen = 1;
-        for (int j = i + 1; j < nums.length; j++)  // 在 [i+1,..) 范围内搜索
+        for (int j = i + 1; j < nums.length; j++)  // 在 [i+1,..] 范围内搜索
             if ((isPeak && nums[j] < nums[i]) || (!isPeak && nums[j] > nums[i]))
                 maxLen = Math.max(maxLen, 1 + helper0(nums, j, !isPeak));
         return maxLen;

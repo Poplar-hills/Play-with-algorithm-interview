@@ -116,7 +116,7 @@ public class L23_MergeKSortedLists {
         if (l1 == null) return l2;
         if (l2 == null) return l1;
         if (l1.val < l2.val) {
-            l1.next = merge(l1.next, l2);  // 对链表递归大多是这种模式：l.next = recursiveFn(...)
+            l1.next = merge(l1.next, l2);  // 对链表递归大多是这种模式：l.next = recursiveFn(...]
             return l1;
         } else {
             l2.next = merge(l1, l2.next);
