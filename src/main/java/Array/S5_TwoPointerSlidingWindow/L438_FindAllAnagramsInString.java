@@ -19,6 +19,8 @@ public class L438_FindAllAnagramsInString {
     /*
      * 解法1：滑动窗口
      * - 思路：类似 L76_MinimumWindowSubstring 的解法1。
+     * ∵ 是求最小子串 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case 可得到窗口
+     *   滑动的控制方式：
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
     public static List<Integer> findAnagrams(String s, String p) {
@@ -35,11 +37,11 @@ public class L438_FindAllAnagramsInString {
         while (r < s.length()) {
             if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0)
                 matchCount++;
-            freq.merge(chars[r++], -1, Integer::sum);
+            freq.merge(chars[r++], -1, Integer::sum);  // 让 chars[r] 的频次-1（即使 chars[r] 不在频谱中也将其加入并设置频率为-1）
 
             if (matchCount == p.length()) res.add(l);
 
-            if (r - l == p.length()) {  // 若窗口中的元素个数比 p 的长度多1，则开始让左界右滑，缩窄窗口
+            if (r - l == p.length()) {                 // 若窗口中的元素个数比 p 的长度多1，则开始收缩窗口
                 if (freq.get(chars[l]) == 0) matchCount--;
                 freq.merge(chars[l++], 1, Integer::sum);
             }
@@ -79,9 +81,7 @@ public class L438_FindAllAnagramsInString {
 
     /*
      * 解法3：滑动窗口（比解法1、2更简洁但也更费解）
-     * - 思路：∵ 是求最小子串 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case 可得到窗口
-     *   滑动的控制方式：在遍历过程中第一次遇到 p 中的字符时将 l 指向该位置，若后面的字符依然是 p 中字符，且出现次数还未到达其在
-     *   p 中的出现次数，则继续扩展窗口
+     * - 思路：
      *        "e  e  c  b  a  e  b  a  b  a  c  d"
      *         lr                                   - {a:1, b:1, c:1}, matchCount=0
      *         r  l                                 - {a:1, b:1, c:1, e:1}, matchCount=-1
@@ -106,7 +106,7 @@ public class L438_FindAllAnagramsInString {
 
         Map<Character, Integer> freq = new HashMap<>();  // 频谱中初始只有 p 中的字符（但开始遍历之后还会加入属于 s 但不属于 p 的字符）
         for (char c : p.toCharArray())
-            freq.merge(c, 1, Integer::sum);  // 将 p 中每个字符的出现频次初始化为1，相当于 freq.put(c, freq.get(c)+1);
+            freq.merge(c, 1, Integer::sum);  // 将 p 中每个字符的出现频次初始化为1，相当于 freq.put(c, freq.getDefault(c,0)+1);
 
         int matchCount = 0, l = 0, r = 0;
         char[] chars = s.toCharArray();
