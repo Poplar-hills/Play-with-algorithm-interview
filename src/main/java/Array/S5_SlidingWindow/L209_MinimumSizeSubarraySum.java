@@ -49,18 +49,22 @@ public class L209_MinimumSizeSubarraySum {
     public static int minSubArrayLen2(int s, int[] nums) {
         if (s <= 0 || nums == null) return 0;
         int n = nums.length;
+        int[] sums = new int[n];                // prefix sum 数组（存储 nums[0..i) 之和，多开辟1的空间给 sums[0]=0）
+        sums[0] = nums[0];
 
-        int[] sums = new int[n + 1];  // prefix sum 数组（存储 nums[0..i) 之和，多开辟1的空间给 sums[0]=0）
-        for (int i = 1; i < n; i++)   // 单次遍历即可构造 prefix sum 数组（i 的取值也要从1开始）
-            sums[i] = sums[i - 1] + nums[i - 1];
+        for (int i = 1; i < n; i++)             // 单次遍历即可构造 prefix sum 数组（i 的取值要从1开始）
+            sums[i] = sums[i - 1] + nums[i];
 
         int minLen = n + 1;
-        for (int l = 0; l < n; l++)   // 外面仍然是双重循环遍历所有子串
-            for (int r = l; r < n; r++)
-                if (sums[r + 1] - sums[l] >= s)            // 里面使用 prefix sum 快速得到该子串的元素之和：nums[l..r] 之和 =
-                    minLen = Math.min(r - l + 1, minLen);  // nums[0..r] 之和 - nums[0..l) 之和 = sums[r+1] - sums[l]
-
-        return minLen == n + 1 ? 0 : minLen;  // 若未找到 ≥ s 的子串则返回0
+        for (int l = 0; l < n; l++) {           // 外面仍然是双重循环遍历所有子串
+            for (int r = l; r < n; r++) {
+                if (sums[r] - sums[l] + nums[l] >= s) {    // 里面使用 prefix sum 快速得到该子串 nums[l..r] 的元素之和 =
+                    minLen = Math.min(minLen, r - l + 1);  // nums[0..r] 之和 - nums[0..l) 之和 = sums[r] - sums[l] + nums[l]
+                    break;                      // ∵ 已经找到了从 l 开始的最短符合条件的子串，而后面的子串只会更长 ∴ 不用再遍历了
+                }
+            }
+        }
+        return minLen == n + 1 ? 0 : minLen;    // 若未找到 ≥ s 的子串则返回0
     }
 
     /*
@@ -113,9 +117,9 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     public static void main(String[] args) {
-        log(minSubArrayLen2(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
         log(minSubArrayLen2(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
         log(minSubArrayLen2(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
+        log(minSubArrayLen2(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
         log(minSubArrayLen2(8, new int[]{1, 2, 3}));           // expects 0.
     }
 }
