@@ -37,21 +37,21 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-     * 解法2：Optimised brute force（Prefix sum）
+     * 解法2：Prefix Sum
      * - 思路：解法1中的问题在于每遍历到一个子串后就要为其求一次和，多次求和过程中有很多重复计算。对此可采用以空间换时间的
      *   prefix sum 技巧，让 sums[i] 记录 nums[0..i) 的和（例如 sums[3] 记录第0、1、2号元素之和），使得不再需要多次
      *   重复计算序列之和。
-     * - 实现：之所以要让 sums[i] 记录 nums[0..i) 而非 nums[0..i] 之和是因为想留出 sums[0]（即不让它记录0号元素的值），
-     *   而是让 sums[0]=0，以便于后面的计算（sums[r+1] - sums[l]）不会越界。
-     * - 💎 经验：Prefix sum 在子串求和问题中是个常见策略。
+     * - 实现：之所以要让 sums[i] 记录 nums[0..i) 而非 nums[0..i] 之和是因为要留出 sums[0] 让 sums[0]=0 表示
+     *   “前0个元素的和为0”，这在后面的计算（sums[r+1] - sums[l]）中是必要的。
+     * - 💎经验：Prefix Sum 本质是为每个位置缓存累加和（cummulative sums），是求解“数组区间求和”类问题时的常用技巧。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int minSubArrayLen2(int s, int[] nums) {
         if (s <= 0 || nums == null) return 0;
         int n = nums.length;
 
-        int[] sums = new int[n + 1];  // ∵ 要让 sums[i] 记录 nums[0..i) 之和 ∴ 需要多开辟一个空间
-        for (int i = 1; i < n; i++)   // i 的取值也要从1开始
+        int[] sums = new int[n + 1];  // prefix sum 数组（存储 nums[0..i) 之和，多开辟1的空间给 sums[0]=0）
+        for (int i = 1; i < n; i++)   // 单次遍历即可构造 prefix sum 数组（i 的取值也要从1开始）
             sums[i] = sums[i - 1] + nums[i - 1];
 
         int minLen = n + 1;
