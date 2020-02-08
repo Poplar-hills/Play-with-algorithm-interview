@@ -17,8 +17,8 @@ import java.util.Map;
 
 public class L560_SubarraySumEqualsK {
     /*
-     * 超时解：Brute-force
-     * - 思路：找到 nums 中的所有 subarray，并求每个 subarray 的和与 k 比较。遍历所有 subarray 的过程如下：
+     * 超时解：Brute Force
+     * - 思路：找到 nums 中的所有 subarray，为每个 subarray 求元素之和，并与 k 比较。遍历过程如下：
      *   [4, 2, -1, 5]
      *    -
      *    ----
@@ -30,19 +30,19 @@ public class L560_SubarraySumEqualsK {
      *          --
      *          -----
      *              -
-     * - 实现：1. 求一个数组的所有 subarray：采用双指针遍历（i ∈ [0,n), j ∈ [i,n)）；
-     *        2. 求每个 subarray 的和：采用单指针遍历（k ∈ [start, end]）。
+     * - 实现：1. 找到一个数组的所有 subarray：双指针遍历（l ∈ [0,n), r ∈ [l,n)）；
+     *        2. 求一个 subarray 的元素之和：单指针遍历（i ∈ [l, r]）。
      *        ∴ 整个过程使用三个指针、三重循环实现。
      * - 时间复杂度 O(n^3)，空间复杂度 O(1)。
      * */
     public static int subarraySum(int[] nums, int k) {
-        int count = 0, len = nums.length;
+        int count = 0, n = nums.length;
 
-        for (int i = 0; i < len; i++) {
-            for (int j = i; j < len; j++) {
+        for (int l = 0; l < n; l++) {
+            for (int r = l; r < n; r++) {
                 int sum = 0;
-                for (int n = i; n <= j; n++)
-                    sum += nums[n];
+                for (int i = l; i <= r; i++)
+                    sum += nums[i];
                 if (sum == k) count++;
             }
         }
@@ -52,16 +52,16 @@ public class L560_SubarraySumEqualsK {
 
     /*
      * 解法1：双指针 + 累加计数
-     * - 思路：超时解中的累加其实可以与右移 j 的过程同步进行，从而去掉最内从的循环，将时间复杂度降低一个次方。
+     * - 思路：超时解中的累加求和过程其实可以与右移 r 的过程同步进行，从而去掉最内从的循环，将时间复杂度降低一个次方。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static int subarraySum1(int[] nums, int k) {
-        int count = 0, len = nums.length;
+        int count = 0, n = nums.length;
 
-        for (int i = 0; i < len; i++) {
+        for (int l = 0; l < n; l++) {
             int sum = 0;
-            for (int j = i; j < len; j++) {
-                sum += nums[j];
+            for (int r = l; r < n; r++) {
+                sum += nums[r];
                 if (sum == k) count++;
             }
         }
