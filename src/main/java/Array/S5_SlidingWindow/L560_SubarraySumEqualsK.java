@@ -11,6 +11,8 @@ import java.util.Map;
  * - Given an array of integers and an integer k, you need to find the total number of continuous subarrays
  *   whose sum equals to k.
  *
+ * - 这道题非常经典，5个解法，从超时 -> O(n^3) -> O(n^2) -> O(n) -> 代码优化，层层递进，且涉及多种解决经典问题的技巧。
+ *
  * - 分析：若该题中的数组元素都是正数，则可以通过滑动窗口轻易解决（类似 L209_MinimumSizeSubarraySum 解法3）。但由于元素既可以
  *   是正也可以是负（如 test case 4、5）∴ 当窗口中元素之和 > k 时无法判断是应该移动左界还是移动右界 ∴ 无法使用单纯的滑动窗口。
  * */
