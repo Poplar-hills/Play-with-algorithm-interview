@@ -82,10 +82,15 @@ public class L1_TwoSum {
     }
 
     /*
-     * 解法4：Memoization (One-pass) (解法2的时间优化版)
+     * 解法4：Memoization (One-pass，解法2的时间优化版)
      * - 思路：在解法3的基础上进行优化，若 nums 中存在 nums[i] + complement == target，则在遍历 nums 的过程中一定会先后
-     *   遇到 nums[i] 和 complement ∴ 我们不需要像解法3中那样一次性将 nums 的所有元素放入 map，一边检查 nums[i] 的
-     *   complement 是否已经存在于 map 中，只需一边向 map 中插入 nums[i] 即可。
+     *   遇到 nums[i] 和 complement ∴ 不需要像解法3中那样一次性将 nums 的所有元素放入 map，再去挨个检查 nums[i] 的
+     *   complement 是否已经存在于 map 中。我们只需一边向 map 中插入 nums[i]，一边检查下一个元素的 complement 即可：
+     *       例如：nums=[4, -1, -3, 7]，target=6：
+     *                  ↑               - complement=2，map 中没有 ∴ 插入 map（{4:0}）
+     *                      ↑           - complement=7，map 中没有 ∴ 插入 map（{4:0, -1:1}）
+     *                          ↑       - complement=9，map 中没有 ∴ 插入 map（{4:0, -1:1, -3:2}）
+     *                             ↑    - complement=-1，map 中有 ∴ 返回找到的解「
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int[] twoSum4(int[] nums, int target) {
@@ -94,15 +99,15 @@ public class L1_TwoSum {
         for (int i = 0; i < nums.length; i++) {
             int complement = target - nums[i];
             if (map.containsKey(complement))          // 先检查 complement 是否已存在
-                return new int[] {map.get(complement), i};
+                return new int[]{map.get(complement), i};
             map.put(nums[i], i);                      // 再插入 nums[i]
         }
         throw new IllegalArgumentException("No two sum solution");
     }
 
     public static void main(String[] args) {
-        log(twoSum2(new int[]{2, 7, 15, 11}, 9));   // expects [0, 1]. (2 + 7)
-        log(twoSum2(new int[]{2, 7, 15, 7}, 14));   // expects [1, 3]. (7 + 7)
-        log(twoSum2(new int[]{3, 2, 4}, 6));        // expects [1, 2]. (2 + 4)
+        log(twoSum4(new int[]{2, 7, 15, 11}, 9));   // expects [0, 1]. (2 + 7)
+        log(twoSum4(new int[]{3, 2, 4}, 6));        // expects [1, 2]. (2 + 4)
+        log(twoSum4(new int[]{4, -1, -3, 7}, 6));   // expects [1, 3]. (-1 + 7)
     }
 }

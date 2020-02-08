@@ -70,58 +70,54 @@ public class L560_SubarraySumEqualsK {
     }
 
     /*
-     * 解法2：Prefix Sum
+     * 解法2：双指针 + Prefix Sum
      * - 思路：类似 L209_MinimumSizeSubarraySum。解法1中通过双指针遍历所有 subarray 的过程若用区间和的方式来表达：
      *   nums[l..r] 之和 = nums[0..r] 之和 - nums[0..l) 之和。即通过区间和相减的方式即可得到所有的 subarray 的元素之和
-     *   （即 nums[l..r] 之和）。而要快速得到任意 nums[l..r] 之和，则要使用 Prefix sums，用 sums[i] 来表示 nums[0..i) 之和。
+     *   （即 nums[l..r] 之和）。而要快速得到任意 nums[l..r] 之和，则要使用 Prefix sums，用 sums[i] 来表示 nums[0..i] 之和。
      * - 💎经验：Prefix Sum 本质是记录每个位置的累加和（cummulative sums），是求解“数组区间求和”（或叫“子串求和”）问题时的常用技巧。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int subarraySum2(int[] nums, int k) {
         int count = 0, n = nums.length;
-        int[] sums = new int[n + 1];     // prefix sum 数组（存储 nums[0..i) 之和，多开辟1的空间给 sums[0]=0）
-        sums[0] = 0;                     // 前0个元素的和为0（之所以要多出 preSums[0] 这个元素是因为在后面遍历过程中每
-                                         // 次要减去 preSums[j]，若没有 preSums[0]=0，则无法遍历到单个元素。
-        for (int i = 1; i <= n; i++)     // 单次遍历即可构造 prefix sum 数组（i 的取值也要从1开始）
-            sums[i] = sums[i - 1] + nums[i - 1];
+        int[] sums = new int[n];        // prefix sum 数组
+        sums[0] = nums[0];
 
-        for (int l = 0; l < n; l++)      // 双重循环遍历所有 subarray
+        for (int i = 1; i < n; i++)     // 单次遍历即可构造 prefix sum 数组（i 的取值要从1开始）
+            sums[i] = sums[i - 1] + nums[i];
+
+        for (int l = 0; l < n; l++)      // 双重循环遍历所有 subarray 检查是否有符合条件的 subarray
             for (int r = l; r < n; r++)
-                if (sums[r + 1] - sums[l] == k)
-                    count++;
+                if (sums[r] - sums[l] + nums[l] == k)
+                    count++;             // 找到解之后不能像 L209 那样终止 ∵ 后面可能有负数正数抵消的情况，使得还存在其他解
 
         return count;
     }
 
     /*
-     * 解法3：Prefix Sum + Memoization
-     * - 思路：在解法2中，我们通过双重循环挨个尝试是否存在 sum[0..i] - sum[0..j-1] == k，该过程是个典型的 Two Sum 问题，
-     *   因而可以采用 L1_TwoSum 解法4的思路求解 —— 在遍历过程中累积 sum[0..i]，然后一边检查其 complement（sum[0..i] - k，
-     *   即 sum[0..j-1]）是否存在于 map 中，一边将 sum[0..i] 插入到 map 中。通过这种方式又将时间复杂度降低一个次方。
-     *   对于 nums = [4, 2, -1, 5, -5, 5], k = 5：
-     *               ↑                    - preSum=4, get(4-5)不存在, count=0, {0:1, 4:1}
-     *                  ↑                 - preSum=6, get(6-5)不存在, count=0, {0:1, 4:1, 6:1}
-     *                      ↑             - preSum=5,  get(5-5)=1    count=1, {0:1, 4:1, 6:1, 5:1}
-     *                         ↑          - preSum=10, get(10-5)=1,  count=2, {0:1, 4:1, 6:1, 5:1, 10:1}
-     *                             ↑      - preSum=5,  get(5-5)=1,   count=3, {0:1, 4:1, 6:1, 5:2, 10:1}
-     *                                 ↑  - preSum=10, get(10-5)=2,  count=5, {0:1, 4:1, 6:1, 5:2, 10:2}
-     * - 注意：代码中 count += 的必须是 sum-k 的频率，而不能是 count++。举例说明：在👆最后一行中，get(10-5)=2 的意义是
-     *   “能与当前 prefix sum 相减等于 k（即 10 - sum[0..j-1] == 5）的 subarray 一共有2个”（sum[0..2] 和 sum[0..4]）
-     *   ∴ 要把这个个数加到 count 上，而不能只++。
-     * - 👉 总结：该题与 L437_PathSumIII 都是 Prefix Sum 和 Two Sum 思想的经典应用。
+     * 解法3：双指针 + Prefix Sum + Two Sum
+     * - 思路：解法2通过双重循遍历所有的 subarray 来检查是否存在 sums[r] - sums[l] + nums[l] == k，该过程是个典型的
+     *   Two Sum 问题 ∴ 可以采用 L1_TwoSum 解法4的思路将时间复杂度再降低一个次方。
+     * - 实现：
+     *     1. 一边累积 sum（即 nums[0..i] 之和）；
+     *     2. 一边检查其 complement（sum - k）是否存在于 Map 中（注意不能是 k - sum）；
+     *     3. 一边将 sum 在 Map 中插入或更新。
+     * - 注意：代码中 count += 的必须是 sum-k 的频率，而不能是 count++。举例说明：在👆最后一行中，complimenet=5 在 Map
+     *   中值为2的意义是“能与当前 prefix sum 相减等于 k（即 10 - sums[0..j-1] == 5）的 subarray 一共有2个”（sum[0..2]
+     *   和 sum[0..4]）∴ 要把这个个数加到 count 上。
+     * - 👉总结：该题与 L437_PathSumIII 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum3(int[] nums, int k) {
-        int count = 0, preSum = 0;
-        Map<Integer, Integer> map = new HashMap<>();  // 存储 <prefix sum, frequency>
-        map.put(0, 1);                                // 需要先插入 <0,1> 用于 preSum == k 的情况（例如👆get(5-5) 的情况）
+        int count = 0, sum = 0;
+        Map<Integer, Integer> map = new HashMap<>();  // 存储 {prefix sum: frequency}
+        map.put(0, 1);                                // 需要先插入 {0:1} 用于 sum == k 的情况（例如👆sum=10 的情况）
 
         for (int n : nums) {
-            preSum += n;                              // 累积 prefix sum
-            int complement = preSum - k;
+            sum += n;                          // 累积 prefix sum
+            int complement = sum - k;          // 得到其 complement（sum - complement == k）
             if (map.containsKey(complement))
-                count += map.get(complement);         // 给 count 加上 sum-k 的出现次数（即元素和为 k 的 subarray 个数）
-            map.put(preSum, map.getOrDefault(preSum, 0) + 1);  // 将 sum 插入 map，并记录/更新其频率
+                count += map.get(complement);  // 给 count 加上 complement 的频次（即能与 sum 相加 == k 的 subarray 个数）
+            map.put(sum, map.getOrDefault(sum, 0) + 1);  // 插入或更新 sum 频率
         }
 
         return count;
@@ -138,18 +134,18 @@ public class L560_SubarraySumEqualsK {
 
         for (int n : nums) {
             preSum += n;
-            count += map.getOrDefault(preSum - k, 0);  // 💎 技巧：map.containsKey + map.get = map.getOrDefault
-            map.merge(preSum, 1, Integer::sum);        // 相当于 map.put(sum, map.getOrDefault(sum) + 1)
+            count += map.getOrDefault(preSum - k, 0);  // 💎技巧：map.containsKey + map.get = map.getOrDefault
+            map.merge(preSum, 1, Integer::sum);        // 💎技巧：相当于 map.put(sum, map.getOrDefault(sum) + 1)
         }
 
         return count;
     }
 
     public static void main(String[] args) {
-        log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
-        log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
-        log(subarraySum4(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
-        log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
-        log(subarraySum4(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
+        log(subarraySum3(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
+        log(subarraySum3(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
+        log(subarraySum3(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
+        log(subarraySum3(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
+        log(subarraySum3(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
     }
 }
