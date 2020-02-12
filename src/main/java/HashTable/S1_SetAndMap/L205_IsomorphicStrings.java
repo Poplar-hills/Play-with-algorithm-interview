@@ -2,6 +2,9 @@ package HashTable.S1_SetAndMap;
 
 import static Utils.Helpers.log;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /*
 * Isomorphic Strings
 *
@@ -10,12 +13,34 @@ import static Utils.Helpers.log;
 
 public class L205_IsomorphicStrings {
     /*
-    * 解法1：双查找表
-    * - 思路：判断两个字符串是否是 isomorphic，只需判断两个字符串中的相同索引上的字符是否具有相同的频率。
-    * - 实现：两个查找表分别记录两个字符串中所有字符的频率，并在之后遍历过程中检查相同索引上的两个字符的频率是否与之前记录的一致。
-    * - 时间复杂度 O(n)，空间复杂度 O(2len(charset))。
-    * */
+     * 解法1：双查找表
+     * - 思路：根据题意中的“同构”和对 test case 4 的纸上演算可知，若只用一个 Map 记录 s -> t 的字符映射是不够的，同时还需要
+     *   记录 t -> s 的字符映射，保证双向都能匹配上才行（例如 test case 4）∴ 使用双查找表。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static boolean isIsomorphic(String s, String t) {
+        return helper(s, t, new HashMap<>(), new HashMap<>());
+    }
+
+    private static boolean helper(String s, String t, Map<Character, Character> mapS, Map<Character, Character> mapT) {
+        if (s.length() == 0 && t.length() == 0) return true;
+        char sc = s.charAt(0), tc = t.charAt(0);
+        if (!mapS.containsKey(sc) && !mapT.containsKey(tc)) {
+            mapS.put(sc, tc);
+            mapT.put(tc, sc);
+        }
+        else if ((mapS.containsKey(sc) && mapS.get(sc) != tc) || (mapT.containsKey(tc) && mapT.get(tc) != sc))  // 若只有单向匹配上了则不是同构
+            return false;
+        return helper(s.substring(1), t.substring(1), mapS, mapT);
+    }
+
+    /*
+     * 解法2：双查找表
+     * - 思路：判断两个字符串是否是 isomorphic，只需判断两个字符串中的相同索引上的字符是否具有相同的频率。
+     * - 实现：两个查找表分别记录两个字符串中所有字符的频率，并在之后遍历过程中检查相同索引上的两个字符的频率是否与之前记录的一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(2len(charset))。
+     * */
+    public static boolean isIsomorphic2(String s, String t) {
         if (s.length() != t.length())
             return false;
 
@@ -36,12 +61,12 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法2：单查找表
+     * 解法3：单查找表
      * - 思路：对于 s 和 t 中的每个字符 s[i]、t[i] 来说，若他们上次在字符串中出现的索引相同，即说明 s 和 t 是 isomorphic 的。
      * - 实现：一个查找表分成两部分使用，两部分分别记录 s[i] -> i 和 t[i] -> i 的映射。
      * - 时间复杂度 O(n)，空间复杂度 O(2len(charset))。
      * */
-    public static boolean isIsomorphic2(String s, String t) {
+    public static boolean isIsomorphic3(String s, String t) {
         int[] map = new int[512];      // ∵ 要分成两部分使用 ∴ 无法用 Map 实现
         for (int i = 0; i < s.length(); i++) {
             if (map[s.charAt(i)] != map[t.charAt(i) + 256])

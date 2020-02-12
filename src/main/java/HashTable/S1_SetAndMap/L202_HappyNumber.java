@@ -92,7 +92,10 @@ public class L202_HappyNumber {
 
     /*
      * 解法4：Floyd Cycle detection
-     * - 思路：检测循环的一个经典方式就是 Floyd Cycle detection。
+     * - 思路：检测循环的一个经典方式是使用 Floyd Cycle detection（佛洛依德判圈算法，又称龟兔赛跑算法 Tortoise and hare）：
+     *     - 它是一个可以在有限状态机、迭代函数或者链表上判断是否存在环，以及判断环的起点与长度的算法。
+     *     - 它的基本思路是若一个链上存在环，则在其上以不同速度前进的2个指针必定会在某个时刻相遇，而相遇点就是环的入口。
+     *     - 时间复杂度为 O(n)，空间复杂度为 O(1)。
      * */
     public static boolean isHappy4(int n) {
         int slow = n, fast = n;
@@ -104,9 +107,9 @@ public class L202_HappyNumber {
     }
 
     public static void main(String[] args) {
-        log(isHappy2(19));   // true.  19 → 82 → 68 → 100 → 1
-        log(isHappy2(100));  // true.  100 → 1
-        log(isHappy2(18));   // false. 18 → 65 → 61 → 37 → 58 → 89 → 145 → 42 → 20 → 4 → 16 → 37 → ...
-        log(isHappy2(0));    // false. 0 → 0 → ...
+        log(isHappy(19));   // true.  19 → 82 → 68 → 100 → 1
+        log(isHappy(100));  // true.  100 → 1
+        log(isHappy(18));   // false. 18 → 65 → 61 → 37 → 58 → 89 → 145 → 42 → 20 → 4 → 16 → 37 → ...
+        log(isHappy(0));    // false. 0 → 0 → ...
     }
 }
