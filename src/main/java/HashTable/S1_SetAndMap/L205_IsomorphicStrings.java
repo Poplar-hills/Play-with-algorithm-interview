@@ -59,13 +59,14 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法3：双查找表
-     * - 思路：不同于解法1、2中将 s、t 中的字符互相映射，该解法将 s、t 中的字符映射到索引+1上（∵ 不能映射成0，否则会跟 int[]
-     *   的默认值一样），这样一来，每次只需检查 s、t 对应位置上的字符是被否映射到了相同的数字上即可：
+     * 解法3：双查找表（映射到统一的编码上）
+     * - 思路：不同于解法1、2中将 s、t 中的字符互相映射，该解法将 s、t 中的字符映射到索引+1上（统一编码），这样一来每次只需检查
+     *   s、t 对应位置上的字符是被否映射到了相同的数字上即可：
      *       例如对于 s="egg", t="add"：       而对于 s="aba", t="baa"：
      *          e -> 1 <- a                      a ->    1   <- b    - sMap[a]=1，tMap[b]=1
      *          g -> 2 <- d                      b ->    2   <- a    - sMap[b]=2，tMap[a]=2
      *          g -> 3 <- d                      a -> 1 != 2 <- a    - sMap[a] != tMap[a] ∴ return false
+     * - 实现：注意要映射到索引+1 上，而不能直接映射到索引上 ∵ 不能映射成0，否则会跟 int[] 的默认值一样。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
     public static boolean isIsomorphic3(String s, String t) {
@@ -85,26 +86,31 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法4：单查找表
-     * - 思路：对于 s 和 t 中的每个字符 s[i]、t[i] 来说，若他们上次在字符串中出现的索引相同，即说明 s 和 t 是 isomorphic 的。
-     * - 实现：一个查找表分成两部分使用，两部分分别记录 s[i] -> i 和 t[i] -> i 的映射。
-     * - 时间复杂度 O(n)，空间复杂度 O(2len(charset))。
+     * 解法4：解法3的单查找表版
+     * - 思路：与解法3一致。
+     * - 实现：一个查找表分成上下两部分使用，两部分分别记录 s[i] -> i+1 和 t[i] -> i+1 的映射。
+     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))：空间复杂度与解法3一样。
      * */
     public static boolean isIsomorphic4(String s, String t) {
-        int[] map = new int[512];      // ∵ 要分成两部分使用 ∴ 无法用 Map 实现
+        if (s.length() != t.length()) return false;
+
+        int[] map = new int[512];    // ∵ 要分成两部分使用 ∴ 无法用 Map 实现
+
         for (int i = 0; i < s.length(); i++) {
-            if (map[s.charAt(i)] != map[t.charAt(i) + 256])
-                return false;
-            map[s.charAt(i)] = map[t.charAt(i) + 256] = i + 1;  // 记录索引（+1 是因为要避免0，因为 int[] 的默认值是0）
+            char sc = s.charAt(i), tc = t.charAt(i);
+            if (map[sc] != map[tc + 256]) return false;
+            map[sc] = i + 1;        // 记录索引（+1 是因为要避免0，因为 int[] 的默认值是0）
+            map[tc + 256] = i + 1;
         }
+
         return true;
     }
 
     public static void main(String[] args) {
-        log(isIsomorphic3("egg", "add"));      // expects true
-        log(isIsomorphic3("paper", "title"));  // expects true
-        log(isIsomorphic3("foo", "bar"));      // expects false
-        log(isIsomorphic3("ab", "aa"));        // expects false
-        log(isIsomorphic3("aba", "baa"));      // expects false
+        log(isIsomorphic4("egg", "add"));      // expects true
+        log(isIsomorphic4("paper", "title"));  // expects true
+        log(isIsomorphic4("foo", "bar"));      // expects false
+        log(isIsomorphic4("ab", "aa"));        // expects false
+        log(isIsomorphic4("aba", "baa"));      // expects false
     }
 }
