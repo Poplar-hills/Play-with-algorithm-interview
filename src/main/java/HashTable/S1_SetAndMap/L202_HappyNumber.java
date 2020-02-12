@@ -25,7 +25,6 @@ public class L202_HappyNumber {
      * - 思路：从题意可知，本题的主体结构是递归；从纸上演算可知，递归的退出条件是 n=1 或检测到循环 ∴ 问题转化为了如何检测循环。
      *   若没有循环，则所有数字应该只出现一次，不会重复 ∴ 只需要使用 hash table 检测是否出现重复数字即可。
      * - 实现：使用 Map 记录 n 的出现频次。
-     * - 时间复杂度为 O()，空间复杂度为 O()。
      * */
     public static boolean isHappy(int n) {
         return helper(n, new HashMap<>());
@@ -48,7 +47,7 @@ public class L202_HappyNumber {
     /*
      * 解法2：Set + Recursion
      * - 思路：与解法1一致。
-     * - 时间复杂度为 O()，空间复杂度为 O()。
+     * - 实现：∵ 只需要检查数字是否出现过 ∴ 可以采用 Set。
      * */
     public static boolean isHappy2(int n) {
         return helper2(n, new HashSet<>());
@@ -74,7 +73,8 @@ public class L202_HappyNumber {
 
     /*
      * 解法3：Set + Iteration
-     * - 时间复杂度为 O()，空间复杂度为 O()。
+     * - 思路：与解法1、2一致。
+     * - 实现：迭代。
      * */
     public static boolean isHappy3(int n) {
         Set<Integer> set = new HashSet<>();
@@ -93,7 +93,6 @@ public class L202_HappyNumber {
     /*
      * 解法4：Floyd Cycle detection
      * - 思路：检测循环的一个经典方式就是 Floyd Cycle detection。
-     * - 时间复杂度为 O()，空间复杂度为 O()。
      * */
     public static boolean isHappy4(int n) {
         int slow = n, fast = n;
