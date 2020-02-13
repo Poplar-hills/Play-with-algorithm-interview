@@ -77,8 +77,9 @@ public class L290_WordPattern {
     }
 
     /*
-     * 解法3：双查找表（匹配上次索引）
-     * - 思路：比较 pattern、str 中的字符/单词上次出现的索引是否相等，该思路比解法1、2更简单，实现也更简洁。
+     * 解法3：双查找表（匹配上次出现位置）
+     * - 思路：类似 L205_IsomorphicStrings 解法5，比较 pattern、str 中的字符/单词上次出现的位置是否相等。该思路比解法1、2
+     *   更简单，实现也更简洁。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean wordPattern3(String pattern, String str) {

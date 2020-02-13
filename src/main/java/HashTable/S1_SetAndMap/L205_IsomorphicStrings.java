@@ -90,7 +90,7 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法4：单查找表
+     * 解法4：解法3的单查找表版
      * - 思路：与解法3一致。
      * - 实现：一个查找表分成上下两部分使用，两部分分别记录 s[i] -> i+1 和 t[i] -> i+1 的映射。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))：空间复杂度与解法3一样。
@@ -110,11 +110,30 @@ public class L205_IsomorphicStrings {
         return true;
     }
 
+    /*
+     * 解法5：双查找表（匹配上次出现位置）
+     * - 思路：比较 s、t 中的字符上次出现的位置是否相等。该思路比解法1-4都更简单，实现也更简洁。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isIsomorphic5(String s, String t) {
+        if (s.length() != t.length()) return false;
+        Map<Character, Integer> sMap = new HashMap<>();
+        Map<Character, Integer> tMap = new HashMap<>();
+
+        for (Integer i = 0; i < s.length(); i++) {  // 注意 i 必须使用 boxing type，否则存到2个 Map 里的 i 在经过 Integer 包装后不能用 == 比较
+            Integer lastSIdx = sMap.put(s.charAt(i), i);  // 这里也必须使用 boxing type ∵ put 可能返回 null
+            Integer lastTIdx = tMap.put(t.charAt(i), i);
+            if (lastSIdx != lastTIdx) return false;       // 若两边都为 null 或相等则说明匹配上了，否则匹配失败
+        }
+
+        return true;
+    }
+
     public static void main(String[] args) {
-        log(isIsomorphic("egg", "add"));      // expects true
-        log(isIsomorphic("paper", "title"));  // expects true
-        log(isIsomorphic("foo", "bar"));      // expects false
-        log(isIsomorphic("ab", "aa"));        // expects false
-        log(isIsomorphic("aba", "baa"));      // expects false
+        log(isIsomorphic5("egg", "add"));      // expects true
+        log(isIsomorphic5("paper", "title"));  // expects true
+        log(isIsomorphic5("foo", "bar"));      // expects false
+        log(isIsomorphic5("ab", "aa"));        // expects false
+        log(isIsomorphic5("aba", "baa"));      // expects false
     }
 }
