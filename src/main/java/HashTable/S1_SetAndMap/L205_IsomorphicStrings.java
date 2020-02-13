@@ -24,13 +24,17 @@ public class L205_IsomorphicStrings {
 
     private static boolean helper(String s, String t, Map<Character, Character> sMap, Map<Character, Character> tMap) {
         if (s.length() == 0 && t.length() == 0) return true;
+
         char sc = s.charAt(0), tc = t.charAt(0);
         if (!sMap.containsKey(sc) && !tMap.containsKey(tc)) {
             sMap.put(sc, tc);
             tMap.put(tc, sc);
+        } else {
+            boolean s2tMatch = sMap.containsKey(sc) && sMap.get(sc) == tc;
+            boolean t2sMatch = tMap.containsKey(tc) && tMap.get(tc) == sc;
+           if (!s2tMatch || !t2sMatch) return false;   // 若只有单向匹配上了则不是同构
         }
-        else if ((sMap.containsKey(sc) && sMap.get(sc) != tc) || (tMap.containsKey(tc) && tMap.get(tc) != sc))  // 若只有单向匹配上了则不是同构
-            return false;
+
         return helper(s.substring(1), t.substring(1), sMap, tMap);  // 这里采用截取字符串的方式，也可以传递索引 i
     }
 
@@ -107,10 +111,10 @@ public class L205_IsomorphicStrings {
     }
 
     public static void main(String[] args) {
-        log(isIsomorphic4("egg", "add"));      // expects true
-        log(isIsomorphic4("paper", "title"));  // expects true
-        log(isIsomorphic4("foo", "bar"));      // expects false
-        log(isIsomorphic4("ab", "aa"));        // expects false
-        log(isIsomorphic4("aba", "baa"));      // expects false
+        log(isIsomorphic("egg", "add"));      // expects true
+        log(isIsomorphic("paper", "title"));  // expects true
+        log(isIsomorphic("foo", "bar"));      // expects false
+        log(isIsomorphic("ab", "aa"));        // expects false
+        log(isIsomorphic("aba", "baa"));      // expects false
     }
 }
