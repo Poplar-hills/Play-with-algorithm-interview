@@ -6,16 +6,16 @@ import java.util.Map;
 import static Utils.Helpers.log;
 
 /*
-* Word Pattern
-*
-* - 判断一个字符串是否符合指定 pattern
-* */
+ * Word Pattern
+ *
+ * - 判断一个字符串是否符合指定 pattern
+ * */
 
 public class L290_WordPattern {
     /*
-    * 解法1：使用两个 map 分别记录 pattern -> str 的映射，以及 str -> pattern 的映射。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)
-    * */
+     * 解法1：使用两个 map 分别记录 pattern -> str 的映射，以及 str -> pattern 的映射。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)
+     * */
     public static boolean wordPattern(String pattern, String str) {
         String[] words = str.split(" ");
         if (pattern.length() != words.length)
