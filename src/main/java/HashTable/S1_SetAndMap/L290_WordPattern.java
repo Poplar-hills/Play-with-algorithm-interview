@@ -54,6 +54,7 @@ public class L290_WordPattern {
     public static boolean wordPattern2(String pattern, String str) {
         String[] words = str.split(" ");
         if (words.length != pattern.length()) return false;
+
         Map<Character, Integer> pMap = new HashMap<>();
         Map<String, Integer> wMap = new HashMap<>();
 
@@ -76,16 +77,38 @@ public class L290_WordPattern {
     }
 
     /*
-     * 解法3：使用单 map，比较 pattern 中的字符和 str 中的 word 上次在 map 中出现的索引是否相等。
+     * 解法3：双查找表（匹配上次索引）
+     * - 思路：比较 pattern、str 中的字符/单词上次出现的索引是否相等，该思路比解法1、2更简单，实现也更简洁。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
-     * - map.put(a, b) 方法返回更新之前 a 的值。该解法虽然更简洁，但语义不如解法1清晰。
      * */
     public static boolean wordPattern3(String pattern, String str) {
         String[] words = str.split(" ");
         if (words.length != pattern.length()) return false;
 
-        Map map = new HashMap();  // Map 的 key 既有 Character 也有 String
-        for (Integer i = 0; i < words.length; i++)
+        Map<Character, Integer> pMap = new HashMap<>();
+        Map<String, Integer> wMap = new HashMap<>();
+
+        for (Integer i = 0; i < words.length; i++) {  // 注意 i 必须使用 boxing type，否则存到2个 Map 里的 i 在经过 Integer 包装后不能用 == 比较
+            Integer lastPIdx = pMap.put(pattern.charAt(i), i);  // 这里也必须使用 boxing type ∵ put 可能返回 null
+            Integer lastWIdx = wMap.put(words[i], i);
+            if (lastPIdx != lastWIdx) return false;   // 若两边都为 null 或相等则说明匹配上了，否则匹配失败
+        }
+
+        return true;
+    }
+
+    /*
+     * 解法4：解法3的单查找表版
+     * - 思路：与解法3一致。
+     * - 实现：使用单个 Map，其 key 即有 Character 也有 String。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean wordPattern4(String pattern, String str) {
+        String[] words = str.split(" ");
+        if (words.length != pattern.length()) return false;
+
+        Map map = new HashMap();
+        for (Integer i = 0; i < words.length; i++)  // 同样 i 得用 boxing type
             if (map.put(pattern.charAt(i), i) != map.put(words[i], i))
                 return false;
 
@@ -93,14 +116,13 @@ public class L290_WordPattern {
     }
 
     public static void main(String[] args) {
-        log(wordPattern2("abba", "dog cat cat dog"));   // true
-        log(wordPattern2("abba", "dog cat cat fish"));  // false
-        log(wordPattern2("abba", "dog dog dog dog"));   // false
-        log(wordPattern2("xxx", "dog dog dog"));        // true
-        log(wordPattern2("xxx", "dog cat dog"));        // false
-        log(wordPattern2("jquery", "jquery"));          // false
-
-        log(wordPattern2(  // true. (SEE: https://stackoverflow.com/questions/1514910/how-to-properly-compare-two-integers-in-java)
+        log(wordPattern3("abba", "dog cat cat dog"));   // true
+        log(wordPattern3("abba", "dog cat cat fish"));  // false
+        log(wordPattern3("abba", "dog dog dog dog"));   // false
+        log(wordPattern3("xxx", "dog dog dog"));        // true
+        log(wordPattern3("xxx", "dog cat dog"));        // false
+        log(wordPattern3("jquery", "jquery"));          // false
+        log(wordPattern3(  // true. (SEE: https://stackoverflow.com/questions/1514910/how-to-properly-compare-two-integers-in-java)
             "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdd",
             "s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s s t t"));
     }
