@@ -26,16 +26,16 @@ public class L349_IntersectionOfTwoArrays {
      * */
     public static int[] intersection(int[] nums1, int[] nums2) {
         Set<Integer> set = new HashSet<>();
-        Set<Integer> common = new HashSet<>();
+        Set<Integer> intersection = new HashSet<>();
 
         for (int n : nums1) set.add(n);
         for (int m : nums2)
             if (set.contains(m))
-                common.add(m);
+                intersection.add(m);
 
         int i = 0;
-        int[] res = new int[common.size()];
-        for (int n : common) res[i++] = n;  // 将 Set 中的元素逐个放入 array
+        int[] res = new int[intersection.size()];
+        for (int n : intersection) res[i++] = n;  // 将 Set 中的元素逐个放入 array
 
         return res;
     }
@@ -70,13 +70,14 @@ public class L349_IntersectionOfTwoArrays {
 
     /*
      * 解法3：二分查找
-     * - 时间复杂度 O(nlogn)。
+     * - 思路：不同于解法1、2，本解法在 nums2 中对 nums1 中的每一个元素进行二分查找（前提是 nums2 有序），以此找到。
+     * - 时间复杂度 O(nlogn + mlogn)。
      * */
     public static int[] intersection3(int[] nums1, int[] nums2) {
         Set<Integer> set = new HashSet<>();
-        Arrays.sort(nums2);   // 要先排序才能对 nums2 进行二分查找，O(nlogn)。若 nums2 本身是有序的，则整个算法复杂度降为 O(logn)
+        Arrays.sort(nums2);   // 进行二分查找的前提是数组有序（若 nums2 本身已有序，则整个算法复杂度降为 O(logn)）
 
-        for (int n : nums1)   // 再进行 nums1.length 次 O(log(nums2.length)) 的查找
+        for (int n : nums1)   // 再进行 m 次 O(logn) 的查找
             if (binarySearch(nums2, 0, nums2.length - 1, n))
                 set.add(n);
 
@@ -86,9 +87,9 @@ public class L349_IntersectionOfTwoArrays {
         return res;
     }
 
-    private static boolean binarySearch(int[] arr, int l, int r, int n) {
+    private static boolean binarySearch(int[] arr, int l, int r, int n) {  // 二分查找要指定查找范围的边界
         if (l > r) return false;
-        int mid = (r - l) / 2 + l;
+        int mid = (r - l) / 2 + l;  // 先计算中间点
         if (n > arr[mid])
             return binarySearch(arr, mid + 1, r, n);
         else if (n < arr[mid])
