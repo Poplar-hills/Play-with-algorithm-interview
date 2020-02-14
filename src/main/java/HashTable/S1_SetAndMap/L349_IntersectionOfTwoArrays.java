@@ -44,12 +44,13 @@ public class L349_IntersectionOfTwoArrays {
      * 解法2：set.retainAll()
      * - 思路：与解法1一致。
      * - 关联：两个 Set 的常用操作：
-     *     1. Union: set1.addAll(set2);
+     *     1. Union:        set1.addAll(set2);
      *     2. Intersection: set1.retainAll(set2);
-     *     3. Difference: set1.removeAll(set2);
-     * - 对比：在 JS 中的 intersection：
-     *     let set1 = new Set(nums1), set2 = new Set(nums2)
-     *     return new Set([...set1].filter(x => set2.has(x)))
+     *     3. Difference:   set1.removeAll(set2);
+     * - 对比：在 JS 中:
+     *     1. Union:        new Set([...set1, ...set2])
+     *     2. Intersection: new Set([...set1].filter(_ => set2.has(_)))
+     *     3. Difference:   new Set([...set1].filter(_ => !set2.has(_)))
      * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)。
      * */
     public static int[] intersection2(int[] nums1, int[] nums2) {
