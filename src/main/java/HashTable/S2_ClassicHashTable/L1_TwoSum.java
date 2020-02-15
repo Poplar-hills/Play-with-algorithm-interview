@@ -10,7 +10,7 @@ import static Utils.Helpers.*;
 /*
  * Two Sum
  *
- * - 对于整型数组 nums，返回其中两个不同元素（值相同可以）的索引 i 和 j 使得 nums[i] + nums[j] = target。
+ * - 对于整型数组 nums，返回其中两个不同元素（值相同可以）的索引 i、j 使得 nums[i] + nums[j] = target。
  * - You may assume that each input would have exactly one solution.
  *
  * - 与 3Sum、4Sum 不同之处在于 3Sum、4Sum 要返回的是元素值，而 TwoSum 要返回的是元素索引。
@@ -37,26 +37,27 @@ public class L1_TwoSum {
      *                     l        r     - nums[l] + nums[r] > target ∴ r--
      *                     l     r        - nums[l] + nums[r] < target ∴ l++
      *                        l  r        - nums[l] + nums[r] == target
-     *   但有一个问题：一旦对 nums 排序，其索引会被打乱而无法再次使用 ∴ 需要有一个数据结构在排序之前记录下元素和索引的对应关系。
-     *   而又因为 nums 中可能有重复元素 ∴ 无法采用 map 记录这种对应关系，
+     *   但有一个问题：一旦对 nums 排序，其索原有引会丢失 ∴ 需要一个数据结构在排序之前记录元素和索引的对应关系。而又因为 nums
+     *   中可能有重复元素 ∴ 无法采用 Map 记录这种对应关系。换一个思路，不使用外部数据结构，而是将索引与元素以 pair 的方式存在
+     *   数组中，这样后面的代码就无需再使用 nums，只用该数组即可。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum2(int[] nums, int target) {
-        Pair<Integer, Integer>[] indexedNums = new Pair[nums.length];
+        Pair<Integer, Integer>[] indexedNums = new Pair[nums.length];  // 构建记录 <索引, 元素> 的数组
         for (int i = 0; i < nums.length; i++)
-            indexedNums[i] = new Pair<>(i, nums[i]);  // 让 indexedNums 中的每个元素记录 <索引, 元素>
+            indexedNums[i] = new Pair<>(i, nums[i]);
 
-        Arrays.sort(indexedNums, Comparator.comparingInt(Pair::getValue));  // O(nlogn)
+        Arrays.sort(indexedNums, Comparator.comparingInt(Pair::getValue));  // 根据元素值对 pair 进行排序
 
         int l = 0, r = indexedNums.length - 1;
-        while (l < r) {                               // 指针对撞，直到找到和为 target 的两个元素
-            Pair<Integer, Integer> lNum = indexedNums[l];
-            Pair<Integer, Integer> rNum = indexedNums[r];
-            if (lNum.getValue() + rNum.getValue() > target) r--;
-            else if (lNum.getValue() + rNum.getValue() < target) l++;
-            else return new int[]{lNum.getKey(), rNum.getKey()};  // 取这两个元素在 nums 中的索引并返回
+        while (l < r) {                                           // 指针对撞
+            Pair<Integer, Integer> lNum = indexedNums[l], rNum = indexedNums[r];
+            int sum = lNum.getValue() + rNum.getValue();
+            if (sum > target) r--;
+            else if (sum < target) l++;
+            else return new int[]{lNum.getKey(), rNum.getKey()};  // 返回两个元素在 nums 中的索引
         }
-        throw new IllegalArgumentException("No two sum solution");
+        throw new IllegalArgumentException("No solution");
     }
 
     /*
@@ -106,8 +107,8 @@ public class L1_TwoSum {
     }
 
     public static void main(String[] args) {
-        log(twoSum4(new int[]{2, 7, 15, 11}, 9));   // expects [0, 1]. (2 + 7)
-        log(twoSum4(new int[]{3, 2, 4}, 6));        // expects [1, 2]. (2 + 4)
-        log(twoSum4(new int[]{4, -1, -3, 7}, 6));   // expects [1, 3]. (-1 + 7)
+        log(twoSum2(new int[]{2, 7, 15, 11}, 9));   // expects [0, 1]. (2 + 7)
+        log(twoSum2(new int[]{3, 2, 4}, 6));        // expects [1, 2]. (2 + 4)
+        log(twoSum2(new int[]{4, -1, -3, 7}, 6));   // expects [1, 3]. (-1 + 7)
     }
 }
