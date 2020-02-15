@@ -11,7 +11,7 @@ import static Utils.Helpers.log;
  * - 注意：返回的数组应该是去重过的，SEE test case 1。
  *
  * - set 底层实现可以有3种：
- *            普通数组   顺序数组   平衡二分搜索树   哈希表
+ *            普通数组   顺序数组    平衡二分搜索树   哈希表
  *   - 插入     O(1)      O(n)       O(logn)      O(1)
  *   - 查找     O(n)      O(logn)    O(logn)      O(1)
  *   - 删除     O(n)      O(n)       O(logn)      O(1)
@@ -69,7 +69,7 @@ public class L349_IntersectionOfTwoArrays {
     }
 
     /*
-     * 解法3：二分查找
+     * 解法3：Set + Binary Search
      * - 思路：不同于解法1、2，本解法在 nums2 中对 nums1 中的每一个元素进行二分查找（前提是 nums2 有序），以此找到。
      * - 时间复杂度 O(nlogn + mlogn)。
      * */
@@ -90,10 +90,8 @@ public class L349_IntersectionOfTwoArrays {
     private static boolean binarySearch(int[] arr, int l, int r, int n) {  // 二分查找要指定查找范围的边界
         if (l > r) return false;
         int mid = (r - l) / 2 + l;  // 先计算中间点
-        if (n > arr[mid])
-            return binarySearch(arr, mid + 1, r, n);
-        else if (n < arr[mid])
-            return binarySearch(arr, l, mid - 1, n);
+        if (n > arr[mid]) return binarySearch(arr, mid + 1, r, n);
+        if (n < arr[mid]) return binarySearch(arr, l, mid - 1, n);
         return true;
     }
 

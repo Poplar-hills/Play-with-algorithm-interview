@@ -25,8 +25,9 @@ public class L1_TwoSum {
     public static int[] twoSum(int[] nums, int target) {
         for (int i = 0; i < nums.length; i++)
             for (int j = i + 1; j < nums.length; j++)
-                if (nums[j] == target - nums[i])
-                    return new int[] {i, j};
+                if (nums[i] + nums[j] == target)
+                    return new int[]{i, j};
+
         throw new IllegalArgumentException("No two sum solution");
     }
 
@@ -43,34 +44,65 @@ public class L1_TwoSum {
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum2(int[] nums, int target) {
-        Pair<Integer, Integer>[] indexedNums = new Pair[nums.length];  // 构建记录 <索引, 元素> 的数组
+        Pair<Integer, Integer>[] indexNums = new Pair[nums.length];  // 构建记录 <索引, 元素> 的数组
         for (int i = 0; i < nums.length; i++)
-            indexedNums[i] = new Pair<>(i, nums[i]);
+            indexNums[i] = new Pair<>(i, nums[i]);
 
-        Arrays.sort(indexedNums, Comparator.comparingInt(Pair::getValue));  // 根据元素值对 pair 进行排序
+        Arrays.sort(indexNums, Comparator.comparingInt(Pair::getValue));  // 根据元素值对 pair 进行排序
 
-        int l = 0, r = indexedNums.length - 1;
+        int l = 0, r = indexNums.length - 1;
         while (l < r) {                                           // 指针对撞
-            Pair<Integer, Integer> lNum = indexedNums[l], rNum = indexedNums[r];
+            Pair<Integer, Integer> lNum = indexNums[l], rNum = indexNums[r];
             int sum = lNum.getValue() + rNum.getValue();
             if (sum > target) r--;
             else if (sum < target) l++;
             else return new int[]{lNum.getKey(), rNum.getKey()};  // 返回两个元素在 nums 中的索引
         }
+
         throw new IllegalArgumentException("No solution");
     }
 
     /*
-     * 解法3：Memoization (Two-pass)
-     * - 思路：另一类思路是用 map 来查找每个元素的 complement —— 先构建一个 map 将 nums 中的元素存储成 <元素, 索引> 的形式，
-     *   然后在遍历 nums 的过程中查找 nums[i] 的 complement 是否存在于 map 中，若存在则找到了结果。
-     * - 注意：∵ test case 3 中存在 target - nums[0] = nums[0]（即 nums[0] 的 complement 还是 nums[0]）的情况，而本
-     *   题要找的是“两个不同元素” ∴ 该情况不是有效解 ∴ 需要在查找 complement 时加入判断排除这种情况才行。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * 解法3：Sort + Binary Search
+     * - 思路：在遍历过程中为每个 nums[i] 在 nums(i..] 区间内搜索一个 complement，使得 nums[i] + complement = target。
+     *   搜索过程使用二分查找 ∴ 需要先对 nums 排序，而又因为解法2的分析，若堆 nums 排序会丢失原有索引 ∴ 需要构建一个保持了
+     *   索引和元素的数组 indexNums，再对 indexNums 进行排序、遍历、搜索。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum3(int[] nums, int target) {
-        Map<Integer, Integer> map = new HashMap<>();
+        int[][] indexNums = new int[nums.length][];
+        for (int i = 0; i < nums.length; i++)
+            indexNums[i] = new int[]{i, nums[i]};
 
+        Arrays.sort(indexNums, (a, b) -> a[1] - b[1]);
+
+        for (int i = 0; i < indexNums.length; i++) {
+            int complement = target - indexNums[i][1];
+            int index = binarySearch(indexNums, i + 1, nums.length - 1, complement);
+            if (index != -1) return new int[]{indexNums[i][0], indexNums[index][0]};
+        }
+
+        throw new IllegalArgumentException("No solution");
+    }
+
+    private static int binarySearch(int[][] nums, int l, int r, int target) {
+        if (l > r) return -1;
+        int mid = (r - l) / 2 + l;
+        if (target < nums[mid][1]) return binarySearch(nums, l, mid - 1, target);
+        if (target > nums[mid][1]) return binarySearch(nums, mid + 1, r, target);
+        return mid;
+    }
+
+    /*
+     * 解法4：Memoization (two-pass)
+     * - 思路：另一类思路是用 Map 来查找每个元素的 complement —— 先构建一个索引 Map（{元素: 索引}），然后在遍历 nums 的过程
+     *   中查找 nums[i] 的 complement 是否存在于 Map 中，若存在则返回其对应索引。
+     * - 注意：∵ test case 3 中存在 target - nums[0] = nums[0] 的情况，而本题要找的是“两个不同元素” ∴ 需要在查找
+     *   complement 时判断并排除这种情况。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int[] twoSum4(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
         for (int i = 0; i < nums.length; i++)  // 将 nums 中的所有元素一次性放入 Map 中（若有重复元素则直接覆盖，如 test case 2）
             map.put(nums[i], i);
 
@@ -79,23 +111,24 @@ public class L1_TwoSum {
             if (map.containsKey(complement) && map.get(complement) != i)  // 检查索引确保 complement 不等于 nums[i] 自身
                 return new int[] {i, map.get(complement)};
         }
+
         throw new IllegalArgumentException("No two sum solution");
     }
 
     /*
-     * 解法4：Memoization (One-pass，解法2的时间优化版)
-     * - 思路：在解法3的基础上进行优化，若 nums 中存在 nums[i] + complement == target，则在遍历 nums 的过程中一定会先后
-     *   遇到 nums[i] 和 complement ∴ 不需要像解法3中那样一次性将 nums 的所有元素放入 map，再去挨个检查 nums[i] 的
-     *   complement 是否已经存在于 map 中。我们只需一边向 map 中插入 nums[i]，一边检查下一个元素的 complement 即可：
+     * 解法5：Memoization (one-pass，解法2的时间优化版)
+     * - 思路：在解法4的基础上进行优化，在遍历到 i 时，若 nums 中存在一个 complement 使得 nums[i] + complement == target，
+     *   则在遍历 i 之后的元素时一定会遇到该 complement ∴ 无需像解法3中那样一次性将 nums 的所有元素放入 map，再去挨个检查
+     *   map 中是否有 nums[i] 的 complement，只需在一遍遍历过程中一边检查 complement 一边插入元素即可：
      *       例如：nums=[4, -1, -3, 7]，target=6：
      *                  ↑               - complement=2，map 中没有 ∴ 插入 map（{4:0}）
      *                      ↑           - complement=7，map 中没有 ∴ 插入 map（{4:0, -1:1}）
      *                          ↑       - complement=9，map 中没有 ∴ 插入 map（{4:0, -1:1, -3:2}）
-     *                             ↑    - complement=-1，map 中有 ∴ 返回找到的解「
+     *                             ↑    - complement=-1，map 中有 ∴ 返回找到的解
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int[] twoSum4(int[] nums, int target) {
-        Map<Integer, Integer> map = new HashMap<>();  // 存储 <元素, 元素索引>
+    public static int[] twoSum5(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>();  // 存储 {元素: 索引}
 
         for (int i = 0; i < nums.length; i++) {
             int complement = target - nums[i];
@@ -103,12 +136,14 @@ public class L1_TwoSum {
                 return new int[]{map.get(complement), i};
             map.put(nums[i], i);                      // 再插入 nums[i]
         }
-        throw new IllegalArgumentException("No two sum solution");
+
+        throw new IllegalArgumentException("No solution");
     }
 
     public static void main(String[] args) {
-        log(twoSum2(new int[]{2, 7, 15, 11}, 9));   // expects [0, 1]. (2 + 7)
-        log(twoSum2(new int[]{3, 2, 4}, 6));        // expects [1, 2]. (2 + 4)
-        log(twoSum2(new int[]{4, -1, -3, 7}, 6));   // expects [1, 3]. (-1 + 7)
+        log(twoSum4(new int[]{2, 7, 15, 11}, 9));   // expects [0, 1]. (2 + 7)
+        log(twoSum4(new int[]{3, 3, 4}, 6));        // expects [0, 1]. (3 + 3)
+        log(twoSum4(new int[]{3, 2, 4}, 6));        // expects [1, 2]. (2 + 4)
+        log(twoSum4(new int[]{4, -1, -3, 7}, 6));   // expects [1, 3]. (-1 + 7)
     }
 }
