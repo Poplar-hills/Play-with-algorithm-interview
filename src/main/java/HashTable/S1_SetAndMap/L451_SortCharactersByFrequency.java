@@ -48,10 +48,12 @@ public class L451_SortCharactersByFrequency {
      * 解法2：Map 频谱 + PriorityQueue 排序（解法1的 PriorityQueue 版）
      * - 思路：思路与解法1一致。
      * - 实现：
-     *   1. 使用 PriorityQueue 替代解法1中的 TreeMap 来根据 value 对 freq 进行排序；
+     *   1. 使用 PriorityQueue 替代解法1中的 TreeMap 来根据 value 对频谱 freq 进行排序；
      *   2. PriorityQueue 默认是最小堆，需要自定义 Comparator 才能得到最大堆；
      *   3. ∵ PriorityQueue 不是 Map，key 不需要唯一 ∴ 不存在解法1中 Comparator 不能返回0的问题。
-     * - 👉语法：∵ PriorityQueue 也继承了 Collection ∴ 也有 addAll 方法（List, Map, Set, Queue 都有该方法）。
+     * - 👉语法：
+     *   - ∵ PriorityQueue 继承了 Collection ∴ 有 addAll 方法（List, Set, Queue 都是 Collection）；
+     *   - 注意 Map 没有继承 Collection（Java 有意这么设计的），它有自己的 putAll 方法。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static String frequencySort2(String s) {
@@ -59,11 +61,11 @@ public class L451_SortCharactersByFrequency {
         for (char c : s.toCharArray())
             freq.put(c, freq.getOrDefault(c, 0) + 1);
 
-        PriorityQueue<Character> maxHeap = new PriorityQueue<>((c1, c2) -> freq.get(c2) - freq.get(c1));  // 最大堆
-        maxHeap.addAll(freq.keySet());
+        PriorityQueue<Character> maxHeap = new PriorityQueue<>((a, b) -> freq.get(b) - freq.get(a));  // 最大堆
+        maxHeap.addAll(freq.keySet());  // 这里只需 add 所有 key 进去就可以排序
 
         StringBuilder b = new StringBuilder();
-        while (!maxHeap.isEmpty()) {  // 用 while 遍历 maxHeap
+        while (!maxHeap.isEmpty()) {    // 用 while 遍历 maxHeap
             char c = maxHeap.poll();
             for (int i = 1; i <= freq.get(c); i++)
                 b.append(c);
@@ -72,19 +74,23 @@ public class L451_SortCharactersByFrequency {
     }
 
     /*
-     * 解法3：Map + List[]
-     * - 思路：与解法1相同的是使用 Map 记录字符出现频次，不同的是记录字符出现频次的方式改用 buckets。
-     *   buckets 的索引是频次，值是出现了该频次的所有字符组成的列表。最后再根据 buckets 构建字符串。
+     * 解法3：Map + buckets
+     * - 思路：与解法1、2相同。
+     * - 实现：使用 buckets 方式根据 value 对频谱 freq 进行排序。buckets 的索引是频次，值是出现了该频次的所有字符组成的列表。
+     *   例如对于 s="tree"，构造出的 List[] buckets = [ null, List.of('t', 'r'), List.of('e'), null ]。
+     * - 👉语法：
+     *   1. List.of() 是 Java 9中的方法，构造的是 immutable List（定长、元素不可变）；
+     *   2. Arrays.asList() 构造的是 mutable List（定长，但元素可变）；
+     *   SEE: https://stackoverflow.com/questions/46579074/what-is-the-difference-between-list-of-and-arrays-aslist
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static String frequencySort3(String s) {
-        Map<Character, Integer> freq = new HashMap<>();  // test case 1 中该 freq = {t: 1, r: 1, e: 2}
-
-        for (char c : s.toCharArray())  // 时间 O(n)
+        Map<Character, Integer> freq = new HashMap<>();
+        for (char c : s.toCharArray())
             freq.put(c, freq.getOrDefault(c, 0) + 1);
 
-        List<Character>[] buckets = new List[s.length() + 1];  // [null, [t,r], [e], null]. 注意要数组长度要+1（∵ 有 0 ~ s.length() 种可能）
-        for (char c : freq.keySet()) {  // 时间 O(n)
+        List<Character>[] buckets = new List[s.length() + 1];  // 注意要数组长度要+1（∵ 有 0~s.length() 种可能）
+        for (char c : freq.keySet()) {
             int f = freq.get(c);
             if (buckets[f] == null)
                 buckets[f] = new ArrayList<>();
@@ -92,10 +98,10 @@ public class L451_SortCharactersByFrequency {
         }
 
         StringBuilder b = new StringBuilder();
-        for (int i = buckets.length - 1; i >= 0; i--)  // 从大到小遍历 buckets 中每个列表中的每个字符。时间 O(n)，空间 O(1)
+        for (int i = buckets.length - 1; i >= 0; i--)  // 遍历 buckets 中每个列表中的每个字符
             if (buckets[i] != null)
                 for (char c : buckets[i])
-                    for (int j = 1; j <= i; j++)
+                    for (int n = 1; n <= i; n++)
                         b.append(c);
 
         return b.toString();
