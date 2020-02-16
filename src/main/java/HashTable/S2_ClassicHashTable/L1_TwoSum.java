@@ -67,12 +67,13 @@ public class L1_TwoSum {
      * - 思路：在遍历过程中为每个 nums[i] 在 nums(i..] 区间内搜索一个 complement，使得 nums[i] + complement = target。
      *   搜索过程使用二分查找 ∴ 需要先对 nums 排序，而又因为解法2的分析，若堆 nums 排序会丢失原有索引 ∴ 需要构建一个保持了
      *   索引和元素的数组 indexNums，再对 indexNums 进行排序、遍历、搜索。
+     * - 实现：本解法中不再使用 Pair，直接使用数组 [i, num] 记录每个索引元素对。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum3(int[] nums, int target) {
         int[][] indexNums = new int[nums.length][];
         for (int i = 0; i < nums.length; i++)
-            indexNums[i] = new int[]{i, nums[i]};
+            indexNums[i] = new int[]{i, nums[i]};  // 直接使用数组记录索引元素对
 
         Arrays.sort(indexNums, (a, b) -> a[1] - b[1]);
 
