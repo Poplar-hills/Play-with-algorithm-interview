@@ -94,7 +94,7 @@ public class L1_TwoSum {
     }
 
     /*
-     * 解法4：Memoization (two-pass)
+     * 解法4：查找表 (two-pass)
      * - 思路：另一类思路是用 Map 来查找每个元素的 complement —— 先构建一个索引 Map（{元素: 索引}），然后在遍历 nums 的过程
      *   中查找 nums[i] 的 complement 是否存在于 Map 中，若存在则返回其对应索引。
      * - 注意：∵ test case 3 中存在 target - nums[0] = nums[0] 的情况，而本题要找的是“两个不同元素” ∴ 需要在查找
@@ -116,7 +116,7 @@ public class L1_TwoSum {
     }
 
     /*
-     * 解法5：Memoization (one-pass，解法2的时间优化版)
+     * 解法5：查找表 (one-pass，解法4的时间优化版)
      * - 思路：在解法4的基础上进行优化，在遍历到 i 时，若 nums 中存在一个 complement 使得 nums[i] + complement == target，
      *   则在遍历 i 之后的元素时一定会遇到该 complement ∴ 无需像解法3中那样一次性将 nums 的所有元素放入 map，再去挨个检查
      *   map 中是否有 nums[i] 的 complement，只需在一遍遍历过程中一边检查 complement 一边插入元素即可：
