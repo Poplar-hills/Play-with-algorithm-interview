@@ -14,6 +14,8 @@ import static Utils.Helpers.*;
  * - You may assume that each input would have exactly one solution.
  *
  * - 与 3Sum、4Sum 不同之处在于 3Sum、4Sum 要返回的是元素值，而 TwoSum 要返回的是元素索引。
+ *
+ * - 💎套路总结：2Sum 问题的三种经典思路：1. 指针对撞；2. Binary Search；3. 查找表。
  * */
 
 public class L1_TwoSum {
