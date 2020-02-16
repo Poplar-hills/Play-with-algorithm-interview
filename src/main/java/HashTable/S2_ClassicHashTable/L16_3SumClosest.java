@@ -1,8 +1,6 @@
 package HashTable.S2_ClassicHashTable;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import static Utils.Helpers.log;
 
