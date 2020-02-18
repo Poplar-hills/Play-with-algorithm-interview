@@ -29,26 +29,84 @@ import static Utils.Helpers.log;
 
 public class L18_4Sum {
     /*
-     * 解法1：化简成 2Sum + 指针对撞 + 手动去重
-     * - 总结来说就是 1.化简 2.去重
+     * 解法1：4Sum -> 3Sum -> 2Sum（查找表 + Set 去重）
+     * - 思路：类似 L15_3Sum 中的解法1。该解法代码最简洁，但 ∵ 要先找到解，再通过 Set 检查是否重复 ∴ 性能比手动去重的解法要差。
+     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> fourSum(int[] nums, int target) {
-        List<List<Integer>> res = new ArrayList<>();
-        if (nums == null || nums.length < 4) return res;
+        if (nums == null || nums.length < 4) return new ArrayList<>();
+        Set<List<Integer>> resSet = new HashSet<>();
+        int n = nums.length;
+
         Arrays.sort(nums);
 
-        for (int i = 0; i < nums.length - 3; i++) {  // 化简到 3Sum（∵ 要保证后面的 j,l,r 有元素可用 ∴ 至少要留出3个元素，即 i 的滑动范围是第0个~倒数第4个元素）
-            if (i == 0 || nums[i] != nums[i - 1]) {  // 去重（i == 0 时是第一个元素，不可能重复，而后面的元素只要不等于前一个元素即可）
-                for (int j = i + 1; j < nums.length - 2; j++) {  // 化简到 2Sum（∵ 要保证后面的 l,r 有元素用 ∴ 至少要留出2个元素给他们，即 j 的滑动范围是i+1~倒数第3个元素）
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    int complement = target - nums[i] - nums[j] - nums[k];
+                    if (set.contains(complement))
+                        resSet.add(Arrays.asList(nums[i], nums[j], nums[k], complement));
+                    set.add(nums[k]);
+                }
+                set.clear();
+            }
+        }
+
+        return new ArrayList<>(resSet);
+    }
+
+    /*
+     * 解法2：4Sum -> 3Sum -> 2Sum（指针对撞 + Set 去重）
+     * - 思路：类似 L15_3Sum 解法3。
+     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> fourSum2(int[] nums, int target) {
+        if (nums == null || nums.length < 4) return new ArrayList<>();
+        Set<List<Integer>> resSet = new HashSet<>();
+        int n = nums.length;
+
+        Arrays.sort(nums);
+
+        for (int i = 0; i < n - 3; i++) {          // ∵ 里面要 n-2 ∴ 这里要 n-3
+            for (int j = i + 1; j < n - 2; j++) {  // i < n-2 即可，不用再最后一个元素进行指针对撞了
+                int l = j + 1, r = n - 1;
+                while (l < r) {
+                    int sum = nums[i] + nums[j] + nums[l] + nums[r];
+                    if (sum < target) l++;
+                    else if (sum > target) r--;
+                    else resSet.add(Arrays.asList(nums[i], nums[j], nums[l++], nums[r--]));
+                }
+            }
+        }
+
+        return new ArrayList<>(resSet);
+    }
+
+    /*
+     * 解法3：4Sum -> 3Sum -> 2Sum（指针对撞 + 手动去重）
+     * - 思路：类似 L15_3Sum 解法4。
+     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> fourSum3(int[] nums, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums == null || nums.length < 4) return res;
+        int n = nums.length;
+
+        Arrays.sort(nums);
+
+        for (int i = 0; i < n - 3; i++) {            // 固定第1个元素，将问题转化为 3Sum
+            if (i == 0 || nums[i] != nums[i - 1]) {  // 去重
+                for (int j = i + 1; j < n - 2; j++) {            // 固定第2个元素，将问题转化为 2Sum
                     if (j == i + 1 || nums[j] != nums[j - 1]) {  // 去重
-                        int l = j + 1, r = nums.length - 1;
+                        int l = j + 1, r = n - 1;
                         while (l < r) {
                             int sum = nums[i] + nums[j] + nums[l] + nums[r];
                             if (sum < target) l++;
                             else if (sum > target) r--;
-                            else {
+                            else {                                            // 当 sum == target 时找到一个解
                                 res.add(Arrays.asList(nums[i], nums[j], nums[l++], nums[r--]));
-                                while (l < r && nums[l] == nums[l - 1]) l++;  // 去重
+                                while (l < r && nums[l] == nums[l - 1]) l++;  // 若下一个元素重复，则让 l, r 跳过
                                 while (l < r && nums[r] == nums[r + 1]) r--;
                             }
                         }
@@ -59,61 +117,11 @@ public class L18_4Sum {
         return res;
     }
 
-    /*
-     * 解法2：化简成 2Sum + 指针对撞 + Set 去重
-     * - 虽然代码简洁，但性能慢于解法1，因为重复的结果仍然会被添加到 Set 中，然后再通过 Set 去重。
-     * */
-    public static List<List<Integer>> fourSum2(int[] nums, int target) {
-        Set<List<Integer>> res = new HashSet<>();
-        if (nums == null || nums.length < 4) return new ArrayList<>();
-        Arrays.sort(nums);
-
-        for (int i = 0; i < nums.length - 3; i++) {  // 每一次化简都不再需要手动去重，完全依靠 Set 去重
-            for (int j = i + 1; j < nums.length - 2; j++) {
-                int l = j + 1, r = nums.length - 1;
-                while (l < r) {
-                    int sum = nums[i] + nums[j] + nums[l] + nums[r];
-                    if (sum < target) l++;
-                    else if (sum > target) r--;
-                    else res.add(Arrays.asList(nums[i], nums[j], nums[l++], nums[r--]));
-                }
-            }
-        }
-        return new ArrayList<>(res);
-    }
-
-    /*
-     * 解法3：查找表 + Set 去重
-     * - 思路：类似 L15_3Sum 中的解法4。
-     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
-     * - 代码最简洁，但性能差于前面两种解法，因为重复结果会先存入 Set，再利用 Set 去重，而手动去重不会有这个过程。
-     * */
-    public static List<List<Integer>> fourSum3(int[] nums, int target) {
-        if (nums == null || nums.length < 4) return new ArrayList<>();
-        Set<List<Integer>> set = new HashSet<>();
-        Map<Integer, Integer> map = new HashMap<>();
-        Arrays.sort(nums);
-
-        for (int i = 0; i < nums.length; i++)
-            map.put(nums[i], i);
-
-        for (int i = 0; i < nums.length - 3; i++) {
-            for (int j = i + 1; j < nums.length - 2; j++) {
-                for (int k = j + 1; k < nums.length - 1; k++) {
-                    int complement = target - nums[i] - nums[j] - nums[k];
-                    if (map.containsKey(complement) && map.get(complement) > k)
-                        set.add(Arrays.asList(nums[i], nums[j], nums[k], complement));
-                }
-            }
-        }
-        return new ArrayList<>(set);
-    }
-
     public static void main(String[] args) {
-        log(fourSum3(new int[] {1, 0, -1, 0, -2, 2}, 0));
+        log(fourSum2(new int[] {1, 0, -1, 0, -2, 2}, 0));
         // expects [[-1,0,0,1], [-2,-1,1,2], [-2,0,0,2]]
 
-        log(fourSum3(new int[] {-1, 0, -5, -2, -2, -4, 0, 1, -2}, -9));
+        log(fourSum2(new int[] {-1, 0, -5, -2, -2, -4, 0, 1, -2}, -9));
         // expects [[-5,-4,-1,1], [-5,-4,0,0], [-5,-2,-2,0], [-4,-2,-2,-1]]
     }
 }
