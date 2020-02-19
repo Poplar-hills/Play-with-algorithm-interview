@@ -7,99 +7,97 @@ import java.util.*;
 import static Utils.Helpers.log;
 
 /*
-* Max Points on a Line
-*
-* - Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.
-* */
+ * Max Points on a Line
+ *
+ * - Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.
+ * */
 
 public class L149_MaxPointsOnLine {
     /*
-    * 解法1：
-    * - 思路：该问题的关键在于如何判断多个点在一条直线上。首先想到可以通过两点一线的斜率（slope）来判断。具体来说，遍历所
-    *   有点的两两组合，并用 Map 记录斜率 -> 点个数的映射。但这种方式还有问题，即存在两条直线斜率 k 相等，但偏移量 b 不等
-    *   的情况（y = kx + b），因此不能用一个 Map 统计所有斜率，需要为每个点单独统计，即为每个点创建一个 Map，记录该点与
-    *   所有其他点连成的直线的斜率，并找出所有这些点的 Map 中最大的 value。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法1：
+     * - 思路：该问题的关键在于如何判断多个点在一条直线上。首先想到可以通过两点一线的斜率（slope）来判断。具体来说，遍历所有点
+     *   的两两组合，用 Map 记录 {斜率: 点个数} 的映射。但根据公式 y = kx + b，若两条线斜率 k 相等，但偏移量 b 不等，则这
+     *   4个点并不在一条直线上，该方法没有考虑这种情况。此时可以考虑另一思路 —— 为每个点单独创建一个 Map，生成该点与所有其他点
+     *   连成的直线的 {斜率: 点个数} 映射。而所有这些 Map 中的最大 value 即是所求解。
+     * - 实现：
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int maxPoints(int[][] points) {
         if (points == null || points.length == 0) return 0;
-        if (points.length <= 2) return points.length;
-        int res = 0;
+        int n = points.length, max = 0;
+        if (n <= 2) return n;
 
-        for (int i = 0; i < points.length; i++) {            // 遍历每个点
-            Map<BigDecimal, Integer> map = new HashMap<>();  // 为每个点创建查找表，记录 {斜率: 点个数}
+        for (int i = 0; i < n; i++) {                        // 遍历每个点
+            Map<BigDecimal, Integer> map = new HashMap<>();  // 为每个点创建 {斜率: 点个数} 映射
             int sameXCount = 1;                              // 记录 x 坐标相同的点的个数（初始值设为1）
             int overlapCount = 0;                            // 记录重叠点的个数
 
-            for (int j = 0; j < points.length; j++) {        // 在固定一个点的基础上遍历所有其他点
+            for (int j = 0; j < n; j++) {                    // 在固定一个点的基础上遍历所有其他点
                 if (i == j) continue;
                 int[] p1 = points[i], p2 = points[j];
 
-                if (Arrays.equals(p1, p2))  // 两点重叠的情况。如果这里不处理则会在下面的 if 块中直接 continue，跳过斜率计算，导致少算了一个点
-                    overlapCount++;         // 因此要在这里单独记录，并在后面加回到 res 里（因为重叠的点肯定在一条线上）
-                if (p1[0] == p2[0]) {       // 若两点 x 坐标相等（包括两点重叠的情况）此时两点所连成的线垂直于 x 轴，没有斜率，斜率公式分母为零会报错，因此单独处理
-                    res = Math.max(res, ++sameXCount);  // 处理方式是用变量单独记录与当前点有相同 x 坐标的点的个数，并与 res 比较
+                if (Arrays.equals(p1, p2))   // 两点重叠则单独记录，并在后面加到 max 里（∵ 重叠的点肯定在一条线上）
+                    overlapCount++;
+                if (p1[0] == p2[0]) {        // 若两点 x 坐标相等（包括两点重叠的情况）则直线平行于 y 轴，没有斜率，斜率公式分母为零会报错 ∴ 要单独处理
+                    max = Math.max(max, ++sameXCount);  // 处理方式是用变量单独记录与当前点有相同 x 坐标的点的个数，并与 max 比较
                     continue;
                 }
-                BigDecimal s = slope(p1, p2);           // 上面处理完两个特殊情况后，这里是一般情况
-                map.put(s, map.getOrDefault(s, 1) + 1);  // 初始值设为1
-                res = Math.max(res, map.get(s) + overlapCount);      // 记得要加上重叠的点的个数
+                BigDecimal k = getSlope(p1, p2);                 // 上面处理完两个特殊情况后，这里是一般情况
+                map.put(k, map.getOrDefault(k, 1) + 1);          // 初始值设为1
+                max = Math.max(max, map.get(k) + overlapCount);  // 记得要加上重叠的点的个数
             }
         }
-        return res;
+        return max;
     }
 
-    private static BigDecimal slope(int[] p1, int[] p2) {      // double 可能会精度不足因此使用 BigDecimal（SEE test case 5）
-        BigDecimal diffY = BigDecimal.valueOf(p2[1] - p1[1]);  // 使用 valueOf() 将 int 转为 BigDecimal
+    private static BigDecimal getSlope(int[] p1, int[] p2) {   // double 可能会精度不足因此使用 BigDecimal（SEE test case 5）
         BigDecimal diffX = BigDecimal.valueOf(p2[0] - p1[0]);
-        return diffY.divide(diffX, new MathContext(20));  // calculating slope: (y2 - y1) / (x2 - x1)
+        BigDecimal diffY = BigDecimal.valueOf(p2[1] - p1[1]);
+        return diffY.divide(diffX, new MathContext(20));       // 计算斜率: (y2 - y1) / (x2 - x1)
     }
 
     public static void main(String[] args) {
         /*
-         *   ^
-         *   |        o
-         *   |     o
-         *   |  o
-         *   +------------->
-         *   0  1  2  3  4
+         *    ^
+         *  3 |        o
+         *  2 |     o
+         *  1 |  o
+         *  0 +----------->
+         *    0  1  2  3
          * */
-        int[] p1 = new int[]{1, 1};
-        int[] p2 = new int[]{2, 2};
-        int[] p3 = new int[]{3, 3};
-        log(maxPoints(new int[][]{p1, p2, p3}));  // expects 3
+        log(maxPoints(new int[][]{{1, 1}, {2, 2}, {3, 3}}));  // expects 3
 
         /*
-         *   ^
-         *   |  o
-         *   |     o        o
-         *   |        o
-         *   |  o        o
-         *   +------------------->
-         *   0  1  2  3  4  5  6
+         *    ^
+         *  4 |  o
+         *  3 |     o        o
+         *  2 |        o
+         *  1 |  o        o
+         *  0 +------------------->
+         *    0  1  2  3  4  5  6
          * */
-        int[] p4 = new int[]{1, 1};
-        int[] p5 = new int[]{3, 2};
-        int[] p6 = new int[]{5, 3};
-        int[] p7 = new int[]{4, 1};
-        int[] p8 = new int[]{2, 3};
-        int[] p9 = new int[]{1, 4};
-        log(maxPoints(new int[][]{p4, p5, p6, p7, p8, p9}));  // expects 4
+        log(maxPoints(new int[][]{{1, 1}, {3, 2}, {5, 3}, {4, 1}, {2, 3}, {1, 4}}));  // expects 4
 
-        int[] q1 = new int[]{1, 1};
-        int[] q2 = new int[]{1, 1};
-        int[] q3 = new int[]{2, 2};
-        int[] q4 = new int[]{2, 2};
-        log(maxPoints(new int[][]{q1, q2, q3, q4}));  // expects 4.（重复点的情况）
+        /*
+         *    ^
+         *  3 |
+         *  2 |     o×2
+         *  1 |  o×2
+         *  0 +---------->
+         *    0  1  2  3
+         * */
+        log(maxPoints(new int[][]{{1, 1}, {1, 1}, {2, 2}, {2, 2}}));  // expects 4.（重复点的情况）
 
-        int[] q5 = new int[]{1, 1};
-        int[] q6 = new int[]{1, 1};
-        int[] q7 = new int[]{1, 1};
-        log(maxPoints(new int[][]{q5, q6, q7}));  // expects 3.（所有都是重复点的情况）
+        /*
+         *    ^
+         *  2 |
+         *  1 |  o×3
+         *  0 +------->
+         *    0  1  2
+         * */
+        log(maxPoints(new int[][]{{1, 1}, {1, 1}, {1, 1}}));  // expects 3.（所有都是重复点的情况）
 
-        int[] r1 = new int[]{0, 0};
-        int[] r2 = new int[]{94911151, 94911150};
-        int[] r3 = new int[]{94911152, 94911151};
-        log(maxPoints(new int[][]{r1, r2, r3}));  // expects 2.（若使用 double 计算斜率则 r1->r2 的直线与 r1->r3 的直线斜率会相等，导致认为这三点在一条线上）
+        log(maxPoints(new int[][]{{0, 0}, {94911151, 94911150}, {94911152, 94911151}}));
+        // expects 2.（若使用 double 计算斜率则 r1->r2 的直线与 r1->r3 的直线斜率会相等，导致认为这三点在一条线上）
     }
 }
