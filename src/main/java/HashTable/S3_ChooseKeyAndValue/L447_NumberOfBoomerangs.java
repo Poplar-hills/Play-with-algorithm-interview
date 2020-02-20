@@ -22,25 +22,26 @@ import static Utils.Helpers.log;
 
 public class L447_NumberOfBoomerangs {
     /*
-     * 解法1：
-     * - 思路：∵ 满足条件的三元组是 q <- p -> r 的形状，即 p 是 q, r 之间的枢纽 ∴ 可以将每一个点当做枢纽点，统计所有其他点到
-     *   达该枢纽点的距离，即对于一个点需要记录 { 到枢纽点的距离: 点个数 }。之后再对其中点个数大于2的项进行统计，看 n 个等距点能
-     *   与1个枢纽点能组成几个三元组，这是个典型的排列组合问题了。
+     * 解法1：查找表
+     * - 思路：∵ 在一个满足条件的三元组中，p 是 q, r 之间的枢纽 ∴ 可以将每一个点当做枢纽点，统计它到其他所有点的距离，即为每个
+     *   点建立 { 到该点的距离: 点个数 } 的映射表。之后再对其中点个数大于2的项进行统计，而看 n 个等距点能与1个枢纽点能组成
+     *   几个三元组，这是个典型的排列问题了。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int numberOfBoomerangs(int[][] points) {
-        int count = 0;
-        for (int i = 0; i < points.length; i++) {        // 遍历所有点（即让每个点都做一次枢纽点）
+        int count = 0, n = points.length;
+
+        for (int i = 0; i < n; i++) {                    // 遍历所有点（即让每个点都做一次枢纽点）
             Map<Double, Integer> map = new HashMap<>();  // 为每个枢纽点建立 { 到枢纽的距离: 点个数 } 的查找表
-            for (int j = 0; j < points.length; j++) {    // 遍历所有其他点
+            for (int j = 0; j < n; j++) {                // 遍历所有其他点
                 if (i == j) continue;
                 double dis = distance(points[i], points[j]);
                 map.put(dis, map.getOrDefault(dis, 0) + 1);
             }
-            for (int n : map.values())      // 统计该枢纽点与所有等距点能组成的三元组个数
-                if (n >= 2)
-                    count += n * (n - 1);   // 如3个等距点能与1个枢纽点组成几个三元组？第一次3选1，有3种可能，第二次2选1，有2种可能，即3*2=6
-        }
+            for (int v : map.values())      // 统计该枢纽点与所有等距点能组成的三元组个数
+                if (v >= 2)
+                    count += v * (v - 1);   // 如3个等距点能与1个枢纽点组成几个三元组？需对3个等距点进行排列 A(3,2) = 3*2 = 6，即：
+        }                                   // 第一次3选1，有3种可能；第二次2选1，有2种可能
 
         return count;
     }
@@ -52,18 +53,19 @@ public class L447_NumberOfBoomerangs {
     }
 
     /*
-     * 解法2：解法1的改进版
-     * - 改进点：
+     * 解法2：查找表（解法1的改进版）
+     * - 实现：
      *   1. 所有枢纽点复用同一个 Map，用完后 clear（或每次使用前 clear）；
      *   2. 距离计算不开根号（不需要精确值，只要能用于区分等距点组即可）；
      *   3. 等距点的个数统计不再最后单独进行，而是在遍历过程中完成 —— 每次等距点个数+1，能组成的三元组个数就会规律性增加：
-     *      等距点个数  可组成的三元组个数
-     *          0            0
-     *          1            0 + 0*2 = 0
-     *          2            0 + 1*2 = 2
-     *          3            2 + 2*2 = 6
-     *          4            6 + 3*2 = 12
-     *      可见其中规律是：每次等距点个数+1，能组成的三元组个数就会在原有基础上翻倍。
+     *        到枢纽的等距点个数  可组成的三元组个数
+     *              0                0
+     *              1                0
+     *              2                2
+     *              3                6   - 上次的2个三元组 + 上次的2个等距点*2
+     *              4                12  - 上次的3个三元组 + 上次的3个等距点*2
+     *        其中规律是：每次到枢纽的等距点个数+1，能组成的三元组个数 = 上次的三元组个数 + 上次的等距点个数 * 2
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int numberOfBoomerangs2(int[][] points) {
         int count = 0;
@@ -73,9 +75,9 @@ public class L447_NumberOfBoomerangs {
             for (int j = 0; j < points.length; j++) {
                 if (i == j) continue;
                 double dis = distance2(points[i], points[j]);
-                int prevNum = map.getOrDefault(dis, 0);
-                count += prevNum * 2;            // 每次等距点个数+1，能组成的三元组个数就会在原有基础上翻倍
-                map.put(dis, prevNum + 1);
+                int prevCount = map.getOrDefault(dis, 0);
+                count += prevCount * 2;            // 每次等距点个数+1，能组成的三元组个数就会在原有基础上翻倍
+                map.put(dis, prevCount + 1);
             }
             map.clear();
         }
