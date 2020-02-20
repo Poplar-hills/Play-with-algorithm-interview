@@ -90,10 +90,30 @@ public class L447_NumberOfBoomerangs {
     }
 
     public static void main(String[] args) {
-        int[] p1 = new int[] {0, 0};
-        int[] p2 = new int[] {1, 0};
-        int[] p3 = new int[] {2, 0};
-        log(numberOfBoomerangs(new int[][] {p1, p2, p3}));  // expects 2. ([[1,0], [0,0], [2,0]], [[1,0], [2,0], [0,0]])
-        log(numberOfBoomerangs2(new int[][] {p1, p2, p3}));  // expects 2. ([[1,0], [0,0], [2,0]], [[1,0], [2,0], [0,0]])
+        /*
+         *    ^
+         *  3 |
+         *  2 |     o
+         *  1 |  o     o
+         *  0 +------------->
+         *    0  1  2  3  4
+         * */
+        log(numberOfBoomerangs(new int[][] {{1, 1}, {2, 2}, {3, 1}}));
+        // expects 2. ([2,2], [1,1], [3,1]), ([2,2], [3,1], [1,1])
+
+        /*
+         *    ^
+         *  4 |     o
+         *  3 |
+         *  2 |     o
+         *  1 |  o     o
+         *  0 +------------------->
+         *    0  1  2  3  4  5  6
+         * */
+        log(numberOfBoomerangs(new int[][] {{1, 1}, {3, 1}, {2, 2}, {2, 4}}));
+        // expects 2. ([1,1], [2,2], [3,1]), ([1,1], [3,1], [2,2]), ([2,4], [1,1], [3,1]), ([2,4], [3,1], [1,1])
+
+        log(numberOfBoomerangs(new int[][] {{0, 0}, {1, 0}}));
+        // expects 0.
     }
 }
