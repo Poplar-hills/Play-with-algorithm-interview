@@ -1,6 +1,5 @@
 package HashTable.S4_SlidingWindow;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,6 +16,8 @@ import static Utils.Helpers.log;
 public class L219_ContainsDuplicateII {
     /*
      * 解法1：查找表 Map + 滑动窗口
+     * - 思路：题中说"i 和 j 之差不超过 k"，可理解为有一个长度为 k 的窗口在数组上滑动，若窗口内存在重复元素即可返回 true。
+     * - 实现：窗口采用双指针实现，“是否存在重复元素”的问题由 Map 来回答。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean containsNearbyDuplicate(int[] nums, int k) {
@@ -26,19 +27,18 @@ public class L219_ContainsDuplicateII {
         Map<Integer, Integer> freq = new HashMap<>();
         int l = 0, r = 0;
 
-        // 先将窗口拉宽到 k 的长度
-        while (r < nums.length && r - l <= k)
+        while (r < nums.length && r - l <= k)      // 先将窗口长度扩展到 k
             freq.merge(nums[r++], 1, Integer::sum);
-        for (int f : freq.values())  // 查看此时窗口内是否有 duplicate
+
+        for (int f : freq.values())                // 查看此时窗口内是否有重复元素
             if (f > 1)
                 return true;
 
-        // 开始让窗口滑动
-        while (r < nums.length) {
+        while (r < nums.length) {                  // 开始让窗口以固定长度滑动
             int left = nums[l], right = nums[r];
-            freq.merge(left, -1, Integer::sum);    // 滑动窗口左边界
-            freq.merge(right, 1, Integer::sum);    // 滑动窗口右边界
-            if (freq.get(right) > 1) return true;  // 只需检查新进入的元素在窗口内是否有 duplicate 即可
+            freq.merge(left, -1, Integer::sum);    // 将左边界的元素排除
+            freq.merge(right, 1, Integer::sum);    // 将右边界的元素纳入
+            if (freq.get(right) > 1) return true;  // 只需检查刚进入窗口的元素是否为重复即可
             l++; r++;
         }
 
@@ -47,10 +47,10 @@ public class L219_ContainsDuplicateII {
 
     /*
      * 解法2：查找表 Set + 滑动窗口
-     * - 思路：题中说"i 和 j 之差不超过 k"，可理解为有一个长度为 k 的窗口在数组上滑动，若窗口内存在重复元素即可返回 true。
-     *   而既可以作为滑动窗口，又能回答"有没有"的问题的数据结构就是查找表了，具体来说可采用 Set：
+     * - 思路：与解法1一致。
+     * - 实现：要实现窗口其实不需要双指针，查找表本身就可以当做窗口，本解法中使用 Set：
      *     1. 作为滑动窗口：Set 中只保存 k 个元素，即索引在 [i-k+1, i] 范围内的元素；
-     *     2. 回答"有没有"的问题：检查当前元素是否存在于 Set 中。
+     *     2. 来回答"有没有"的问题：检查当前元素是否存在于 Set 中。
      * - 时间复杂度 O(n)，空间复杂度 O(k)。
      * */
     public static boolean containsNearbyDuplicate2(int[] nums, int k) {
