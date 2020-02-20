@@ -1,7 +1,5 @@
 package HashTable.S4_SlidingWindow;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.TreeSet;
 
 import static Utils.Helpers.log;
