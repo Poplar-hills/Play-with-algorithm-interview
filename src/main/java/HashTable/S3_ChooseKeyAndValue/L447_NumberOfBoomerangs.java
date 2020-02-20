@@ -47,9 +47,9 @@ public class L447_NumberOfBoomerangs {
     }
 
     private static double distance(int[] p, int[] q) {
-        int xDiff = p[0] - q[0];
-        int yDiff = p[1] - q[1];
-        return Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+        double xDiff = p[0] - q[0];
+        double yDiff = p[1] - q[1];
+        return Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));  // 返回值为 double 的计算需要入参也是 double 才行，否则会丢精度
     }
 
     /*
@@ -86,8 +86,8 @@ public class L447_NumberOfBoomerangs {
     }
 
     private static double distance2(int[] p, int[] q) {
-        int xDiff = p[0] - q[0];
-        int yDiff = p[1] - q[1];
+        double xDiff = p[0] - q[0];
+        double yDiff = p[1] - q[1];
         return Math.pow(xDiff, 2) + Math.pow(yDiff, 2);  // 不开根号
     }
 
