@@ -5,18 +5,18 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
-* Remove Nth Node From End of List
-*
-* - 删除给定链表的倒数第 n 个节点（n 从1开始），返回删除节点后的链表。
-* */
+ * Remove Nth Node From End of List
+ *
+ * - 删除给定链表的倒数第 n 个节点（n 从1开始），返回删除节点后的链表。
+ * */
 
 public class L19_RemoveNthNodeFromEndOfList {
     /*
-    * 解法1：两次遍历
-    * - 思路：先求得链表长度，再找到并删除目标节点。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * - 不足：∵ 需要遍历两遍 ∴ 是 two pass algorithm。
-    * */
+     * 解法1：两次遍历
+     * - 思路：先求得链表长度，再找到并删除目标节点。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * - 不足：∵ 需要遍历两遍 ∴ 是 two pass algorithm。
+     * */
     public static ListNode removeNthFromEnd(ListNode head, int n) {
         if (head == null || n < 0) return head;
 

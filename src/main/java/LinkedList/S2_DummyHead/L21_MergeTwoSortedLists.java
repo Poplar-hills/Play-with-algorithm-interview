@@ -5,16 +5,16 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
-* Merge Two Sorted Lists
-*
-* - merge 两个有序链表 l1, l2，返回一个新的有序链表，其中节点应该从 l1, l2 中截取而来，而非创建新的。
-* */
+ * Merge Two Sorted Lists
+ *
+ * - merge 两个有序链表 l1, l2，返回一个新的有序链表，其中节点应该从 l1, l2 中截取而来，而非创建新的。
+ * */
 
 public class L21_MergeTwoSortedLists {
     /*
-    * 解法1：双指针模拟归并排序过程
-    * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
-    * */
+     * 解法1：双指针模拟归并排序过程
+     * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
+     * */
     public static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
         ListNode dummyHead = new ListNode(), curr = dummyHead;
 
@@ -64,9 +64,9 @@ public class L21_MergeTwoSortedLists {
     }
 
     /*
-    * 解法3：解法1的改进版
-    * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
-    * */
+     * 解法3：解法1的改进版
+     * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
+     * */
     public static ListNode mergeTwoLists3(ListNode l1, ListNode l2) {
         ListNode dummyHead = new ListNode(), curr = dummyHead;
 
@@ -88,9 +88,9 @@ public class L21_MergeTwoSortedLists {
     }
 
     /*
-    * 解法4：解法3的递归版（即解法2的改进版）
-    * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)。
-    * */
+     * 解法4：解法3的递归版（即解法2的改进版）
+     * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)。
+     * */
     public static ListNode mergeTwoLists4(ListNode l1, ListNode l2) {
         if (l1 == null) return l2;
         if (l2 == null) return l1;

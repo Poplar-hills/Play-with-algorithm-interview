@@ -5,17 +5,17 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
-* Reverse Nodes in k-Group
-*
-* - 给定一个链表，每 k 个节点为一组，反转每一组节点，返回修改后的链表。
-* */
+ * Reverse Nodes in k-Group
+ *
+ * - 给定一个链表，每 k 个节点为一组，反转每一组节点，返回修改后的链表。
+ * */
 
 public class L25_ReverseNodesInKGroup {
     /*
-    * 解法1：
-    * - 思路：从左到右按组进行反转，反转前先检查节点是否充足。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：
+     * - 思路：从左到右按组进行反转，反转前先检查节点是否充足。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static ListNode reverseKGroup(ListNode head, int k) {
         ListNode prev = null, curr = head, temp = head;
 

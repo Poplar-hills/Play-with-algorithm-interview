@@ -7,17 +7,17 @@ import java.util.Stack;
 import static Utils.Helpers.*;
 
 /*
-* Palindrome Linked List
-*
-* - Given a singly linked list, determine if it is a palindrome (回文).
-* */
+ * Palindrome Linked List
+ *
+ * - Given a singly linked list, determine if it is a palindrome (回文).
+ * */
 
 public class L234_PalindromeLinkedList {
     /*
-    * 错误解：采用类似判断括号匹配的思路
-    * - 匹配的括号（如 {([])}）一定是 palindrome，而 palindrome 不一定是匹配括号的形态。例如 test case 3 中的 [1,0,1]，中间
-    *   有单个没有匹配的元素，这种情况也是 palindrome，但无法用括号匹配的思路来判断。
-    * */
+     * 错误解：采用类似判断括号匹配的思路
+     * - 匹配的括号（如 {([])}）一定是 palindrome，而 palindrome 不一定是匹配括号的形态。例如 test case 3 中的 [1,0,1]，中间
+     *   有单个没有匹配的元素，这种情况也是 palindrome，但无法用括号匹配的思路来判断。
+     * */
     public static boolean isPalindrome(ListNode head) {
         if (head == null || head.next == null) return true;
 
@@ -33,12 +33,12 @@ public class L234_PalindromeLinkedList {
     }
 
     /*
-    * 解法1：指针对撞 + 使用 Stack 实现反向遍历
-    * - 思路：要看一个链表或数组是否是 palindrome，需要同时从前、后两个方向逐个节点对照，若节点值相等则过，不相等则说明不是 palindrome。
-    *   因此需要一个能反向遍历链表的方式，因此可以采用 Stack。
-    * - 实现：类似 L143 中的解法1。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：指针对撞 + 使用 Stack 实现反向遍历
+     * - 思路：要看一个链表或数组是否是 palindrome，需要同时从前、后两个方向逐个节点对照，若节点值相等则过，不相等则说明不是 palindrome。
+     *   因此需要一个能反向遍历链表的方式，因此可以采用 Stack。
+     * - 实现：类似 L143 中的解法1。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static boolean isPalindrome1(ListNode head) {
         if (head == null || head.next == null) return true;
 
@@ -58,11 +58,11 @@ public class L234_PalindromeLinkedList {
     }
 
     /*
-    * 解法2：生成反向链表
-    * - 思路：直接生成一个反向链表，然后与原链表逐一比较节点。
-    * - 注意：反向链表需要重新创建，而不能用 L206_ReverseLinkedList 中原地修改的方式，否则原链表会被修改导致后面无法正确遍历。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法2：生成反向链表
+     * - 思路：直接生成一个反向链表，然后与原链表逐一比较节点。
+     * - 注意：反向链表需要重新创建，而不能用 L206_ReverseLinkedList 中原地修改的方式，否则原链表会被修改导致后面无法正确遍历。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static boolean isPalindrome2(ListNode head) {
         ListNode curr1 = head, curr2 = createReversedList(head);
         while (curr1 != null && curr2 != null && curr1 != curr2) {  // 以 curr1 != curr2 作为终止条件的话对于 test case 3 这种偶数个节点的链表来说会遍历整个链表，即 O(n)

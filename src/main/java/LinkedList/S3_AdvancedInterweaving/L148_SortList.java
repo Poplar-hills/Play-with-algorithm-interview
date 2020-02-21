@@ -5,23 +5,23 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
-* Sort List
-*
-* - Sort a linked list in O(nlogn) time using constant space complexity.
-* */
+ * Sort List
+ *
+ * - Sort a linked list in O(nlogn) time using constant space complexity.
+ * */
 
 public class L148_SortList {
     /*
-    * 解法1：Merge Sort (top-down)
-    * - 注意：该解法的空间复杂度未达到题目要求。
-    * - 思路：因为要求用 O(nlogn) 的算法排序，而 Quick Sort 非常依赖于数组的随机访问能力，不适用于链表，而 Merge Sort 适用于链表。
-    *        要使用 Merge Sort 为链表排序，则需解决：1. 如何对链表进行二分（分成前半部分和后半部分）；2. 如何对各自有序的链表进行合并。
-    *        1. 采用类似 Floyd Cycle detection 的方法，指针 slow 每次走1步，指针 fast 每次走2步，当 fast 到头时，slow 一定指向
-    *           链表中点。这里有个小坑 —— 当 fast 和 slow 都到达各自位置后，需要断开 fast 最后一个节点和 slow 第一个节点之间的链接，
-    *           否则往下递归二分时 fast 仍然是整个链表，而非前半部分。
-    *        2. 没啥好说的。
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)（递归深度是 logn，但任意时刻都需要存储 n 个元素，因此总体是 O(n)）。
-    * */
+     * 解法1：Merge Sort (top-down)
+     * - 注意：该解法的空间复杂度未达到题目要求。
+     * - 思路：因为要求用 O(nlogn) 的算法排序，而 Quick Sort 非常依赖于数组的随机访问能力，不适用于链表，而 Merge Sort 适用于链表。
+     *        要使用 Merge Sort 为链表排序，则需解决：1. 如何对链表进行二分（分成前半部分和后半部分）；2. 如何对各自有序的链表进行合并。
+     *        1. 采用类似 Floyd Cycle detection 的方法，指针 slow 每次走1步，指针 fast 每次走2步，当 fast 到头时，slow 一定指向
+     *           链表中点。这里有个小坑 —— 当 fast 和 slow 都到达各自位置后，需要断开 fast 最后一个节点和 slow 第一个节点之间的链接，
+     *           否则往下递归二分时 fast 仍然是整个链表，而非前半部分。
+     *        2. 没啥好说的。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)（递归深度是 logn，但任意时刻都需要存储 n 个元素，因此总体是 O(n)）。
+     * */
     public static ListNode sortList(ListNode head) {
         if (head == null || head.next == null)
             return head;
@@ -58,19 +58,19 @@ public class L148_SortList {
     }
 
     /*
-    * 解法2：Merge Sort (bottom-up)
-    * - 思路：要做到空间复杂度为 O(1) 就不能使用递归，而得采用迭代，因此使用 bottom-up 的 Merge Sort。
-    *        bottom-up 的 Merge Sort 的原理是通过多轮迭代模拟二分操作，例：
-    *        5 -> 1 -> 6 -> 4 -> 2 -> 7 -> 3 -> NULL
-    *        +    +    +    +    +    +    +          - 第1次遍历，每组1个节点，两组两组归并
-    *        1 -> 5 -> 4 -> 6 -> 2 -> 7 -> 3 -> NULL
-    *        +----+    +----+    +----+    +          - 第2次遍历，每组2个节点，两组两组归并
-    *        1 -> 4 -> 5 -> 6 -> 2 -> 3 -> 7 -> NULL
-    *        +--------------+    +---------+          - 第3次遍历，每组4个节点，两组两组归并
-    *        1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> NULL
-    *        因此，首先需要生成一个 1, 2, 4... 的单组节点个数序列，之后在每个单组节点个数下两组两组遍历链表。
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
-    * */
+     * 解法2：Merge Sort (bottom-up)
+     * - 思路：要做到空间复杂度为 O(1) 就不能使用递归，而得采用迭代，因此使用 bottom-up 的 Merge Sort。
+     *        bottom-up 的 Merge Sort 的原理是通过多轮迭代模拟二分操作，例：
+     *        5 -> 1 -> 6 -> 4 -> 2 -> 7 -> 3 -> NULL
+     *        +    +    +    +    +    +    +          - 第1次遍历，每组1个节点，两组两组归并
+     *        1 -> 5 -> 4 -> 6 -> 2 -> 7 -> 3 -> NULL
+     *        +----+    +----+    +----+    +          - 第2次遍历，每组2个节点，两组两组归并
+     *        1 -> 4 -> 5 -> 6 -> 2 -> 3 -> 7 -> NULL
+     *        +--------------+    +---------+          - 第3次遍历，每组4个节点，两组两组归并
+     *        1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> NULL
+     *        因此，首先需要生成一个 1, 2, 4... 的单组节点个数序列，之后在每个单组节点个数下两组两组遍历链表。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+     * */
     public static ListNode sortList2(ListNode head) {
         if (head == null || head.next == null)
             return head;
@@ -128,11 +128,11 @@ public class L148_SortList {
     }
 
     /*
-    * 解法3：Dual-Pivot Quick Sort (3-way Quick Sort)
-    * - 思路：直接将传入的 head 作为标定节点，建立三个子链表，分别存储 > head.val、== head.val、< head.val 的节点，
-    *        之后对除了 == head.val 以外的子链表进行递归排序，最后返回两两 merge 的结果。
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
-    * */
+     * 解法3：Dual-Pivot Quick Sort (3-way Quick Sort)
+     * - 思路：直接将传入的 head 作为标定节点，建立三个子链表，分别存储 > head.val、== head.val、< head.val 的节点，
+     *        之后对除了 == head.val 以外的子链表进行递归排序，最后返回两两 merge 的结果。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+     * */
     public static ListNode sortList3(ListNode head) {
         if (head == null || head.next == null)
             return head;

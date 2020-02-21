@@ -5,16 +5,16 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
-* Remove Linked List Elements
-*
-* - Remove all elements from a linked list of integers that have value val.
-* */
+ * Remove Linked List Elements
+ *
+ * - Remove all elements from a linked list of integers that have value val.
+ * */
 
 public class L203_RemoveLinkedListElements {
     /*
-    * 解法1：创建新节点和新链表
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：创建新节点和新链表
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static ListNode removeElements(ListNode head, int val) {
         ListNode dummyHead = new ListNode();
         ListNode curr2 = dummyHead;
@@ -49,9 +49,9 @@ public class L203_RemoveLinkedListElements {
     }
 
     /*
-    * 解法3：解法2的优化版（只是用 curr 一个变量）
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
+     * 解法3：解法2的优化版（只是用 curr 一个变量）
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static ListNode removeElements3(ListNode head, int val) {
         ListNode dummyHead = new ListNode();
         dummyHead.next = head;
@@ -68,9 +68,9 @@ public class L203_RemoveLinkedListElements {
     }
 
     /*
-    * 解法4：解法2、3的递归版
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法4：解法2、3的递归版
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static ListNode removeElements4(ListNode head, int val) {
         if (head == null) return null;
         if (head.val == val) return removeElements4(head.next, val);  // 若当前节点是待删除节点则直接跳过，处理下一个节点

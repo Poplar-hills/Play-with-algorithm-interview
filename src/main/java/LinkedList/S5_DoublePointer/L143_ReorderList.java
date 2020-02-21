@@ -7,18 +7,18 @@ import java.util.Stack;
 import static Utils.Helpers.*;
 
 /*
-* Reorder List
-*
-* - Given a singly linked list L0 -> L1 -> ... -> Ln-1 -> Ln, reorder it to: L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ...
-* - You may not modify the values in the list's nodes, only nodes itself may be changed.
-* */
+ * Reorder List
+ *
+ * - Given a singly linked list L0 -> L1 -> ... -> Ln-1 -> Ln, reorder it to: L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ...
+ * - You may not modify the values in the list's nodes, only nodes itself may be changed.
+ * */
 
 public class L143_ReorderList {
     /*
-    * 解法1：借助 stack 实现反向遍历
-    * - 思路：若要按要求 reorder 链表，则需从后往前逐个移动链表尾部的节点，因此需要一个能从后往前移动的指针，这可以通过 stack 实现。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：借助 stack 实现反向遍历
+     * - 思路：若要按要求 reorder 链表，则需从后往前逐个移动链表尾部的节点，因此需要一个能从后往前移动的指针，这可以通过 stack 实现。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static void reorderList(ListNode head) {
         if (head == null || head.next == null) return;
 
@@ -38,16 +38,16 @@ public class L143_ReorderList {
     }
 
     /*
-    * 解法2：生成反向链表后 merge
-    * - 思路：如果我们需要的是一个能从后往前移动的指针，那么最直接的方式就是先生成一个反向链表。步骤如下：
-    *   1. 生成反向链表 —— 不需包含全部节点，只需要原链表的后一半节点即可，因此需要找到链表的中点，将中点到尾节点这部分链表反向。
-    *   2. 至此问题转变成了 merge 两个链表，即将反向后的半截链表中的每个节点插入原链表中：
-    *      - 1->2->3->4->5 的中间节点为3，可得反向链表 5->4->3，merge 后得到：1->5->2->4->3；
-    *      - 1->2->3->4 的中间节点为3，可得反向链表 4->3，merge 后得到：1->4->2->3->3；
-    *      - 注意：反向链表的最后一个节点不需要 merge 到原链表中 ∴ merge 的循环结束条件是到达反向链表的最后一个节点（而非到达 null）。
-    * - 技巧：找链表的中点的最佳方式是采用 slow/fast 技巧。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法2：生成反向链表后 merge
+     * - 思路：如果我们需要的是一个能从后往前移动的指针，那么最直接的方式就是先生成一个反向链表。步骤如下：
+     *   1. 生成反向链表 —— 不需包含全部节点，只需要原链表的后一半节点即可，因此需要找到链表的中点，将中点到尾节点这部分链表反向。
+     *   2. 至此问题转变成了 merge 两个链表，即将反向后的半截链表中的每个节点插入原链表中：
+     *      - 1->2->3->4->5 的中间节点为3，可得反向链表 5->4->3，merge 后得到：1->5->2->4->3；
+     *      - 1->2->3->4 的中间节点为3，可得反向链表 4->3，merge 后得到：1->4->2->3->3；
+     *      - 注意：反向链表的最后一个节点不需要 merge 到原链表中 ∴ merge 的循环结束条件是到达反向链表的最后一个节点（而非到达 null）。
+     * - 技巧：找链表的中点的最佳方式是采用 slow/fast 技巧。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static void reorderList2(ListNode head) {
         ListNode midNode = mid(head);
         ListNode head2 = reverse(midNode);
