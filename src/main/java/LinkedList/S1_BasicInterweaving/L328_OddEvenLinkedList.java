@@ -5,11 +5,11 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
-* Odd Even Linked List
-*
-* - Given a singly linked list, group all odd-index nodes together followed by the even-index nodes.
-* - 注意：索引从1开始。
-* */
+ * Odd Even Linked List
+ *
+ * - Given a singly linked list, group all odd-index nodes together followed by the even-index nodes.
+ * - 注意：索引从1开始。
+ * */
 
 public class L328_OddEvenLinkedList {
     /*
@@ -54,10 +54,10 @@ public class L328_OddEvenLinkedList {
     }
 
     /*
-    * 解法2：双链表拼接
-    * - 思路：同 L86 的解法2。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法2：双链表拼接
+     * - 思路：同 L86 的解法2。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static ListNode oddEvenList2(ListNode head) {
         ListNode odd = new ListNode(), oddHead = odd;
         ListNode even = new ListNode(), evenHead = even;

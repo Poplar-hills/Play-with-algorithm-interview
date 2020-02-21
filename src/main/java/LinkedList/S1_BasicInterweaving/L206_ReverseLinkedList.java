@@ -5,14 +5,14 @@ import java.util.Stack;
 import static Utils.Helpers.*;
 
 /*
-* Reverse Linked List
-* */
+ * Reverse Linked List
+ * */
 
 public class L206_ReverseLinkedList {
     /*
-    * 解法1：遍历过程中不断将两个节点间的链接反向
-    * - 时间复杂度 O(n)，空间复杂度 O(1)
-    * */
+     * 解法1：遍历过程中不断将两个节点间的链接反向
+     * - 时间复杂度 O(n)，空间复杂度 O(1)
+     * */
     public static ListNode reverseList(ListNode head) {
         if (head == null) return null;
         ListNode prev = null, curr = head;
@@ -51,10 +51,10 @@ public class L206_ReverseLinkedList {
     }
 
     /*
-    * 解法3：Stack
-    * - 思路：说起"反向"就应该能联想到 Stack 这种数据结构。BST 的前序、中序遍历就是同样的思路。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法3：Stack
+     * - 思路：说起"反向"就应该能联想到 Stack 这种数据结构。BST 的前序、中序遍历就是同样的思路。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static ListNode reverseList3(ListNode head) {
         Stack<ListNode> stack = new Stack<>();
 

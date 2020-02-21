@@ -5,10 +5,10 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
-* Remove Duplicates from Sorted List
-*
-* - 为有序链表去重。
-* */
+ * Remove Duplicates from Sorted List
+ *
+ * - 为有序链表去重。
+ * */
 
 public class L83_RemoveDuplicatesFromSortedList {
     /*

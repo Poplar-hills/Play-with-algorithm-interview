@@ -3,19 +3,19 @@ package LinkedList.S1_BasicInterweaving;
 import static Utils.Helpers.*;
 
 /*
-* Reverse Linked List II
-*
-* - Reverse a linked list from position m to n. Note:
-*   - 1 ≤ m ≤ n ≤ length of list (m 和 n 是从1开始的)
-*   - Do it in one-pass (要求在一次遍历内完成)
-* */
+ * Reverse Linked List II
+ *
+ * - Reverse a linked list from position m to n. Note:
+ *   - 1 ≤ m ≤ n ≤ length of list (m 和 n 是从1开始的)
+ *   - Do it in one-pass (要求在一次遍历内完成)
+ * */
 
 public class L92_ReverseLinkedListII {
     /*
-    * 错误解：迭代指针对撞 + 交换节点值
-    * - 大体思路对，但是最后因为无法从下一个节点回到上一个节点而最终失败。
-    * - 虽然错误，但有助于理解解法1。
-    * */
+     * 错误解：迭代指针对撞 + 交换节点值
+     * - 大体思路对，但是最后因为无法从下一个节点回到上一个节点而最终失败。
+     * - 虽然错误，但有助于理解解法1。
+     * */
     public ListNode reverseBetween0(ListNode head, int m, int n) {
         ListNode left = head, right = head;
 
@@ -35,13 +35,13 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-    * 解法1：递归指针对撞 + 交换节点值
-    * - 思路：类似将数组倒序的思路 —— 先将两个指针移动到数组 m, n 的位置上，再在他们互相逼近的过程中不断 swap 节点里的值。但是因
-    *   为单向链表没有从后一个节点指向前一个节点的指针，若要让右指针左移到上一个节点需要借助递归来实现，因为在每层递归结束回到上一
-    *   层调用栈时可以获得上一个节点。（过程可视化 SEE: https://leetcode.com/problems/reverse-linked-list-ii/solution/）
-    * - 时间复杂度 O(n)，因为只遍历到 n 处的节点；
-    * - 空间复杂度 O(n)，同样因为只遍历到 n 处的节点，因此递归深度为 n。
-    * */
+     * 解法1：递归指针对撞 + 交换节点值
+     * - 思路：类似将数组倒序的思路 —— 先将两个指针移动到数组 m, n 的位置上，再在他们互相逼近的过程中不断 swap 节点里的值。但是因
+     *   为单向链表没有从后一个节点指向前一个节点的指针，若要让右指针左移到上一个节点需要借助递归来实现，因为在每层递归结束回到上一
+     *   层调用栈时可以获得上一个节点。（过程可视化 SEE: https://leetcode.com/problems/reverse-linked-list-ii/solution/）
+     * - 时间复杂度 O(n)，因为只遍历到 n 处的节点；
+     * - 空间复杂度 O(n)，同样因为只遍历到 n 处的节点，因此递归深度为 n。
+     * */
     public static class Solution1 {
         private ListNode left;
         private boolean stop;
@@ -73,20 +73,20 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-    * 解法2：不交换节点值，而是改变节点间的链接
-    * - 思路：改变节点间的链接并不意味着要交换两个节点，而是可以：
-    *   1. 先将 [m, n] 范围内的节点反向；
-    *   2. 再 fix 反向后的节点与 m 之前、n 之后的节点的链接。
-    *   例如 7->9->2->10->1->8->6, m=2, n=5，则：
-    *   1. 先将9和8之间的节点反向：7->9<->2<-10<-1<-8  6，注意：
-    *     - ∵ 8.next 指向了1 ∴ 8->6 的链接断开了；
-    *     - ∵ 9是范围内第一个节点，不需要修改 9.next ∴ 9->2 的链接没有断开，并最终形成双向链接。
-    *   2. 再 fix 反向后的节点与前后节点的链接：把8链接到7后面、把6链接到9后面：
-    *     - 需要获取到 m-1 节点、m 节点、n 节点、n+1 节点，因此需要定义指针指向他们；
-    *     - ∵ 反向两个节点之间的链接只需这两个节点参与 ∴ 程序的大体结构是在 for 中不断获取前后两个节点，对他们进行反向或不反向；
-    *     - 注意特殊情况的处理：test case 2、3。
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
+     * 解法2：不交换节点值，而是改变节点间的链接
+     * - 思路：改变节点间的链接并不意味着要交换两个节点，而是可以：
+     *   1. 先将 [m, n] 范围内的节点反向；
+     *   2. 再 fix 反向后的节点与 m 之前、n 之后的节点的链接。
+     *   例如 7->9->2->10->1->8->6, m=2, n=5，则：
+     *   1. 先将9和8之间的节点反向：7->9<->2<-10<-1<-8  6，注意：
+     *     - ∵ 8.next 指向了1 ∴ 8->6 的链接断开了；
+     *     - ∵ 9是范围内第一个节点，不需要修改 9.next ∴ 9->2 的链接没有断开，并最终形成双向链接。
+     *   2. 再 fix 反向后的节点与前后节点的链接：把8链接到7后面、把6链接到9后面：
+     *     - 需要获取到 m-1 节点、m 节点、n 节点、n+1 节点，因此需要定义指针指向他们；
+     *     - ∵ 反向两个节点之间的链接只需这两个节点参与 ∴ 程序的大体结构是在 for 中不断获取前后两个节点，对他们进行反向或不反向；
+     *     - 注意特殊情况的处理：test case 2、3。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static ListNode reverseBetween2(ListNode head, int m, int n) {
         if (head == null) return null;
         ListNode prev = null, curr = head;   // prev 最后会停在 n 上；curr 最后会停在 n+1 上
@@ -114,9 +114,9 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-    * 解法3：与解法2思路完全一致，实现上稍有不同
-    * - 时间复杂度 O(n)，空间复杂度 O(1)。
-    * */
+     * 解法3：与解法2思路完全一致，实现上稍有不同
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
     public static ListNode reverseBetween3(ListNode head, int m, int n) {
         if (head == null) return null;
 

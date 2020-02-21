@@ -5,19 +5,19 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 /*
-* Add Two Numbers
-*
-* - 给出两个非空链表，代表两个非负整数。其中每个整数的各个位上的数字以逆序存储，返回这两个整数之和的逆序链表。
-*   如 342 + 1465 = 1807，输入是 2->4->3、5->6->4->1，输出应为 7->0->8->1。
-* */
+ * Add Two Numbers
+ *
+ * - 给出两个非空链表，代表两个非负整数。其中每个整数的各个位上的数字以逆序存储，返回这两个整数之和的逆序链表。
+ *   如 342 + 1465 = 1807，输入是 2->4->3、5->6->4->1，输出应为 7->0->8->1。
+ * */
 
 public class L2_AddTwoNumbers {
     /*
-    * 有缺陷的解：
-    * - 思路：先把两个链表逆序转成 long，再相加两个 long，最后再将结果逆序转成链表。
-    * - 这种方法的：优势是不需要手动处理进位问题；劣势是无法处理超过 long 精度的链表（可以使用 BigInteger）（实际面试中很少有，不是个很大的问题）。
-    * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)，其中 m, n 分别为 l1, l2 的节点个数。
-    * */
+     * 有缺陷的解：
+     * - 思路：先把两个链表逆序转成 long，再相加两个 long，最后再将结果逆序转成链表。
+     * - 这种方法的：优势是不需要手动处理进位问题；劣势是无法处理超过 long 精度的链表（可以使用 BigInteger）（实际面试中很少有，不是个很大的问题）。
+     * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)，其中 m, n 分别为 l1, l2 的节点个数。
+     * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         long num1 = linkedListToLong(l1);
         long num2 = linkedListToLong(l2);
@@ -45,9 +45,9 @@ public class L2_AddTwoNumbers {
     }
 
     /*
-    * 解法1：模拟加法运算
-    * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
-    * */
+     * 解法1：模拟加法运算
+     * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
+     * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         ListNode dummyHead = new ListNode();
         ListNode curr = dummyHead;
@@ -73,10 +73,10 @@ public class L2_AddTwoNumbers {
     }
 
     /*
-    * 解法3：模拟加法运算（递归实现）
-    * - 思路：递归地创建下一个节点，直到两个链表都穷尽。
-    * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
-    * */
+     * 解法3：模拟加法运算（递归实现）
+     * - 思路：递归地创建下一个节点，直到两个链表都穷尽。
+     * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
+     * */
     public static ListNode addTwoNumbers3(ListNode l1, ListNode l2) {
         return addTwoNumbers3(l1, l2, 0);
     }
