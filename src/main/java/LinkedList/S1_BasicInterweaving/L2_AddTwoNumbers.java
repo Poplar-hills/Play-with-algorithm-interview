@@ -85,28 +85,36 @@ public class L2_AddTwoNumbers {
         if (l1 == null && l2 == null && carry == 0)  // 三个条件同时满足才结束递归
             return null;
 
-        int l1Val = l1 != null ? l1.val : 0;
-        int l2Val = l2 != null ? l2.val : 0;
-        int sum = l1Val + l2Val + carry;
+        int val1 = l1 == null ? 0 : l1.val;
+        int val2 = l2 == null ? 0 : l2.val;
+        int sum = val1 + val2 + carry;
 
         carry = sum / 10;
-        ListNode s = new ListNode(sum % 10);
+        ListNode node = new ListNode(sum % 10);
 
-        ListNode l1Next = l1 == null ? null : l1.next;
-        ListNode l2Next = l2 == null ? null : l2.next;
-        s.next = addTwoNumbers3(l1Next, l2Next, carry);
+        ListNode next1 = l1 == null ? null : l1.next;
+        ListNode next2 = l2 == null ? null : l2.next;
+        node.next = addTwoNumbers3(next1, next2, carry);
 
-        return s;
+        return node;
     }
+
+    // private static ListNode addTwoNumbers4(ListNode l1, ListNode l2) {
+    //     return helper4(l1, l2, 0);
+    // }
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{2, 4, 3});
         ListNode l2 = createLinkedList(new int[]{5, 6, 4, 1});
-        printLinkedList(addTwoNumbers(l1, l2));   // expects 7->0->8->1->NULL
+        printLinkedList(addTwoNumbers4(l1, l2));   // expects 7->0->8->1->NULL
 
-        ListNode l3 = createLinkedList(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
-        ListNode l4 = createLinkedList(new int[]{7});
-        printLinkedList(addTwoNumbers(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
+        ListNode l3 = createLinkedList(new int[]{2, 4, 3});
+        ListNode l4 = createLinkedList(new int[]{5, 6, 4});
+        printLinkedList(addTwoNumbers4(l3, l4));   // expects 7->0->8->1->NULL
+
+        ListNode l5 = createLinkedList(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
+        ListNode l6 = createLinkedList(new int[]{7});
+        printLinkedList(addTwoNumbers4(l5, l6));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
     }
 }
 
