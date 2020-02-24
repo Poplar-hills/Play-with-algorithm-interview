@@ -144,17 +144,17 @@ public class L92_ReverseLinkedListII {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
         printLinkedList(reverseBetween2(l1, 2, 4));  // expects 1->4->3->2->5->NULL
 
-        ListNode l2 = createLinkedListFromArray(new int[]{3, 5});
+        ListNode l2 = createLinkedList(new int[]{3, 5});
         printLinkedList(reverseBetween2(l2, 1, 2));  // expects 5->3->NULL
 
-        ListNode l3 = createLinkedListFromArray(new int[]{5});
+        ListNode l3 = createLinkedList(new int[]{5});
         printLinkedList(reverseBetween2(l3, 1, 1));  // expects 5->NULL
 
         // 解法1是一个类，因此测试方式与其他解法不同
-        ListNode l4 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        ListNode l4 = createLinkedList(new int[]{1, 2, 3, 4, 5});
         Solution1 s1 = new Solution1();
         printLinkedList(s1.reverseBetween(l4, 2, 4));
     }

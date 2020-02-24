@@ -86,13 +86,13 @@ public class L24_SwapNodesInPairs {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4});
+        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
         printLinkedList(swapPairs3(l1));  // expects 2->1->4->3->NULL
 
-        ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4, 5});
         printLinkedList(swapPairs3(l2));  // expects 2->1->4->3->5->NULL
 
-        ListNode l3 = createLinkedListFromArray(new int[]{1});
+        ListNode l3 = createLinkedList(new int[]{1});
         printLinkedList(swapPairs3(l3));  // expects 1->NULL
     }
 }

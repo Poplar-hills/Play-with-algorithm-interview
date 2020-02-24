@@ -54,10 +54,10 @@ public class L61_RotateList {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{1, 2, 3, 4, 5});
+        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
         printLinkedList(rotateRight(l1, 2));  // expects 4->5->1->2->3->NULL
 
-        ListNode l2 = createLinkedListFromArray(new int[]{0, 1, 2, 3, 4});
+        ListNode l2 = createLinkedList(new int[]{0, 1, 2, 3, 4});
         printLinkedList(rotateRight(l2, 7));  // expects 3->4->0->1->2->NULL
     }
 }

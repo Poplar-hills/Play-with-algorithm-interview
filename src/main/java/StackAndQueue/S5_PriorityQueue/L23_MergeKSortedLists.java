@@ -148,19 +148,19 @@ public class L23_MergeKSortedLists {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{1, 4, 5});
-        ListNode l2 = createLinkedListFromArray(new int[]{1, 3, 4});
-        ListNode l3 = createLinkedListFromArray(new int[]{2, 6});
+        ListNode l1 = createLinkedList(new int[]{1, 4, 5});
+        ListNode l2 = createLinkedList(new int[]{1, 3, 4});
+        ListNode l3 = createLinkedList(new int[]{2, 6});
         ListNode res = mergeKLists(new ListNode[]{l1, l2, l3});
         printLinkedList(res);  // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
 
-        ListNode l4 = createLinkedListFromArray(new int[]{-2, -1, -1, -1});
-        ListNode l5 = createLinkedListFromArray(new int[]{});
+        ListNode l4 = createLinkedList(new int[]{-2, -1, -1, -1});
+        ListNode l5 = createLinkedList(new int[]{});
         ListNode res2 = mergeKLists(new ListNode[]{l4, l5});
         printLinkedList(res2);  // expects -2 -> -1 -> -1 -> -1
 
-        ListNode l6 = createLinkedListFromArray(new int[]{});
-        ListNode l7 = createLinkedListFromArray(new int[]{});
+        ListNode l6 = createLinkedList(new int[]{});
+        ListNode l7 = createLinkedList(new int[]{});
         ListNode res3 = mergeKLists(new ListNode[]{l6, l7});
         printLinkedList(res3);  // expects null
     }

@@ -129,22 +129,22 @@ public class L234_PalindromeLinkedList {
     }
 
     public static void main(String[] args) {
-        ListNode l0 = createLinkedListFromArray(new int[]{1, 2});
+        ListNode l0 = createLinkedList(new int[]{1, 2});
         log(isPalindrome3(l0));  // expects false
 
-        ListNode l1 = createLinkedListFromArray(new int[]{1, 1, 2, 1});
+        ListNode l1 = createLinkedList(new int[]{1, 1, 2, 1});
         log(isPalindrome3(l1));  // expects false
 
-        ListNode l2 = createLinkedListFromArray(new int[]{1, 2, 2, 1});
+        ListNode l2 = createLinkedList(new int[]{1, 2, 2, 1});
         log(isPalindrome3(l2));  // expects true
 
-        ListNode l3 = createLinkedListFromArray(new int[]{1, 0, 1});
+        ListNode l3 = createLinkedList(new int[]{1, 0, 1});
         log(isPalindrome3(l3));  // expects true
 
-        ListNode l4 = createLinkedListFromArray(new int[]{1});
+        ListNode l4 = createLinkedList(new int[]{1});
         log(isPalindrome3(l4));  // expects true
 
-        ListNode l5 = createLinkedListFromArray(new int[]{});
+        ListNode l5 = createLinkedList(new int[]{});
         log(isPalindrome3(l5));  // expects true
     }
 }

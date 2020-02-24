@@ -89,10 +89,10 @@ public class L203_RemoveLinkedListElements {
     }
 
     public static void main(String[] args) {
-        ListNode l = createLinkedListFromArray(new int[]{1, 2, 6, 3, 4, 5, 6});
+        ListNode l = createLinkedList(new int[]{1, 2, 6, 3, 4, 5, 6});
         printLinkedList(removeElements(l, 6));  // expects 1->2->3->4->5->NULL
 
-        ListNode l2 = createLinkedListFromArray(new int[]{6, 6});
+        ListNode l2 = createLinkedList(new int[]{6, 6});
         printLinkedList(removeElements(l2, 6));  // expects NULL
     }
 }

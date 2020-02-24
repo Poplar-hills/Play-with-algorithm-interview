@@ -128,7 +128,7 @@ public class Helpers {
     }
 
     // 从数组生成链表
-    public static ListNode createLinkedListFromArray(int[] arr) {
+    public static ListNode createLinkedList(int[] arr) {
         ListNode dummyHead = new ListNode();
         ListNode curr = dummyHead;
         for (int n : arr) {

@@ -62,9 +62,9 @@ public class L160_IntersectionOfTwoLinkedLists {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{4, 1});
-        ListNode l2 = createLinkedListFromArray(new int[]{5, 0, 1});
-        ListNode l3 = createLinkedListFromArray(new int[]{8, 4, 5});
+        ListNode l1 = createLinkedList(new int[]{4, 1});
+        ListNode l2 = createLinkedList(new int[]{5, 0, 1});
+        ListNode l3 = createLinkedList(new int[]{8, 4, 5});
         ListNode l1Tail = l1.tail(), l2Tail = l2.tail();
         l1Tail.next = l3;
         l2Tail.next = l3;
@@ -76,9 +76,9 @@ public class L160_IntersectionOfTwoLinkedLists {
          *   5 → 0 → 1 → 8 → 4 → 5
          * */
 
-        ListNode l4 = createLinkedListFromArray(new int[]{0, 9, 1});
-        ListNode l5 = createLinkedListFromArray(new int[]{3});
-        ListNode l6 = createLinkedListFromArray(new int[]{2, 4});
+        ListNode l4 = createLinkedList(new int[]{0, 9, 1});
+        ListNode l5 = createLinkedList(new int[]{3});
+        ListNode l6 = createLinkedList(new int[]{2, 4});
         ListNode l4Tail = l4.tail(), l5Tail = l5.tail();
         l4Tail.next = l6;
         l5Tail.next = l6;
@@ -90,15 +90,15 @@ public class L160_IntersectionOfTwoLinkedLists {
          *          3 → 2 → 4
          * */
 
-        ListNode l7 = createLinkedListFromArray(new int[]{2, 6, 4});
-        ListNode l8 = createLinkedListFromArray(new int[]{1, 5});
+        ListNode l7 = createLinkedList(new int[]{2, 6, 4});
+        ListNode l8 = createLinkedList(new int[]{1, 5});
         log(getIntersectionNode(l7, l8));  // expects null.
         /*
          *   0 → 6 → 4
          *   1 → 5
          * */
 
-        ListNode l9 = createLinkedListFromArray(new int[]{1});
+        ListNode l9 = createLinkedList(new int[]{1});
         ListNode l10 = l9;
         ListNode res4 = getIntersectionNode2(l9, l10);
         log(res4.val + "; Equals to l9: " + (res4 == l9));  // expects 1, Equals to l6: true.

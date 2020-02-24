@@ -79,10 +79,10 @@ public class L86_PartitionList {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedListFromArray(new int[]{1, 4, 3, 2, 5, 2});
+        ListNode l1 = createLinkedList(new int[]{1, 4, 3, 2, 5, 2});
         printLinkedList(partition2(l1, 3));  // expects 1->2->2->4->3->5->NULL（第1个元素 < x 的情况，此时 joint 存在）
 
-        ListNode l3 = createLinkedListFromArray(new int[]{2, 4, 1, 0, 3});
+        ListNode l3 = createLinkedList(new int[]{2, 4, 1, 0, 3});
         printLinkedList(partition2(l3, 2));  // expects 1->0->2->4->3->NULL（第1个元素就 ≥ x 的情况，此时 joint 不存在）
     }
 }
