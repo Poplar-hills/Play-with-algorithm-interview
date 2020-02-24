@@ -15,7 +15,7 @@ public class L2_AddTwoNumbers {
     /*
      * 有缺陷的解：
      * - 思路：先把两个链表逆序转成 long，再相加两个 long，最后再将结果逆序转成链表。
-     * - 这种方法的：优势是不需要手动处理进位问题；劣势是无法处理超过 long 精度的链表（可以使用 BigInteger）（实际面试中很少有，不是个很大的问题）。
+     * - 这种方法的优势是不需要手动处理进位问题；劣势是无法处理超过 long 精度的链表（可以使用 BigInteger）。
      * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)，其中 m, n 分别为 l1, l2 的节点个数。
      * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
@@ -54,9 +54,9 @@ public class L2_AddTwoNumbers {
         int carry = 0;
 
         while (l1 != null || l2 != null) {
-            int curr1Val = l1 != null ? l1.val : 0;
-            int curr2Val = l2 != null ? l2.val : 0;
-            int sum = curr1Val + curr2Val + carry;
+            int v1 = l1 == null ? 0 : l1.val;
+            int v2 = l2 == null ? 0 : l2.val;
+            int sum = v1 + v2 + carry;
 
             carry = sum / 10;
             curr.next = new ListNode(sum % 10);
@@ -99,22 +99,14 @@ public class L2_AddTwoNumbers {
         return node;
     }
 
-    // private static ListNode addTwoNumbers4(ListNode l1, ListNode l2) {
-    //     return helper4(l1, l2, 0);
-    // }
-
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{2, 4, 3});
         ListNode l2 = createLinkedList(new int[]{5, 6, 4, 1});
-        printLinkedList(addTwoNumbers4(l1, l2));   // expects 7->0->8->1->NULL
+        printLinkedList(addTwoNumbers(l1, l2));   // expects 7->0->8->1->NULL
 
-        ListNode l3 = createLinkedList(new int[]{2, 4, 3});
-        ListNode l4 = createLinkedList(new int[]{5, 6, 4});
-        printLinkedList(addTwoNumbers4(l3, l4));   // expects 7->0->8->1->NULL
-
-        ListNode l5 = createLinkedList(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
-        ListNode l6 = createLinkedList(new int[]{7});
-        printLinkedList(addTwoNumbers4(l5, l6));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
+        ListNode l3 = createLinkedList(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
+        ListNode l4 = createLinkedList(new int[]{7});
+        printLinkedList(addTwoNumbers(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
     }
 }
 
