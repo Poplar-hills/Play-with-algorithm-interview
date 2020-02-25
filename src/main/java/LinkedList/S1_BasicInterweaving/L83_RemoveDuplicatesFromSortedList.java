@@ -20,9 +20,9 @@ public class L83_RemoveDuplicatesFromSortedList {
         ListNode curr = head;
         while (curr != null && curr.next != null) {
             if (curr.val == curr.next.val)
-                curr.next = curr.next.next;  // 跳过 curr.next 节点，将 curr 和 curr.next.next 相连
+                curr.next = curr.next.next;  // 跳过 curr.next 节点后无需再移动 curr（test case 2）
             else
-                curr = curr.next;
+                curr = curr.next;            // 若没有跳过节点则需要移动 curr
         }
         return head;
     }
