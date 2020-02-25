@@ -5,9 +5,11 @@ import static Utils.Helpers.*;
 /*
  * Reverse Linked List II
  *
- * - Reverse a linked list from position m to n. Note:
- *   - 1 ≤ m ≤ n ≤ length of list (m 和 n 是从1开始的)
- *   - Do it in one-pass (要求在一次遍历内完成)
+ * - Reverse a linked list from position m to n.
+ *
+ * - Note:
+ *   1. 1 ≤ m ≤ n ≤ length of list (m 和 n 是从1开始的)
+ *   2. Do it in one-pass (要求在一次遍历内完成)
  * */
 
 public class L92_ReverseLinkedListII {

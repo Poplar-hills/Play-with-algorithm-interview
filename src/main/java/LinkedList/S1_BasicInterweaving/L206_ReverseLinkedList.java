@@ -10,12 +10,14 @@ import static Utils.Helpers.*;
 
 public class L206_ReverseLinkedList {
     /*
-     * 解法1：遍历过程中不断将两个节点间的链接反向
+     * 解法1：迭代
+     * - 思路：在遍历过程中不断反向两个节点间的链接。
      * - 时间复杂度 O(n)，空间复杂度 O(1)
      * */
     public static ListNode reverseList(ListNode head) {
         if (head == null) return null;
         ListNode prev = null, curr = head;
+
         while (curr != null) {
             ListNode next = curr.next;
             curr.next = prev;
@@ -28,19 +30,23 @@ public class L206_ReverseLinkedList {
     /*
      * 解法2：递归
      * - 思路：当使用递归反向链表时，我们期望的过程是：
-     *        1 -> 2 -> 3 -> 4
-     *                     ← 4
-     *                ← 4->3
-     *           ← 4->3->2
-     *      ← 4->3->2->1
-     *   要实现这个过程：
-     *   1. 递归终止条件：head == null || head.next == null（这两种情况只需返回 head 即可，不需要改变节点顺序）
-     *   2. 递归单元逻辑：例如当 reserveList(head.next) 返回 4->3 时，此时链表为：1->2  4->3。此时需要让2链到3后面，
-     *      得到 1  4->3->2，再将4返回给上一层。这就需要：                          |_____↑
-     *           |________↑
-     *      a. 让 3.next 指向 2 —— ∵ 此时 head 是2 ∴ head.next.next = head，此时链表为：1  4->3<->2
-     *      b. 再移除 2->3 的链接（仅保留 3->2）—— head.next = null                    |_________↑
-     * - 时间复杂度 O(n)，空间复杂度 O(n)
+     *           0 -> 1 -> 2 -> 3 -> 4
+     *                             ← 4
+     *                        ← 4->3
+     *                   ← 4->3->2
+     *              ← 4->3->2->1
+     *         ← 4->3->2->1->0
+     *   ∴ 总体逻辑应该是先递归到底，在返回的路上反向节点。
+     * - 实现：该思路在实现是的难点在于，下层递归返回的节点和要链接当前节点的节点不是一个，比如👆的例子中下层递归返回了 4->3->2，
+     *   当前节点 head=1，而要链接当前节点的节点是2（即要将1链接到2后面）∴ 如何能在不遍历的情况下快速获得节点2是个问题。对于
+     *   该问题画图理解：当下层递归返回 4->3->2 时，链表的完整形态是：0->1  4->3->2 。此时若要把1链接到2后面就需要：
+     *                                                          |________↑
+     *     1. 添加 2->1 的链接：这就需要先获取的节点2。∵ 有两个方向都可到达节点2，若从4开始则需遍历，而从1开始则只需 1.next；
+     *        即 head.next。∴ 添加 2->1 的链接就是 head.next.next = head。
+     *     2. 断开 1->2 的链接：head.next = null;
+     *   ∴ 最后得到的链表形态为：0  4->3->2->1，至此本轮递归结束，可以将节点4再返回给再上一层的递归。
+     *                       |___________↑
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode reverseList2(ListNode head) {
         if (head.next == null) return head;
@@ -57,22 +63,23 @@ public class L206_ReverseLinkedList {
      * */
     public static ListNode reverseList3(ListNode head) {
         Stack<ListNode> stack = new Stack<>();
-
-        for (ListNode curr = head; curr != null; curr = curr.next)
-            stack.push(curr);
-
-        ListNode dummyHead = new ListNode(), prev = dummyHead;
-        while (!stack.isEmpty()) {
-            prev.next = stack.pop();
-            prev = prev.next;
+        while (head != null) {
+            stack.push(head);
+            head = head.next;
         }
-        prev.next = null;  // 注意要把最后一个节点的 next 置空（否则会与前一个节点形成双向链接）
+
+        ListNode dummyHead = new ListNode(), curr = dummyHead;
+        while (!stack.isEmpty()) {
+            curr.next = stack.pop();
+            curr = curr.next;
+        }
+        curr.next = null;  // 注意要把最后一个节点的 next 置空（否则会与前一个节点形成双向链接）
 
         return dummyHead.next;
     }
 
     public static void main(String[] args) {
-        ListNode l = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(reverseList3(l));    // expects 5->4->3->2->1->NULL
+        ListNode l = createLinkedList(new int[]{0, 1, 2, 3, 4, 5});
+        printLinkedList(reverseList(l));    // expects 5->4->3->2->1->0->NULL
     }
 }
