@@ -73,48 +73,46 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-     * 解法2：不交换节点值，而是改变节点间的链接
-     * - 思路：改变节点间的链接并不意味着要交换两个节点，而是可以：
-     *   1. 先将 [m, n] 范围内的节点反向；
-     *   2. 再 fix 反向后的节点与 m 之前、n 之后的节点的链接。
-     *   例如 7->9->2->10->1->8->6, m=2, n=5，则：
-     *   1. 先将9和8之间的节点反向：7->9<->2<-10<-1<-8  6，注意：
-     *     - ∵ 8.next 指向了1 ∴ 8->6 的链接断开了；
-     *     - ∵ 9是范围内第一个节点，不需要修改 9.next ∴ 9->2 的链接没有断开，并最终形成双向链接。
-     *   2. 再 fix 反向后的节点与前后节点的链接：把8链接到7后面、把6链接到9后面：
-     *     - 需要获取到 m-1 节点、m 节点、n 节点、n+1 节点，因此需要定义指针指向他们；
-     *     - ∵ 反向两个节点之间的链接只需这两个节点参与 ∴ 程序的大体结构是在 for 中不断获取前后两个节点，对他们进行反向或不反向；
-     *     - 注意特殊情况的处理：test case 2、3。
+     * 解法2：反向节点间的链接
+     * - 思路：采用类似 L206_ReverseLinkedList 解法1的思路 —— 不交换节点，而是反向节点之间的链接。具体来说：
+     *     1. 先将 [m, n] 范围内的节点链接反向；
+     *     2. 再 fix 反向后的第 m、m-1、n、n+1 号节点间的链接。
+     *   例如对于 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7, m=3, n=5 来说：
+     *     1. 先将 [3, 5] 之间的节点反向：1 -> 2 -> 3 <- 4 <- 5   6 -> 7；
+     *     2. 再 fix 第2、3、5、6号节点之间的链接：将5链到2上、将6链到3上。
+     * - 实现：要进行上面第2步 fix 的话需先获得这4个节点的引用 ∴ 在遍历和反向的过程中要能记录到这4个节点。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode reverseBetween2(ListNode head, int m, int n) {
         if (head == null) return null;
-        ListNode prev = null, curr = head;   // prev 最后会停在 n 上；curr 最后会停在 n+1 上
-        ListNode conn = head, left = head;   // conn 指向 m-1 上的节点；left 指向 m 上的节点
+        ListNode prev = null, curr = head;
+        ListNode conn = head, rTail = head;  // conn 用于记录 m-1 号节点的引用，rTail 记录 m 号节点的引用（也就是 reverse 之后的尾节点）
 
-        for (int i = 1; i <= n; i++) {
-            if (i == m) {                    // 遍历到 m 处的节点时给 conn、left 赋值
+        for (int i = 1; i <= n; i++) {       // ∵ m、n 从1开始 ∴ 这里从1开始遍历
+            if (i == m) {                    // 遍历到第 m 号节点时记录第 m-1、m 号节点
                 conn = prev;
-                left = curr;
+                rTail = curr;
             }
-            if (i > m && i <= n) {           // 在有效范围内对前后两个节点进行反向
+            if (i <= m || i > n) {           // 注意 i == m 时也要移动 prev、curr
+                prev = curr;
+                curr = curr.next;
+            } else {                         // 在 (m,n] 范围内开始反向链表（注意左边是开区间 ∵ 也要让 prev 进入区间才能开始反向）
                 ListNode next = curr.next;
                 curr.next = prev;            // 后一个节点的 next 指向前一个节点
                 prev = curr;
                 curr = next;
-            } else {                         // 若 i < m（在有效范围之外）只移动指针，不反向节点
-                prev = curr;
-                curr = curr.next;
             }
-        }
-        if (conn != null) conn.next = prev;  // 进行上面说的步骤2，将 n 处的节点链回 m-1 处节点上
-        else head = prev;                    // test case 2、3中 m=1，因此 conn 是 null，需要特殊处理
-        left.next = curr;                    // 将 n-1 处的节点链到 m 处节点上
+        }                                    // 遍历结束时 prev 停在第 n 号节点上，curr 停在 n+1 号节点上
+        if (conn != null) conn.next = prev;  // 步骤2：将现在第 n 号节点链回原来的第 m-1 号节点上
+        else head = prev;                    // test case 2、3中 m=1 ∴ conn 是 null，需要特殊处理，此时第 n 号节点就是链表的新 head
+        rTail.next = curr;                   // 将 n-1 处的节点链到 m 处节点上
         return head;
     }
 
     /*
-     * 解法3：与解法2思路完全一致，实现上稍有不同
+     * 解法3：反向节点间的链接
+     * - 思路：与解法2一致。
+     * - 实现：上稍有不同
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode reverseBetween3(ListNode head, int m, int n) {
@@ -144,13 +142,17 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-     * 解法4：
+     * 解法4：反向节点间的链接（递归）
      * - 思路：与解法2、3一致。
-     * - 实现：先走到第 m 个节点，然后对 m ~ n 内的节点进行反向，反向采用类似 L206_ReverseLinkedList 解法2的递归实现，
-     *   不同点在于返回的是两个节点：1. reverse 之后的新头节点； 2. 第 n+1 个节点（即后面不需要反向的第一个节点）。
-     *   有了这两个节点就能拼接出最终要返回的链表：
+     * - 实现：先走到第 m 个节点，然后对 m ~ n 内的节点进行反向，反向过程采用类似 L206_ReverseLinkedList 解法2的递归实现，
+     *   不同点在于返回的是两个节点：1. reverse 之后的新头节点； 2. 第 n+1 个节点（即后面不需要反向的第一个节点）。有了这两个
+     *   节点就能拼接出最终要返回的链表：
      *     1. 第 m-1 个节点 -> reverse 后的新头节点；
      *     2. reverse 后的第 n 个节点（即原第 m 个节点）-> 第 n+1 个节点。
+     *   最终返回的链表：
+     *     1 -> 2 -> 5 -> 4 -> 3 -> 6 -> 7, m=3, n=5
+     *         m-1   m         n   n+1
+     *        prev  curr     rHead rest
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode reverseBetween4(ListNode head, int m, int n) {
@@ -158,16 +160,16 @@ public class L92_ReverseLinkedListII {
         dummyHead.next = head;
 
         ListNode prev = dummyHead, curr = head;
-        for (int i = 1; i < m; i++) {            // 先让 prev 走到第 m-1 个节点上，curr 走到第 m 个节点上
+        for (int i = 1; i < m; i++) {  // 先让 prev 走到第 m-1 个节点上，curr 走到第 m 个节点上
             prev = curr;
             curr = curr.next;
         }
 
         ListNode[] reversed = reverseBeforeN(curr, m, n);
-        ListNode reversedHead = reversed[0];     // reverse 后的新头节点
-        ListNode rest = reversed[1];             // 第 n+1 个节点（即后面不需要反向的第一个节点）
-        prev.next = reversedHead;                // 第 m-1 个节点 -> reverse 后的新头节点
-        curr.next = rest;                        // reverse 后的第 n 个节点 -> 第 n+1 个节点
+        ListNode rHead = reversed[0];  // reverse 后的新头节点
+        ListNode rest = reversed[1];   // 第 n+1 个节点（即后面不需要反向的第一个节点）
+        prev.next = rHead;             // 第 m-1 个节点 -> reverse 后的新头节点
+        curr.next = rest;              // reverse 后的第 n 个节点 -> 第 n+1 个节点
 
         return dummyHead.next;
     }
@@ -181,13 +183,13 @@ public class L92_ReverseLinkedListII {
     }
 
 	public static void main(String[] args) {
-        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(reverseBetween(l1, 2, 4));  // expects 1->4->3->2->5->NULL
+        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7});
+        printLinkedList(reverseBetween2(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
 
         ListNode l2 = createLinkedList(new int[]{3, 5});
-        printLinkedList(reverseBetween(l2, 1, 2));  // expects 5->3->NULL
+        printLinkedList(reverseBetween2(l2, 1, 2));  // expects 5->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{5});
-        printLinkedList(reverseBetween(l3, 1, 1));  // expects 5->NULL
+        printLinkedList(reverseBetween2(l3, 1, 1));  // expects 5->NULL
     }
 }
