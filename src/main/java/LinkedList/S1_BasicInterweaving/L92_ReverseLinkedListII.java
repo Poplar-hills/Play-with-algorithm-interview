@@ -112,7 +112,7 @@ public class L92_ReverseLinkedListII {
     /*
      * 解法3：反向节点间的链接
      * - 思路：与解法2一致。
-     * - 实现：上稍有不同
+     * - 实现：稍有不同。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode reverseBetween3(ListNode head, int m, int n) {
@@ -128,10 +128,10 @@ public class L92_ReverseLinkedListII {
 
         ListNode conn = prev, tail = curr;
         while (n > 0) {  // 开始将有效范围内的节点反向
-            ListNode third = curr.next;
+            ListNode next = curr.next;
             curr.next = prev;
             prev = curr;
-            curr = third;
+            curr = next;
             n--;
         }
 
@@ -160,7 +160,7 @@ public class L92_ReverseLinkedListII {
         dummyHead.next = head;
 
         ListNode prev = dummyHead, curr = head;
-        for (int i = 1; i < m; i++) {  // 先让 prev 走到第 m-1 个节点上，curr 走到第 m 个节点上
+        for (int i = 1; i < m; i++) {  // 先让 prev、curr 分别移动到 m-1、m 号节点上
             prev = curr;
             curr = curr.next;
         }
@@ -184,12 +184,12 @@ public class L92_ReverseLinkedListII {
 
 	public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7});
-        printLinkedList(reverseBetween2(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
+        printLinkedList(reverseBetween3(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
 
         ListNode l2 = createLinkedList(new int[]{3, 5});
-        printLinkedList(reverseBetween2(l2, 1, 2));  // expects 5->3->NULL
+        printLinkedList(reverseBetween3(l2, 1, 2));  // expects 5->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{5});
-        printLinkedList(reverseBetween2(l3, 1, 1));  // expects 5->NULL
+        printLinkedList(reverseBetween3(l3, 1, 1));  // expects 5->NULL
     }
 }
