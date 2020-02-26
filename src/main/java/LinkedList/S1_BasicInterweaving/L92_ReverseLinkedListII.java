@@ -2,14 +2,16 @@ package LinkedList.S1_BasicInterweaving;
 
 import static Utils.Helpers.*;
 
+import Utils.Helpers.ListNode;
+
 /*
  * Reverse Linked List II
  *
  * - Reverse a linked list from position m to n.
  *
  * - Note:
- *   1. 1 ≤ m ≤ n ≤ length of list (m 和 n 是从1开始的)
- *   2. Do it in one-pass (要求在一次遍历内完成)
+ *   - 1 ≤ m ≤ n ≤ length of list (m 和 n 是从1开始的)
+ *   - Do it in one-pass (要求在一次遍历内完成)
  * */
 
 public class L92_ReverseLinkedListII {
@@ -44,33 +46,29 @@ public class L92_ReverseLinkedListII {
      * - 时间复杂度 O(n)，因为只遍历到 n 处的节点；
      * - 空间复杂度 O(n)，同样因为只遍历到 n 处的节点，因此递归深度为 n。
      * */
-    public static class Solution1 {
-        private ListNode left;
-        private boolean stop;
+    private static ListNode left;
+    private static boolean stop;
 
-        public ListNode reverseBetween(ListNode head, int m, int n) {
-            left = null;
-            stop = false;
-            recurseAndReverse(head, m, n);
-            return head;
-        }
+    public static ListNode reverseBetween(ListNode head, int m, int n) {
+        recurseAndReverse(head, m, n);
+        return head;
+    }
 
-        private void recurseAndReverse(ListNode head, int m, int n) {
-            // 进入下一层递归之前：让两个指针向右移动，直到 left 抵达 m，head 抵达 n
-            if (n == 0) return;  // 此时右指针抵达 n+1（该处的节点不需要交换值，因此递归到底，开始返回上层）
-            if (m == 1) left = head;
+    private static void recurseAndReverse(ListNode head, int m, int n) {
+        // 进入下一层递归之前：让两个指针向右移动，直到 left 抵达 m，head 抵达 n
+        if (n == 0) return;  // 此时右指针抵达 n+1（该处的节点不需要交换值，因此递归到底，开始返回上层）
+        if (m == 1) left = head;
 
-            recurseAndReverse(head.next, m - 1, n - 1);
+        recurseAndReverse(head.next, m - 1, n - 1);
 
-            // 回到上一层递归之后：判断两个指针是否已撞上，若没有则交换节点值，并让两个指针互相接近一步
-            if (left == head || left == head.next)  // 对于只有两个节点的链表（test case 2）需要添加 left == head.next 判断（∵ 两个指针互相接近一步相当于互相调换位置，此时 left 在 head 右侧）
-                stop = true;
-            if (!stop) {
-                int value = left.val;
-                left.val = head.val;
-                head.val = value;
-                left = left.next;  // 不需要手动管理右指针，其向左移动到上一节点是由递归返回上层时实现的
-            }
+        // 回到上一层递归之后：判断两个指针是否已撞上，若没有则交换节点值，并让两个指针互相接近一步
+        if (left == head || left == head.next)  // 对于只有两个节点的链表（test case 2）需要添加 left == head.next 判断（∵ 两个指针互相接近一步相当于互相调换位置，此时 left 在 head 右侧）
+            stop = true;
+        if (!stop) {
+            int value = left.val;
+            left.val = head.val;
+            head.val = value;
+            left = left.next;  // 不需要手动管理右指针，其向左移动到上一节点是由递归返回上层时实现的
         }
     }
 
@@ -145,19 +143,51 @@ public class L92_ReverseLinkedListII {
         return head;
     }
 
-    public static void main(String[] args) {
+    /*
+     * 解法4：
+     * - 思路：与解法2、3一致。
+     * - 实现：先走到第 m 个节点，然后对 m ~ n 内的节点进行反向，反向采用类似 L206_ReverseLinkedList 解法2的递归实现，
+     *   不同点在于返回的是两个节点：1. reverse 之后的新头节点； 2. 第 n+1 个节点（即后面不需要反向的第一个节点）。
+     *   有了这两个节点就能拼接出最终要返回的链表：
+     *     1. 第 m-1 个节点 -> reverse 后的新头节点；
+     *     2. reverse 后的第 n 个节点（即原第 m 个节点）-> 第 n+1 个节点。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static ListNode reverseBetween4(ListNode head, int m, int n) {
+        ListNode dummyHead = new ListNode();
+        dummyHead.next = head;
+
+        ListNode prev = dummyHead, curr = head;
+        for (int i = 1; i < m; i++) {            // 先让 prev 走到第 m-1 个节点上，curr 走到第 m 个节点上
+            prev = curr;
+            curr = curr.next;
+        }
+
+        ListNode[] reversed = reverseBeforeN(curr, m, n);
+        ListNode reversedHead = reversed[0];     // reverse 后的新头节点
+        ListNode rest = reversed[1];             // 第 n+1 个节点（即后面不需要反向的第一个节点）
+        prev.next = reversedHead;                // 第 m-1 个节点 -> reverse 后的新头节点
+        curr.next = rest;                        // reverse 后的第 n 个节点 -> 第 n+1 个节点
+
+        return dummyHead.next;
+    }
+
+    private static ListNode[] reverseBeforeN(ListNode head, int i, int n) {
+        if (i == n) return new ListNode[]{head, head.next};  // 走到第 n 个节点时递归到底，返回第 n 个、第 n+1 个节点
+        ListNode[] reversed = reverseBeforeN(head.next, ++i, n);
+        head.next.next = head;
+        head.next = null;
+        return reversed;
+    }
+
+	public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(reverseBetween2(l1, 2, 4));  // expects 1->4->3->2->5->NULL
+        printLinkedList(reverseBetween(l1, 2, 4));  // expects 1->4->3->2->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{3, 5});
-        printLinkedList(reverseBetween2(l2, 1, 2));  // expects 5->3->NULL
+        printLinkedList(reverseBetween(l2, 1, 2));  // expects 5->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{5});
-        printLinkedList(reverseBetween2(l3, 1, 1));  // expects 5->NULL
-
-        // 解法1是一个类，因此测试方式与其他解法不同
-        ListNode l4 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        Solution1 s1 = new Solution1();
-        printLinkedList(s1.reverseBetween(l4, 2, 4));
+        printLinkedList(reverseBetween(l3, 1, 1));  // expects 5->NULL
     }
 }
