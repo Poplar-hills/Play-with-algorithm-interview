@@ -14,9 +14,9 @@ import static Utils.Helpers.*;
 public class L86_PartitionList {
     /*
      * 解法1：In-place Insertion
-     * - 思路：总体思路是仿照快速排序的方式将所有 < x 的节点移动到链表头部。具体思路是，先找到链表中最后一个 < x 的节点，并在
-     *   往后遍历过程中，每当遇到 < x 的节点，就将其插入到该节点后面。例如：1->2->4->3->5->0，x=3 中，最后一个 < x 的节点
-     *   是2，则在继续向后遍历过程中，将3插入到2后面、将0插入到3后面。
+     * - 思路：总体思路是仿照快速排序的方式将所有 < x 的节点移动到链表头部 ∴ 要先找到链表中最后一个 < x 的节点，并在往后遍历
+     *   过程中，每当遇到 < x 的节点，就将其插入到该节点后面。例如：1->2->4->3->5->0，x=3 中，最后一个 < x 的节点是2，则
+     *   在继续向后遍历过程中，将3插入到2后面、将0插入到3后面。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode partition(ListNode head, int x) {
@@ -24,7 +24,7 @@ public class L86_PartitionList {
         dummyhead.next = head;
 
         ListNode lastLtX = dummyhead, curr = head;
-        while (curr != null && curr.val < x) {        // 先找到最后一个 < x 的节点
+        while (curr != null && curr.val < x) {        // 先找到最后一个 < x 的节点标记为 lastLtX
             lastLtX = curr;
             curr = curr.next;
         }
@@ -56,7 +56,7 @@ public class L86_PartitionList {
      * 解法2：双链表拼接
      * - 思路：在遍历链表过程中将 < x 的节点放到一个链表上；将 ≥ x 的节点放到另一个链表上，最后将两个链表拼接在一起。
      * - 实现：这也是很多工具函数库中 partition 的实现方式。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode partition2(ListNode head, int x) {
         ListNode l1 = new ListNode(), dummyHead1 = l1;
@@ -78,44 +78,11 @@ public class L86_PartitionList {
         return dummyHead1.next;
     }
 
-    /*
-     *   D -> 1 -> 2 -> 2 -> 4 -> 3 -> 5 -> NULL
-     *   p    c
-     *   l
-     *
-     *
-     *
-     * */
-    public static ListNode partition0(ListNode head, int x) {
-        ListNode dummyHead = new ListNode();
-        dummyHead.next = head;
-        ListNode prev = dummyHead, curr = head, lastLtX = dummyHead;
-
-        while (curr != null) {
-            if (curr.val >= x) {
-                prev = curr;
-                curr = curr.next;
-            } else {
-                prev.next = curr.next;
-                insert2(lastLtX, curr);
-                curr = prev.next;
-            }
-        }
-
-        return head;
-    }
-
-    private static void insert2(ListNode prev, ListNode node) {
-        ListNode next = prev.next;
-        prev.next = node;
-        node.next = next;
-    }
-
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 4, 3, 2, 5, 2});
-        printLinkedList(partition(l1, 3));  // expects 1->2->2->4->3->5->NULL（第1个元素 < x 的情况，此时 joint 存在）
+        printLinkedList(partition(l1, 3));  // expects 1->2->2->4->3->5->NULL（第1个元素 < x 的情况）
 
         ListNode l2 = createLinkedList(new int[]{2, 4, 1, 0, 3});
-        printLinkedList(partition(l2, 2));  // expects 1->0->2->4->3->NULL（第1个元素就 ≥ x 的情况，此时 joint 不存在）
+        printLinkedList(partition(l2, 2));  // expects 1->0->2->4->3->NULL（第1个元素就 ≥ x 的情况，此时 lastLtX 不存在）
     }
 }
