@@ -62,6 +62,8 @@ public class L445_AddTwoNumbersII {
      * - 思路：该题的难点在于如何解决数位对齐问题，本解法与解法1一致，也是通过反向链表来对其数位。
      * - 实现：解法1是通过反向节点间的链接来反向链表，从而对齐数位。而本解法使用 Stack（如 L2 解法3）结构来反向链表，从而对齐数位。
      *   使用 Stack 的好处是不会修改原链表 l1、l2。
+     * - 👉技巧：本解法中的一个技巧是逆序生成链表 —— 从尾部的 null 开始，每次都将新生成的节点插入到链表头部，从而免去了解法1中
+     *   最后得再 reverse 一次的麻烦。
      * - 时间复杂度 O(max(m,n))，空间复杂度 O(m+n)。
      * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
@@ -78,7 +80,7 @@ public class L445_AddTwoNumbersII {
 
             carry = sum / 10;
             ListNode newHead = new ListNode(sum % 10);
-            newHead.next = head;  // 将新生成的节点放到结果链表头部（逆序生成链表），从而免去解法1中最后再 reverse 一次的必要
+            newHead.next = head;  // 逆序生成链表（将新生成的节点放到结果链表头部）
             head = newHead;
         }
 
