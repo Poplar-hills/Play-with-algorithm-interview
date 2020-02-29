@@ -9,32 +9,32 @@ import static Utils.Helpers.*;
 /*
  * Add Two Numbers II
  *
- * - 给出两个非空链表，代表两个非负整数。其中每个整数的各个位上的数字以顺序存储（此处于 L2 不同，L2 是逆序存储），返回这两个整数之和的顺序链表。
- *   如 243 + 1564 = 1807，则给出 2->4->3、1—>5->6->4，返回 1->8->0->7。
+ * - 给出两个非空链表，代表两个非负整数。其中每个整数的各个位上的数字以顺序存储（此处于 L2 不同，L2 是逆序存储），返回这两个整数
+ *   之和的顺序链表。如 243 + 1564 = 1807，则给出 2->4->3、1—>5->6->4，返回 1->8->0->7。
  * */
 
 public class L445_AddTwoNumbersII {
     /*
      * 解法1：先将链表反向，再模拟加法运算，最后再反向。
-     * - 思路：本题与 L2 的不同点在于输入、输出都是顺序链表，因此在模拟加法运算之前需要解决数位对应的问题（个位与个位相加，十位与
-     *   十位相加……）。因此可以先将两个链表反向，再对这两个逆序链表求和，此时求和过程就是从个位开始相加，不存在数位对应问题，因此
-     *   求和逻辑可以采用 L2 中解法3的思路。最后再将结果链表再次反向即可。
+     * - 思路：本题与 L2 的不同点在于输入、输出都是顺序链表，因此在模拟加法运算之前需要解决数位对应的问题（个位与个位相加，十位
+     *   与十位相加……）∴ 可以先将两个链表反向，再对这两个逆序链表求和，此时求和过程就是从个位开始相加，不存在数位对应问题。
+     * - 实现：求和过程采用 L2 解法3的实现；反向过程采用 L206 解法1的实现。
      * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
      * */
     public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        ListNode reverseL1 = reverse(l1);  // O(m)
-        ListNode reverseL2 = reverse(l2);  // O(n)
-        ListNode reversedSum = addTwoNumbers(reverseL1, reverseL2, 0);  // O(max(m,n))
-        return reverse(reversedSum);       // O(max(m,n))
+        ListNode reversedL1 = reverse(l1);  // O(m)
+        ListNode reversedL2 = reverse(l2);  // O(n)
+        ListNode reversedSum = addTwoNumbers(reversedL1, reversedL2, 0);  // O(max(m,n))
+        return reverse(reversedSum);        // O(max(m,n))
     }
 
-    private static ListNode reverse(ListNode l1) {  // 将一个链表反向
-        ListNode prev = null, curr = l1;
+    private static ListNode reverse(ListNode head) {
+        ListNode prev = null, curr = head;
         while (curr != null) {
-            ListNode third = curr.next;
+            ListNode next = curr.next;
             curr.next = prev;
             prev = curr;
-            curr = third;
+            curr = next;
         }
         return prev;
     }
@@ -48,7 +48,7 @@ public class L445_AddTwoNumbersII {
         int sum = l1Val + l2Val + carry;
 
         carry = sum / 10;
-        ListNode s = new ListNode(sum % 10);         // 空间复杂度（即最终新生成的链表长度）为 O(max(m,n))
+        ListNode s = new ListNode(sum % 10);  // 空间复杂度（即最终新生成的链表长度）为 O(max(m,n))
 
         ListNode l1Next = l1 == null ? null : l1.next;
         ListNode l2Next = l2 == null ? null : l2.next;
