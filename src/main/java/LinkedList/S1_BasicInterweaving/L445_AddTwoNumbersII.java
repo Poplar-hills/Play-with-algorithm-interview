@@ -58,39 +58,40 @@ public class L445_AddTwoNumbersII {
     }
 
     /*
-     * 解法2：模拟加法运算（用 stack 辅助）
-     * - 思路：解法1是采用重置节点间链接的方式反向链表，从而解决数位对齐问题。而反向链表的另一种方式是使用 stack（如 L2 解法3）。
-     * - Bonus：该解法不会修改 l1、l2。
+     * 解法2：模拟加法运算（运用 Stack）
+     * - 思路：该题的难点在于如何解决数位对齐问题，本解法与解法1一致，也是通过反向链表来对其数位。
+     * - 实现：解法1是通过反向节点间的链接来反向链表，从而对齐数位。而本解法使用 Stack（如 L2 解法3）结构来反向链表，从而对齐数位。
+     *   使用 Stack 的好处是不会修改原链表 l1、l2。
      * - 时间复杂度 O(max(m,n))，空间复杂度 O(m+n)。
      * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
-        Stack<Integer> s1 = new Stack<>(), s2 = new Stack<>();
-        ListNode curr1 = l1, curr2 = l2;
+        Stack<Integer> s1 = toStack(l1);
+        Stack<Integer> s2 = toStack(l2);
 
-        while (curr1 != null || curr2 != null) {  // 先将两个链表反向存储在 stack 中。O(max(m,n))
-            if (curr1 != null) {
-                s1.push(curr1.val);
-                curr1 = curr1.next;
-            }
-            if (curr2 != null) {
-                s2.push(curr2.val);
-                curr2 = curr2.next;
-            }
-        }
-
-        ListNode resList = null;
         int carry = 0;
-        while (!s1.isEmpty() || !s2.isEmpty() || carry != 0) {  // 再模拟加法运算（非递归）。O(max(m,n))
-            int s1Val = !s1.isEmpty() ? s1.pop() : 0;
-            int s2Val = !s2.isEmpty() ? s2.pop() : 0;
-            int sum = s1Val + s2Val + carry;
+        ListNode head = null;  // 结果链表
 
-            carry = sum / 10;                            // 定义结果链表
-            ListNode head = new ListNode(sum % 10);
-            head.next = resList;                         // 将新生成的 sum 节点放到结果链表头部，从而免去解法1中最后再反向一次的必要
-            resList = head;
+        while (!s1.isEmpty() || !s2.isEmpty() || carry != 0) {  // 再模拟加法运算（非递归）。O(max(m,n))
+            int v1 = s1.isEmpty() ? 0 : s1.pop();
+            int v2 = s2.isEmpty() ? 0 : s2.pop();
+            int sum = v1 + v2 + carry;
+
+            carry = sum / 10;
+            ListNode newHead = new ListNode(sum % 10);
+            newHead.next = head;  // 将新生成的节点放到结果链表头部（逆序生成链表），从而免去解法1中最后再 reverse 一次的必要
+            head = newHead;
         }
-        return resList;
+
+        return head;
+    }
+
+    private static Stack<Integer> toStack(ListNode head) {
+        Stack<Integer> stack = new Stack<>();
+        while (head != null) {
+            stack.push(head.val);
+            head = head.next;
+        }
+        return stack;
     }
 
     public static void main(String[] args) {
