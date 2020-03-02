@@ -48,47 +48,43 @@ public class L82_RemoveDuplicatesFromSortedListII {
 
     /*
      * 解法2：双指针 + 标志位
-     * - 思路：∵ 原节点也要删除 ∴ 像 L83 中那样只使用一个指针、在发现原节点后存在重复节点就跳过的方法是不行的。需要一个指针指向原节点
-     *   的上一个节点，另一个指针向后移动直到找到最后一个重复节点的下一个节点，这样才能将需要删除的节点跳过。
-     * - 实现：对于 2->3->3->4 来说，若想将去除 3->3，则需要链接2节点和4节点，因此需要先获取这两个节点：
-     *        D -> 2 -> 3 -> 3 -> 4
-     *        a    b                 让 a 初始指向虚拟头结点，b 指向 head。此时 b.val != b.next.val，则 a, b 向后移动
-     *        D -> 2 -> 3 -> 3 -> 4
-     *             a    b            此时 b.val == b.next.val，则 a 不动，b 向后移动，标志位置为 true
-     *        D -> 2 -> 3 -> 3 -> 4
-     *             a         b       此时 b.val != b.next.val，但因为标志位置为 true，所以 a 不动，b 向后移动，标志位置为 false，再让 a.next 指向 b
-     *        D -> 2 -> 4
-     *             a    b            此时 b.next == null，结束遍历
-     * - 注意：特殊情况的处理：D -> 2 -> 1 -> 1，此时重复节点后面没有更多节点，因此 a 停在 2 上，b 停在最后一个1上，无法按上面的过
-     *   程完成删除（即循环已结束，但标志位还是 true），因此可直接将 a.next 指向 null 即可。
+     * - 思路：∵ 原节点也要删除 ∴ 像 L83 中那样只使用一个指针、在发现原节点后跳过后面的重复节点的方法是不行的。需要一个指针指向
+     *   原节点的上一个节点，另一个指针向后移动直到最后一个重复节点的下一个节点，最后连接这两个节点完成对中间节点的删除。
+     * - 演示：例如对于 2->3->3->4->5 来说，若想将去除 3->3，则需要链接2和4 ∴ 需要先获取这两个节点：
+     *      D -> 2 -> 3 -> 3 -> 4 -> 5
+     *      p    c                      - p 初始指向虚拟头结点，c 指向 head。此时 c 与下个节点不重复 ∴ 让 p, c 后移
+     *      D -> 2 -> 3 -> 3 -> 4 -> 5
+     *           p    c                 - 此时 c 与下个节点重复 ∴ 只让 c 后移
+     *      D -> 2 -> 3 -> 3 -> 4 -> 5
+     *           p         c            - 此时 c 与下个节点不重复，但 ∵ c 也是需要删除的节点 ∴ 需要让 p.next = c.next，再让 c 后移
+     *      D -> 2 -> 4 -> 5
+     *           p    c                 - 此时 c 与下个节点不重复 ∴ 同时让 p、c 后移
+     *      D -> 2 -> 4 -> 5
+     *                p    c            - 此时 c.next == null，遍历结束
+     * - 实现：1. ∵ 链表中可能存在多个重复节点 ∴ 可在第2步中使用 while 一直走到最后一个重复节点；
+     *        2. 在第3步中，p.next = c.next 这一操作只能对最后一个重复节点进行（在第4步中就不能有）∴ 需要一个标志位标识在
+     *           某一时刻 c 是否指向重复节点。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode deleteDuplicates2(ListNode head) {
-        if (head == null) return null;  // 注意这个 case 得特殊处理
         ListNode dummyHead = new ListNode();
         dummyHead.next = head;
-
-        ListNode conn = dummyHead, curr = head;
+        ListNode prev = dummyHead, curr = head;
         boolean foundDuplicates = false;
 
-        while (curr.next != null) {
-            if (!foundDuplicates && curr.val != curr.next.val) {
-                conn = conn.next;
-                curr = curr.next;
-            }
-            else if (curr.val == curr.next.val) {
+        while (curr != null && curr.next != null) {
+            while (curr.next != null && curr.val == curr.next.val) {
                 foundDuplicates = true;
                 curr = curr.next;
             }
-            else {  // 若 foundDuplicates && curr.val != curr.next.val（即"实现"中第3步的情况）
+            if (foundDuplicates) {
+                prev.next = curr.next;
                 foundDuplicates = false;
-                curr = curr.next;
-                conn.next = curr;
+            } else {
+                prev = curr;
             }
+            curr = curr.next;
         }
-
-        if (foundDuplicates)  // "注意"中的特殊情况
-            conn.next = null;
 
         return dummyHead.next;
     }
@@ -177,15 +173,15 @@ public class L82_RemoveDuplicatesFromSortedListII {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 3, 4, 4, 5});
-        printLinkedList(deleteDuplicates(l1));  // expects 1->2->5->NULL
+        printLinkedList(deleteDuplicates0(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 1, 1, 2, 3});
-        printLinkedList(deleteDuplicates(l2));  // expects 2->3->NULL
+        printLinkedList(deleteDuplicates0(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 1});
-        printLinkedList(deleteDuplicates(l3));  // expects NULL
+        printLinkedList(deleteDuplicates0(l3));  // expects NULL
 
         ListNode l4 = createLinkedList(new int[]{});
-        printLinkedList(deleteDuplicates(l4));  // expects NULL
+        printLinkedList(deleteDuplicates0(l4));  // expects NULL
     }
 }

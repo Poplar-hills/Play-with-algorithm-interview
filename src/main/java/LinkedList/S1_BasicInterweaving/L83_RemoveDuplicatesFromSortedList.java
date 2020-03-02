@@ -37,6 +37,7 @@ public class L83_RemoveDuplicatesFromSortedList {
         helper2(head);
         return head;  // ∵ 在递归去程路上跳过下一个节点就无法返回链表头结点了 ∴ 递归返回类型为 void，并需要在外部单独返回头结点
     }
+    
     public static void helper2(ListNode head) {
         if (head == null || head.next == null)
             return;
