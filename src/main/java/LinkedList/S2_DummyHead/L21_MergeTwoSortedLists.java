@@ -47,7 +47,7 @@ public class L21_MergeTwoSortedLists {
     public static ListNode mergeTwoLists2(ListNode l1, ListNode l2) {
         if (l1 == null && l2 == null) return null;
         if (l1 == null) {
-            l2.next = mergeTwoLists2(null, l2.next);
+            l2.next = mergeTwoLists2(null, l2.next);  // 无需虚拟头结点，直接使用 l1, l2 本身的节点即可
             return l2;
         }
         if (l2 == null) {
@@ -68,7 +68,8 @@ public class L21_MergeTwoSortedLists {
      * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
      * */
     public static ListNode mergeTwoLists3(ListNode l1, ListNode l2) {
-        ListNode dummyHead = new ListNode(), curr = dummyHead;
+        ListNode dummyHead = new ListNode();
+        ListNode curr = dummyHead;
 
         while (l1 != null && l2 != null) {  // 此处是 &&，而非解法1中的 ||
             if (l1.val < l2.val) {
@@ -106,10 +107,10 @@ public class L21_MergeTwoSortedLists {
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 4});
         ListNode l2 = createLinkedList(new int[]{3, 4, 5});
-        printLinkedList(mergeTwoLists4(l1, l2));  // expects 1->2->3->4->4->5->NULL
+        printLinkedList(mergeTwoLists(l1, l2));  // expects 1->2->3->4->4->5->NULL
 
         ListNode l3 = createLinkedList(new int[]{5});
         ListNode l4 = createLinkedList(new int[]{1, 2, 4});
-        printLinkedList(mergeTwoLists4(l3, l4));  // expects 1->2->4->5->NULL
+        printLinkedList(mergeTwoLists(l3, l4));  // expects 1->2->4->5->NULL
     }
 }
