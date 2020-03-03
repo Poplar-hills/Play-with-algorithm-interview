@@ -17,12 +17,13 @@ public class L203_RemoveLinkedListElements {
      * */
     public static ListNode removeElements(ListNode head, int val) {
         ListNode dummyHead = new ListNode();
-        ListNode curr2 = dummyHead;
+        ListNode prev = dummyHead, curr = head;
 
-        for (ListNode curr = head; curr != null; curr = curr.next) {
+        while (curr != null) {
             if (curr.val == val) continue;
-            curr2.next = new ListNode(curr.val);  // 创建新节点
-            curr2 = curr2.next;
+            prev.next = new ListNode(curr.val);  // 创建新节点
+            prev = prev.next;
+            curr = curr.next;
         }
 
         return dummyHead.next;
@@ -49,26 +50,8 @@ public class L203_RemoveLinkedListElements {
     }
 
     /*
-     * 解法3：解法2的优化版（只是用 curr 一个变量）
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
-     * */
-    public static ListNode removeElements3(ListNode head, int val) {
-        ListNode dummyHead = new ListNode();
-        dummyHead.next = head;
-        ListNode curr = dummyHead;
-
-        while (curr.next != null) {
-            if (curr.next.val == val)  // ∵ 删除节点需要前一个节点的索引 ∴ curr 不能丢 ∴ 检查的是 curr.next 而不是 curr
-                curr.next = curr.next.next;  // 跳过 curr.next 节点后 curr 不用右移，直接进行下一轮遍历即可
-            else
-                curr = curr.next;
-        }
-
-        return dummyHead.next;
-    }
-
-    /*
-     * 解法4：解法2、3的递归版
+     * 解法3：解法2的递归版
+     * - 实现：在递归去程的路上执行处理逻辑。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode removeElements4(ListNode head, int val) {
@@ -79,13 +62,15 @@ public class L203_RemoveLinkedListElements {
     }
 
     /*
-     * 解法5：解法4的改进版
+     * 解法4：解法3的改进版
+     * - 实现：在递归回程的路上执行处理逻辑。
+     * - 👉比较：解法3、4都适用递归，但一个在去程、一个回程时执行业务逻辑。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode removeElements5(ListNode head, int val) {
         if (head == null) return null;
         head.next = removeElements4(head.next, val);
-        return head.val == val ? head.next : head;  // 处理逻辑在最后
+        return head.val == val ? head.next : head;
     }
 
     public static void main(String[] args) {
