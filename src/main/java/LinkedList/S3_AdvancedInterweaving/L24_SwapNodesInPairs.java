@@ -22,6 +22,7 @@ public class L24_SwapNodesInPairs {
      *                            p    c     n     - ∵ c.next == null ∴ 停止交换
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
+
     public static ListNode swapPairs(ListNode head) {
         if (head == null || head.next == null) return head;
         ListNode dummyHead = new ListNode();
@@ -50,6 +51,7 @@ public class L24_SwapNodesInPairs {
      *                          ← f(5) = 5->N
      *                ← f(3) = 4->3->5->N
      *      ← f(1) = 2->1->4->3->5->N
+     * - 💎技巧：在交换节点时，由于是递，所以无需提供 first 的上一个节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode swapPairs2(ListNode head) {
@@ -61,8 +63,8 @@ public class L24_SwapNodesInPairs {
         return first;
     }
 
-    private static ListNode swap(ListNode first) {  // 交换 first 和 second 并返回交换后的第一个节点（∵ 是用于递归 ∴ 不需要提供 first 的上一个节点）
-        ListNode second = first.next;
+    private static ListNode swap(ListNode first) {  // 交换 first 和 first.next 并返回交换后的第一个节点
+        ListNode second = first.next;               // （∵ 是递归实现 ∴ 无需提供 first 的上一个节点）
         if (second == null) return first;
         ListNode temp = second.next;
         second.next = first;
@@ -71,12 +73,13 @@ public class L24_SwapNodesInPairs {
     }
 
     /*
-     * 解法3：解法2的精简版
-     * - 思路：1 -> 2 -> 3 -> 4 -> 5 -> NULL
-     *          → 1.next = f(3); 2.next = 1;
-     *                    → 3.next = f(5); 4.next = 3;
+     * 解法3：递归（最简单、直接的版本）
+     * - 实现：不用想太多，直接写交换逻辑即可 —— 交换节点1和2，那么1要链到2后面，1的下一个是3的递归结果：
+     *        1 -> 2 -> 3 -> 4 -> 5 -> NULL
+     *          → 1跟2交换：2.next = 1; 1.next = f(3);
+     *                    → 3跟4交换：4.next = 3; 3.next = f(5);
      *                          ← f(5) = 5->N
-     *               ← f(3) = 4->3->5->N
+     *                ← f(3) = 4->3->5->N
      *      ← f(1) = 2->1->4->3->5->N
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -90,12 +93,12 @@ public class L24_SwapNodesInPairs {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-        printLinkedList(swapPairs3(l1));  // expects 2->1->4->3->NULL
+        printLinkedList(swapPairs(l1));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(swapPairs3(l2));  // expects 2->1->4->3->5->NULL
+        printLinkedList(swapPairs(l2));  // expects 2->1->4->3->5->NULL
 
         ListNode l3 = createLinkedList(new int[]{1});
-        printLinkedList(swapPairs3(l3));  // expects 1->NULL
+        printLinkedList(swapPairs(l3));  // expects 1->NULL
     }
 }
