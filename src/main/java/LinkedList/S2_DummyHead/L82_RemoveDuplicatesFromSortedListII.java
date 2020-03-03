@@ -92,8 +92,9 @@ public class L82_RemoveDuplicatesFromSortedListII {
     /*
      * 解法3：解法2的递归版
      * - 思路：与解法2一致，使用标志位标识处理最后一个重复节点。
-     * - 实现：先递归到底，在返回上一层时需要让上一层知道是否已经出现了重复节点，从而删除其中一个（不能两个都删掉，否则再碰到一个
-     *   重复节点就无法删除了），这就需要在返回上一层时加入标志位：若标志位为 true 则删除上层返回的头节点：
+     * - 实现：先递归到底，在回程时决定返回、跳过哪个节点。∵ 在返回上一层时需要让上一层知道是否已经出现了重复节点，从而删除其中
+     *   一个（不能两个都删掉，否则再碰到一个重复节点就无法删除了）∴ 需要在返回上一层时加入标志位：若标志位为 true 则删除上层
+     *   返回的头节点：
      *        D -> 2 -> 3 -> 3 -> 4                      D -> 1 -> 1 -> 1 -> 2
      *                         ← (4, false)                               ← (2, false)
      *                    ← (3->4, false)                            ← (1->2, false)
@@ -103,15 +104,15 @@ public class L82_RemoveDuplicatesFromSortedListII {
      * */
     public static ListNode deleteDuplicates3(ListNode head) {
         if (head == null) return null;
-        Pair<ListNode, Boolean> pair = deleteHeadDuplicates(head);
+        Pair<ListNode, Boolean> pair = helper3(head);
         ListNode newHead = pair.getKey();
         return pair.getValue() ? newHead.next : newHead;
     }
 
-    private static Pair<ListNode, Boolean> deleteHeadDuplicates(ListNode head) {
+    private static Pair<ListNode, Boolean> helper3(ListNode head) {
         if (head.next == null) return new Pair<>(head, false);
 
-        Pair<ListNode, Boolean> pair = deleteHeadDuplicates(head.next);
+        Pair<ListNode, Boolean> pair = helper3(head.next);
         ListNode next = pair.getKey();
         boolean foundDuplicate = pair.getValue();
 
@@ -122,9 +123,9 @@ public class L82_RemoveDuplicatesFromSortedListII {
     }
 
     /*
-     * 解法4：双指针 + 内部 while 循环直到找到不重复节点
-     * - 思路：与解法2类似，都需要两个指针，分别指向重复节点之前和之后的节点；与解法2的不同的是该解法不需要标志位，而是当发现有
-     *   重复节点后通过 while 循环一直往下找，直到找到不重复节点为止，再链接 conn 与不重复节点。
+     * 解法4：双指针 + 重复节点值
+     * - 思路：与解法2类似，使用两个指针、两个 while 来跳过重复节点。
+     * - 实现：对于如何判断当前节点是否是最后一个重复节点，解法2、3采用标志位，而该解法记录重复节点的节点值。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode deleteDuplicates4(ListNode head) {
@@ -136,9 +137,9 @@ public class L82_RemoveDuplicatesFromSortedListII {
         int duplicateVal;  // 记录发现的重复节点的节点值
 
         while (curr != null) {
-            if (curr.next != null && curr.val == curr.next.val) {  // 当前发现重复节点时
-                duplicateVal = curr.val;
-                while (curr.next != null && curr.next.val == duplicateVal)  // 内部 while 循环
+            if (curr.next != null && curr.val == curr.next.val) {  // 若发现重复节点
+                duplicateVal = curr.val;                           // 先记录下重复节点值
+                while (curr.next != null && curr.next.val == duplicateVal)  // 用 while 走到最后一个重复节点上
                     curr = curr.next;
                 prev.next = curr = curr.next;                      // 将 curr.next 链接到 prev 上
             } else {
@@ -151,33 +152,36 @@ public class L82_RemoveDuplicatesFromSortedListII {
     }
 
     /*
-     * 解法5：解法4的递归版
+     * 解法5：递归 + 迭代
+     * - 思路：采用递归 + 迭代的方式，在递归去程路上检查是否与下一个节点重复，若是则通过 while 走到最后一个重复节点上，并从对
+     *   其后面的节点继续递归（相当于跳过了所有重复节点）；若否的话则正常递归下去。
+     * - 💎经典：这种递归 + 迭代的实现其实非常 straightforward。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode deleteDuplicates5(ListNode head) {
         if (head == null || head.next == null) return head;
+
         if (head.val == head.next.val) {
-            int duplicateVal = head.val;
-            while (head.next != null && head.next.val == duplicateVal)  // 通过 while 循环跳过 val 相同的节点
+            while (head.next != null && head.next.val == head.val)  // 通过 while 循环跳过 val 相同的节点
                 head = head.next;
-            return deleteDuplicates4(head.next);
+            return deleteDuplicates5(head.next);
         } else {
-            head.next = deleteDuplicates4(head.next);
+            head.next = deleteDuplicates5(head.next);
             return head;
         }
     }
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 3, 4, 4, 5});
-        printLinkedList(deleteDuplicates3(l1));  // expects 1->2->5->NULL
+        printLinkedList(deleteDuplicates5(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 1, 1, 2, 3});
-        printLinkedList(deleteDuplicates3(l2));  // expects 2->3->NULL
+        printLinkedList(deleteDuplicates5(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 1});
-        printLinkedList(deleteDuplicates3(l3));  // expects NULL
+        printLinkedList(deleteDuplicates5(l3));  // expects NULL
 
         ListNode l4 = createLinkedList(new int[]{});
-        printLinkedList(deleteDuplicates3(l4));  // expects NULL
+        printLinkedList(deleteDuplicates5(l4));  // expects NULL
     }
 }
