@@ -13,39 +13,32 @@ import static Utils.Helpers.*;
 public class L24_SwapNodesInPairs {
     /*
      * 解法1：遍历
-     * - 思路：要交换两个节点需要有指针指向这两个节点之前和之后的节点，这样交换完之后才能链回去。因此 swapNodes 方法的输入
-     *        参数应该是待交换节点的前一个节点（它后面的三个节点都能通过它访问到）。但因为链表头结点前面没有更多节点，因此可
-     *        以设置虚拟一个头结点以便于交换链表的前两个节点。
-     * - 过程：D -> 1 -> 2 -> 3 -> 4 -> 5 -> NULL
-     *        p    c                               交换节点1和2，返回节点1，并赋给 p，c = p.next
+     * - 思路：交换两个节点实际上需要4个节点的参与：两个节点 + 这两个节点之前、之后的节点，这样交换完之后才能再将后续链表链接回去。
+     * - 演示：D -> 1 -> 2 -> 3 -> 4 -> 5 -> NULL
+     *        p    c    n    t                     - 交换节点1和2
      *        D -> 2 -> 1 -> 3 -> 4 -> 5 -> NULL
-     *                  p    c                     交换节点3和4，返回节点3，并赋给 p，c = p.next
+     *                  p    c    n    t           - 交换节点3和4
      *        D -> 2 -> 1 -> 4 -> 3 -> 5 -> NULL
-     *                            p    c           ∵ c.next == null，返回 c，并赋给 p，∵ p.next == null，c = null
-     *        D -> 2 -> 1 -> 4 -> 3 -> 5 -> NULL
-     *                                 p     c     ∵ c == null，循环结束
+     *                            p    c     n     - ∵ c.next == null ∴ 停止交换
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode swapPairs(ListNode head) {
         if (head == null || head.next == null) return head;
         ListNode dummyHead = new ListNode();
-        dummyHead.next = head;
-        ListNode prev = dummyHead;
+        ListNode prev = dummyHead, curr = head;
 
-        while (prev.next != null)
-            prev = swapNodes(prev);  // 返回交换后的最后一个节点并赋给 prev（相当于让 prev 向后移两步）
+        while (curr != null && curr.next != null) {  // 内部不断交换 curr 和 curr.next
+            ListNode next = curr.next;
+            ListNode temp = next.next;
+            prev.next = next;
+            next.next = curr;
+            curr.next = temp;
+
+            prev = curr;       // 交换完成后让 prev、curr 都向后移动两步
+            curr = curr.next;
+        }
 
         return dummyHead.next;
-    }
-
-    private static ListNode swapNodes(ListNode prev) {  // 交换 curr 和 next 并返回交换后的最后一个节点
-        ListNode first = prev.next, second = prev.next.next;
-        if (second == null) return first;
-        ListNode temp = second.next;
-        second.next = first;
-        first.next = temp;
-        prev.next = second;  // 把交换完的链表链回上一个节点
-        return first;
     }
 
     /*
@@ -85,14 +78,16 @@ public class L24_SwapNodesInPairs {
         return second;
     }
 
+
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-        printLinkedList(swapPairs3(l1));  // expects 2->1->4->3->NULL
+        printLinkedList(swapPairs0(l1));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(swapPairs3(l2));  // expects 2->1->4->3->5->NULL
+        printLinkedList(swapPairs0(l2));  // expects 2->1->4->3->5->NULL
 
         ListNode l3 = createLinkedList(new int[]{1});
-        printLinkedList(swapPairs3(l3));  // expects 1->NULL
+        printLinkedList(swapPairs0(l3));  // expects 1->NULL
     }
 }
