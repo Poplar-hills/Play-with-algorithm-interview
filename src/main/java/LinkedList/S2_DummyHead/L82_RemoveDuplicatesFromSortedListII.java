@@ -155,7 +155,7 @@ public class L82_RemoveDuplicatesFromSortedListII {
      * 解法5：递归 + 迭代
      * - 思路：采用递归 + 迭代的方式，在递归去程路上检查是否与下一个节点重复，若是则通过 while 走到最后一个重复节点上，并从对
      *   其后面的节点继续递归（相当于跳过了所有重复节点）；若否的话则正常递归下去。
-     * - 💎经典：这种递归 + 迭代的实现其实非常 straightforward。
+     * - 💎技巧：这种递归 + 迭代的实现其实非常 straightforward。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode deleteDuplicates5(ListNode head) {
