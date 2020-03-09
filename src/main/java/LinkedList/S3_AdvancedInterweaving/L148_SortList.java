@@ -37,7 +37,7 @@ public class L148_SortList {
         }
         prevSlow.next = null;  // 将链表的前半截和后半截断开，以便于后面分别递归前、后半段链表
 
-        return merge(sortList(head), sortList(slow));  // 继续二分，直到每个节点为一组时开始 merge
+        return merge(sortList(head), sortList(slow));  // 不断二分，直到每个节点为一组时再开始 merge
     }
 
     private static ListNode merge(ListNode l1, ListNode l2) {
@@ -62,21 +62,23 @@ public class L148_SortList {
 
     /*
      * 解法2：Merge Sort (bottom-up)
-     * - 思路：要做到空间复杂度为 O(1) 就不能使用递归，而得采用迭代，因此使用 bottom-up 的 Merge Sort。
-     *        bottom-up 的 Merge Sort 的原理是通过多轮迭代模拟二分操作，例：
-     *        5 -> 1 -> 6 -> 4 -> 2 -> 7 -> 3 -> NULL
-     *        +    +    +    +    +    +    +          - 第1次遍历，每组1个节点，两组两组归并
-     *        1 -> 5 -> 4 -> 6 -> 2 -> 7 -> 3 -> NULL
-     *        +----+    +----+    +----+    +          - 第2次遍历，每组2个节点，两组两组归并
-     *        1 -> 4 -> 5 -> 6 -> 2 -> 3 -> 7 -> NULL
-     *        +--------------+    +---------+          - 第3次遍历，每组4个节点，两组两组归并
-     *        1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> NULL
-     *        因此，首先需要生成一个 1, 2, 4... 的单组节点个数序列，之后在每个单组节点个数下两组两组遍历链表。
+     * - 思路：要做到空间复杂度为 O(1) 就不能使用递归，而得采用迭代 ∴ 使用 bottom-up 的 Merge Sort。Bottom-up 的
+     *   Merge Sort 的本质是通过多轮遍历来模拟二分操作：
+     *     5 -> 1 -> 6 -> 4 -> 2 -> 7 -> 3 -> NULL
+     *     +    +    +    +    +    +    +          - 第1次遍历，每组1个节点，两组两组归并
+     *     1 -> 5 -> 4 -> 6 -> 2 -> 7 -> 3 -> NULL
+     *     +----+    +----+    +----+    +          - 第2次遍历，每组2个节点，两组两组归并
+     *     1 -> 4 -> 5 -> 6 -> 2 -> 3 -> 7 -> NULL
+     *     +--------------+    +---------+          - 第3次遍历，每组4个节点，两组两组归并
+     *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> NULL
+     *                                              - 第4次遍历，每组8个节点，已经超过链表长度 ∴ 不再继续，排序结束
+     * - 实现：
+     *   1. ∵ 采用多轮遍历来模拟二分 ∴ 首先需要生成一个 1, 2, 4... 的单组节点个数序列，之后按照这个序列两组两组遍历链表。
+     *   2. ∵ 停止遍历的条件是一组中节点个数超过量表长度 ∴ 要先获取链表长度。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     public static ListNode sortList2(ListNode head) {
-        if (head == null || head.next == null)
-            return head;
+        if (head == null || head.next == null) return head;
 
         int len = 0;
         for (ListNode curr = head; curr != null; curr = curr.next)  // 先获取链表长度
@@ -85,10 +87,10 @@ public class L148_SortList {
         ListNode dummyHead = new ListNode();
         dummyHead.next = head;
 
-        for (int step = 1; step <= len; step *= 2) {  // 生成单组节点个数序列
+        for (int step = 1; step <= len; step *= 2) {  // 生成 1, 2, 4...（单组节点个数序列）序列
             ListNode prev = dummyHead;
-            for (int i = 0; i + step < len; i += step * 2) {  // 在每个单组节点个数下两组两组遍历链表
-                ListNode l1 = prev.next;
+            for (int i = 0; i + step < len; i += step * 2) {  // 两组两组遍历链表，i + step < len 保证了第二组中至少有元素存在
+                ListNode l1 = prev.next;              // l1、l2 分别指向第1、2组头结点
                 ListNode l2 = split(l1, step);
                 ListNode tail = split(l2, step);
                 ListNode last = merge(l1, l2, prev);
@@ -111,68 +113,65 @@ public class L148_SortList {
     }
 
     private static ListNode merge(ListNode l1, ListNode l2, ListNode prev) {  // 将两个链表 merge 到 prev 节点之后，返回最后一个节点
-        ListNode p = prev, n1 = l1, n2 = l2;  // p 初始化为 prev，之后每次都将节点直接添加到 prev 之后
-
-        while (n1 != null && n2 != null) {
-            if (n1.val < n2.val) {
-                p.next = n1;
-                n1 = n1.next;
+        while (l1 != null && l2 != null) {
+            if (l1.val < l2.val) {
+                prev.next = l1;
+                l1 = l1.next;
             } else {
-                p.next = n2;
-                n2 = n2.next;
+                prev.next = l2;
+                l2 = l2.next;
             }
-            p = p.next;
+            prev = prev.next;
         }
-        if (n1 != null) p.next = n1;
-        if (n2 != null) p.next = n2;
+        if (l1 != null) prev.next = l1;
+        if (l2 != null) prev.next = l2;
 
-        while (p.next != null) p = p.next;  // 走到最后一个节点上
-        return p;                           // 返回最后一个节点
+        while (prev.next != null) prev = prev.next;  // 走到最后一个节点上
+        return prev;                           // 返回最后一个节点
     }
 
     /*
      * 解法3：Dual-Pivot Quick Sort (3-way Quick Sort)
      * - 思路：直接将传入的 head 作为标定节点，建立三个子链表，分别存储 > head.val、== head.val、< head.val 的节点，
-     *        之后对除了 == head.val 以外的子链表进行递归排序，最后返回两两 merge 的结果。
+     *   之后对除了 == head.val 以外的子链表进行递归排序，最后返回两两 merge 的结果。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     public static ListNode sortList3(ListNode head) {
-        if (head == null || head.next == null)
-            return head;
+        if (head == null || head.next == null) return head;
 
-        ListNode smallDummy = new ListNode(), small = smallDummy;
-        ListNode equalDummy = new ListNode(), equal = equalDummy;
-        ListNode largeDummy = new ListNode(), large = largeDummy;
-
+        ListNode ltDummy = new ListNode(), lt = ltDummy;
+        ListNode eqDummy = new ListNode(), eq = eqDummy;
+        ListNode gtDummy = new ListNode(), gt = gtDummy;
         ListNode curr = head;
+
         while (curr != null) {
             if (curr.val < head.val) {
-                small.next = curr;
-                small = small.next;
+                lt.next = curr;
+                lt = lt.next;
             } else if (curr.val == head.val) {
-                equal.next = curr;
-                equal = equal.next;
+                eq.next = curr;
+                eq = eq.next;
             } else {
-                large.next = curr;
-                large = large.next;
+                gt.next = curr;
+                gt = gt.next;
             }
             curr = curr.next;
         }
-        small.next = equal.next = large.next = null;        // put an end
+        lt.next = eq.next = gt.next = null;        // put an end
 
-        ListNode sortedSmall = sortList3(smallDummy.next);  // 对于 > head、< head 的子链表递归排序（== head 的子链表不需要再排）
-        ListNode sortedLarge = sortList3(largeDummy.next);
-        return merge(merge(sortedSmall, sortedLarge), equalDummy.next);  // 最终两两 merge 在一起（merge 顺序无所谓）
+        ListNode sortedLt = sortList3(ltDummy.next);  // 递归排序 > head、< head 的子链表（== head 的子链表不需要再排）
+        ListNode sortedGt = sortList3(gtDummy.next);
+        return merge(merge(sortedLt, sortedGt), eqDummy.next);  // 最终两两 merge 在一起（merge 顺序无所谓）
     }
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{5, 1, 6, 4, 2, 7, 3});
-        printLinkedList(sortList(l1));  // expects 1->2->3->4->5->6->7->NULL
+        printLinkedList(sortList2(l1));  // expects 1->2->3->4->5->6->7->NULL
 
         ListNode l2 = createLinkedList(new int[]{4, 2, 1, 3});
-        printLinkedList(sortList(l2));  // expects 1->2->3->4->NULL
+        printLinkedList(sortList2(l2));  // expects 1->2->3->4->NULL
 
         ListNode l3 = createLinkedList(new int[]{-1, 5, 3, 4, 0});
-        printLinkedList(sortList(l3));  // expects -1->0->3->4->5->NULL
+        printLinkedList(sortList2(l3));  // expects -1->0->3->4->5->NULL
     }
 }
