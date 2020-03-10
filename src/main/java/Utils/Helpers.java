@@ -119,6 +119,15 @@ public class Helpers {
         public ListNode(int x) { val = x; }
         public ListNode() { }
 
+        public ListNode get(int i) {  // 获取并返回第 i 个节点
+            ListNode curr = this;
+            while (curr.next != null && i != 0) {
+                curr = curr.next;
+                i--;
+            }
+            return i == 0 ? curr : null;
+        }
+
         public ListNode tail() {  // 找到并返回链表中的最后一个节点（SEE: L160_IntersectionOfTwoLinkedLists）
             ListNode curr = this;
             while (curr.next != null)
