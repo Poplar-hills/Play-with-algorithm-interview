@@ -131,9 +131,9 @@ public class L148_SortList {
     }
 
     /*
-     * 解法3：Dual-Pivot Quick Sort (3-way Quick Sort)
-     * - 思路：直接将传入的 head 作为标定节点，建立三个子链表，分别存储 > head.val、== head.val、< head.val 的节点，
-     *   之后对除了 == head.val 以外的子链表进行递归排序，最后返回两两 merge 的结果。
+     * 解法3：Dual-Pivot Sort (3-way Sort)
+     * - 思路：仿照三路快排的思路，使用 head 作为标定节点，将链表分成小、中、大三个子联表，然后对小、大两个子链表进行递归分组，
+     *   直到只剩一个节点时递归到底，然后在回程时将三个子联表按顺序链接起来。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     public static ListNode sortList3(ListNode head) {
@@ -157,21 +157,30 @@ public class L148_SortList {
             }
             curr = curr.next;
         }
-        lt.next = eq.next = gt.next = null;        // put an end
+        lt.next = eq.next = gt.next = null;   // put an end
 
         ListNode sortedLt = sortList3(ltDummy.next);  // 递归排序 > head、< head 的子链表（== head 的子链表不需要再排）
         ListNode sortedGt = sortList3(gtDummy.next);
-        return merge(merge(sortedLt, sortedGt), eqDummy.next);  // 最终两两 merge 在一起（merge 顺序无所谓）
+
+        return concat(concat(sortedLt, eqDummy.next), sortedGt);  // 最终将三个链表按小、中、大的顺序链接起来
+    }
+
+    private static ListNode concat(ListNode l1, ListNode l2) {  // 将 l2 链到 l1 上，返回 l1 的头结点
+        if (l1 == null) return l2;
+        ListNode curr = l1;
+        while (curr.next != null) curr = curr.next;
+        curr.next = l2;
+        return l1;
     }
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{5, 1, 6, 4, 2, 7, 3});
-        printLinkedList(sortList2(l1));  // expects 1->2->3->4->5->6->7->NULL
+        printLinkedList(sortList3(l1));  // expects 1->2->3->4->5->6->7->NULL
 
         ListNode l2 = createLinkedList(new int[]{4, 2, 1, 3});
-        printLinkedList(sortList2(l2));  // expects 1->2->3->4->NULL
+        printLinkedList(sortList3(l2));  // expects 1->2->3->4->NULL
 
         ListNode l3 = createLinkedList(new int[]{-1, 5, 3, 4, 0});
-        printLinkedList(sortList2(l3));  // expects -1->0->3->4->5->NULL
+        printLinkedList(sortList3(l3));  // expects -1->0->3->4->5->NULL
     }
 }
