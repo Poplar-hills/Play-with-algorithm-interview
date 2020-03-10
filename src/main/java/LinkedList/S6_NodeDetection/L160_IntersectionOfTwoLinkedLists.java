@@ -1,4 +1,4 @@
-package LinkedList;
+package LinkedList.S6_NodeDetection;
 
 import Utils.Helpers.ListNode;
 
@@ -22,7 +22,7 @@ import java.util.Set;
 public class L160_IntersectionOfTwoLinkedLists {
     /*
      * 解法1：HashTable (Set)
-     * - 思路：将链表 a 的所有节点放入一个 set 中，然后从头到尾遍历链表 b，第一个存在于 set 中的节点即是两链表的交叉点。
+     * - 思路：利用 Set 比较引用地址的特性来查找链表 a 中是否有节点存在于链表 b 中。
      * - 时间复杂度 O(m+n)，空间复杂度 O(m) or O(n)。
      * */
     public static ListNode getIntersectionNode(ListNode headA, ListNode headB) {
@@ -41,11 +41,11 @@ public class L160_IntersectionOfTwoLinkedLists {
 
     /*
      * 解法2：双指针循环遍历
-     * - 思路：若两个链表 a、b 交叉，则当指针 p1 遍历 a+b，指针 p2 遍历 b+a，p1 和 p2 一定会同时抵达交叉点。
-     *   例如在 test case 2 中，a+b = [0 → 9 → 1 → 2 → 4] → [3 → 2 → 4]；
-     *                      而 b+a = [3 → 2 → 4] → [0 → 9 → 1 → 2 → 4]；
+     * - 思路：若两个链表 a、b 交叉，则当指针 p1 遍历完 a->b、指针 p2 遍历完 b->a 时，p1、p2 一定会同时抵达交叉点。
+     *   例如在 test case 2 中，a->b = [0 → 9 → 1 → 2 → 4] → [3 → 2 → 4]；
+     *                      而 b->a = [3 → 2 → 4] → [0 → 9 → 1 → 2 → 4]；
      *   用指针 p1、p2 同时遍历这两个链表：
-     *     1. 若两个链表交叉，则第一个使 p1 == p2 的节点就是交叉点2；
+     *     1. 若两个链表有交叉，则第一个使 p1 == p2 的节点就是交叉点2；
      *     2. 若两个链表不交叉，则第一个使 p1 == p2 的节点就是链表两个链表尾部的 null；
      * - 时间复杂度 O(m+n)，空间复杂度 O(1)，相比解法1，该解法最小化了空间开销。
      * */
@@ -65,11 +65,9 @@ public class L160_IntersectionOfTwoLinkedLists {
         ListNode l1 = createLinkedList(new int[]{4, 1});
         ListNode l2 = createLinkedList(new int[]{5, 0, 1});
         ListNode l3 = createLinkedList(new int[]{8, 4, 5});
-        ListNode l1Tail = l1.tail(), l2Tail = l2.tail();
-        l1Tail.next = l3;
-        l2Tail.next = l3;
-        ListNode res1 = getIntersectionNode2(l1, l2);
-        log(res1.val + "; Equals to l3: " + (res1 == l3));  // expects 8, Equals to l3: true.
+        l1.tail().next = l2.tail().next = l3;
+        ListNode node1 = getIntersectionNode(l1, l2);
+        log("Intersection node val: " + node1.val);  // expects 8
         /*
          *       4 → 1
          *             ↘
@@ -79,11 +77,9 @@ public class L160_IntersectionOfTwoLinkedLists {
         ListNode l4 = createLinkedList(new int[]{0, 9, 1});
         ListNode l5 = createLinkedList(new int[]{3});
         ListNode l6 = createLinkedList(new int[]{2, 4});
-        ListNode l4Tail = l4.tail(), l5Tail = l5.tail();
-        l4Tail.next = l6;
-        l5Tail.next = l6;
-        ListNode res2 = getIntersectionNode2(l4, l5);
-        log(res2.val + "; Equals to l6: " + (res2 == l6));  // expects 2, Equals to l6: true.
+        l4.tail().next = l5.tail().next = l6;
+        ListNode node2 = getIntersectionNode(l4, l5);
+        log("Intersection node val: " + node2.val);  // expects 2
         /*
          *   0 → 9 → 1
          *             ↘
@@ -100,8 +96,8 @@ public class L160_IntersectionOfTwoLinkedLists {
 
         ListNode l9 = createLinkedList(new int[]{1});
         ListNode l10 = l9;
-        ListNode res4 = getIntersectionNode2(l9, l10);
-        log(res4.val + "; Equals to l9: " + (res4 == l9));  // expects 1, Equals to l6: true.
+        ListNode node4 = getIntersectionNode(l9, l10);
+        log("Intersection node val: " + node4.val);  // expects 1
         /*
          *   1
          * */
