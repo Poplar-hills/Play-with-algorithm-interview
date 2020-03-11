@@ -49,6 +49,7 @@ public class L19_RemoveNthNodeFromEndOfList {
      *   1. 待删除的节点4 ∴ 只要获得节点3即可完成删除；
      *   2. 虽然不知道链表长度，但能知道节点3与 null 的差距是 n+1 ∴ 可以利用这个差距，设置两个初始差距为 n+1 的指针，然后
      *      让他们同时移动，当右指针到达 null 时，左指针即指向节点3；
+     * - 💎技巧：👆这个利用节点与 null 之间的距离差移动指针，来找到待删除节点的前一节点，这个技巧很妙。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode removeNthFromEnd2(ListNode head, int n) {
