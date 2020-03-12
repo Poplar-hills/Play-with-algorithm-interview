@@ -1,0 +1,9 @@
+关于leetcode环形链表相关题目的总结：
+
+https://changsiyuan.github.io/2016/07/20/2016-7-20-roll-linkedlist/
+
+1. 判断链表是否有环（leetcode 141）
+2. 环长度是多少
+3. 找到环中的第一个节点（leetcode 142）
+4. 如何将有环的链表变成单链表（解除环）
+5. 如何判断两个单链表是否有交点，如何找到第一个相交的节点（leetcode 160）
