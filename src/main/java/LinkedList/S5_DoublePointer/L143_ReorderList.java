@@ -71,26 +71,25 @@ public class L143_ReorderList {
 
     /*
      * 解法3：生成反向链表后 merge
-     * - 思路：如果我们需要的是一个能从后往前移动的指针，那么最直接的方式就是先生成一个反向链表。步骤如下：
-     *   1. 生成反向链表 —— 不需包含全部节点，只需要原链表的后一半节点即可，因此需要找到链表的中点，将中点到尾节点这部分链表反向。
-     *   2. 至此问题转变成了 merge 两个链表，即将反向后的半截链表中的每个节点插入原链表中：
-     *      - 1->2->3->4->5 的中间节点为3，可得反向链表 5->4->3，merge 后得到：1->5->2->4->3；
-     *      - 1->2->3->4 的中间节点为3，可得反向链表 4->3，merge 后得到：1->4->2->3->3；
-     *      - 注意：反向链表的最后一个节点不需要 merge 到原链表中 ∴ merge 的循环结束条件是到达反向链表的最后一个节点（而非到达 null）。
-     * - 技巧：找链表的中点的最佳方式是采用 slow/fast 技巧。
+     * - 思路：与解法1、2一致，还是要先获得反向链表，再与正向链表进行 merge。
+     * - 实现：解法1、2都是借用其它数据结构来获得整个原链表的反向链表。但实际上只需为原链表的后半部分生成反向链表即可 ∴ 可以只要
+     *   找到原链表的中点，将后半部分截断、reverse、再与前半部分 merge 即可。例如 1->2->3->4->5 的中间节点为3，后半部分的
+     *   反向链表为 5->4，merge 后得到：1->5->2->4->3；
+     * - 💎技巧：找链表的中间点的方法有很多（如先求得长度），但 slow/fast 方式是最快的 O(n/2)。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static void reorderList3(ListNode head) {
         ListNode midNode = mid(head);
-        ListNode head2 = reverse(midNode);
+        ListNode reversed = reverse(midNode.next);
+        midNode.next = null;
         ListNode prev = head;
 
-        while (head2.next != null) {  // merge 的循环结束条件是到达反向链表的最后一个节点（最后一个节点不 merge 到原链表中）
-            ListNode temp = prev.next;
-            prev.next = head2;
-            head2 = head2.next;
-            prev.next.next = temp;    // 至此完成节点的插入
-            prev = temp;              // 将指针移到下一个节点的插入位置之前
+        while (reversed != null) {
+            ListNode next = prev.next;
+            prev.next = reversed;
+            reversed = reversed.next;
+            prev.next.next = next;    // 至此完成节点的插入
+            prev = next;              // 将指针移到下一个待插入位置之前的节点
         }
     }
 
@@ -98,15 +97,15 @@ public class L143_ReorderList {
         if (head == null) return null;
         ListNode prev = null, curr = head;
         while (curr != null) {
-            ListNode temp = curr.next;
+            ListNode next = curr.next;
             curr.next = prev;
             prev = curr;
-            curr = temp;
+            curr = next;
         }
-        return prev;
+        return prev;  // 反向之前的尾节点就是反向之后的头结点
     }
 
-    private static ListNode mid(ListNode head) {  // 找链表的中间点的方法有很多（如先求得长度），但这种 slow/fast 方式是最快的 O(n/2)
+    private static ListNode mid(ListNode head) {
         ListNode slow = head, fast = head;
         while (fast != null && fast.next != null) {  // 若 fast 指针到达尾节点（test case 1）或到达 null（test case 2）则循环结束
             slow = slow.next;
@@ -117,15 +116,15 @@ public class L143_ReorderList {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        reorderList2(l1);
+        reorderList3(l1);
         printLinkedList(l1);  // expects 1->5->2->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4});
-        reorderList2(l2);
+        reorderList3(l2);
         printLinkedList(l2);  // expects 1->4->2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3});
-        reorderList2(l3);
+        reorderList3(l3);
         printLinkedList(l3);  // expects 1->3->1->1->1->1->2->3->1->NULL
     }
 }
