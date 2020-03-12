@@ -88,15 +88,6 @@ class NestedIterator2 implements Iterator<Integer> {
 /*
  * 解法3：Lazy approach
  * - 思路：Lazy 的 iterator 弱化实例化时的计算逻辑，只做数据加载，而主要逻辑放在 hasNext/next 方法中。
- *
- * - 总结：Queue 是尾进头出： poll <-- [1|2|3|4|5] <-- offer
- *
- *        Stack 是尾进尾出： [1|2|3|4|5] <-- push
- *                                     --> pop
- *
- *        Deque 实现的 queue 是尾进头出（与 Queue 一致）；而 Deque 实现的 stack 是头进头出（与 Stack 的存储、遍历顺序相反）：
- *                         poll <-- [1|2|3|4|5] <-- offer         push --> [5|4|3|2|1]
- *                                                                 pop <--
  * */
 class NestedIterator3 implements Iterator<Integer> {
     private Stack<NestedInteger> stack = new Stack<>();
