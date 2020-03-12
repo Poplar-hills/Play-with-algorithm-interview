@@ -2,6 +2,8 @@ package LinkedList.S5_DoublePointer;
 
 import Utils.Helpers.ListNode;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 import static Utils.Helpers.*;
@@ -14,29 +16,10 @@ import static Utils.Helpers.*;
 
 public class L234_PalindromeLinkedList {
     /*
-     * 错误解：采用类似判断括号匹配的思路
-     * - 匹配的括号（如 {([])}）一定是 palindrome，而 palindrome 不一定是匹配括号的形态。例如 test case 3 中的 [1,0,1]，中间
-     *   有单个没有匹配的元素，这种情况也是 palindrome，但无法用括号匹配的思路来判断。
-     * */
-    public static boolean isPalindrome(ListNode head) {
-        if (head == null || head.next == null) return true;
-
-        Stack<ListNode> stack = new Stack<>();
-        for (ListNode curr = head; curr != null; curr = curr.next) {
-            if (!stack.isEmpty() && curr.val == stack.peek().val)
-                stack.pop();
-            else
-                stack.push(curr);
-        }
-
-        return stack.isEmpty();
-    }
-
-    /*
-     * 解法1：指针对撞 + 使用 Stack 实现反向遍历
-     * - 思路：要看一个链表或数组是否是 palindrome，需要同时从前、后两个方向逐个节点对照，若节点值相等则过，不相等则说明不是 palindrome。
-     *   因此需要一个能反向遍历链表的方式，因此可以采用 Stack。
-     * - 实现：类似 L143 中的解法1。
+     * 解法1：Stack + 指针对撞
+     * - 思路：一个链表/数组是否是 palindrome 要同时从前、后两个方向逐个节点对照，若有节点值不等则说明不是 palindrome
+     *   ∴ 可采用类似 L143_ReorderList 解法1的方式，反向链表的后半段，再与前半段来对照。
+     * - 实现：类似 L143 中的解法1采用 Stack 进行反向。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isPalindrome1(ListNode head) {
@@ -47,11 +30,11 @@ public class L234_PalindromeLinkedList {
             stack.push(curr);
 
         int len = stack.size();              // 注意该变量不能 inline，∵ 循环中会不断改变 stack.size
-        ListNode left = head;
+        ListNode l = head;
         for (int i = 0; i < len / 2; i++) {  // 遍历一半的节点，O(n/2)
-            ListNode right = stack.pop();
-            if (left.val != right.val) return false;
-            left = left.next;
+            ListNode r = stack.pop();
+            if (l.val != r.val) return false;
+            l = l.next;
         }
 
         return true;
@@ -59,17 +42,40 @@ public class L234_PalindromeLinkedList {
 
     /*
      * 解法2：生成反向链表
-     * - 思路：直接生成一个反向链表，然后与原链表逐一比较节点。
-     * - 注意：反向链表需要重新创建，而不能用 L206_ReverseLinkedList 中原地修改的方式，否则原链表会被修改导致后面无法正确遍历。
+     * - 思路：与解法1一致。
+     * - 实现：类似 L143_ReorderList 解法2，使用 Deque 来获得后半段的反向链表。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isPalindrome2(ListNode head) {
+        if (head == null || head.next == null) return true;
+
+        Deque<ListNode> dq = new ArrayDeque<>();
+        for (ListNode curr = head; curr != null; curr = curr.next)
+            dq.add(curr);
+
+        while (dq.size() > 1)
+            if (dq.pollFirst().val != dq.pollLast().val)
+                return false;
+
+        return true;
+    }
+
+    /*
+     * 解法3：生成反向链表
+     * - 思路：与解法1、2一致。
+     * - 实现：类似 L143_ReorderList 解法3，生成反向链表后再与原链表逐一对照。
+     * - 💎技巧：若反向链表的过程需要重新创建节点，则可以采用不断将新建节点并插入到 dummyHead 之后的方式来实现对原链表的反向。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isPalindrome3(ListNode head) {
         ListNode curr1 = head, curr2 = createReversedList(head);
-        while (curr1 != null && curr2 != null && curr1 != curr2) {  // 以 curr1 != curr2 作为终止条件的话对于 test case 3 这种偶数个节点的链表来说会遍历整个链表，即 O(n)
+
+        while (curr1 != null && curr2 != null) {
             if (curr1.val != curr2.val) return false;
             curr1 = curr1.next;
             curr2 = curr2.next;
         }
+
         return true;
     }
 
@@ -77,7 +83,7 @@ public class L234_PalindromeLinkedList {
         ListNode dummyNode = new ListNode(), curr = head;
         while (curr != null) {
             ListNode temp = dummyNode.next;
-            dummyNode.next = new ListNode(curr.val);  // 新建节点并插入到 dummyHead 之后，从而实现对原链表的反向
+            dummyNode.next = new ListNode(curr.val);  // 不断将新建节点并插入到 dummyHead 之后，从而实现对原链表的反向
             curr = curr.next;
             dummyNode.next.next = temp;
         }
@@ -85,12 +91,12 @@ public class L234_PalindromeLinkedList {
     }
 
     /*
-     * 解法3：截断链表后比较
+     * 解法4：截断链表后比较
      * - 思路：从链表中点截断链表，之后再逐个比较前一半，以及反向过的后一半。要截断首先需要找到中点，而找一个链表的中点可
      *   采用 slow/fast 技巧（同 L143 解法2 中的 mid 方法）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)（该解法原地变换、比较链表，无需开辟辅助空间）。
      * */
-    public static boolean isPalindrome3(ListNode head) {
+    public static boolean isPalindrome4(ListNode head) {
         if (head == null || head.next == null) return true;
 
         ListNode curr1 = head;
@@ -130,21 +136,21 @@ public class L234_PalindromeLinkedList {
 
     public static void main(String[] args) {
         ListNode l0 = createLinkedList(new int[]{1, 2});
-        log(isPalindrome3(l0));  // expects false
+        log(isPalindrome2(l0));  // expects false
 
         ListNode l1 = createLinkedList(new int[]{1, 1, 2, 1});
-        log(isPalindrome3(l1));  // expects false
+        log(isPalindrome2(l1));  // expects false
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 2, 1});
-        log(isPalindrome3(l2));  // expects true
+        log(isPalindrome2(l2));  // expects true
 
         ListNode l3 = createLinkedList(new int[]{1, 0, 1});
-        log(isPalindrome3(l3));  // expects true
+        log(isPalindrome2(l3));  // expects true
 
         ListNode l4 = createLinkedList(new int[]{1});
-        log(isPalindrome3(l4));  // expects true
+        log(isPalindrome2(l4));  // expects true
 
         ListNode l5 = createLinkedList(new int[]{});
-        log(isPalindrome3(l5));  // expects true
+        log(isPalindrome2(l5));  // expects true
     }
 }
