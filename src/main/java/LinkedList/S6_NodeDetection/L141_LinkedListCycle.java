@@ -34,6 +34,22 @@ public class L141_LinkedListCycle {
         return false;
     }
 
+    /*
+     * 解法2：Fast/slow
+     * - 思路：
+     * - 时间复杂度 O()，空间复杂度 O()。
+     * */
+    public static boolean hasCycle2(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) return true;
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
         l1.get(3).next = l1.get(2);
