@@ -53,7 +53,7 @@ public class L234_PalindromeLinkedList {
         for (ListNode curr = head; curr != null; curr = curr.next)
             dq.add(curr);
 
-        while (dq.size() > 1)
+        while (dq.size() > 1)  // 如 test case 3,4 ∵ 链表节点个数可能为奇数 ∴ 当 dq 中节点个数 ==1 时即可停止遍历
             if (dq.pollFirst().val != dq.pollLast().val)
                 return false;
 
@@ -63,7 +63,7 @@ public class L234_PalindromeLinkedList {
     /*
      * 解法3：生成反向链表
      * - 思路：与解法1、2一致。
-     * - 实现：类似 L143_ReorderList 解法3，生成反向链表后再与原链表逐一对照。
+     * - 实现：生成反向链表后再与原链表逐一对照。
      * - 💎技巧：若反向链表的过程需要重新创建节点，则可以采用不断将新建节点并插入到 dummyHead 之后的方式来实现对原链表的反向。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -92,17 +92,16 @@ public class L234_PalindromeLinkedList {
 
     /*
      * 解法4：截断链表后比较
-     * - 思路：从链表中点截断链表，之后再逐个比较前一半，以及反向过的后一半。要截断首先需要找到中点，而找一个链表的中点可
-     *   采用 slow/fast 技巧（同 L143 解法2 中的 mid 方法）。
-     * - 时间复杂度 O(n)，空间复杂度 O(1)（该解法原地变换、比较链表，无需开辟辅助空间）。
+     * - 思路：与解法1、2、3一致。
+     * - 实现：类似 L143_ReorderList 解法3，从链表中点截断链表，之后前后对照比较。找到中点的方式同样采用 slow/fast 技巧。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isPalindrome4(ListNode head) {
         if (head == null || head.next == null) return true;
-
         ListNode curr1 = head;
         ListNode curr2 = reverse(partition(head));  // reverse 和 partition 都是 O(n/2)
 
-        while (curr1 != null && curr2 != null) {  // 也是 O(n/2)
+        while (curr1 != null && curr2 != null) {    // 也是 O(n/2)
             if (curr1.val != curr2.val) return false;
             curr1 = curr1.next;
             curr2 = curr2.next;
@@ -111,46 +110,42 @@ public class L234_PalindromeLinkedList {
     }
 
     private static ListNode partition(ListNode head) {  // 对于 1->2->3->4，返回 3->4；对于 1->2->3，返回 2->3
-        ListNode prevSlow = new ListNode(), fast = head;  // ∵ 要截断链表 ∴ 需获取链表中点的前一个节点 ∵ slow/fast 技巧中 slow 最后到达中点 ∴ 只需找到 slow 的上一节点即可
-        prevSlow.next = head;
+        ListNode slow = new ListNode(), fast = head;    // ∵ 截断链表需获取截断点的前一个节点 ∴ 需要取到中点的上一个节点 ∴ slow 要从虚拟头节点出发
+        slow.next = head;
         while (fast != null && fast.next != null) {
-            prevSlow = prevSlow.next;
+            slow = slow.next;
             fast = fast.next.next;  // 若有偶数个节点则 fast 最后会停在 null 上，若有奇数个节点则会停在尾节点上
         }
-        ListNode secondHalf = prevSlow.next;
-        prevSlow.next = null;           // 截断链表
-        return secondHalf;
+        ListNode secondHalf = slow.next;
+        slow.next = null;           // 截断链表
+        return secondHalf;          // 返回后半段链表的头结点
     }
 
     private static ListNode reverse(ListNode head) {
         if (head == null || head.next == null) return head;
-        ListNode prev = null, curr = head;
-        while (curr != null) {
-            ListNode temp = curr.next;
-            curr.next = prev;
-            prev = curr;
-            curr = temp;
-        }
-        return prev;
+        ListNode newHead = reverse(head.next);
+        head.next.next = head;
+        head.next = null;
+        return newHead;
     }
 
     public static void main(String[] args) {
         ListNode l0 = createLinkedList(new int[]{1, 2});
-        log(isPalindrome2(l0));  // expects false
+        log(isPalindrome4(l0));  // expects false
 
         ListNode l1 = createLinkedList(new int[]{1, 1, 2, 1});
-        log(isPalindrome2(l1));  // expects false
+        log(isPalindrome4(l1));  // expects false
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 2, 1});
-        log(isPalindrome2(l2));  // expects true
+        log(isPalindrome4(l2));  // expects true
 
         ListNode l3 = createLinkedList(new int[]{1, 0, 1});
-        log(isPalindrome2(l3));  // expects true
+        log(isPalindrome4(l3));  // expects true
 
         ListNode l4 = createLinkedList(new int[]{1});
-        log(isPalindrome2(l4));  // expects true
+        log(isPalindrome4(l4));  // expects true
 
         ListNode l5 = createLinkedList(new int[]{});
-        log(isPalindrome2(l5));  // expects true
+        log(isPalindrome4(l5));  // expects true
     }
 }

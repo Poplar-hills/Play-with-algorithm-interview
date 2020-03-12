@@ -93,6 +93,15 @@ public class L143_ReorderList {
         }
     }
 
+    private static ListNode mid(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {  // 若 fast 指针到达尾节点（test case 1）或到达 null（test case 2）则循环结束
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
     private static ListNode reverse(ListNode head) {
         if (head == null) return null;
         ListNode prev = null, curr = head;
@@ -103,15 +112,6 @@ public class L143_ReorderList {
             curr = next;
         }
         return prev;  // 反向之前的尾节点就是反向之后的头结点
-    }
-
-    private static ListNode mid(ListNode head) {
-        ListNode slow = head, fast = head;
-        while (fast != null && fast.next != null) {  // 若 fast 指针到达尾节点（test case 1）或到达 null（test case 2）则循环结束
-            slow = slow.next;
-            fast = fast.next.next;
-        }
-        return slow;
     }
 
     public static void main(String[] args) {
