@@ -4,6 +4,9 @@ import Utils.Helpers.ListNode;
 
 import static Utils.Helpers.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /*
  * Linked List Cycle
  *
@@ -16,22 +19,29 @@ import static Utils.Helpers.*;
 
 public class L141_LinkedListCycle {
     /*
-     * 解法1：
+     * 解法1：Hashtable
      * - 思路：
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static boolean hasCycle(ListNode head) {
+        Set<ListNode> set = new HashSet<>();
+        ListNode curr = head;
+        while (curr != null) {
+            if (set.contains(curr)) return true;
+            set.add(curr);
+            curr = curr.next;
+        }
         return false;
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedList(new int[]{3, 2, 0, -4});
-        l1.get(3).next = l1.get(1);
+        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
+        l1.get(3).next = l1.get(2);
         log(hasCycle(l1));  // expects true
         /*
-         *   3 → 2 → 0 → -4
-         *       ↑        |
-         *       +--------+
+         *   1 → 2 → 3 → 4
+         *       ↑       |
+         *       +-------+
          * */
 
         ListNode l2 = createLinkedList(new int[]{1, 2});
@@ -43,8 +53,14 @@ public class L141_LinkedListCycle {
          *   +---+
          * */
 
-        ListNode l3 = createLinkedList(new int[]{1});
+        ListNode l3 = createLinkedList(new int[]{1, 2});
         log(hasCycle(l3));  // expects false
+        /*
+         *   1 → 2
+         * */
+
+        ListNode l4 = createLinkedList(new int[]{1});
+        log(hasCycle(l4));  // expects false
         /*
          *   1
          * */

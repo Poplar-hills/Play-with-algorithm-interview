@@ -122,7 +122,7 @@ public class L234_PalindromeLinkedList {
     }
 
     private static ListNode reverse(ListNode head) {
-        if (head == null || head.next == null) return head;
+        if (head.next == null) return head;
         ListNode newHead = reverse(head.next);
         head.next.next = head;
         head.next = null;
