@@ -21,7 +21,7 @@ import java.util.Set;
 
 public class L160_IntersectionOfTwoLinkedLists {
     /*
-     * 解法1：HashTable (Set)
+     * 解法1：Hash table (Set)
      * - 思路：利用 Set 比较引用地址的特性来查找链表 a 中是否有节点存在于链表 b 中。
      * - 时间复杂度 O(m+n)，空间复杂度 O(m) or O(n)。
      * */
@@ -40,7 +40,7 @@ public class L160_IntersectionOfTwoLinkedLists {
     }
 
     /*
-     * 解法2：双指针循环遍历
+     * 解法2：双指针 + 循环遍历
      * - 思路：若两个链表 l1、l2 交叉，则当指针 a 遍历完 l1->l2、指针 b 遍历完 l2->l1 时，a、b 一定会同时抵达交叉点。
      *   例如在 test case 2 中，l1->l2 = [0 → 9 → 1 → 2 → 4] → [3 → 2 → 4]；
      *                      而 l2->l1 = [3 → 2 → 4] → [0 → 9 → 1 → 2 → 4]；
@@ -62,7 +62,7 @@ public class L160_IntersectionOfTwoLinkedLists {
     }
 
     /*
-     * 解法3：双指针找齐前进
+     * 解法3：双指针 + 找齐前进
      * - 思路：另一种思路是，若两个链表相交，则交点之后的长度是两个链表共有的，只有交点之前的长度可能不同 ∴ 若在节点之前将链表的
      *   长度只差消除，则通过双指针前进的方式一定能同时走到交点上。
      * - 时间复杂度 O(max(m+n))，空间复杂度 O(1)。
