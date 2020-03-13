@@ -20,8 +20,7 @@ import java.util.Set;
 public class L141_LinkedListCycle {
     /*
      * 解法1：Hashtable
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean hasCycle(ListNode head) {
         Set<ListNode> set = new HashSet<>();
@@ -35,9 +34,11 @@ public class L141_LinkedListCycle {
     }
 
     /*
-     * 解法2：Fast/slow
-     * - 思路：
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * 解法2：Faster and slower runner
+     * - 💎总结：若链表有环，从头节点到入环点的距离是 D，环长是 S，则：
+     *   1. 循环一定会进行 S 次；
+     *   2. fast、slow 的相遇点跟 D、S 都相关，不总在固定的地方相遇。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static boolean hasCycle2(ListNode head) {
         ListNode slow = head, fast = head;
@@ -51,32 +52,41 @@ public class L141_LinkedListCycle {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-        l1.get(3).next = l1.get(2);
-        log(hasCycle(l1));  // expects true
+        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7, 8});
+        l1.get(7).next = l1.get(2);
+        log(hasCycle2(l1));  // expects true.
+        /*
+         *   1 → 2 → 3 → 4 → 5
+         *           ↑       ↓
+         *           8 ← 7 ← 6
+         * */
+
+        ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4});
+        l2.get(3).next = l2.get(1);
+        log(hasCycle2(l2));  // expects true
         /*
          *   1 → 2 → 3 → 4
          *       ↑       |
          *       +-------+
          * */
 
-        ListNode l2 = createLinkedList(new int[]{1, 2});
-        l2.get(1).next = l2.get(0);
-        log(hasCycle(l2));  // expects true
+        ListNode l3 = createLinkedList(new int[]{1, 2});
+        l3.get(1).next = l3.get(0);
+        log(hasCycle2(l3));  // expects true
         /*
          *   1 → 2
          *   ↑   |
          *   +---+
          * */
 
-        ListNode l3 = createLinkedList(new int[]{1, 2});
-        log(hasCycle(l3));  // expects false
+        ListNode l4 = createLinkedList(new int[]{1, 2});
+        log(hasCycle2(l4));  // expects false
         /*
          *   1 → 2
          * */
 
-        ListNode l4 = createLinkedList(new int[]{1});
-        log(hasCycle(l4));  // expects false
+        ListNode l5 = createLinkedList(new int[]{1});
+        log(hasCycle2(l5));  // expects false
         /*
          *   1
          * */
