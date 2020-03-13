@@ -81,7 +81,7 @@ public class L160_IntersectionOfTwoLinkedLists {
             lenB--;
         }
 
-        while (headA != headB) {  // 当 lenA == lenB 时开始寻找相交节点
+        while (headA != headB) {  // 当 lenA == lenB 时开始遍历寻找相交节点，遍历的停止条件就是找到交点
             headA = headA.next;
             headB = headB.next;
         }
