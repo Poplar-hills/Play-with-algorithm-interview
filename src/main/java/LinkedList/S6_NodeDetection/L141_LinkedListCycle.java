@@ -51,10 +51,33 @@ public class L141_LinkedListCycle {
         return false;
     }
 
+    /*
+     * 解法3：Reverse
+     * - 思路：若一个链表有环，则将其反向之后的头结点一定就是原链表的头结点：
+     *        1 → 2 → 3 → 4              1   2 ← 3 ← 4
+     *            ↑       |      --->        |       ↑   - 反向过程结束后 curr == null, prev 指向1节点 ∴ 返回1节点
+     *            +-------+                  +-------+
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static boolean hasCycle3(ListNode head) {
+        return head != null && head.next != null && head == reverse(head);
+    }
+
+    private static ListNode reverse(ListNode head) {  // 注意不能使用递归，否则会 stack overflow
+        ListNode prev = null, curr = head;
+        while (curr != null) {
+            ListNode next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7, 8});
         l1.get(7).next = l1.get(2);
-        log(hasCycle2(l1));  // expects true.
+        log(hasCycle3(l1));  // expects true.
         /*
          *   1 → 2 → 3 → 4 → 5
          *           ↑       ↓
@@ -63,7 +86,7 @@ public class L141_LinkedListCycle {
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4});
         l2.get(3).next = l2.get(1);
-        log(hasCycle2(l2));  // expects true
+        log(hasCycle3(l2));  // expects true
         /*
          *   1 → 2 → 3 → 4
          *       ↑       |
@@ -72,7 +95,7 @@ public class L141_LinkedListCycle {
 
         ListNode l3 = createLinkedList(new int[]{1, 2});
         l3.get(1).next = l3.get(0);
-        log(hasCycle2(l3));  // expects true
+        log(hasCycle3(l3));  // expects true
         /*
          *   1 → 2
          *   ↑   |
@@ -80,13 +103,13 @@ public class L141_LinkedListCycle {
          * */
 
         ListNode l4 = createLinkedList(new int[]{1, 2});
-        log(hasCycle2(l4));  // expects false
+        log(hasCycle3(l4));  // expects false
         /*
          *   1 → 2
          * */
 
         ListNode l5 = createLinkedList(new int[]{1});
-        log(hasCycle2(l5));  // expects false
+        log(hasCycle3(l5));  // expects false
         /*
          *   1
          * */
