@@ -5,16 +5,16 @@ import java.util.*;
 import static Utils.Helpers.*;
 
 /*
-* Binary Tree Inorder Traversal
-*
-* - Given a binary tree, return the inorder traversal of its nodes' values.
-* */
+ * Binary Tree Inorder Traversal
+ *
+ * - Given a binary tree, return the inorder traversal of its nodes' values.
+ * */
 
 public class L94_BinaryTreeInorderTraversal {
     /*
-    * 解法1：intuitive 递归
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-    * */
+     * 解法1：intuitive 递归
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
+     * */
     public static List<Integer> inorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         inorderTraversal(root, res);
@@ -29,10 +29,10 @@ public class L94_BinaryTreeInorderTraversal {
     }
 
     /*
-    * 解法2：迭代
-    * - 思路：与 L144 的解法3思路类似，唯一区别在于访问节点的时机 —— 向左递归到底的路上先不访问节点，而是到底之后开始出栈时再访问节点。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-    * */
+     * 解法2：迭代
+     * - 思路：与 L144 的解法3思路类似，唯一区别在于访问节点的时机 —— 向左递归到底的路上先不访问节点，而是到底之后开始出栈时再访问节点。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
+     * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         Stack<TreeNode> stack = new Stack<>();
@@ -75,17 +75,17 @@ public class L94_BinaryTreeInorderTraversal {
     }
 
     /*
-    * 解法4：迭代（模拟指令）
-    * - 思路：在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问）：
-    *               5       |      |     |      |     |_i__1_|     |_v__1_|     |______|     |      |
-    *            /    \     |      |     |______|     |_v__3_|     |_v__3_|     |_v__3_|     |______|
-    *          3       8    |      | --> |_i__3_| --> |_i__4_| --> |_i__4_| --> |_i__4_| --> |_i__4_| ...
-    *        /  \     /     |______|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|
-    *       1    4   6      |_i__5_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|
-    *                          []           []           []           []          [1]         [1,3]
-    * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法5、L145 的解法5）。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-    * */
+     * 解法4：迭代（模拟指令）
+     * - 思路：在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问）：
+     *               5       |      |     |      |     |_i__1_|     |_v__1_|     |______|     |      |
+     *            /    \     |      |     |______|     |_v__3_|     |_v__3_|     |_v__3_|     |______|
+     *          3       8    |      | --> |_i__3_| --> |_i__4_| --> |_i__4_| --> |_i__4_| --> |_i__4_| ...
+     *        /  \     /     |______|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|
+     *       1    4   6      |_i__5_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|
+     *                          []           []           []           []          [1]         [1,3]
+     * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法5、L145 的解法5）。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
+     * */
     static class Command {
         String type;
         TreeNode node;

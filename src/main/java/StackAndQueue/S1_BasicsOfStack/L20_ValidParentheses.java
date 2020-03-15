@@ -5,10 +5,10 @@ import java.util.*;
 import static Utils.Helpers.*;
 
 /*
-* Valid Parentheses
-*
-* - Given a string containing just the characters '(', ')', '{', '}', '[', ']', determine if the input string is valid.
-* */
+ * Valid Parentheses
+ *
+ * - Given a string containing just the characters '(', ')', '{', '}', '[', ']', determine if the input string is valid.
+ * */
 
 public class L20_ValidParentheses {
     /*

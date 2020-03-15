@@ -6,14 +6,14 @@ import java.util.function.BiFunction;
 import static Utils.Helpers.*;
 
 /*
-* Evaluate Reverse Polish Notation
-*
-* - Evaluate the value of an arithmetic expression in Reverse Polish Notation (RPN, 逆波兰表示法).
-*   1. Valid operators are +, -, *, /.
-*   2. Each operand may be an integer or another expression.
-*   3. The given RPN expression is always valid. That means the expression would always evaluate to a result
-*      and there won't be any divide by zero operation.
-* */
+ * Evaluate Reverse Polish Notation
+ *
+ * - Evaluate the value of an arithmetic expression in Reverse Polish Notation (RPN, 逆波兰表示法).
+ *   1. Valid operators are +, -, *, /.
+ *   2. Each operand may be an integer or another expression.
+ *   3. The given RPN expression is always valid. That means the expression would always evaluate to a result
+ *      and there won't be any divide by zero operation.
+ * */
 
 public class L150_EvaluateReversePolishNotation {
     /*

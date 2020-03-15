@@ -5,18 +5,18 @@ import java.util.*;
 import static Utils.Helpers.*;
 
 /*
-* Binary Tree Zigzag Level Order Traversal
-*
-* - Given a binary tree, return the zigzag level order traversal of its nodes' values.
-*   (ie, from left to right, then right to left for the next level and alternate between).
-* */
+ * Binary Tree Zigzag Level Order Traversal
+ *
+ * - Given a binary tree, return the zigzag level order traversal of its nodes' values.
+ *   (ie, from left to right, then right to left for the next level and alternate between).
+ * */
 
 public class L103_BinaryTreeZigzagLevelOrderTraversal {
     /*
-    * 解法1：迭代（BFT）
-    * - 思路：类似 L102 的解法1，只是加入判断，在不同的层级以不同的顺序入队左/右子节点。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：迭代（BFT）
+     * - 思路：类似 L102 的解法1，只是加入判断，在不同的层级以不同的顺序入队左/右子节点。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static List<List<Integer>> zigzagLevelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
@@ -45,11 +45,11 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
     }
 
     /*
-    * 解法2：递归 + 最后 reverse
-    * - 思路：与 L107 的解法4类似，仍然是 DFT，只是最后 reverse 的不是整个 res，而是 res 中的奇数层列表。
-    * - 时间复杂度 O(n*h)，其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表，每个列表最多有 n/2 个元素）；
-    * - 空间复杂度 O(h)。
-    * */
+     * 解法2：递归 + 最后 reverse
+     * - 思路：与 L107 的解法4类似，仍然是 DFT，只是最后 reverse 的不是整个 res，而是 res 中的奇数层列表。
+     * - 时间复杂度 O(n*h)，其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表，每个列表最多有 n/2 个元素）；
+     * - 空间复杂度 O(h)。
+     * */
     public static List<List<Integer>> zigzagLevelOrder2(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
@@ -74,10 +74,10 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
     }
 
     /*
-    * 解法3：递归2
-    * - 思路：在往每一层的列表中添加节点值时进行判断，如果该层是奇数层，则每次添加到列表头部，否则正常添加到列表尾部。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
-    * */
+     * 解法3：递归2
+     * - 思路：在往每一层的列表中添加节点值时进行判断，如果该层是奇数层，则每次添加到列表头部，否则正常添加到列表尾部。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
+     * */
     public static List<List<Integer>> zigzagLevelOrder3(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
@@ -98,11 +98,11 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
     }
 
     /*
-    * 解法4：迭代
-    * - 思路：类似 L107 的解法2，区别是 queue 中以 Pair 形式同时存储节点和节点层级信息，在向层级列表 levelList 添加节点值时根据
-    *   节点的层级进行判断，若是奇数层则添加到列表头部，否则正常添加到尾部。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法4：迭代
+     * - 思路：类似 L107 的解法2，区别是 queue 中以 Pair 形式同时存储节点和节点层级信息，在向层级列表 levelList 添加节点值时根据
+     *   节点的层级进行判断，若是奇数层则添加到列表头部，否则正常添加到尾部。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static List<List<Integer>> zigzagLevelOrder4(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;

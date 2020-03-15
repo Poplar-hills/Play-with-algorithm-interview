@@ -3,19 +3,19 @@ package StackAndQueue.S2_StackAndRecursion.L341_FlattenNestedListIterator;
 import java.util.*;
 
 /*
-* Flatten Nested List Iterator
-*
-* - Given a nested list of integers, implement an iterator to flatten it.
-* - Each element is either an integer, or a list -- whose elements may also be integers or other lists.
-*
-* - Your NestedIterator object will be instantiated and called as such:
-*       NestedIterator i = new NestedIterator(nestedList);
-*       while (i.hasNext())
-*           doSomethingWith(i.next());
-*
-* - Example 1: Input: [0,[[1,2],3],[4,[5,6]]]  Output: [0,1,2,3,4,5,6]
-*   Example 2: Input: [1,[4,[6]]]              Output: [1,4,6]
-* */
+ * Flatten Nested List Iterator
+ *
+ * - Given a nested list of integers, implement an iterator to flatten it.
+ * - Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+ *
+ * - Your NestedIterator object will be instantiated and called as such:
+ *       NestedIterator i = new NestedIterator(nestedList);
+ *       while (i.hasNext())
+ *           doSomethingWith(i.next());
+ *
+ * - Example 1: Input: [0,[[1,2],3],[4,[5,6]]]  Output: [0,1,2,3,4,5,6]
+ *   Example 2: Input: [1,[4,[6]]]              Output: [1,4,6]
+ * */
 
 
 /*

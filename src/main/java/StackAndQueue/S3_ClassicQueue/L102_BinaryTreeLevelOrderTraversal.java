@@ -8,17 +8,17 @@ import java.util.Queue;
 import static Utils.Helpers.*;
 
 /*
-* Binary Tree Level Order Traversal
-*
-* - Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
-* */
+ * Binary Tree Level Order Traversal
+ *
+ * - Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
+ * */
 
 public class L102_BinaryTreeLevelOrderTraversal {
     /*
-    * 基础1：二叉树非递归层序遍历，用于和解法1进行对比。
-    * - 思路：二叉树层序遍历的本质实际上就是广度优先遍历（Breadth-first traversal, BFT），因此可以采用类似图论 BFS 的思路，
-    *   使用 queue 作为辅助结构。
-    * */
+     * 基础1：二叉树非递归层序遍历，用于和解法1进行对比。
+     * - 思路：二叉树层序遍历的本质实际上就是广度优先遍历（Breadth-first traversal, BFT），因此可以采用类似图论 BFS 的思路，
+     *   使用 queue 作为辅助结构。
+     * */
     public static List<Integer> simpleLevelOrder(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
@@ -59,10 +59,10 @@ public class L102_BinaryTreeLevelOrderTraversal {
     }
 
     /*
-    * 解法1：迭代（BFT）
-    * - 思路：在基础1的基础上实现，区别在于队列中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：迭代（BFT）
+     * - 思路：在基础1的基础上实现，区别在于队列中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;

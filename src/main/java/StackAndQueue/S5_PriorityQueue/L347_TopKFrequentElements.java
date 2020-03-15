@@ -5,20 +5,20 @@ import java.util.*;
 import static Utils.Helpers.*;
 
 /*
-* Top K Frequent Elements
-*
-* - Given a non-empty array of integers, return the k most frequent elements.
-*
-* - 注：Java 中的 PriorityQueue 在使用 iterator 遍历时不保证任何顺序性。
-* */
+ * Top K Frequent Elements
+ *
+ * - Given a non-empty array of integers, return the k most frequent elements.
+ *
+ * - 注：Java 中的 PriorityQueue 在使用 iterator 遍历时不保证任何顺序性。
+ * */
 
 public class L347_TopKFrequentElements {
     /*
-    * 解法1：Map + merge sort（全排序）
-    * - 思路：要求 most frequent elements，自然想到先用 map 统计所有元素的出现频率。之后问题就是如何从 map 中选出频率
-    *   最高的 k 个 key 了，最直接的实现就是排序 —— 对 map 中的 key 根据 value 进行排序，最后拿到前 k 个最大的。
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
-    * */
+     * 解法1：Map + merge sort（全排序）
+     * - 思路：要求 most frequent elements，自然想到先用 map 统计所有元素的出现频率。之后问题就是如何从 map 中选出频率
+     *   最高的 k 个 key 了，最直接的实现就是排序 —— 对 map 中的 key 根据 value 进行排序，最后拿到前 k 个最大的。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+     * */
     public static List<Integer> topKFrequent(int[] nums, int k) {
         List<Integer> res = new ArrayList<>();
         if (nums.length == 0) return res;
@@ -34,10 +34,10 @@ public class L347_TopKFrequentElements {
     }
 
     /*
-    * 解法2：Map + heap sort (全排序)
-    * - 思路：与解法1相同，但排序方式是堆排序；堆排序的实现可以选择 PriorityQueue，因为底层实现是堆（默认是最小堆，但这里需要最大堆）。
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
-    * */
+     * 解法2：Map + heap sort (全排序)
+     * - 思路：与解法1相同，但排序方式是堆排序；堆排序的实现可以选择 PriorityQueue，因为底层实现是堆（默认是最小堆，但这里需要最大堆）。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+     * */
     public static List<Integer> topKFrequent2(int[] nums, int k) {
         List<Integer> res = new ArrayList<>();
         if (nums.length == 0) return res;
@@ -56,16 +56,16 @@ public class L347_TopKFrequentElements {
     }
 
     /*
-    * 解法3：Map + TreeSet sort (全排序)
-    * - 思路：与解法1、2相同，但排序方式是利用 TreeSet 插入后会对元素排序的机制完成的。
-    * - 说明：Comparator 用法 -- 在构造 TreeSet 或 PriorityQueue 时都可以指定 Comparator：
-    *   1. 若返回正数，表示需要交换 a 和 b，让 b 在前 a 在后 ∴ 是降序排列；
-    *   2. 若返回负数，表示无需交换 a 和 b，让 a 在前 b 在后 ∴ 是升序排列；
-    *   对于 [1, 2, 3] 来说：                           对于 [3, 2, 1] 来说：
-    *   1. 若 (a, b) -> a - b：则结果为 [1, 2, 3]；      1. 若 (a, b) -> a - b：则结果仍为 [1, 2, 3]；
-    *   2. 若 (a, b) -> b - a：则结果为 [3, 2, 1]；      2. 若 (a, b) -> b - a：则结果仍为 [3, 2, 1]；
-    * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
-    * */
+     * 解法3：Map + TreeSet sort (全排序)
+     * - 思路：与解法1、2相同，但排序方式是利用 TreeSet 插入后会对元素排序的机制完成的。
+     * - 说明：Comparator 用法 -- 在构造 TreeSet 或 PriorityQueue 时都可以指定 Comparator：
+     *   1. 若返回正数，表示需要交换 a 和 b，让 b 在前 a 在后 ∴ 是降序排列；
+     *   2. 若返回负数，表示无需交换 a 和 b，让 a 在前 b 在后 ∴ 是升序排列；
+     *   对于 [1, 2, 3] 来说：                           对于 [3, 2, 1] 来说：
+     *   1. 若 (a, b) -> a - b：则结果为 [1, 2, 3]；      1. 若 (a, b) -> a - b：则结果仍为 [1, 2, 3]；
+     *   2. 若 (a, b) -> b - a：则结果为 [3, 2, 1]；      2. 若 (a, b) -> b - a：则结果仍为 [3, 2, 1]；
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+     * */
     public static List<Integer> topKFrequent3(int[] nums, int k) {
         List<Integer> res = new ArrayList<>();
         if (nums.length == 0) return res;
@@ -121,11 +121,11 @@ public class L347_TopKFrequentElements {
     }
 
     /*
-    * 解法5：
-    * - 思路：创建 n+1 大小的 buckets 数组，下标为频次，内容为有相同频次的键值 list。这使得我们不再需要借助堆，而是通过空间换时间
-    *   的方式达到从 map 中选出频率最高的 k 个 key 的目的。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法5：
+     * - 思路：创建 n+1 大小的 buckets 数组，下标为频次，内容为有相同频次的键值 list。这使得我们不再需要借助堆，而是通过空间换时间
+     *   的方式达到从 map 中选出频率最高的 k 个 key 的目的。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static List<Integer> topKFrequent5(int[] nums, int k) {
         List<Integer> res = new ArrayList<>();
         if (nums.length == 0) return res;

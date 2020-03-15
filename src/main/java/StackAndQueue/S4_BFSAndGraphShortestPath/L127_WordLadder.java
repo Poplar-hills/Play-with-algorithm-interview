@@ -7,29 +7,29 @@ import Utils.Helpers.Pair;
 import static Utils.Helpers.log;
 
 /*
-* Word Ladder
-*
-* - Given two words (beginWord and endWord), and a dictionary's word list, find the length of shortest
-*   transformation sequence from beginWord to endWord, such that:
-*   1. Only one letter can be changed at a time.
-*   2. Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
-*   3. Return 0 if there is no such transformation sequence.
-*   Note that:
-*   1. All words have the same length.
-*   2. All words contain only lowercase alphabetic characters.
-*   3. You may assume no duplicates in the word list.
-*   4. You may assume beginWord and endWord are non-empty and are not the same.
-*
-* - 注意：本题求的是最短路径上的顶点数（包含头尾顶点），而非最短路径的上步数（L279 中求的是步数），这个要区分清楚。
-* */
+ * Word Ladder
+ *
+ * - Given two words (beginWord and endWord), and a dictionary's word list, find the length of shortest
+ *   transformation sequence from beginWord to endWord, such that:
+ *   1. Only one letter can be changed at a time.
+ *   2. Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
+ *   3. Return 0 if there is no such transformation sequence.
+ *   Note that:
+ *   1. All words have the same length.
+ *   2. All words contain only lowercase alphabetic characters.
+ *   3. You may assume no duplicates in the word list.
+ *   4. You may assume beginWord and endWord are non-empty and are not the same.
+ *
+ * - 注意：本题求的是最短路径上的顶点数（包含头尾顶点），而非最短路径的上步数（L279 中求的是步数），这个要区分清楚。
+ * */
 
 public class L127_WordLadder {
     /*
-    * 超时解（但结果正确）：BFS
-    * - 思路：
-    *   1. 该题是个典型求最短路径的题，而求图上两点的最短路径可采用 BFS。
-    *   2. 题中要求返回最短路径的步数，因此队列中除了存储路径上的每一个顶点之外，还要存储从起点开始到该顶点的步数信息。
-    * */
+     * 超时解（但结果正确）：BFS
+     * - 思路：
+     *   1. 该题是个典型求最短路径的题，而求图上两点的最短路径可采用 BFS。
+     *   2. 题中要求返回最短路径的步数，因此队列中除了存储路径上的每一个顶点之外，还要存储从起点开始到该顶点的步数信息。
+     * */
     public static int ladderLength(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;            // 无解的情况
         Queue<Pair<String, Integer>> q = new LinkedList<>();  // BFS 需要使用 queue 作为辅助数据结构
@@ -62,14 +62,14 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法1：在超时解的基础上对 BFS 进行优化
-    * - 问题：在超时解中，很可能出现这种情况：顶点 A、B 都与 C 相邻，当分别为 A 和 B 寻找相邻节点时 C 都会出现，因此也会被入队2次，
-    *   从而造成不必要的重复访问。
-    * - 思路：记录哪些顶点还未被访问过，当寻找相邻顶点时只在这些未被访问过的顶点中寻找，找到后只要不是 endWord 就让它们入队待访问，
-    *   并将它们从未被访问的记录中删除。
-    * - 注意：当需要一边遍历 set，一边增/删其中元素（动态增删）时，不能使用 for, while 或者 forEach，需要使用 iterator。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法1：在超时解的基础上对 BFS 进行优化
+     * - 问题：在超时解中，很可能出现这种情况：顶点 A、B 都与 C 相邻，当分别为 A 和 B 寻找相邻节点时 C 都会出现，因此也会被入队2次，
+     *   从而造成不必要的重复访问。
+     * - 思路：记录哪些顶点还未被访问过，当寻找相邻顶点时只在这些未被访问过的顶点中寻找，找到后只要不是 endWord 就让它们入队待访问，
+     *   并将它们从未被访问的记录中删除。
+     * - 注意：当需要一边遍历 set，一边增/删其中元素（动态增删）时，不能使用 for, while 或者 forEach，需要使用 iterator。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int ladderLength1(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Set<String> unvisited = new HashSet<>(wordList);  // 通过 Collection 构造 Set
@@ -95,13 +95,13 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法2：解法2的性能改进版
-    * - 思路：改进点在于寻找相邻顶点的过程 —— 解法2中该过程是通过 isSimilar 方法比较 wordSet 中每个单词是否与待比较单词 word
-    *   相似来完成的；而本解法中采用另一种策略 —— 尝试对 word 中的每个字母用 a-z 中的字母进行替换，看替换后的单词 tWord 是否
-    *   存在于 wordSet 中，若存在则说明确实与 word 相邻。这种方法复杂度更低 ∵ 只有26个字母 ∴ 复杂度为 len(word) * 26；而解法1
-    *   中的复杂度为 wordSet.size() * len(word)，因此在 wordSet 中元素数较多时，性能会差于解法2。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法2：解法2的性能改进版
+     * - 思路：改进点在于寻找相邻顶点的过程 —— 解法2中该过程是通过 isSimilar 方法比较 wordSet 中每个单词是否与待比较单词 word
+     *   相似来完成的；而本解法中采用另一种策略 —— 尝试对 word 中的每个字母用 a-z 中的字母进行替换，看替换后的单词 tWord 是否
+     *   存在于 wordSet 中，若存在则说明确实与 word 相邻。这种方法复杂度更低 ∵ 只有26个字母 ∴ 复杂度为 len(word) * 26；而解法1
+     *   中的复杂度为 wordSet.size() * len(word)，因此在 wordSet 中元素数较多时，性能会差于解法2。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     private static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Queue<Pair<String, Integer>> q = new LinkedList<>();
@@ -132,29 +132,29 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法3：Bi-directional BFS
-    * - 策略：采用 Bi-directional BFS 能有效减小搜索复杂度：
-    *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的时间及空间
-    *     复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
-    *   - 使用条件：1. 已知头尾两个顶点  2. 两个方向的 branching factor 相同。
-    *
-    * - 思路：虽然代码不少，但思路并不复杂：
-    *   1. 使用2个队列 startQ 和 endQ，分别用于辅助正/反向查找；
-    *   2. startQ 放入起始顶点 beginWord，endQ 放入终结顶点 endWord；
-    *   3. 从 startQ 开始，遍历其中所有顶点，为每一个顶点寻找相邻顶点：
-    *      a. 若其中任一相邻顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回顶点数即可；
-    *      b. 若没有相邻顶点出现在 endQ 中，则说明正反向查找还未相遇，此时：
-    *        1). 经过的顶点数+1；
-    *        2). 将所有未访问过的相邻顶点加入 neighbours 集合；
-    *        3). 调换方向开始下一轮查找（刚才是正向查找一步，下一轮是反向查找一步），将 endQ 作为 startQ 开始遍历，并将 neighbours
-    *            作为 endQ 用于查看下一轮中的相邻顶点是否出现在对面方向最外层顶点中。
-    *
-    * - 优化：在最后要调换方向时，可以加一步判断 —— Choose the shortest between the startQ and endQ in hopes to alternate
-    *   between them to meet somewhere at the middle. This optimizes the code, because we are processing smallest
-    *   queue first, so the # of words in the queues dont blow up too fast. basically balancing between the two queues.
-    *
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法3：Bi-directional BFS
+     * - 策略：采用 Bi-directional BFS 能有效减小搜索复杂度：
+     *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的时间及空间
+     *     复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
+     *   - 使用条件：1. 已知头尾两个顶点  2. 两个方向的 branching factor 相同。
+     *
+     * - 思路：虽然代码不少，但思路并不复杂：
+     *   1. 使用2个队列 startQ 和 endQ，分别用于辅助正/反向查找；
+     *   2. startQ 放入起始顶点 beginWord，endQ 放入终结顶点 endWord；
+     *   3. 从 startQ 开始，遍历其中所有顶点，为每一个顶点寻找相邻顶点：
+     *      a. 若其中任一相邻顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回顶点数即可；
+     *      b. 若没有相邻顶点出现在 endQ 中，则说明正反向查找还未相遇，此时：
+     *        1). 经过的顶点数+1；
+     *        2). 将所有未访问过的相邻顶点加入 neighbours 集合；
+     *        3). 调换方向开始下一轮查找（刚才是正向查找一步，下一轮是反向查找一步），将 endQ 作为 startQ 开始遍历，并将 neighbours
+     *            作为 endQ 用于查看下一轮中的相邻顶点是否出现在对面方向最外层顶点中。
+     *
+     * - 优化：在最后要调换方向时，可以加一步判断 —— Choose the shortest between the startQ and endQ in hopes to alternate
+     *   between them to meet somewhere at the middle. This optimizes the code, because we are processing smallest
+     *   queue first, so the # of words in the queues dont blow up too fast. basically balancing between the two queues.
+     *
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int ladderLength3(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
 
@@ -195,10 +195,10 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法4：解法3的递归版
-    * - 思路：每次递归都相当于从正/反方向往前走一步，进行一次正/反向查找，查找这一侧最外层顶点的相邻顶点。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法4：解法3的递归版
+     * - 思路：每次递归都相当于从正/反方向往前走一步，进行一次正/反向查找，查找这一侧最外层顶点的相邻顶点。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int ladderLength4(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Set<String> unvisited = new HashSet<>(wordList);
@@ -229,11 +229,11 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法5：生成 Graph + BFS
-    * - 思路：不同于解法1-4，该解法先构建邻接矩阵更直接地将问题建模为图论问题，再通过 BFS 求解。而构建邻接矩阵的过程实际上就是确定
-    *   顶点直接的链接关系，即每个顶点相邻顶点都有哪些。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法5：生成 Graph + BFS
+     * - 思路：不同于解法1-4，该解法先构建邻接矩阵更直接地将问题建模为图论问题，再通过 BFS 求解。而构建邻接矩阵的过程实际上就是确定
+     *   顶点直接的链接关系，即每个顶点相邻顶点都有哪些。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int ladderLength5(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 需要把 beginWord 加入 wordList 才能开始建立图
@@ -271,14 +271,14 @@ public class L127_WordLadder {
     }
 
     /*
-    * 解法6：生成 Graph + Bi-directional BFS
-    * - 思路：在解法5的邻接矩阵的基础上使用 Bi-directional BFS。但该解法中 Bi-directional BFS 的实现（即 biDirectionalBfs
-    *   方法）不同于解法3、4中两个方向交替进行查找的方式，而是：
-    *   1. 同时从起点和终点开始对整个图进行 BFS。
-    *   2. 每次正向和反向都向前查找一个顶点的所有相邻顶点，计算从起/终点到这些顶点的步数，并分别记录在 beginSteps 和 endSteps 中。
-    *   3. 检测 beginSteps、endSteps 中是否存在能同时从起、终点到达的顶点，并从所有这样的路径中求出最短的来。
-    * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-    * */
+     * 解法6：生成 Graph + Bi-directional BFS
+     * - 思路：在解法5的邻接矩阵的基础上使用 Bi-directional BFS。但该解法中 Bi-directional BFS 的实现（即 biDirectionalBfs
+     *   方法）不同于解法3、4中两个方向交替进行查找的方式，而是：
+     *   1. 同时从起点和终点开始对整个图进行 BFS。
+     *   2. 每次正向和反向都向前查找一个顶点的所有相邻顶点，计算从起/终点到这些顶点的步数，并分别记录在 beginSteps 和 endSteps 中。
+     *   3. 检测 beginSteps、endSteps 中是否存在能同时从起、终点到达的顶点，并从所有这样的路径中求出最短的来。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
     public static int ladderLength6(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);

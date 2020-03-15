@@ -5,10 +5,10 @@ import java.util.*;
 import static Utils.Helpers.*;
 
 /*
-* Merge k Sorted Lists
-*
-* - Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
-* */
+ * Merge k Sorted Lists
+ *
+ * - Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+ * */
 
 public class L23_MergeKSortedLists {
     /*

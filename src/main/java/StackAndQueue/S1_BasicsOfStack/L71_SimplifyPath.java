@@ -6,14 +6,14 @@ import java.util.stream.Stream;
 import static Utils.Helpers.*;
 
 /*
-* Simplify Path
-*
-* - Given an absolute path for a file (Unix-style), simplify it by converting it to the canonical path.
-*   1. The returned canonical path must always begin with a slash /
-*   2. There must be only a single slash / between two directory names.
-*   3. The last directory name (if it exists) must not end with a trailing /.
-*   4. The canonical path must be the shortest string representing the absolute path.
-* */
+ * Simplify Path
+ *
+ * - Given an absolute path for a file (Unix-style), simplify it by converting it to the canonical path.
+ *   1. The returned canonical path must always begin with a slash /
+ *   2. There must be only a single slash / between two directory names.
+ *   3. The last directory name (if it exists) must not end with a trailing /.
+ *   4. The canonical path must be the shortest string representing the absolute path.
+ * */
 
 public class L71_SimplifyPath {
     /*

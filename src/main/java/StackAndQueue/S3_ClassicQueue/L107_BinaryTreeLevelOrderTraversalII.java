@@ -5,19 +5,19 @@ import java.util.*;
 import static Utils.Helpers.*;
 
 /*
-* Binary Tree Level Order Traversal II
-*
-* - Given a binary tree, return the bottom-up level order traversal of its nodes' values.
-*   (ie, from left to right, level by level from leaf to root).
-* */
+ * Binary Tree Level Order Traversal II
+ *
+ * - Given a binary tree, return the bottom-up level order traversal of its nodes' values.
+ *   (ie, from left to right, level by level from leaf to root).
+ * */
 
 public class L107_BinaryTreeLevelOrderTraversalII {
     /*
-    * 基础1：自底向上的层序遍历。
-    * - 思路：本题其实就是 L102 的解的倒序，因此首先要能实现正序的二叉树层序遍历，然后再将结果倒序即可。
-    * - 实现：仍然使用一个 queue 进行广度优先遍历；另外再用一个 stack 对结果进行倒序。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 基础1：自底向上的层序遍历。
+     * - 思路：本题其实就是 L102 的解的倒序，因此首先要能实现正序的二叉树层序遍历，然后再将结果倒序即可。
+     * - 实现：仍然使用一个 queue 进行广度优先遍历；另外再用一个 stack 对结果进行倒序。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static List<Integer> simpleLevelOrderBottom(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
@@ -63,11 +63,11 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-    * 解法1：在基础2的基础上实现
-    * - 思路：以 Pair 形式同时存储节点和节点的层级信息在 list 中（也可以抽象成单独的类），记录节点的层级的层级信息用于获取树的高度，
-    *   树的高度用于得知该某一节点应该放在 res 的哪个列表里。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：在基础2的基础上实现
+     * - 思路：以 Pair 形式同时存储节点和节点的层级信息在 list 中（也可以抽象成单独的类），记录节点的层级的层级信息用于获取树的高度，
+     *   树的高度用于得知该某一节点应该放在 res 的哪个列表里。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static List<List<Integer>> levelOrderBottom(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         List<Pair<TreeNode, Integer>> l = new ArrayList<>();
@@ -126,12 +126,12 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-    * 解法3：递归 DFT
-    * - 思路：类似 L102 的解法2，采用 DFT（深度优先遍历），但达到了 BFT 的效果。与 L102 的区别在于：
-    *   1. 该解法通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
-    *   2. 在向 res 中添加空列表时要插入到 res 的头部，否则对于如 test case 2 的右倾的二叉树会出错。
-    * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
-    * */
+     * 解法3：递归 DFT
+     * - 思路：类似 L102 的解法2，采用 DFT（深度优先遍历），但达到了 BFT 的效果。与 L102 的区别在于：
+     *   1. 该解法通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
+     *   2. 在向 res 中添加空列表时要插入到 res 的头部，否则对于如 test case 2 的右倾的二叉树会出错。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
+     * */
     public static List<List<Integer>> levelOrderBottom2(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
