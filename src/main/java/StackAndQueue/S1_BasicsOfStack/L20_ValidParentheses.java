@@ -22,15 +22,15 @@ public class L20_ValidParentheses {
         for (char c : s.toCharArray()) {
             if (openBrackets.contains(c))
                 stack.push(c);
-            else if (stack.isEmpty() || !match(stack.pop(), c))  // 注意 empty 的情况也要考虑
+            else if (stack.isEmpty() || !match(stack.pop(), c))  // 注意若 stack 为空（open bracket 不够匹配）的情况
                 return false;
         }
 
-        return stack.isEmpty();
+        return stack.isEmpty();  // 若最后 stack 不为空则也是无效的
     }
 
     private static boolean match(char c1, char c2) {
-        return (c1 == '(' && c2 == ')') || (c1 == '[' && c2 == ']') || (c1 == '{' && c2 == '}');
+        return c1 == '(' && c2 == ')' || c1 == '[' && c2 == ']' || c1 == '{' && c2 == '}';
     }
 
     public static void main(String[] args) {
