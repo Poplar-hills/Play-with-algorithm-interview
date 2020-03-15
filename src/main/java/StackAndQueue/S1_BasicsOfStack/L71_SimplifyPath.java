@@ -18,10 +18,17 @@ import static Utils.Helpers.*;
 public class L71_SimplifyPath {
     /*
      * 解法1：Stack
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
-     * - 解释：若使用 Deque 代替 Stack，则最终输出是反的，因为他们 have reverse iteration orders，SEE:
-     *   1. L341 - NestedIterator2 中的 Stack, Queue, Deque 结构可视化；
+     * - 思路：首先分析题中的不同情况：
+     *     1. 正常路径（"/home/"）
+     *     2. 空路径（"//"）
+     *     3. 停在当前目录（"/./"）
+     *     4. 回到上级目录（"/../"）
+     *   若根据对目录的操作方式分类，情况1是进入下一级目录，情况2、3是停在当前目录，情况3是回到上一级目录。而且这三种操作都发生
+     *   在尾部 ∴ 可以想到使用 Stack 作为辅助数据结构。
+     * - 实现：注意若使用 Deque 来实现 Stack，则最终输出是反的 ∵ they have reverse iteration orders，SEE:
+     *   1. DequeTest.java
      *   2. https://stackoverflow.com/questions/12524826/why-should-i-use-deque-over-stack
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static String simplifyPath(String path) {
         if (path == null) return null;
@@ -37,19 +44,19 @@ public class L71_SimplifyPath {
     }
 
     /*
-     * 解法2：解法1的 stream 版（运行效率低很多）
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * 解法2：解法1的 stream 版
+     * - 时间复杂度 O(n)，空间复杂度 O(n)，实际运行效率比解法1低一些。
      * */
     public static String simplifyPath2(String path) {
         if (path == null) return null;
         Stack<String> stack = new Stack<>();
 
         Stream.of(path.split("/"))
-                .filter(s -> !s.isEmpty() && !s.equals("."))
-                .forEach(s -> {
-                     if (!s.equals("..")) stack.push(s);
-                     else if (!stack.isEmpty()) stack.pop();
-                });
+            .filter(s -> !s.isEmpty() && !s.equals("."))
+            .forEach(s -> {
+                if (!s.equals("..")) stack.push(s);
+                else if (!stack.isEmpty()) stack.pop();
+            });
 
         return "/" + String.join("/", stack);
     }
