@@ -12,7 +12,7 @@ import static Utils.Helpers.*;
 
 public class L20_ValidParentheses {
     /*
-    * 解法1：stack
+    * 解法1：Stack
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static boolean isValid(String s) {

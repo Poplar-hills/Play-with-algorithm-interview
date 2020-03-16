@@ -21,29 +21,29 @@ public class L150_EvaluateReversePolishNotation {
     * - 时间复杂度 O(n)，空间复杂度 O(n)。
     * */
     public static int evalRPN(String[] tokens) {
-        Stack<String> stack = new Stack<>();
-        Set<String> operators = new HashSet<>(Arrays.asList("+", "-", "*", "/"));
+        Stack<Integer> stack = new Stack<>();
+        Set<String> set = new HashSet<>(Arrays.asList("+", "-", "*", "/"));
 
-        for (String s : tokens) {
-            if (operators.contains(s)) {
-              int operand2 = Integer.parseInt(stack.pop());
-              int operand1 = Integer.parseInt(stack.pop());  // String -> Integer
-              stack.push(calculate(operand1, operand2, s));
+        for (String t : tokens) {
+            if (set.contains(t)) {
+                int operand2 = stack.pop();
+                int operand1 = stack.pop();
+                stack.push(calc(operand1, operand2, t));
             } else {
-                stack.push(s);
+                stack.push(Integer.parseInt(t));
             }
         }
 
-        return Integer.parseInt(stack.pop());  // String -> Integer
+        return stack.pop();
     }
 
-    private static String calculate(int operand1, int operand2, String operator) {
+    private static int calc(int operand1, int operand2, String operator) {
         switch (operator) {
-            case "+": return String.valueOf(operand1 + operand2);  // Integer -> String
-            case "-": return String.valueOf(operand1 - operand2);
-            case "*": return String.valueOf(operand1 * operand2);
-            case "/": return String.valueOf(operand1 / operand2);
-            default: return null;
+            case "+": return operand1 + operand2;
+            case "-": return operand1 - operand2;
+            case "*": return operand1 * operand2;
+            case "/": return operand1 / operand2;
+            default: throw new IllegalArgumentException("Invalid operator");
         }
     }
 
@@ -84,15 +84,9 @@ public class L150_EvaluateReversePolishNotation {
     public static void main(String[] args) {
         log(evalRPN(new String[]{"2", "1", "+", "3", "*"}));   // expects 9. ((2 + 1) * 3) = 9
 
-        log(evalRPN(new String[]{"4", "13", "5", "/", "+"}));  // expects 6. (4 + (13 / 5)) = 6
+        log(evalRPN(new String[]{"4", "13", "5", "=", "+"}));  // expects 6. (4 + (13 / 5)) = 6
 
         log(evalRPN(new String[]{"10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"}));
-        // expects 22.
-        // ((10 * (6 / ((9 + 3) * -11))) + 17) + 5
-        //= ((10 * (6 / (12 * -11))) + 17) + 5
-        //= ((10 * (6 / -132)) + 17) + 5
-        //= ((10 * 0) + 17) + 5
-        //= (0 + 17) + 5
-        //= 17 + 5
+        // expects 22. ((10 * (6 / ((9 + 3) * -11))) + 17) + 5 = 22
     }
 }
