@@ -28,7 +28,7 @@ public class L150_EvaluateReversePolishNotation {
             if (set.contains(t)) {
                 int operand2 = stack.pop();
                 int operand1 = stack.pop();
-                stack.push(calc(operand1, operand2, t));
+                stack.push(calculate(operand1, operand2, t));
             } else {
                 stack.push(Integer.parseInt(t));
             }
@@ -37,7 +37,7 @@ public class L150_EvaluateReversePolishNotation {
         return stack.pop();
     }
 
-    private static int calc(int operand1, int operand2, String operator) {
+    private static int calculate(int operand1, int operand2, String operator) {
         switch (operator) {
             case "+": return operand1 + operand2;
             case "-": return operand1 - operand2;
@@ -48,37 +48,36 @@ public class L150_EvaluateReversePolishNotation {
     }
 
     /*
-    * 解法2：Stack（FP 版）
-    * - 改进：
-    *   1. stack 中存的是 Integer 而非解法1中的 String，这样避免了需要进行3次类型转化的麻烦；
-    *   2. 先根据 operator 得到 function，再 apply 参数；
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法2：Stack（FP 版）
+     * - 思路：与解法1一致。
+     * - 实现：根据 operator 得到对应的函数，再 apply 操作数。更多函数式接口 SEE: http://ocpj8.javastudyguide.com/ch10.html
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static int evalRPN2(String[] tokens) {
         Stack<Integer> stack = new Stack<>();
 
-        for (String s : tokens) {
-            BiFunction<Integer, Integer, Integer> f = getFunction(s);  // 接受2个参数的 function，更多函数式接口 SEE: http://ocpj8.javastudyguide.com/ch10.html
-            if (f != null) {
+        for (String t : tokens) {
+            BiFunction<Integer, Integer, Integer> fn = getOperation(t);
+            if (fn != null) {
                 int operand2 = stack.pop();
                 int operand1 = stack.pop();
-                stack.push(f.apply(operand1, operand2));
+                stack.push(fn.apply(operand1, operand2));
             } else {
-                stack.push(Integer.parseInt(s));
+                stack.push(Integer.parseInt(t));
             }
         }
 
         return stack.pop();
     }
 
-    private static BiFunction<Integer, Integer, Integer> getFunction(String operator) {
+    private static BiFunction<Integer, Integer, Integer> getOperation(String operator) {
         switch (operator) {
             case "+": return (x, y) -> x + y;
             case "-": return (x, y) -> x - y;
             case "*": return (x, y) -> x * y;
             case "/": return (x, y) -> x / y;
+            default: throw new IllegalArgumentException("Invalid operator");
         }
-        return null;
     }
 
     public static void main(String[] args) {
