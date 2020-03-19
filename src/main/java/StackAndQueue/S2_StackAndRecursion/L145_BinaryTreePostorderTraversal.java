@@ -169,12 +169,32 @@ public class L145_BinaryTreePostorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(postorderTraversal3(t1));  // expects [3, 2, 1]
+        log(postorderTraversal3(t1));
+        /*
+         * expects [3, 2, 1]
+         *      1
+         *       \
+         *        2
+         *       /
+         *      3
+         * */
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(postorderTraversal3(t2));  // expects []
+        log(postorderTraversal3(t2));
+        /*
+         * expects []
+         * */
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(postorderTraversal3(t3));  // expects [1, 4, 3, 6, 7, 5]
+        log(postorderTraversal3(t3));
+        /*
+         * expects [1, 4, 3, 6, 7, 5]
+         *         5
+         *       /   \
+         *      3     7
+         *     / \   /
+         *    1   4 6
+         * */
+
     }
 }

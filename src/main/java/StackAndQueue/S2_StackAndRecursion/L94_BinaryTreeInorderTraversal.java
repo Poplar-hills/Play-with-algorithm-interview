@@ -120,12 +120,31 @@ public class L94_BinaryTreeInorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(inorderTraversal(t1));  // expects [1, 3, 2]
+        log(inorderTraversal(t1));
+        /*
+         * expects [1, 3, 2]
+         *      1
+         *       \
+         *        2
+         *       /
+         *      3
+         * */
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(inorderTraversal(t2));  // expects []
+        log(inorderTraversal(t2));
+        /*
+         * expects []
+         * */
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(inorderTraversal(t3));  // expects [1, 3, 4, 5, 6, 7]
+        log(inorderTraversal(t3));
+        /*
+         * expects [1, 3, 4, 5, 6, 7]
+         *         5
+         *       /   \
+         *      3     7
+         *     / \   /
+         *    1   4 6
+         * */
     }
 }

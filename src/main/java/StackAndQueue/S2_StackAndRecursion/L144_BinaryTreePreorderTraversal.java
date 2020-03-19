@@ -146,12 +146,31 @@ public class L144_BinaryTreePreorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(preorderTraversal3(t1));  // expects [1, 2, 3]
+        log(preorderTraversal3(t1));
+        /*
+         * expects [1, 2, 3]
+         *      1
+         *       \
+         *        2
+         *       /
+         *      3
+         * */
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(preorderTraversal3(t2));  // expects []
+        log(preorderTraversal3(t2));
+        /*
+         * expects []
+         * */
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(preorderTraversal3(t3));  // expects [5, 3, 1, 4, 7, 6]
+        log(preorderTraversal3(t3));
+        /*
+         * expects [5, 3, 1, 4, 7, 6]
+         *         5
+         *       /   \
+         *      3     7
+         *     / \   /
+         *    1   4 6
+         * */
     }
 }
