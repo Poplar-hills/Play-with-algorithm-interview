@@ -36,11 +36,11 @@ class NestedIterator implements Iterator<Integer> {
     }
 
     private void addToQueue(List<NestedInteger> nestedList) {
-        for (NestedInteger n : nestedList) {  // 递归遍历（其实也是 DFT）
+        for (NestedInteger n : nestedList) {  // 横向遍历
             if (n.isInteger())
                 queue.offer(n.getInteger());
             else
-                addToQueue(n.getList());
+                addToQueue(n.getList());      // 纵向递归
         }
     }
 
@@ -54,21 +54,21 @@ class NestedIterator implements Iterator<Integer> {
 /*
  * 解法2：Eager style + Iteration
  * - 思路：解法1的迭代版
- * - 总结：将解法1的递归式改写为迭代式的关键在于用 Stack + while 循环模拟系统调用栈（很好的练习）。
+ * - 👉总结：将解法1的递归式改写为迭代式的关键在于用 Stack + while 模拟系统调用栈（很好的练习）。
  * - 时间复杂度 O(n)，空间复杂度 O(n)。
  * */
 class NestedIterator2 implements Iterator<Integer> {
     private Queue<Integer> queue = new LinkedList<>();
 
     public NestedIterator2(List<NestedInteger> nestedList) {
-        Stack<NestedInteger> stack = new Stack<>();  // 模拟解法1中的调用栈
-        pushInReverseOrder(nestedList, stack);
+        Stack<NestedInteger> stack = new Stack<>();  // 模拟解法1中的调用栈，存储还未解析的 NestedInteger（解析过的 int 则放入 Queue 中）
+        pushInReverseOrder(nestedList, stack);       // 先加载数据
 
-        while (!stack.isEmpty()) {
+        while (!stack.isEmpty()) {                   // 对加载的数据进行解析
             NestedInteger n = stack.pop();
-            if (n.isInteger())
+            if (n.isInteger())                       // 若 NestedInteger 解析为 int 则直接入队等待消费
                 queue.offer(n.getInteger());
-            else
+            else                                     // 否解析为 List<NestedInteger> 则继续入栈，等待解析
                 pushInReverseOrder(n.getList(), stack);
         }
     }
@@ -88,16 +88,17 @@ class NestedIterator2 implements Iterator<Integer> {
 /*
  * 解法3：Lazy style
  * - 思路：解法1、2中的 eager style 的最大缺点就是，对于大数据集存在性能问题 —— we are pre-computing and pre-loading
- *   everything into memory, which can be a big waste of resource。要解决这个问题就要使用 lazy style：Lazy 与 eager
- *   的区别在于实例化时（构造器中）做哪些事情：
+ *   everything into memory, which can be a big waste of resource。要解决这个问题可使用 lazy style：Lazy 与 eager
+ *   的区别在于实例化时（构造器中）做的事情：
  *   - Eager iterator 在实例化时要完成所有计算和加载工作；
- *   - Lazy iterator 则弱化实例化时的计算逻辑，只加载数据，而主要计算逻辑放在 hasNext、next 方法中完成。
+ *   - Lazy iterator 在实例化时只加载数据，而计算工作等到真正消费时（hasNext、next）再进行。
+ * - 实现：与解法2类似，需要使用 Stack 模拟调用栈，将加载的数据放到 Stack 中等待消费时去计算。
  * */
 class NestedIterator3 implements Iterator<Integer> {
-    private Stack<NestedInteger> stack = new Stack<>();  // 加载的数据放在 Stack 中
+    private Stack<NestedInteger> stack = new Stack<>();
 
     public NestedIterator3(List<NestedInteger> nestedList) {
-        pushInReverseOrder(nestedList);
+        pushInReverseOrder(nestedList);  // 实例化时只将数据加载到 Stack 中
     }
 
     private void pushInReverseOrder(List<NestedInteger> list) {
@@ -107,9 +108,10 @@ class NestedIterator3 implements Iterator<Integer> {
 
     @Override
     public boolean hasNext() {
-        while (!stack.isEmpty()) {
-            if (stack.peek().isInteger()) return true;
-            pushInReverseOrder(stack.pop().getList());  // 若栈顶元素不是 integer 则持续寻找
+        while (!stack.isEmpty()) {         // 在消费时再进行计算（解析数据）
+            if (stack.peek().isInteger())  // 若是 int 则放在那等待消费
+                return true;
+            pushInReverseOrder(stack.pop().getList());  // 否则再加载到 Stack 中进行解析
         }
         return false;
     }
