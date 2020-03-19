@@ -35,7 +35,7 @@ class NestedIterator implements Iterator<Integer> {
         addToQueue(nestedList);
     }
 
-    private void addToQueue(List<NestedInteger> nestedList) {
+    private void addToQueue(List<NestedInteger> nestedList) {  // 解析过程是 DFS
         for (NestedInteger n : nestedList) {  // 横向遍历
             if (n.isInteger())
                 queue.offer(n.getInteger());
