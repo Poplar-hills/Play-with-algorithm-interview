@@ -12,7 +12,7 @@ import static Utils.Helpers.*;
 
 public class L145_BinaryTreePostorderTraversal {
     /*
-     * 解法1：intuitive 递归
+     * 解法1：递归
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> postorderTraversal(TreeNode root) {
@@ -126,12 +126,12 @@ public class L145_BinaryTreePostorderTraversal {
     /*
      * 解法5：迭代（模拟指令）
      * - 思路：在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问）：
-     *               5       |      |     |      |     |_i__1_|     |_v__1_|     |______|     |      |
-     *            /    \     |      |     |______|     |_i__4_|     |_i__4_|     |_v__4_|     |______|
-     *          3       8    |      | --> |_i__3_| --> |_v__3_| --> |_v__3_| --> |_v__3_| --> |_v__3_| ...
-     *        /  \     /     |______|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|
-     *       1    4   6      |_i__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|
-     *                          []           []           []           []          [1]         [1,4]
+     *            5       |      |     |      |     |_i__1_|     |_v__1_|     |______|     |      |
+     *          /   \     |      |     |______|     |_i__4_|     |_i__4_|     |_v__4_|     |______|
+     *         3     8    |      | --> |_i__3_| --> |_v__3_| --> |_v__3_| --> |_v__3_| --> |_v__3_| ...
+     *        / \   /     |______|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|
+     *       1   4 6      |_i__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|
+     *                       []           []           []           []          [1]         [1,4]
      * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L144 的解法5）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
@@ -146,10 +146,10 @@ public class L145_BinaryTreePostorderTraversal {
 
     public static List<Integer> postorderTraversal6(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Stack<Command> stack = new Stack<>();   // 栈中存的是 Command（将节点和指令的 pair）
         if (root == null) return res;
+        Stack<Command> stack = new Stack<>();   // 栈中存的是 Command（将节点和指令的 pair）
+        stack.push(new Command("traverse", root));
 
-        stack.push(new Command("iterate", root));
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
             TreeNode curr = cmd.node;
@@ -158,9 +158,9 @@ public class L145_BinaryTreePostorderTraversal {
             else {
                 stack.push(new Command("visit", curr));  // visit 指令最先入栈、最后执行
                 if (curr.right != null)
-                    stack.push(new Command("iterate", curr.right));
+                    stack.push(new Command("traverse", curr.right));
                 if (curr.left != null)
-                    stack.push(new Command("iterate", curr.left));
+                    stack.push(new Command("traverse", curr.left));
             }
         }
 
@@ -195,6 +195,5 @@ public class L145_BinaryTreePostorderTraversal {
          *     / \   /
          *    1   4 6
          * */
-
     }
 }
