@@ -98,7 +98,6 @@ public class L94_BinaryTreeInorderTraversal {
     public static List<Integer> inorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-
         Stack<Command> stack = new Stack<>();  // 栈中存的是 Command（将节点和指令的 pair）
         stack.push(new Command("traverse", root));
 
