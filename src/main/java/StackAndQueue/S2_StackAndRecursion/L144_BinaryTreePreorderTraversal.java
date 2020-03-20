@@ -29,7 +29,7 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     /*
-     * 解法2：迭代
+     * 解法2：迭代（解法1的迭代版）
      * - 思路：访问并入栈每个元素，出栈时入栈其左右子节点。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
