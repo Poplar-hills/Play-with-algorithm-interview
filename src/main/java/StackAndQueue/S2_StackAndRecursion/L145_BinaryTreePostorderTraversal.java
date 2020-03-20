@@ -47,13 +47,13 @@ public class L145_BinaryTreePostorderTraversal {
                 curr = curr.left;
             }
             curr = stack.pop();
-            if (curr.right == null || curr.right == prev) {  // 若父节点没有右子节点，或有右子节点但已经被访问过，则访问父节点
-                res.add(curr.val);
-                prev = curr;
-                curr = null;       // 置空 curr 好跳过 while 循环
-            } else {               // 若父节点有右子节点且还未被访问过，则把父节点放回 stack 中，先处理其右子节点
+            if (curr.right != null && curr.right != prev) {  // 若父节点有右子节点且还未被访问过，则把父节点放回 stack 中，先遍历其右子节点
                 stack.push(curr);
                 curr = curr.right;
+            } else {                // 若父节点没有右子节点，或有右子节点但已经被访问过，则访问父节点
+                res.add(curr.val);
+                prev = curr;
+                curr = null;        // 置空 curr 好跳过 while 循环
             }
         }
 
@@ -62,12 +62,12 @@ public class L145_BinaryTreePostorderTraversal {
 
     /*
      * 解法3：迭代
-     * - 思路：二叉树的前序遍历的方法之一是先往左遍历，没有左子节点时再右转一步，如此循环。由此可想：对于后序遍历，如果从根节点开始
-     *   先往右遍历，没有右子节点时再左转一步，如此循环。按这个思路遍历得到的结果刚好与后序遍历应有的结果顺序相反，因此可以使用一个
-     *   stack 将该结果倒序输出即可。
+     * - 思路：前序遍历的方法之一是先往左遍历到底，一路上访问节点，当到底后再转向访问右子树，如此循环。由此可想：若若从根节点开始
+     *   先往右遍历，一路上访问节点，当没有右子节点时再转向访问左子树，如此循环会得到什么？结果是访问到的节点顺序刚好与后序遍历
+     *   应有的结果顺序相反 ∴ 可以使用一个 stack 将该结果倒序输出即可。
      * - 实现：根据该思路可知需要2个 stack —— 一个用于实现往右遍历，另一个用于倒序输出遍历结果。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-     * - 注：Java 中
+     * - 👉语法：Java 中：
      *   - Stack 接口的实现有：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated，推荐用 Deque 代替）；
      *   - Deque 接口的实现有：ArrayDeque, LinkedList；
      * */
@@ -83,8 +83,8 @@ public class L145_BinaryTreePostorderTraversal {
                 stack2.push(curr);
                 curr = curr.right;
             }
-            curr = stack1.pop();
-            curr = curr.left;       // 转向左子节点
+            curr = stack1.pop();    // 到底后转向开始遍历左子树（这里并不访问节点，只入栈）
+            curr = curr.left;
         }
 
         while (!stack2.isEmpty())   // 使用 stack2 倒序输出
@@ -94,37 +94,7 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     /*
-     * 解法4：迭代
-     * - 这种方法虽然很简单，但有点取巧，不是非常推荐。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-     * */
-    public static List<Integer> postorderTraversal4(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        if (root == null) return res;
-        Stack<TreeNode> stack = new Stack<>();
-        stack.push(root);
-
-        while (!stack.isEmpty()) {
-            TreeNode node = stack.peek();
-            if (node.left != null) {
-                stack.push(node.left);
-                node.left = null;
-            }
-            else if (node.right != null) {
-                stack.push(node.right);
-                node.right = null;
-            }
-            else {
-                res.add(node.val);
-                stack.pop();
-            }
-        }
-
-        return res;
-    }
-
-    /*
-     * 解法5：迭代（模拟指令）
+     * 解法4：迭代（模拟指令）
      * - 思路：在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问）：
      *            5       |      |     |      |     |_i__1_|     |_v__1_|     |______|     |      |
      *          /   \     |      |     |______|     |_i__4_|     |_i__4_|     |_v__4_|     |______|
@@ -144,7 +114,7 @@ public class L145_BinaryTreePostorderTraversal {
         }
     }
 
-    public static List<Integer> postorderTraversal6(TreeNode root) {
+    public static List<Integer> postorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
         Stack<Command> stack = new Stack<>();   // 栈中存的是 Command（将节点和指令的 pair）
@@ -169,7 +139,7 @@ public class L145_BinaryTreePostorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(postorderTraversal3(t1));
+        log(postorderTraversal2(t1));
         /*
          * expects [3, 2, 1]
          *      1
@@ -180,13 +150,13 @@ public class L145_BinaryTreePostorderTraversal {
          * */
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(postorderTraversal3(t2));
+        log(postorderTraversal2(t2));
         /*
          * expects []
          * */
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(postorderTraversal3(t3));
+        log(postorderTraversal2(t3));
         /*
          * expects [1, 4, 3, 6, 7, 5]
          *         5
