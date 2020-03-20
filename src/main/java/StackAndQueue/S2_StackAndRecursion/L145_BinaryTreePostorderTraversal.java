@@ -53,7 +53,7 @@ public class L145_BinaryTreePostorderTraversal {
             } else {                // 若父节点没有右子节点，或有右子节点但已经被访问过，则访问父节点
                 res.add(curr.val);
                 prev = curr;
-                curr = null;        // 置空 curr 好跳过 while 循环
+                curr = null;        // 置空 curr 好跳过 while 循环（∵ 访问完父节点之后就该回到再上一层的节点了）
             }
         }
 
