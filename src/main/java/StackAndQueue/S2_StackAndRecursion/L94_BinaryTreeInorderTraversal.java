@@ -12,7 +12,7 @@ import static Utils.Helpers.*;
 
 public class L94_BinaryTreeInorderTraversal {
     /*
-     * 解法1：intuitive 递归
+     * 解法1：递归
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> inorderTraversal(TreeNode root) {
@@ -30,7 +30,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     /*
      * 解法2：迭代
-     * - 思路：与 L144 的解法3思路类似，唯一区别在于访问节点的时机 —— 向左递归到底的路上先不访问节点，而是到底之后开始出栈时再访问节点。
+     * - 思路：与 L144 解法3思路类似，区别在于访问节点的时机 —— 向左递归到底的路上先不访问节点，而是到底之后开始出栈时再访问节点。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
@@ -52,7 +52,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     /*
      * 解法3：迭代（解法2的变种）
-     * - 思路：类似 L144 的解法3思路。
+     * - 思路：与解法1一致。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> inorderTraversal3(TreeNode root) {
@@ -77,17 +77,17 @@ public class L94_BinaryTreeInorderTraversal {
     /*
      * 解法4：迭代（模拟指令）
      * - 思路：在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问）：
-     *               5       |      |     |      |     |_i__1_|     |_v__1_|     |______|     |      |
-     *            /    \     |      |     |______|     |_v__3_|     |_v__3_|     |_v__3_|     |______|
-     *          3       8    |      | --> |_i__3_| --> |_i__4_| --> |_i__4_| --> |_i__4_| --> |_i__4_| ...
-     *        /  \     /     |______|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|
-     *       1    4   6      |_i__5_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|
-     *                          []           []           []           []          [1]         [1,3]
+     *             5       |      |     |      |     |_t__1_|     |_v__1_|     |______|     |      |
+     *           /   \     |      |     |______|     |_v__3_|     |_v__3_|     |_v__3_|     |______|
+     *          3     7    |      | --> |_t__3_| --> |_t__4_| --> |_t__4_| --> |_t__4_| --> |_t__4_| ...
+     *         / \   /     |______|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|
+     *        1   4 6      |_t__5_|     |_t__7_|     |_t__7_|     |_t__7_|     |_t__7_|     |_t__7_|
+     *                        []           []           []           []          [1]         [1,3]
      * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法5、L145 的解法5）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
-    static class Command {
-        String type;
+    private static class Command {
+        String type;     // Enum ("traverse" or "vist")
         TreeNode node;
         Command(String type, TreeNode node) {
             this.type = type;
@@ -97,10 +97,11 @@ public class L94_BinaryTreeInorderTraversal {
 
     public static List<Integer> inorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        Stack<Command> stack = new Stack<>();   // 栈中存的是 Command（将节点和指令的 pair）
         if (root == null) return res;
 
-        stack.push(new Command("iterate", root));
+        Stack<Command> stack = new Stack<>();  // 栈中存的是 Command（将节点和指令的 pair）
+        stack.push(new Command("traverse", root));
+
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
             TreeNode node = cmd.node;
@@ -108,10 +109,10 @@ public class L94_BinaryTreeInorderTraversal {
                 res.add(node.val);
             else {
                 if (node.right != null)
-                    stack.push(new Command("iterate", node.right));
-                stack.push(new Command("visit", node));  // visit 指令在 iterate 两个子节点之间执行
+                    stack.push(new Command("traverse", node.right));
+                stack.push(new Command("visit", node));
                 if (node.left != null)
-                    stack.push(new Command("iterate", node.left));
+                    stack.push(new Command("traverse", node.left));
             }
         }
 
@@ -139,7 +140,7 @@ public class L94_BinaryTreeInorderTraversal {
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
         log(inorderTraversal(t3));
         /*
-         * expects [1, 3, 4, 5, 6, 7]
+         * expects [1, 3, 4, 5, 6, 7].（若是 BST，则中序遍历结果一定是有序的）
          *         5
          *       /   \
          *      3     7
