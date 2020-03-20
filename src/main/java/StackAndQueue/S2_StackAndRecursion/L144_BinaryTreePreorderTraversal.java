@@ -74,6 +74,7 @@ public class L144_BinaryTreePreorderTraversal {
 
     /*
      * 解法4：迭代（解法3的变种）
+     * - 思路：与解法3一致。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> preorderTraversal4(TreeNode root) {
@@ -86,7 +87,7 @@ public class L144_BinaryTreePreorderTraversal {
                 res.add(curr.val);
                 stack.push(curr);
                 curr = curr.left;
-            } else {             // 再转向右一步
+            } else {             // 到底之后开始从 stack 中取出父节点，并转向去遍历父节点的右子树
                 curr = stack.pop();
                 curr = curr.right;
             }
@@ -112,8 +113,8 @@ public class L144_BinaryTreePreorderTraversal {
      * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L145 的解法5）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
-    static class Command {  // 将节点和指令的 pair 抽象成 Command
-        String type;        // "traverse" or "visit"（更好的方式是用枚举类）
+    private static class Command {  // 将节点和指令的 pair 抽象成 Command
+        String type;                // "traverse" or "visit"（更好的方式是用枚举类）
         TreeNode node;
         Command(String type, TreeNode node) {
             this.type = type;
