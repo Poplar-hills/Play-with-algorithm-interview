@@ -133,7 +133,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
         log(basicLevelOrder(t));   // expects [3, 9, 20, 8, 15, 7, 1, 2]
         log(basicLevelOrder2(t));  // expects [3, 9, 20, 8, 15, 7, 1, 2]
 
-        log(levelOrder0(t));        // expects [[3], [9,20], [8,15,7], [1,2]]
+        log(levelOrder(t));        // expects [[3], [9,20], [8,15,7], [1,2]]
         log(levelOrder2(t));       // expects [[3], [9,20], [8,15,7], [1,2]]
     }
 }
