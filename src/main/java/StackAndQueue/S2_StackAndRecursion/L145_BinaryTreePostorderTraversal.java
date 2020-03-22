@@ -33,6 +33,11 @@ public class L145_BinaryTreePostorderTraversal {
      * - 思路：∵ 后序遍历需要先访问两个子节点后再访问父节点，而访问右子节点又必须经过父节点才能拿到，因此：
      *   1. 经过父节点时，需要知道其右子节点是否被访问过；
      *   2. 若右子节点未被访问过，则经过父节点拿到右子节点后需要把父节点再放回 stack 中，等右子节点访问完后再回来处理父节点。
+     * - 💎技巧：
+     *   - 对于要求节点访问顺序的题目，可以考虑 👆这种把节点拿出来再放回去的技巧。
+     *   - 这种遍历树的题目中可以使用 curr = null 来改变代码行进路线，本解法中：
+     *     > 若 curr 有右子树，则最后 curr 会指向右子节点，并在下一轮循环中会继续走进内层 while，对右子树进行遍历；
+     *     > 若 curr 没有右子树，则访问父节点，且最后的 curr = null 会让代码在下一轮循环中避开内层 while，直接 stack.pop()。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> postorderTraversal2(TreeNode root) {
@@ -47,7 +52,7 @@ public class L145_BinaryTreePostorderTraversal {
                 curr = curr.left;
             }
             curr = stack.pop();
-            if (curr.right != null && curr.right != prev) {  // 若父节点有右子节点且还未被访问过，则把父节点放回 stack 中，先遍历其右子节点
+            if (curr.right != null && curr.right != prev) {  // 若父节点有右子节点且还未被访问过，则把父节点放回 stack 中，先遍历右子树
                 stack.push(curr);
                 curr = curr.right;
             } else {                // 若父节点没有右子节点，或有右子节点但已经被访问过，则访问父节点
@@ -131,6 +136,30 @@ public class L145_BinaryTreePostorderTraversal {
                     stack.push(new Command("traverse", curr.right));
                 if (curr.left != null)
                     stack.push(new Command("traverse", curr.left));
+            }
+        }
+
+        return res;
+    }
+
+    public static List<Integer> postorderTraversal0(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode prev = null, curr = root;
+
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) {
+                stack.push(curr);
+                curr = curr.left;
+            }
+            curr = stack.pop();
+            if (curr.right != null && curr.right != prev) {
+                stack.push(curr);
+                curr = curr.right;
+            } else {
+                res.add(curr.val);
+                prev = curr;
             }
         }
 
