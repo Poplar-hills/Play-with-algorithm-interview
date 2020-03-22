@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import Utils.Helpers.TreeNode;
+
 import static Utils.Helpers.*;
 
 /*
@@ -19,7 +21,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
      * - 思路：二叉树层序遍历的本质实际上就是广度优先遍历（Breadth-first traversal, BFT），因此可以采用类似图论 BFS 的思路，
      *   使用 queue 作为辅助结构。
      * */
-    public static List<Integer> simpleLevelOrder(TreeNode root) {
+    public static List<Integer> basicLevelOrder(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
         Queue<TreeNode> q = new LinkedList<>();
@@ -31,31 +33,34 @@ public class L102_BinaryTreeLevelOrderTraversal {
             if (curr.left != null) q.offer(curr.left);
             if (curr.right != null) q.offer(curr.right);
         }
+
         return res;
     }
 
     /*
      * 基础2：基础1的递归版
-     * - 总结：
-     *   - 树的广度优先遍历（BFT）通常使用 queue 作为辅助数据结构（递归或非递归实现都一样）；
-     *   - 树的深度优先遍历（DFT），如前、中、后序遍历的非递归实现，通常使用 stack 作为辅助数据结构（递归实现则不需要辅助结构）。
+     * - 实现：要使用递归先要想清楚递归遍历的对象是什么。∵ 该题中要广度优先遍历 ∴ 不能对树进行纵向的递归。而 ∵ 要使用 Queue
+     *   来保证遍历的输出顺序 ∴ 递归遍历的对象应该是 Queue 中的节点。
+     * - 💎总结：
+     *   - 树的广度优先遍历（BFS）通常使用 Queue 作为辅助数据结构（递归或非递归实现都一样）；
+     *   - 树的深度优先遍历（DFS），如前、中、后序遍历的非递归实现，通常使用 Stack 作为辅助数据结构（递归实现则不需要辅助结构）。
      * */
-    public static List<Integer> simpleLevelOrder2(TreeNode root) {
+    public static List<Integer> basicLevelOrder2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        Queue<TreeNode> q = new LinkedList<>();  // 同样采用 queue 作为辅助结构
+        Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
-        simpleLevelOrder3(q, res);  // 不同于基础1的地方是该版本用递归代替了基础1中的 while 循环
+        helper2(q, res);  // 用递归代替基础1中的 while 循环
         return res;
     }
 
-    private static void simpleLevelOrder3(Queue<TreeNode> q, List<Integer> res) {
+    private static void helper2(Queue<TreeNode> q, List<Integer> res) {
         if (q.isEmpty()) return;
         TreeNode curr = q.poll();
         res.add(curr.val);
         if (curr.left != null) q.offer(curr.left);
         if (curr.right != null) q.offer(curr.right);
-        simpleLevelOrder3(q, res);
+        helper2(q, res);
     }
 
     /*
@@ -108,13 +113,22 @@ public class L102_BinaryTreeLevelOrderTraversal {
         levelOrder2(node.right, res, level + 1);
     }
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7, 1, 2});
+        /*
+         *         3
+         *      /     \
+         *     9      20
+         *      \     / \
+         *       8   15  7
+         *      / \
+         *     1   2
+         * */
 
-        log(simpleLevelOrder(t));   // expects [3, 9, 20, 8, 15, 7, 1, 2]
-        log(simpleLevelOrder2(t));  // expects [3, 9, 20, 8, 15, 7, 1, 2]
+        log(basicLevelOrder(t));   // expects [3, 9, 20, 8, 15, 7, 1, 2]
+        log(basicLevelOrder2(t));  // expects [3, 9, 20, 8, 15, 7, 1, 2]
 
-        log(levelOrder(t));   // expects [[3], [9,20], [8,15,7], [1,2]]
-        log(levelOrder2(t));  // expects [[3], [9,20], [8,15,7], [1,2]]
+        log(levelOrder(t));        // expects [[3], [9,20], [8,15,7], [1,2]]
+        log(levelOrder2(t));       // expects [[3], [9,20], [8,15,7], [1,2]]
     }
 }
