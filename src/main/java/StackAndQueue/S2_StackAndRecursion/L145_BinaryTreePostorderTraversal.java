@@ -66,7 +66,37 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     /*
-     * 解法3：迭代
+     * 解法3：迭代（切断子节点）
+     * - 思路：另一个思路是 ∵ 后续遍历的访问顺序是 左 → 右 → 父 ∴ 可以在访问完一个子节点后就将其切断，从而确保访问顺序。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
+     * */
+    public static List<Integer> postorderTraversal3(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.peek();   // 在不出栈的情况下检查该节点是否有左、右子节点
+            if (node.left != null) {        // 若有左子节点
+                stack.push(node.left);
+                node.left = null;           // 入栈左子节点后就将其置空，以避免重复访问
+            }
+            else if (node.right != null) {  // 若只有右子节点
+                stack.push(node.right);
+                node.right = null;          // 入栈右子节点后就将其置空，以避免访重复访问
+            }
+            else {                          // 在确保没有左、右子节点后再访问该节点
+                res.add(node.val);
+                stack.pop();
+            }
+        }
+
+        return res;
+    }
+
+    /*
+     * 解法4：迭代
      * - 思路：前序遍历的方法之一是先往左遍历到底，一路上访问节点，当到底后再转向访问右子树，如此循环。由此可想：若若从根节点开始
      *   先往右遍历，一路上访问节点，当没有右子节点时再转向访问左子树，如此循环会得到什么？结果是访问到的节点顺序刚好与后序遍历
      *   应有的结果顺序相反 ∴ 可以使用一个 stack 将该结果倒序输出即可。
@@ -76,7 +106,7 @@ public class L145_BinaryTreePostorderTraversal {
      *   - Stack 接口的实现有：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated，推荐用 Deque 代替）；
      *   - Deque 接口的实现有：ArrayDeque, LinkedList；
      * */
-    public static List<Integer> postorderTraversal3(TreeNode root) {
+    public static List<Integer> postorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         Stack<TreeNode> stack1 = new Stack<>();
         Stack<TreeNode> stack2 = new Stack<>();
@@ -99,7 +129,7 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     /*
-     * 解法4：迭代（模拟指令）
+     * 解法5：迭代（模拟指令）
      * - 思路：在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问）：
      *            5       |      |     |      |     |_i__1_|     |_v__1_|     |______|     |      |
      *          /   \     |      |     |______|     |_i__4_|     |_i__4_|     |_v__4_|     |______|
@@ -119,7 +149,7 @@ public class L145_BinaryTreePostorderTraversal {
         }
     }
 
-    public static List<Integer> postorderTraversal4(TreeNode root) {
+    public static List<Integer> postorderTraversal5(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
         Stack<Command> stack = new Stack<>();   // 栈中存的是 Command（将节点和指令的 pair）
