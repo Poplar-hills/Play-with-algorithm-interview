@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import Utils.Helpers.Pair;
 import Utils.Helpers.TreeNode;
 
 import static Utils.Helpers.*;
@@ -17,9 +18,8 @@ import static Utils.Helpers.*;
 
 public class L102_BinaryTreeLevelOrderTraversal {
     /*
-     * 基础1：二叉树非递归层序遍历，用于和解法1进行对比。
-     * - 思路：二叉树层序遍历的本质实际上就是广度优先遍历（Breadth-first traversal, BFT），因此可以采用类似图论 BFS 的思路，
-     *   使用 queue 作为辅助结构。
+     * 基础1：二叉树非递归层序遍历（用于和解法1进行对比）
+     * - 思路：二叉树层序遍历本质上就是广度优先遍历（BFS）。
      * */
     public static List<Integer> basicLevelOrder(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -39,6 +39,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
 
     /*
      * 基础2：基础1的递归版
+     * - 思路：与解法1一致，仍然是 BFS。
      * - 实现：要使用递归先要想清楚递归遍历的对象是什么。∵ 该题中要广度优先遍历 ∴ 不能对树进行纵向的递归。而 ∵ 要使用 Queue
      *   来保证遍历的输出顺序 ∴ 递归遍历的对象应该是 Queue 中的节点。
      * - 💎总结：
@@ -64,24 +65,26 @@ public class L102_BinaryTreeLevelOrderTraversal {
     }
 
     /*
-     * 解法1：迭代（BFT）
-     * - 思路：在基础1的基础上实现，区别在于队列中以 Pair 形式（也可以抽象成单独的类）同时保存节点和节点的层级信息。
+     * 解法1：迭代（BFS）
+     * - 思路：∵ 要按树的 level 对遍历的节点值进行分组 ∴ 在遍历过程中需要知道每个节点的 level 信息。而每个节点的 level 信息
+     *   可以通过父节点的 level + 1 得到。
+     * - 实现：在基础1的基础上，让 Queue 中存储节点和其 level 的 Pair（也可以抽象成单独的类），同时保存节点和节点的层级信息。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
-        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();  // 因为结果要求同一层的节点放在一个列表中，因此这里队列中除了保存节点之外还需要保存层级信息
-        q.offer(new Pair<>(root, 0));  // 层数从0开始
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(root, 0));      // level 从0开始
 
         while (!q.isEmpty()) {
             Pair<TreeNode, Integer> pair = q.poll();
             TreeNode node = pair.getKey();
             Integer level = pair.getValue();
 
-            if (level == res.size())  // 此时需在 res 中创建新的列表存储新一层的节点值（如上面 poll 出来的是 level=0 的根节点，此时 res 中还没有任何列表，因此需要创建）
+            if (res.size() == level)       // 若 size == level，说明需在 res 中创建新的列表存储新一层的节点值
                 res.add(new ArrayList<>());
-            res.get(level).add(node.val);  // 创建完或者 res 中本来已经存在，则将节点值推入
+            res.get(level).add(node.val);  // 创建完或者 res 中本来已经存在，则将节点值放入列表（注意这里的链式写法）
 
             if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
             if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
@@ -91,10 +94,12 @@ public class L102_BinaryTreeLevelOrderTraversal {
     }
 
     /*
-     * 解法2：递归（DFT）
-     * - 思路：
-     *   - 在递归中传递 level 信息，并根据该信息判断当前节点值应该放在第几个 list 中。
-     *   - 本质上是深度优先遍历 DFT，但是因为将不同 level 的节点值放到了不同位置的 list 中，从而达到了 BFT 的效果。
+     * 解法2：递归（DFS）
+     * - 思路：不同于解法1、基础2，该解法使用的是 DFS 进行层序遍历，将遍历到的节点值追加到结果集中相应 level 的分组中，
+     *   从而实现 BFS 的遍历效果。
+     * - 实现：
+     *   - 在递归层级中传递 level 信息；
+     *   - 根据 level 该信息判断当前节点值应该放在 res 中的第几个 list 里。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */
     public static List<List<Integer>> levelOrder2(TreeNode root) {
@@ -106,9 +111,9 @@ public class L102_BinaryTreeLevelOrderTraversal {
 
     private static void levelOrder2(TreeNode node, List<List<Integer>> res, int level) {
         if (node == null) return;
-        if (level == res.size())       // 是否需要在 res 中创建新的列表存储新一层的节点值
+        if (level == res.size())
             res.add(new ArrayList<>());
-        res.get(level).add(node.val);  // 创建完之后这里再获取，从而统一了两种情况（创建新列表或直接添加），而不再需要 if else。
+        res.get(level).add(node.val);
         levelOrder2(node.left, res, level + 1);
         levelOrder2(node.right, res, level + 1);
     }
@@ -128,7 +133,7 @@ public class L102_BinaryTreeLevelOrderTraversal {
         log(basicLevelOrder(t));   // expects [3, 9, 20, 8, 15, 7, 1, 2]
         log(basicLevelOrder2(t));  // expects [3, 9, 20, 8, 15, 7, 1, 2]
 
-        log(levelOrder(t));        // expects [[3], [9,20], [8,15,7], [1,2]]
+        log(levelOrder0(t));        // expects [[3], [9,20], [8,15,7], [1,2]]
         log(levelOrder2(t));       // expects [[3], [9,20], [8,15,7], [1,2]]
     }
 }
