@@ -104,9 +104,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
     /*
      * 解法2：迭代2
-     * - 思路：与解法1一致。
-     * - 实现：以 Pair 形式同时存储节点和节点的层级信息在 list 中（也可以抽象成单独的类），记录节点的层级的层级信息用于获取树的高度，
-     *   树的高度用于得知该某一节点应该放在 res 的哪个列表里。
+     * - 思路：在广度优先遍历树上节点时，让每个节点带上层级信息以 Pair 的形式存在 List 中。同时根据层级信息先往结果集中插入 h
+     *   个空列表，当遍历完所有节点后即可得到树的高度 h，这样就能为每个 Pair 中的节点计算出应该放到结果集中的哪个列表里了。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> levelOrderBottom2(TreeNode root) {
@@ -119,19 +118,19 @@ public class L107_BinaryTreeLevelOrderTraversalII {
             TreeNode node = l.get(i).getKey();
             int level = l.get(i).getValue();
 
+            if (level == res.size())
+                res.add(new ArrayList<>());               // 往 res 中添加空列表
+            if (node.left != null)
+                l.add(new Pair<>(node.left, level + 1));  // 遍历子节点时先 left 再 right（这样在下面插入对应分组时的顺序才是对的）
             if (node.right != null)
                 l.add(new Pair<>(node.right, level + 1));
-            if (node.left != null)
-                l.add(new Pair<>(node.left, level + 1));
-            if (level == res.size())
-                res.add(new ArrayList<>());
         }
 
-        int levelCount = l.get(l.size() - 1).getValue();  // 通过节点的 level 信息获得二叉树高度（树的高度就是 res 中应有的列表个数）
-        for (int i = l.size() - 1; i >= 0; i--) {
+        int h = l.get(l.size() - 1).getValue();  // 通过节点的 level 信息获得二叉树高度（树的高度就是 res 中应有的列表个数）
+        for (int i = 0; i < l.size(); i++) {
             TreeNode node = l.get(i).getKey();
             int level = l.get(i).getValue();
-            res.get(levelCount - level).add(node.val);  // levelCount - level 得到该节点值应放入 res 中的哪个列表里
+            res.get(h - level).add(node.val);    // h - level 得到该节点值应放入 res 中的哪个列表里
         }
 
         return res;
@@ -166,83 +165,51 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-     * 解法4：递归 DFT
-     * - 思路：类似 L102 的解法2，采用 DFT（深度优先遍历），但达到了 BFT 的效果。与 L102 的区别在于：
-     *   1. 该解法通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
-     *   2. 在向 res 中添加空列表时要插入到 res 的头部，否则对于如 test case 2 的右倾的二叉树会出错。
+     * 解法4：递归 DFS
+     * - 思路：类似 L102 的解法2，同样采用 DFS 来实现 BFS 的效果：
+     *     1. 通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
+     *     2. 将遍历到的节点插入到结果集中的对应列表里。
+     * - 实现：注意在往 res 中插入空列表时要插入到 res 的头部，否则 test case 2 的右倾的二叉树会出错（左侧已经递归到底，开始
+     *   往空列表中插入元素，但此时右侧还在往 res 中插入空列表）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */
     public static List<List<Integer>> levelOrderBottom4(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
-        levelOrderBottom2(root, res, 0);
+        helper4(root, 0, res);
         return res;
     }
 
-    private static void levelOrderBottom2(TreeNode node, List<List<Integer>> res, int level) {
+    private static void helper4(TreeNode node, int level, List<List<Integer>> res) {
         if (node == null) return;
         if (level == res.size())
-            res.add(0, new ArrayList<>());       // 每次将空列表插入 res 头部
-        levelOrderBottom2(node.left, res, level + 1);
-        levelOrderBottom2(node.right, res, level + 1);
-        res.get(res.size() - 1 - level).add(node.val);  // 递归到底之后再开始将节点值推入 res 中的对应列表（后续遍历）
+            res.add(0, new ArrayList<>());  // 在递归去程时向 res 中插入空列表（注意要插入在 res 的头部）
+        helper4(node.left, level + 1, res);
+        helper4(node.right, level + 1, res);
+        res.get(res.size() - 1 - level).add(node.val);  // 递归到底之后再开始将节点值推入 res 中的对应列表里
     }
 
     /*
-     * 解法5：递归 DFT + 最后 reverse
-     * - 思路：与解法3大体相同，仍然是 DFT，区别在于递归结束后再统一 reverse，而非在每层递归中通过 res.get 找到应加入的列表，因此统计性能稍差于解法3。
+     * 解法5：递归 + reverse
+     * - 思路：与解法3类似，仍然是 DFS。
+     * - 实现：区别在于递归结束后再统一 reverse，而非在每层递归中通过 res.get 找到应加入的列表 ∴ 统计性能稍差于解法3。
      * - 时间复杂度 O(n*h)：其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表）；
      * - 空间复杂度 O(h)。
      * */
     public static List<List<Integer>> levelOrderBottom5(TreeNode root) {
         List<List<Integer>> res = new LinkedList<>();
-        levelOrderBottom4(root, res, 0);
+        helper5(root, 0, res);
         Collections.reverse(res);  // 递归结束后需要再 reverse 一下
         return res;
     }
 
-    private static void levelOrderBottom4(TreeNode node, List<List<Integer>> res, int level) {
+    private static void helper5(TreeNode node, int level, List<List<Integer>> res) {
         if (node == null) return;
         if (level == res.size())
             res.add(new LinkedList<>());
-        levelOrderBottom4(node.left, res, level + 1);
-        levelOrderBottom4(node.right, res, level + 1);
-        res.get(level).add(node.val);  // 直接获取第 level 个列表，因此递归结束后得到的 res 是反着的
-    }
-
-    public static List<List<Integer>> levelOrderBottom0(TreeNode root) {
-        List<List<Integer>> res = new ArrayList<>();
-        if (root == null) return res;
-
-        List<List<TreeNode>> l = new ArrayList<>();
-        l.add(Arrays.asList(root));
-        int level = 1;
-
-        for (int i = 0; i < l.size(); i++) {
-            if (level == l.size())
-                l.add(new ArrayList<>());
-
-            List<TreeNode> currLevelList = l.get(i);
-            List<TreeNode> nextLevelList = l.get(level);
-
-            for (TreeNode node : currLevelList) {
-                if (node.left != null) nextLevelList.add(node.left);
-                if (node.right != null) nextLevelList.add(node.right);
-            }
-
-            level++;
-        }
-
-        return l.stream()
-            .map(levelList -> levelList.stream()
-                .map(node -> node.val)
-                .collect(Collectors.toList()))
-            .sorted(Collections.reverseOrder())
-            .collect(Collectors.toList());
-    }
-
-    public static void helper0(TreeNode node, Queue<TreeNode> q) {
-
+        helper5(node.left, level + 1, res);
+        helper5(node.right, level + 1, res);
+        res.get(level).add(node.val);   // 直接获取第 level 个列表，因此递归结束后得到的 res 是反着的
     }
 
     public static void main(String[] args) {
@@ -269,7 +236,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         log(basicLevelOrderBottom(t1));   // expects [1, 2, 8, 15, 7, 9, 20, 3]
         log(basicLevelOrderBottom2(t1));  // expects [1, 2, 8, 15, 7, 9, 20, 3]
 
-        // log(levelOrderBottom0(t1));        // expects [[1,2], [8,15,7], [9,20], [3]]
-        log(levelOrderBottom0(t2));        // expects [[15,7], [9,20], [3]] (注意不能是 [[9,15,7], [20], [3]])
+        log(levelOrderBottom4(t1));        // expects [[1,2], [8,15,7], [9,20], [3]]
+        log(levelOrderBottom4(t2));        // expects [[15,7], [9,20], [3]] (注意不能是 [[9,15,7], [20], [3]])
     }
 }

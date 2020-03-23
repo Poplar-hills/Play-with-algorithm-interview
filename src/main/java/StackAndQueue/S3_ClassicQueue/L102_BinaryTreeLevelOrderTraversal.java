@@ -13,7 +13,8 @@ import static Utils.Helpers.*;
 /*
  * Binary Tree Level Order Traversal
  *
- * - Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
+ * - Given a binary tree, return the level order traversal of its nodes' values.
+ *   (ie, from left to right, level by level).
  * */
 
 public class L102_BinaryTreeLevelOrderTraversal {
@@ -95,8 +96,8 @@ public class L102_BinaryTreeLevelOrderTraversal {
 
     /*
      * 解法2：递归（DFS）
-     * - 思路：不同于解法1、基础2，该解法使用的是 DFS 进行层序遍历，将遍历到的节点值追加到结果集中相应 level 的分组中，
-     *   从而实现 BFS 的遍历效果。
+     * - 思路：不同于解法1、基础2，该解法使用 DFS 对二叉树进行前序遍历，将遍历到的节点值追加到结果集中相应 level 的分组中，从而
+     *   通过 DFS 实现了 BFS 的遍历效果。
      * - 实现：
      *   - 在递归层级中传递 level 信息；
      *   - 根据 level 该信息判断当前节点值应该放在 res 中的第几个 list 里。
