@@ -105,7 +105,7 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
 
     /*
      * 解法4：迭代（层级列表）
-     * - 思路：类似 L107 的解法2。
+     * - 思路：类似 L107 的解法3。
      * - 实现：类似解法3。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
