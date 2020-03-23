@@ -169,8 +169,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
      * - 思路：类似 L102 的解法2，同样采用 DFS 来实现 BFS 的效果：
      *     1. 通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
      *     2. 将遍历到的节点插入到结果集中的对应列表里。
-     * - 实现：注意在往 res 中插入空列表时要插入到 res 的头部，否则 test case 2 的右倾的二叉树会出错（左侧已经递归到底，开始
-     *   往空列表中插入元素，但此时右侧还在往 res 中插入空列表）。
+     * - 实现：注意在往 res 中插入空列表时要插入到 res 的头部，否则 test case 2 的右倾的二叉树会出错（当左侧递归已完成时，
+     *   右侧递归的最底层节点需要插入到 res 的头部才行）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */
     public static List<List<Integer>> levelOrderBottom4(TreeNode root) {
