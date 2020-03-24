@@ -330,43 +330,6 @@ public class L127_WordLadder {
         return 0;
     }
 
-
-
-
-    public static int ladderLength0(String beginWord, String endWord, List<String> wordList) {
-        if (!wordList.contains(endWord)) return 0;
-        Set<String> visited = new HashSet<>();
-        Queue<Pair<String, Integer>> q = new LinkedList<>();
-        q.offer(new Pair<>(beginWord, 1));
-
-        while (!q.isEmpty()) {
-            Pair<String, Integer> pair = q.poll();
-            String word = pair.getKey();
-            int step = pair.getValue();
-
-            if (word.equals(endWord)) return step;
-
-            for (String w : wordList) {
-                if (isSimilar0(word, w) && !visited.contains(w)) {
-                    q.offer(new Pair<>(w, step + 1));
-                    visited.add(w);
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    private static boolean isSimilar0(String a, String b) {
-        int diffCount = 0;
-        char[] aLetters = a.toCharArray();
-        char[] bLetters = b.toCharArray();
-        for (int i = 0; i < a.length(); i++) {
-            if (aLetters[i] != bLetters[i]) diffCount++;
-            if (diffCount > 1) return false;
-        }
-        return true;
-    }
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
         log(ladderLength1("hit", "cog", wordList));
