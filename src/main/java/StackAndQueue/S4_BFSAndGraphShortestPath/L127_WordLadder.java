@@ -1,6 +1,8 @@
 package StackAndQueue.S4_BFSAndGraphShortestPath;
 
 import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import Utils.Helpers.Pair;
 
@@ -63,7 +65,7 @@ public class L127_WordLadder {
     /*
      * 解法1：超时解的性能优化版
      * - 思路：与解法1一致，使用 BFS。
-     * - 实现：解法1的问题在于同一个节点会被重复访问（例如，顶点 A、B 都与 C 相邻，当分别为 A、B 寻找相邻顶点时，C 会被入队2次）。
+     * - 实现：解法1的问题在于同一个顶点会被重复访问（例如，顶点 A、B 都与 C 相邻，当分别为 A、B 寻找相邻顶点时，C 会被入队2次）。
      *   ∴ 需要一个 Set 记录哪些顶点还未被访问过，并且在寻找相邻顶点时只在该 Set 中寻找。
      * - 注意：当需要一边遍历 Set，一边增/删其中元素（动态增删）时，不能使用 for、while、forEach，需要使用 iterator。
      * - 优化：更简单的做法是使用 Set 记录已经访问过的顶点，这样就不需要入队之后将访问的顶点从 Set 中移除。
@@ -85,7 +87,7 @@ public class L127_WordLadder {
                 String w = it.next();
                 if (isSimilar(w, word)) {
                     if (w.equals(endWord)) return step + 1;
-                    q.offer(new Pair<>(w, step + 1));  // 将相邻节点入队待访问
+                    q.offer(new Pair<>(w, step + 1));  // 将相邻顶点入队待访问
                     it.remove();                       // 从 unvisited 中删除（动态删除 unvisited 中的元素）
                 }
             }
@@ -105,7 +107,7 @@ public class L127_WordLadder {
     public static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Queue<Pair<String, Integer>> q = new LinkedList<>();
-        Set<String> unvisitied = new HashSet<>(wordList);
+        Set<String> unvisited = new HashSet<>(wordList);
         q.offer(new Pair<>(beginWord, 1));
 
         while (!q.isEmpty()) {
@@ -114,15 +116,15 @@ public class L127_WordLadder {
             int step = p.getValue();
 
             for (int i = 0; i < word.length(); i++) {  // 替换 word 中的每个字母，查看替换后的单词 tWord 是否与 word 相邻
-                StringBuilder sb = new StringBuilder(word);
+                StringBuilder wordSb = new StringBuilder(word);
                 for (char c = 'a'; c <= 'z'; c++) {
                     if (c == word.charAt(i)) continue;
-                    sb.setCharAt(i, c);                // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
-                    String tWord = sb.toString();
-                    if (unvisitied.contains(tWord)) {  // 若 unvisitied 中有 tWord，则说明找到了一个相邻节点
+                    wordSb.setCharAt(i, c);            // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
+                    String tWord = wordSb.toString();
+                    if (unvisited.contains(tWord)) {   // 若 unvisitied 中有 tWord，则说明找到了一个相邻顶点
                         if (tWord.equals(endWord)) return step + 1;
                         q.offer(new Pair<>(tWord, step + 1));
-                        unvisitied.remove(tWord);
+                        unvisited.remove(tWord);
                     }
                 }
             }
@@ -134,61 +136,57 @@ public class L127_WordLadder {
     /*
      * 解法3：Bi-directional BFS
      * - 策略：采用 Bi-directional BFS 能有效减小搜索复杂度：
-     *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的时间及空间
-     *     复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
+     *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的时间
+     *     及空间复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
      *   - 使用条件：1. 已知头尾两个顶点  2. 两个方向的 branching factor 相同。
      *
-     * - 思路：虽然代码不少，但思路并不复杂：
-     *   1. 使用2个队列 startQ 和 endQ，分别用于辅助正/反向查找；
-     *   2. startQ 放入起始顶点 beginWord，endQ 放入终结顶点 endWord；
-     *   3. 从 startQ 开始，遍历其中所有顶点，为每一个顶点寻找相邻顶点：
-     *      a. 若其中任一相邻顶点出现在 endQ 中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回顶点数即可；
-     *      b. 若没有相邻顶点出现在 endQ 中，则说明正反向查找还未相遇，此时：
-     *        1). 经过的顶点数+1；
-     *        2). 将所有未访问过的相邻顶点加入 neighbours 集合；
-     *        3). 调换方向开始下一轮查找（刚才是正向查找一步，下一轮是反向查找一步），将 endQ 作为 startQ 开始遍历，并将 neighbours
-     *            作为 endQ 用于查看下一轮中的相邻顶点是否出现在对面方向最外层顶点中。
+     * - 思路：使用2个队列 startQ、endQ，分别从 beginWord/endWord 开始交替进行正/反向 BFS，即交替遍历 startQ、endQ 中的
+     *   所有顶点，为每一个顶点寻找相邻顶点：
+     *     1. 若其中任一相邻顶点出现在另一队列中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回顶点数即可；
+     *     2. 若没有相邻顶点出现在另一队列中，则说明正反向查找还未相遇，则调换方向继续另一端的 BFS 过程。
+     * （将 endQ 作为 startQ 开始新一轮遍历、将 neighbours 作为 endQ 用于查看下一轮
+     *         中的相邻顶点是否出现在对面方向最外层顶点中）。
      *
-     * - 优化：在最后要调换方向时，可以加一步判断 —— Choose the shortest between the startQ and endQ in hopes to alternate
-     *   between them to meet somewhere at the middle. This optimizes the code, because we are processing smallest
-     *   queue first, so the # of words in the queues dont blow up too fast. basically balancing between the two queues.
+     * - 实现：
+     *   1. ∵ 本题中进行 BFS 时的顺序不重要（先访问哪个相邻顶点都可以，这是 graph 的一个特定），且对于两边队列中的每个顶点都要
+     *      检查其是否存在于另一边的队列（即另一边 BFS 的最外层顶点）中 ∴ 两边的队列 startQ、endQ 可使用 Set 实现（startSet、endSet）。
+     *   2. ∵ 使用 Set 代替队列 ∴ 对于 BFS 过程中找到的相邻顶点，不再需要将其入队回去，而是放入一个 neighbours Set 中，
+     *      最后在调换方向时直接用它来替换其中一边的队列 Set。
+     *   3. 在调换方向时，可以加一步判断 —— 不是每次都交替遍历 startSet 和 endSet，而是每次都找到两者中元素数少的进行遍历。
+     *      这样可以让两边队列 Set 中的元素数保持相对平衡，不会在一边持续产生指数型增长。
      *
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int ladderLength3(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
 
-        Set<String> unvisited = new HashSet<>(wordList);
-        Set<String> startQ = new HashSet<>();  // 辅助正向 BFS 的集合
-        Set<String> endQ = new HashSet<>();    // 辅助反向 BFS 的集合
-        startQ.add(beginWord);
-        endQ.add(endWord);
+        Set<String> visited = new HashSet<>();
+        Set<String> startSet = new HashSet<>();  // 用于正向 BFS
+        Set<String> endSet = new HashSet<>();    // 用于反向 BFS
+        startSet.add(beginWord);
+        endSet.add(endWord);
+        int stepCount = 2;                       // 从2开始是已包含头尾顶点
 
-        int stepCount = 2;                     // stepCount 为最终所求的最短路径顶点数，从2开始是已包含头尾的顶点
-        while (!startQ.isEmpty()) {
-            Set<String> neighbours = new HashSet<>();  // 多个单词很有可能有重复的相邻单词，因此使用 set 去重
-            for (String word: startQ) {        // 不同于解法1，这里要遍历 startQ 中的所有单词，为每一个单词寻找相邻单词（neighbouring words）
-                for (int i = 0; i < word.length(); i++) {
-                    StringBuilder transformed = new StringBuilder(word);
-                    for (char c = 'a'; c <= 'z'; c++) {
-                        if (c == word.charAt(i)) continue;
-                        transformed.setCharAt(i, c);
-                        String tWord = transformed.toString();
-                        if (endQ.contains(tWord)) return stepCount;  // 本侧的相邻顶点也出现在对面方向的最外层顶点中，说明正反向查找相遇，找到了最短路径
-                        if (unvisited.contains(tWord)) {
-                            neighbours.add(tWord);
-                            unvisited.remove(tWord);
-                        }
+        while (!startSet.isEmpty()) {
+            Set<String> neighbours = new HashSet<>();  // 多个顶点有可能有相同的相邻顶点 ∴ 使用 Set 去重
+            for (String word : startSet) {             // 遍历 startSet，为每一个单词寻找相邻单词（neighbouring words）
+                for (String w : wordList) {
+                    if (visited.contains(w)) continue;
+                    if (isSimilar(word, w)) {
+                        if (endSet.contains(w)) return stepCount;  // 若本侧的相邻顶点出现在另一边 BFS 的最外层顶点中，
+                        neighbours.add(w);                         // 说明正反向查找相遇，找到了最短路径
                     }
                 }
+                visited.add(word);
             }
-            stepCount++;                            // 上面循环过程中没有 return 说明正反向查找还未相遇，因此让路径上的顶点数+1
+            stepCount++;                              // 若上面过程中没有 return，说明正反向查找还未相遇 ∴ 让路径步数+1
 
-            if (endQ.size() < neighbours.size()) {  // 若 endQ 中的顶点数少，则调换方向，下一轮从反向查找，遍历 endQ 中的顶点
-                startQ = endQ;                      // 下一轮要遍历谁就把谁赋给 startQ
-                endQ = neighbours;                  // 本轮中找到的相邻顶点（本侧最外层顶点）作为下一轮中的 endQ，用于检测是否正反向相遇
+            if (endSet.size() < neighbours.size()) {  // 调换方向之前先判断两边 set 中的节点数，谁少就用谁做 startSet
+                startSet = endSet;
+                endSet = neighbours;
+            } else {
+                startSet = neighbours;
             }
-            else startQ = neighbours;               // 若 endQ 中顶点多，则下一轮继续正向查找（即将本轮中正向的最外层顶点作为 startQ）
         }
 
         return 0;
@@ -332,31 +330,31 @@ public class L127_WordLadder {
 
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(ladderLength1("hit", "cog", wordList));
+        log(ladderLength3("hit", "cog", wordList));
         // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
         List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(ladderLength1("a", "c", wordList2));
+        log(ladderLength3("a", "c", wordList2));
         // expects 2. ("a" -> "c")
 
         List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(ladderLength1("red", "tax", wordList3));
+        log(ladderLength3("red", "tax", wordList3));
         // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
 
         List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(ladderLength1("hit", "cog", wordList4));
+        log(ladderLength3("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
         List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(ladderLength1("hot", "dog", wordList5));
+        log(ladderLength3("hot", "dog", wordList5));
         // expects 0. (No solution)
 
         List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(ladderLength1("leet", "code", wordList6));
+        log(ladderLength3("leet", "code", wordList6));
         // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
         List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(ladderLength1("kiss", "tusk", wordList7));
+        log(ladderLength3("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
 }
