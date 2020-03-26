@@ -1,8 +1,6 @@
 package StackAndQueue.S4_BFSAndGraphShortestPath;
 
 import java.util.*;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import Utils.Helpers.Pair;
 
@@ -115,7 +113,7 @@ public class L127_WordLadder {
             String word = p.getKey();
             int step = p.getValue();
 
-            for (int i = 0; i < word.length(); i++) {  // 替换 word 中的每个字母，查看替换后的单词 tWord 是否与 word 相邻
+            for (int i = 0; i < word.length(); i++) {  // 为 word 中的每个字母进行替换匹配
                 StringBuilder wordSb = new StringBuilder(word);
                 for (char c = 'a'; c <= 'z'; c++) {
                     if (c == word.charAt(i)) continue;
@@ -194,36 +192,39 @@ public class L127_WordLadder {
 
     /*
      * 解法4：解法3的递归版
-     * - 思路：每次递归都相当于从正/反方向往前走一步，进行一次正/反向查找，查找这一侧最外层顶点的相邻顶点。
+     * - 思路：每轮递归都从正或反方向进行一步 BFS，查找出这一侧最外层顶点的相邻顶点。
+     * - 实现：使用解法2中的字母替换匹配方式。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int ladderLength4(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Set<String> unvisited = new HashSet<>(wordList);
-        return ladderLength4(Collections.singleton(beginWord), Collections.singleton(endWord), unvisited, 2);
+        return helper4(Collections.singleton(beginWord), Collections.singleton(endWord), unvisited, 2);
     }
 
-    private static int ladderLength4(Set<String> startQ, Set<String> endQ, Set<String> unvisited, int stepCount) {
-        if (startQ.isEmpty()) return 0;
+    private static int helper4(Set<String> startSet, Set<String> endSet, Set<String> unvisited, int stepCount) {
+        if (startSet.isEmpty()) return 0;  // 递归结束条件是一边已经没有更多未访问过的相邻顶点，此时正反向 BFS 还未相遇的话就说明没有联通路径
         Set<String> neighbours = new HashSet<>();
-        for (String word : startQ) {
-            for (int i = 0; i < word.length(); i++) {
-                StringBuilder transformed = new StringBuilder(word);
+
+        for (String word : startSet) {                  // 遍历 startSet 中的单词
+            for (int i = 0; i < word.length(); i++) {   // 开始为每个单词的每个字母进行替换匹配
+                StringBuilder wordSb = new StringBuilder(word);
                 for (char c = 'a'; c <= 'z'; c++) {
                     if (c == word.charAt(i)) continue;
-                    transformed.setCharAt(i, c);
-                    String tWord = transformed.toString();
-                    if (endQ.contains(tWord)) return stepCount;  // 当正反向查找找到交点时，unvisited 也为空了（∵ 正反向查找时都会从中 remove 元素）
-                    if (unvisited.contains(tWord)) {  // 不再像解法2中使用 visited 变量，而是将访问过的顶点从 unvisited 中移除，效果一样
+                    wordSb.setCharAt(i, c);
+                    String tWord = wordSb.toString();
+                    if (endSet.contains(tWord)) return stepCount;  // tWord 在对面最外层出现说明正反向 BFS 相遇，得到最短路径
+                    if (unvisited.contains(tWord)) {
                         neighbours.add(tWord);
                         unvisited.remove(tWord);
                     }
                 }
             }
         }
-        return endQ.size() < neighbours.size()
-                ? ladderLength4(endQ, neighbours, unvisited, stepCount + 1)
-                : ladderLength4(neighbours, endQ, unvisited, stepCount + 1);
+
+        return endSet.size() < neighbours.size()        // 选择元素少的一边进行下一轮 BFS
+            ? helper4(endSet, neighbours, unvisited, stepCount + 1)
+            : helper4(neighbours, endSet, unvisited, stepCount + 1);
     }
 
     /*
