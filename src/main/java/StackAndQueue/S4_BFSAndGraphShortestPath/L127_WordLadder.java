@@ -228,9 +228,13 @@ public class L127_WordLadder {
     }
 
     /*
-     * 解法5：生成 Graph + BFS
-     * - 思路：不同于解法1-4，该解法先构建邻接矩阵更直接地将问题建模为图论问题，再通过 BFS 求解。而构建邻接矩阵的过程实际上就是确定
-     *   顶点直接的链接关系，即每个顶点相邻顶点都有哪些。
+     * 解法5：先生成 Graph，再 BFS
+     * - 思路：不同于解法1-4，该解法先构建邻接矩阵（Adjacency Matrix）更直接地将问题建模为图论问题，再通过 BFS 求解。
+     * - 实现：1. 邻接矩阵本质上就是一个 boolean[][]，描述各顶点之间的链接关系。本解法中构建的是无向图的邻接矩阵（更多介绍
+     *           SEE: Play-with-algorithms/GraphBasics/_Introduction.txt）。其实用邻接表也可以（SEE: L126 解法1）。
+     *        2. ∵ 邻接表是基于顶点的 index 构建的 ∴ 在进行 BFS 时，队列中存储的也应是顶点的 index，统一操作方式。
+     *        3. BFS 中使用 steps 数组来存储 beginWord 到 wordList 中各单词的步数，例如 beginWord 到 wordList[i] 的
+     *           距离是 n，则 steps[i] = n。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int ladderLength5(String beginWord, String endWord, List<String> wordList) {
@@ -238,34 +242,35 @@ public class L127_WordLadder {
         if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 需要把 beginWord 加入 wordList 才能开始建立图
 
         int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];  // 创建基于 wordList index 的邻接矩阵（邻接表也可以，SEE: L126 方法1）
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < i; j++)         // 注意是 i < j，即只遍历矩阵的左下部分，而通过下面的 graph[i][j] = graph[j][i] = .. 使得右上部分也被填充
-                graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));  // 矩阵中存储的是两两 word 是否相邻的关系
+        boolean[][] graph = new boolean[n][n];  // 创建基于 index 的邻接矩阵
+        for (int i = 0; i < n; i++)             // 遍历行
+            for (int j = 0; j < i; j++)         // 遍历列（注意是 j < i，即只遍历矩阵的左下区域，再通过下面的 graph[i][j] = graph[j][i] = .. 使得右上区域也被填充）
+                graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));  // 矩阵中存储的是2个 word 是否相邻的关系
 
-        return bsf(graph, wordList, beginWord, endWord);  // 在邻接矩阵上进行 BFS
+        return bsf(graph, wordList, beginWord, endWord);  // 借助邻接矩阵进行 BFS
     }
 
     private static int bsf(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
-        Queue<Integer> q = new LinkedList<>();    // 队列中存储的是顶点在 wordList 中的 index（而非具体单词），因为构建的邻接矩阵也是使用顶点的 index 构建的
-        int[] steps = new int[wordList.size()];   // steps 中每个位置存储从 beginWord 出发到 wordList 中对应位置上的单词的步数（这是不同于 Queue<String, Integer> 的另一种计数方式）
+        Queue<Integer> q = new LinkedList<>();        // 队列中存储的是也是各顶点的 index
+        int[] steps = new int[wordList.size()];       // steps[i] 上存储的是 beginWord 到 wordList[i] 的距离
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
 
         q.offer(beginIndex);
-        steps[beginIndex] = 1;                    // 因为题中要求最终结果里 beginWord 也算一步，因此这里初始化为1
+        steps[beginIndex] = 1;                        // ∵ beginWord 也算一步 ∴ 要为它在 steps 中初始化
 
         while (!q.isEmpty()) {
-            int currIndex = q.poll();             // poll 出来的是 index，而非具体单词
-            boolean[] edges = graph[currIndex];   // 在邻接矩阵中找到当前顶点与其他顶点的链接关系
-            for (int i = 0; i < edges.length; i++) {
-                if (edges[i] && steps[i] == 0) {  // 如果与 currIndex 所指单词相邻，且还未被访问过
+            int currIndex = q.poll();
+            boolean[] edges = graph[currIndex];       // 在邻接矩阵中找到当前顶点与所有其他顶点的链接关系
+            for (int i = 0; i < edges.length; i++) {  // 遍历与相邻顶点的链接关系
+                if (edges[i] && steps[i] == 0) {      // 若相邻，且该相邻顶点还未被访问过
                     if (i == endIndex) return steps[currIndex] + 1;
-                    steps[i] = steps[currIndex] + 1;
-                    q.offer(i);
+                    steps[i] = steps[currIndex] + 1;  // 在 steps 中更新 beginWord 到该相邻顶点的距离
+                    q.offer(i);                       // 将该相邻顶点的 index 放入 q 中
                 }
             }
         }
+
         return 0;
     }
 
