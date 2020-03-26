@@ -138,19 +138,19 @@ public class L127_WordLadder {
      *     及空间复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
      *   - 使用条件：1. 已知头尾两个顶点  2. 两个方向的 branching factor 相同。
      *
-     * - 思路：使用2个队列 startQ、endQ，分别从 beginWord/endWord 开始交替进行正/反向 BFS，即交替遍历 startQ、endQ 中的
+     * - 思路：使用2个队列 beginQ、endQ，分别从 beginWord/endWord 开始交替进行正/反向 BFS，即交替遍历 beginQ、endQ 中的
      *   所有顶点，为每一个顶点寻找相邻顶点：
      *     1. 若其中任一相邻顶点出现在另一队列中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回顶点数即可；
      *     2. 若没有相邻顶点出现在另一队列中，则说明正反向查找还未相遇，则调换方向继续另一端的 BFS 过程。
-     * （将 endQ 作为 startQ 开始新一轮遍历、将 neighbours 作为 endQ 用于查看下一轮
+     * （将 endQ 作为 beginQ 开始新一轮遍历、将 neighbours 作为 endQ 用于查看下一轮
      *         中的相邻顶点是否出现在对面方向最外层顶点中）。
      *
      * - 实现：
      *   1. ∵ 本题中进行 BFS 时的顺序不重要（先访问哪个相邻顶点都可以，这是 graph 的一个特定），且对于两边队列中的每个顶点都要
-     *      检查其是否存在于另一边的队列（即另一边 BFS 的最外层顶点）中 ∴ 两边的队列 startQ、endQ 可使用 Set 实现（startSet、endSet）。
+     *      检查其是否存在于另一边的队列（即另一边 BFS 的最外层顶点）中 ∴ 两边的队列 beginQ、endQ 可使用 Set 实现（beginSet、endSet）。
      *   2. ∵ 使用 Set 代替队列 ∴ 对于 BFS 过程中找到的相邻顶点，不再需要将其入队回去，而是放入一个 neighbours Set 中，
      *      最后在调换方向时直接用它来替换其中一边的队列 Set。
-     *   3. 在调换方向时，可以加一步判断 —— 不是每次都交替遍历 startSet 和 endSet，而是每次都找到两者中元素数少的进行遍历。
+     *   3. 在调换方向时，可以加一步判断 —— 不是每次都交替遍历 beginSet 和 endSet，而是每次都找到两者中元素数少的进行遍历。
      *      这样可以让两边队列 Set 中的元素数保持相对平衡，不会在一边持续产生指数型增长。
      *
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
@@ -159,15 +159,15 @@ public class L127_WordLadder {
         if (!wordList.contains(endWord)) return 0;
 
         Set<String> visited = new HashSet<>();
-        Set<String> startSet = new HashSet<>();  // 用于正向 BFS
+        Set<String> beginSet = new HashSet<>();  // 用于正向 BFS
         Set<String> endSet = new HashSet<>();    // 用于反向 BFS
-        startSet.add(beginWord);
+        beginSet.add(beginWord);
         endSet.add(endWord);
         int stepCount = 2;                       // 从2开始是已包含头尾顶点
 
-        while (!startSet.isEmpty()) {
+        while (!beginSet.isEmpty()) {
             Set<String> neighbours = new HashSet<>();  // 多个顶点有可能有相同的相邻顶点 ∴ 使用 Set 去重
-            for (String word : startSet) {             // 遍历 startSet，为每一个单词寻找相邻单词（neighbouring words）
+            for (String word : beginSet) {             // 遍历 beginSet，为每一个单词寻找相邻单词（neighbouring words）
                 for (String w : wordList) {
                     if (visited.contains(w)) continue;
                     if (isSimilar(word, w)) {
@@ -179,11 +179,11 @@ public class L127_WordLadder {
             }
             stepCount++;                              // 若上面过程中没有 return，说明正反向查找还未相遇 ∴ 让路径步数+1
 
-            if (endSet.size() < neighbours.size()) {  // 调换方向之前先判断两边 set 中的节点数，谁少就用谁做 startSet
-                startSet = endSet;
+            if (endSet.size() < neighbours.size()) {  // 调换方向之前先判断两边 set 中的节点数，谁少就用谁做 beginSet
+                beginSet = endSet;
                 endSet = neighbours;
             } else {
-                startSet = neighbours;
+                beginSet = neighbours;
             }
         }
 
@@ -202,11 +202,11 @@ public class L127_WordLadder {
         return helper4(Collections.singleton(beginWord), Collections.singleton(endWord), unvisited, 2);
     }
 
-    private static int helper4(Set<String> startSet, Set<String> endSet, Set<String> unvisited, int stepCount) {
-        if (startSet.isEmpty()) return 0;  // 递归结束条件是一边已经没有更多未访问过的相邻顶点，此时正反向 BFS 还未相遇的话就说明没有联通路径
+    private static int helper4(Set<String> beginSet, Set<String> endSet, Set<String> unvisited, int stepCount) {
+        if (beginSet.isEmpty()) return 0;  // 递归结束条件是一边已经没有更多未访问过的相邻顶点，此时正反向 BFS 还未相遇的话就说明没有联通路径
         Set<String> neighbours = new HashSet<>();
 
-        for (String word : startSet) {                  // 遍历 startSet 中的单词
+        for (String word : beginSet) {                  // 遍历 beginSet 中的单词
             for (int i = 0; i < word.length(); i++) {   // 开始为每个单词的每个字母进行替换匹配
                 StringBuilder wordSb = new StringBuilder(word);
                 for (char c = 'a'; c <= 'z'; c++) {
@@ -276,11 +276,11 @@ public class L127_WordLadder {
 
     /*
      * 解法6：生成 Graph + Bi-directional BFS
-     * - 思路：在解法5的邻接矩阵的基础上使用 Bi-directional BFS。但该解法中 Bi-directional BFS 的实现（即 biDirectionalBfs
-     *   方法）不同于解法3、4中两个方向交替进行查找的方式，而是：
-     *   1. 同时从起点和终点开始对整个图进行 BFS。
-     *   2. 每次正向和反向都向前查找一个顶点的所有相邻顶点，计算从起/终点到这些顶点的步数，并分别记录在 beginSteps 和 endSteps 中。
-     *   3. 检测 beginSteps、endSteps 中是否存在能同时从起、终点到达的顶点，并从所有这样的路径中求出最短的来。
+     * - 思路：在解法5的邻接矩阵的基础上使用 Bi-directional BFS。
+     * - 实现：不同于解法3、4中两个方向交替进行查找的方式，该解法中：
+     *     1. 同时从起点和终点开始进行 BFS。
+     *     2. 每次正向和反向都向前查找一个顶点的所有相邻顶点，并计算从起/终点到这些顶点的步数，别记录在 beginSteps、endSteps 中。
+     *     3. 每一步 BFS 完之后都检测 beginSteps、endSteps 中是否存在共同的顶点，并从所有公共顶点中找出到达起、终点最短的路径长度来。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int ladderLength6(String beginWord, String endWord, List<String> wordList) {
@@ -293,30 +293,30 @@ public class L127_WordLadder {
             for (int j = 0; j < i; j++)
                 graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));
 
-        return biDirectionalBfs(graph, wordList, beginWord, endWord);  // 双向 BFS
+        return biDirectionalBfs(graph, wordList, beginWord, endWord);  // 借助邻接表进行双向 BFS
     }
 
     private static int biDirectionalBfs(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
-        Queue<Integer> beginQ = new LinkedList<>();    // 队列中存储的是顶点在 wordList 中的 index
+        Queue<Integer> beginQ = new LinkedList<>();
         Queue<Integer> endQ = new LinkedList<>();
-        int beginIndex = wordList.indexOf(beginWord);  // 首先入队的是起点和终点的 index，因此要先获取他们
+        int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
         beginQ.offer(beginIndex);
         endQ.offer(endIndex);
 
         int n = wordList.size();
-        int[] beginSteps = new int[n], endSteps = new int[n];  // 为正向和反向 BFS 各设置一个 steps 数组，这样会不互相干扰
+        int[] beginSteps = new int[n], endSteps = new int[n];  // 为正、反向 BFS 各设置一个 steps 数组，这样会不互相干扰
         beginSteps[beginIndex] = endSteps[endIndex] = 1;
 
-        while (!beginQ.isEmpty() && !endQ.isEmpty()) {  // 若其中一个方向的查找完成时还没有从起点到终点的路径出现则说明无解，程序结束
+        while (!beginQ.isEmpty() && !endQ.isEmpty()) {         // 若其中一个方向的查找完成时还没有从起点到终点的路径出现则说明无解，程序结束
             int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();  // 正、反向队列分别出队一个顶点的 index
 
             for (int i = 0; i < n; i++) {                              // 从所有顶点的 index 中...
-                if (graph[currBeginIndex][i] && beginSteps[i] == 0) {  // 1. 找到 currBeginIndex 的相邻顶点的 index
+                if (graph[currBeginIndex][i] && beginSteps[i] == 0) {  // 1. 找到 currBegin 顶点相邻，且未访问过的顶点的 index
                     beginSteps[i] = beginSteps[currBeginIndex] + 1;    // 2. 计算起点到该相邻顶点的步数
                     beginQ.offer(i);                                   // 3. 将该相邻顶点的 index 入队
                 }
-                if (graph[currEndIndex][i] && endSteps[i] == 0) {      // 4. 找到 currEndIndex 的相邻顶点的 index
+                if (graph[currEndIndex][i] && endSteps[i] == 0) {      // 4. 找到 currEnd 顶点的相邻顶点的 index
                     endSteps[i] = endSteps[currEndIndex] + 1;          // 5. 计算终点到该相邻顶点的步数
                     endQ.offer(i);                                     // 6. 将该相邻顶点的 index 入队
                 }
@@ -325,7 +325,7 @@ public class L127_WordLadder {
             int minStep = Integer.MAX_VALUE;
             for (int i = 0; i < n; i++)
                 if (beginSteps[i] != 0 && endSteps[i] != 0)  // 若 beginSteps、endSteps 在 i 位置上同时有值说明从起、终点都能到达 i 上的顶点，即找到一条联通起终点的路径
-                    minStep = Integer.min(minStep, beginSteps[i] + endSteps[i] - 1);  // 求所有联通路径中最短的那条
+                    minStep = Math.min(minStep, beginSteps[i] + endSteps[i] - 1);  // 求所有联通路径中最短的那条
 
             if (minStep != Integer.MAX_VALUE)
                 return minStep;
