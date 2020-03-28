@@ -55,7 +55,9 @@ public class L126_WordLadderII {
 
     /*
      * 解法1：构建邻接表 + BFS + 回溯（TODO: 学完回溯法后再来 review）
-     * - 思路：∵ 要找到所有最短路径 ∴ 不能再在 BFS 中记录步数直接返回，而是：
+     * - 思路：在 L127 解法5中，
+     *
+     * ∵ 要找到所有最短路径 ∴ 不能再在 BFS 中记录步数直接返回，而是：
      *   1. 要通过 BFS 计算起点到每个顶点的最少步数，保存在 steps 中；
      *   2. 再根据 steps 进行回溯查找，找到所有最短路径。回溯的逻辑本质上是 DFS：
      *      a. 从 beginWord 出发，根据 steps 中的信息不断查找最短路径上的下一个相邻顶点，直到到达 endWord，并一路上记录下该路径所经顶点，得到路径。
@@ -67,27 +69,37 @@ public class L126_WordLadderII {
         if (!wordList.contains(endWord)) return res;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
-        int n = wordList.size();
-        List<List<Integer>> graph = new ArrayList<>();
-
-        for (int i = 0; i < n; i++) {    // 构建邻接表（本题中使用邻接矩阵会超时，邻接表可以通过）
-            graph.add(new ArrayList<>());
-            for (int j = 0; j < n; j++)  // 技巧（这里无法使用）：若写作 j=i+1 的话可以避免遍历相同的 i,j 组合（如 i=0,j=1 和 i=1,j=0），从而加快遍历速度
-                if (isSimilar(wordList.get(i), wordList.get(j)))
-                    graph.get(i).add(j);
-        }
-
+        List<List<Integer>> graph = buildAdjacencyList(wordList);  // 构建无向邻接表（若使用邻接矩阵则会超时）
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
 
         Map<Integer, Integer> steps = new HashMap<>();  // 保存 { 顶点: 起点到该顶点的最少步数 }
         bfs(graph, beginIndex, steps);                  // 通过 BFS 来 populate steps
 
-        List<Integer> indexPath = new ArrayList<>();    // 用于回溯，存储最短路径上每个顶点的 index
-        indexPath.add(beginIndex);
-        dfsBackTrace(graph, beginIndex, endIndex, wordList, steps, indexPath, res);  // 根据 steps 回溯，找到所有最短路径
+        List<Integer> path = new ArrayList<>();    // 用于回溯，存储最短路径上每个顶点的 index
+        path.add(beginIndex);
+        dfsBackTrace(graph, beginIndex, endIndex, wordList, steps, path, res);  // 根据 steps 回溯，找到所有最短路径
 
         return res;
+    }
+
+    private static List<List<Integer>> buildAdjacencyList(List<String> wordList) {
+        List<List<Integer>> graph = new ArrayList<>();
+        int n = wordList.size();
+
+        for (int i = 0; i < n; i++)
+            graph.add(new ArrayList<>());  // 先为 graph 填充 n 个 list（这样后面就可以一次给两个 list 赋值，不需要遍历 n × n 次）
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {  // j 从 i+1 开始，让 i, j 不重复的遍历 wordList 中所有的两两组合
+                if (isSimilar(wordList.get(i), wordList.get(j))) {
+                    graph.get(i).add(j);       // 找到相邻单词后一次给两个 list 赋值
+                    graph.get(j).add(i);
+                }
+            }
+        }
+
+        return graph;
     }
 
     private static void bfs(List<List<Integer>> graph, int beginIndex, Map<Integer, Integer> steps) {
@@ -97,8 +109,8 @@ public class L126_WordLadderII {
 
         while (!q.isEmpty()) {
             int currIndex = q.poll();
-            for (int adjIndex : graph.get(currIndex)) {  // 遍历所有相邻节点的 index
-                if (!steps.containsKey(adjIndex)) {  // 若 adjIndex 在 steps 中已存在，则说明在之前已经赋过值了，即有更短的路径到达，因此不能再覆盖
+            for (int adjIndex : graph.get(currIndex)) {  // 遍历所有相邻节点的顶点的 index
+                if (!steps.containsKey(adjIndex)) {  // 若 adjIndex 存在于 steps 中，说明之前已找到过更短的到达路径 ∴ 不能再覆盖
                     steps.put(adjIndex, steps.get(currIndex) + 1);
                     q.offer(adjIndex);
                 }
@@ -211,35 +223,35 @@ public class L126_WordLadderII {
 
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(findLadders0("hit", "cog", wordList));
+        log(findLadders("hit", "cog", wordList));
         // expects [["hit","hot","dot","dog","cog"], ["hit","hot","lot","log","cog"]]
 
         List<String> wordList2 = new ArrayList<>(Arrays.asList("hot", "cog", "dot", "dog", "hit", "lot", "log"));
-        log(findLadders0("hit", "cog", wordList2));
+        log(findLadders("hit", "cog", wordList2));
         // expects [["hit","hot","dot","dog","cog"], ["hit","hot","lot","log","cog"]]
 
         List<String> wordList3 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(findLadders0("a", "c", wordList3));
+        log(findLadders("a", "c", wordList3));
         // expects [["a","c"]]
 
         List<String> wordList4 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(findLadders0("red", "tax", wordList4));
+        log(findLadders("red", "tax", wordList4));
         // expects [["red","ted","tad","tax"], [red, ted, tad, tax], [red, rex, tex, tax]]
 
         List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(findLadders0("hit", "cog", wordList5));
+        log(findLadders("hit", "cog", wordList5));
         // expects []
 
         List<String> wordList6 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(findLadders0("hot", "dog", wordList6));
+        log(findLadders("hot", "dog", wordList6));
         // expects []
 
         List<String> wordList7 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(findLadders0("leet", "code", wordList7));
+        log(findLadders("leet", "code", wordList7));
         // expects [["leet","lest","lost","lose","lode","code"]]
 
         List<String> wordList8 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(findLadders0("kiss", "tusk", wordList8));
+        log(findLadders("kiss", "tusk", wordList8));
         // expects [[kiss, miss, muss, musk, tusk], [kiss, diss, disk, dusk, tusk]]
     }
 }
