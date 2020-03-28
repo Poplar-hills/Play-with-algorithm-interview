@@ -91,7 +91,7 @@ public class L126_WordLadderII {
             graph.add(new ArrayList<>());  // 先为 graph 填充 n 个 list（这样后面就可以一次给两个 list 赋值，不需要遍历 n × n 次）
 
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {  // j 从 i+1 开始，让 i, j 不重复的遍历 wordList 中所有的两两组合
+            for (int j = i + 1; j < n; j++) {  // j 从 i+1 开始，不重复的遍历 wordList 中所有的两两组合
                 if (isSimilar(wordList.get(i), wordList.get(j))) {
                     graph.get(i).add(j);       // 找到相邻单词后一次给两个 list 赋值
                     graph.get(j).add(i);

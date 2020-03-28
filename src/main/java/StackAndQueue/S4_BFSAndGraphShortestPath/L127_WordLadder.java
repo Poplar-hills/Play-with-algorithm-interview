@@ -179,7 +179,7 @@ public class L127_WordLadder {
             }
             stepCount++;                              // 若上面过程中没有 return，说明正反向查找还未相遇 ∴ 让路径步数+1
 
-            if (endSet.size() < neighbours.size()) {  // 调换方向之前先判断两边 set 中的节点数，谁少就用谁做 beginSet
+            if (endSet.size() < neighbours.size()) {  // 调换方向之前先判断两边 set 中的顶点数，谁少就用谁做 beginSet
                 beginSet = endSet;
                 endSet = neighbours;
             } else {
@@ -229,44 +229,57 @@ public class L127_WordLadder {
 
     /*
      * 解法5：先生成 Graph，再 BFS
-     * - 思路：不同于解法1-4，该解法先构建邻接矩阵（Adjacency Matrix）更直接地将问题建模为图论问题，再通过 BFS 求解。
-     * - 实现：1. 邻接矩阵本质上就是一个 boolean[][]，描述各顶点之间的链接关系。本解法中构建的是无向图的邻接矩阵（更多介绍
-     *           SEE: Play-with-algorithms/GraphBasics/_Introduction.txt）。其实用邻接表也可以（SEE: L126 解法1）。
-     *        2. ∵ 邻接表是基于顶点的 index 构建的 ∴ 在进行 BFS 时，队列中存储的也应是顶点的 index，统一操作方式。
-     *        3. BFS 中使用 steps 数组来存储 beginWord 到 wordList 中各单词的步数，例如 beginWord 到 wordList[i] 的
-     *           距离是 n，则 steps[i] = n。
+     * - 思路：
+     *     1. 不同于解法1-4中遍历到某个顶点时再现去搜索相邻顶点，该解法先构建邻接矩阵（Adjacency Matrix），从而在后面的 BFS
+     *        过程可以直接从邻接矩阵中取得任意顶点所有相邻顶点；
+     *     2. 不同于解法1-4中在 Queue 中存储 Pair<顶点，起点到该顶点的步数>，该解法中的 BFS 过程不再给每个顶点带上步数信息，
+     *        而是通过 BFS 建立一个 steps 数组，每个位置保存起点到每个顶点的最小步数信息，最终获得起点到终点的最小步数。
+     * - 实现：
+     *     1. 邻接矩阵本质上就是一个 boolean[][]，描述各顶点之间的链接关系。本解法中构建的是无向图的邻接矩阵（更多介绍
+     *        SEE: Play-with-algorithms/GraphBasics/_Introduction.txt）。其实用邻接表也可以（SEE: L126 解法1）。
+     *     2. ∵ 邻接表是基于顶点的 index 构建的 ∴ 在进行 BFS 时，队列中存储的也应是顶点的 index，统一操作方式。
+     *     3. 关于 steps 数组：
+     *        a). steps[i] = n 表示 beginWord 到 wordList[i] 的最小步数为 n。
+     *        b). BFS 过程中，每个顶点 i 都可能被当做其他顶点的相邻顶点而被多次访问，但只有第一次访问时才能给 steps[i] 赋值，
+     *            ∵ BFS 的最大特点就是从起点扩散性的向外访问 ∴ 第一次访问到某个顶点时走过的路径就是从起点到该顶点的最短路径。
+     *        c). ∵ 不会重复给 steps 中的元素赋值 ∴ steps 实际上起到了解法1-4中 visited/unvisited 的作用。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int ladderLength5(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 需要把 beginWord 加入 wordList 才能开始建立图
-
-        int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];  // 创建基于 index 的邻接矩阵
-        for (int i = 0; i < n; i++)             // 遍历行
-            for (int j = 0; j < i; j++)         // 遍历列（注意是 j < i，即只遍历矩阵的左下区域，再通过下面的 graph[i][j] = graph[j][i] = .. 使得右上区域也被填充）
-                graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));  // 矩阵中存储的是2个 word 是否相邻的关系
-
-        return bsf(graph, wordList, beginWord, endWord);  // 借助邻接矩阵进行 BFS
+        boolean[][] graph = buildAdjacencyMatrix(wordList);
+        return bfs(graph, wordList, beginWord, endWord);  // 借助邻接矩阵进行 BFS
     }
 
-    private static int bsf(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
-        Queue<Integer> q = new LinkedList<>();        // 队列中存储的是也是各顶点的 index
-        int[] steps = new int[wordList.size()];       // steps[i] 上存储的是 beginWord 到 wordList[i] 的距离
+    private static boolean[][] buildAdjacencyMatrix(List<String> wordList) {
+        int n = wordList.size();
+        boolean[][] graph = new boolean[n][n];  // 基于 wordList 的 index 创建邻接矩阵
+
+        for (int i = 0; i < n; i++)             // ∵ 矩阵中要存的是两两 word 是否相邻 ∴ 要遍历所有所有 word 的两两组合
+            for (int j = i + 1; j < n; j++)     // j 从 i+1 开始，不重复的遍历 wordList 中所有的两两组合
+                if (isSimilar(wordList.get(i), wordList.get(j)))
+                    graph[i][j] = graph[j][i] = true;
+
+        return graph;
+    }
+
+    private static int bfs(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
+        Queue<Integer> q = new LinkedList<>();   // 队列中存储的是也是各顶点的 index
+        int[] steps = new int[wordList.size()];  // steps[i] 上存储的是 beginWord 到 wordList[i] 的最短步数
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
 
         q.offer(beginIndex);
-        steps[beginIndex] = 1;                        // ∵ beginWord 也算一步 ∴ 要为它在 steps 中初始化
+        steps[beginIndex] = 1;                   // ∵ beginWord 也算一步 ∴ 初始化为1
 
         while (!q.isEmpty()) {
-            int currIndex = q.poll();
-            boolean[] edges = graph[currIndex];       // 在邻接矩阵中找到当前顶点与所有其他顶点的链接关系
-            for (int i = 0; i < edges.length; i++) {  // 遍历与相邻顶点的链接关系
-                if (edges[i] && steps[i] == 0) {      // 若相邻，且该相邻顶点还未被访问过
-                    if (i == endIndex) return steps[currIndex] + 1;
-                    steps[i] = steps[currIndex] + 1;  // 在 steps 中更新 beginWord 到该相邻顶点的距离
-                    q.offer(i);                       // 将该相邻顶点的 index 放入 q 中
+            int i = q.poll();
+            for (int j = 0; j < graph[i].length; j++) {  // 遍历邻接矩阵中的第 i 行，检查每个 wordList[j] 是否与 wordList[i] 相邻
+                if (graph[i][j] && steps[j] == 0) {      // 若相邻且还未被访问过（第一次访问时的步数就是最小步数 ∴ 不能覆盖）
+                    if (j == endIndex) return steps[i] + 1;
+                    steps[j] = steps[i] + 1;
+                    q.offer(j);                          // 将该相邻顶点的 index 放入 q 中
                 }
             }
         }
@@ -336,31 +349,31 @@ public class L127_WordLadder {
 
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(ladderLength3("hit", "cog", wordList));
+        log(ladderLength5("hit", "cog", wordList));
         // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
         List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(ladderLength3("a", "c", wordList2));
+        log(ladderLength5("a", "c", wordList2));
         // expects 2. ("a" -> "c")
 
         List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(ladderLength3("red", "tax", wordList3));
+        log(ladderLength5("red", "tax", wordList3));
         // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
 
         List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(ladderLength3("hit", "cog", wordList4));
+        log(ladderLength5("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
         List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(ladderLength3("hot", "dog", wordList5));
+        log(ladderLength5("hot", "dog", wordList5));
         // expects 0. (No solution)
 
         List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(ladderLength3("leet", "code", wordList6));
+        log(ladderLength5("leet", "code", wordList6));
         // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
         List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(ladderLength3("kiss", "tusk", wordList7));
+        log(ladderLength5("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
 }
