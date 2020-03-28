@@ -7,13 +7,54 @@ import static Utils.Helpers.log;
 /*
  * Word Ladder II
  *
- * - 题目与 L127 基本一致，区别在于返回结果得是所有的最短路径。
- * - 参考：找出图上任意两点之间的所有路径的实现（SEE: play-with-algorithms/Graph/Path 中的 allPaths 方法）。
+ * - 题目与 L127 一致，区别在于要返回所有的最短路径。
  * */
 
 public class L126_WordLadderII {
     /*
-     * 方法1：构建邻接表 + BFS + 回溯（TODO: 学完回溯法后再来 review）
+     * 超时解：
+     * - 思路：与“找出图上任意两点之间的所有路径”的思路一致（SEE: Play-with-algorithms/Graph/Path 中的 allPaths 方法）。
+     * - 实现：BFS 过程中，第一次找到的路径一定是最短路径。根据这一规律，可以停止对超过最短路径长度的其他路径的遍历。
+     * - 时间复杂度 O(n^n)：虽然有进行优化，但复杂度量级没变 —— 每找到一个相邻顶点都可能多出 n 种可能 ∴ 是 O(n^n)。
+     * */
+    public static List<List<String>> findLadders0(String beginWord, String endWord, List<String> wordList) {
+        List<List<String>> res = new ArrayList<>();
+        if (!wordList.contains(endWord)) return res;
+
+        Queue<List<String>> q = new LinkedList<>();
+        List<String> initialList = new ArrayList<>();
+        initialList.add(beginWord);
+        q.offer(initialList);
+        Integer minStep = null;
+
+        while (!q.isEmpty()) {
+            List<String> path = q.poll();
+            if (minStep != null && path.size() == minStep) continue;  // 若 q 中拿出来的 path 长度已经等于 minStep 则抛弃掉
+            String lastWord = path.get(path.size() - 1);
+
+            for (String w : wordList) {
+                if (isSimilar(w, lastWord)) {
+                    if (w.equals(endWord)) {
+                        List<String> newPath = new ArrayList<>(path);
+                        newPath.add(w);
+                        res.add(newPath);
+                        minStep = newPath.size();  // 第一次找到的路径一定是最短路径 ∴ 若之后再找到的路径的长度 > 该路径长度，则不是最短路径
+                        continue;
+                    }
+                    if (minStep != null && path.size() + 1 == minStep) continue;  // 若 w 不是 endWord 且 path 长度已经为 minStep-1 则抛弃
+                    if (path.contains(w)) continue;                               // 若 w 已存在于该路径中，则说明已经访问过，不再继续（否则会成环）
+                    List<String> newPath = new ArrayList<>(path);
+                    newPath.add(w);
+                    q.offer(newPath);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    /*
+     * 解法1：构建邻接表 + BFS + 回溯（TODO: 学完回溯法后再来 review）
      * - 思路：∵ 要找到所有最短路径 ∴ 不能再在 BFS 中记录步数直接返回，而是：
      *   1. 要通过 BFS 计算起点到每个顶点的最少步数，保存在 steps 中；
      *   2. 再根据 steps 进行回溯查找，找到所有最短路径。回溯的逻辑本质上是 DFS：
@@ -170,31 +211,35 @@ public class L126_WordLadderII {
 
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(findLadders2("hit", "cog", wordList));
+        log(findLadders0("hit", "cog", wordList));
         // expects [["hit","hot","dot","dog","cog"], ["hit","hot","lot","log","cog"]]
 
-        List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(findLadders2("a", "c", wordList2));
+        List<String> wordList2 = new ArrayList<>(Arrays.asList("hot", "cog", "dot", "dog", "hit", "lot", "log"));
+        log(findLadders0("hit", "cog", wordList2));
+        // expects [["hit","hot","dot","dog","cog"], ["hit","hot","lot","log","cog"]]
+
+        List<String> wordList3 = new ArrayList<>(Arrays.asList("a", "b", "c"));
+        log(findLadders0("a", "c", wordList3));
         // expects [["a","c"]]
 
-        List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(findLadders2("red", "tax", wordList3));
+        List<String> wordList4 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
+        log(findLadders0("red", "tax", wordList4));
         // expects [["red","ted","tad","tax"], [red, ted, tad, tax], [red, rex, tex, tax]]
 
-        List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(findLadders2("hit", "cog", wordList4));
+        List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
+        log(findLadders0("hit", "cog", wordList5));
         // expects []
 
-        List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(findLadders2("hot", "dog", wordList5));
+        List<String> wordList6 = new ArrayList<>(Arrays.asList("hot", "dog"));
+        log(findLadders0("hot", "dog", wordList6));
         // expects []
 
-        List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(findLadders2("leet", "code", wordList6));
+        List<String> wordList7 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
+        log(findLadders0("leet", "code", wordList7));
         // expects [["leet","lest","lost","lose","lode","code"]]
 
-        List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(findLadders2("kiss", "tusk", wordList7));
+        List<String> wordList8 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
+        log(findLadders0("kiss", "tusk", wordList8));
         // expects [[kiss, miss, muss, musk, tusk], [kiss, diss, disk, dusk, tusk]]
     }
 }

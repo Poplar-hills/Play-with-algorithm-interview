@@ -75,18 +75,18 @@ public class L127_WordLadder {
         Queue<Pair<String, Integer>> q = new LinkedList<>();
         q.offer(new Pair<>(beginWord, 1));
 
-        while (!q.isEmpty()) {                         // 最差情况下遍历了所有顶点才到达 endWord ∴ 时间复杂度 O(n)
+        while (!q.isEmpty()) {                           // 最差情况下遍历了所有顶点才到达 endWord ∴ 时间复杂度 O(n)
             Pair<String, Integer> pair = q.poll();
             String word = pair.getKey();
             int step = pair.getValue();
 
-            Iterator<String> it = unvisited.iterator();
-            while (it.hasNext()) {                     // 遍历 unvisited 而非 wordList，时间复杂度 O(n)
+            Iterator<String> it = unvisited.iterator();  // 遍历 unvisited 而非 wordList，时间复杂度 O(n)
+            while (it.hasNext()) {
                 String w = it.next();
                 if (isSimilar(w, word)) {
                     if (w.equals(endWord)) return step + 1;
-                    q.offer(new Pair<>(w, step + 1));  // 将相邻顶点入队待访问
-                    it.remove();                       // 从 unvisited 中删除（动态删除 unvisited 中的元素）
+                    q.offer(new Pair<>(w, step + 1));    // 将相邻顶点入队待访问
+                    it.remove();                         // 从 unvisited 中删除（动态删除 unvisited 中的元素）
                 }
             }
         }
@@ -136,7 +136,7 @@ public class L127_WordLadder {
      * - 策略：采用 Bi-directional BFS 能有效减小搜索复杂度：
      *   - 复杂度：设 branching factor 是 b，两点间距是 d，则单向 BFS/DFS 的时间及空间复杂度为 O(b^d)，而双向 BFS 的时间
      *     及空间复杂度为 O(b^(d/2) + b^(d/2)) 即 O(b^(d/2))，比起 O(b^d) 要小得多。
-     *   - 使用条件：1. 已知头尾两个顶点  2. 两个方向的 branching factor 相同。
+     *   - 使用条件：1. 已知头尾两个顶点；2. 两个方向的 branching factor 相同。
      *
      * - 思路：使用2个队列 beginQ、endQ，分别从 beginWord/endWord 开始交替进行正/反向 BFS，即交替遍历 beginQ、endQ 中的
      *   所有顶点，为每一个顶点寻找相邻顶点：
