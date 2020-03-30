@@ -12,10 +12,11 @@ import static Utils.Helpers.log;
  * - 👉该题是非常有助于理解 BFS、DFS 的各自优势和局限性，以及在如何各尽所能相互配合。
  *
  * - // TODO:
+ *   - 解法2中的字符替换方式 -> L127
+ *   - DFS, BFS 复杂度
  *   - dijkastra
  *   - BFS vs dijkastra: https://www.quora.com/What-is-the-difference-between-dijkastra-and-bfs
  *   - find the 1st shortest path on graph
- *   - 解法2中的字符替换方式 -> L127
  * */
 
 public class L126_WordLadderII {
@@ -168,13 +169,13 @@ public class L126_WordLadderII {
      * - 实现：与解法1的不同点：
      *     1. 辅助数据结构是一棵用 Map 表达的树，其 key 记录 BFS 过程中在走过所有最短路径之前访问过的所有顶点，value 记录每个
      *        顶点的所有相邻顶点（之所以能只记录走过所有最短路径之前的顶点，是因为充分利用了 BFS 的性质，SEE👇的💎）；
-     *     2. BFS 过程采用双向 BFS（类似 L127 解法3）；
+     *     2. BFS 过程采用双向 BFS（类似 L127 解法3），若用单向 BFS 则逻辑简单些，但效率低；
      *     3. 不为 BFS 事先构建 graph，而是在 BFS 过程中现为每个顶点搜索相邻顶点。
      * - 💎总结：
-     *     1. BFS 的最大特点是从起点扩散性的向外逐层访问顶点 ∴ 最先到达终点的一定是最短路径，若存在多条最短路径；
+     *     1. BFS 的最大特点是从起点扩散性的向外逐层访问顶点 ∴ 最先到达终点的一定是最短路径，若存在多条最短路径，则它们都会在
+     *        同一轮遍历（对最外圈顶点的遍历）中到达终点。
      *     2. 该解法中的辅助数据结构使用 Map 表达树 —— 是一个很经典且常用的技巧。
-     *   则它们都会在同一轮遍历（对最外圈顶点的遍历）中到达终点。
-     * - 时间复杂度 O()，空间复杂度 O()。
+     * - 扩展：若该题目只求任意一条最短路径，则可以对 biDirBfs、dfs 方法进行改造，在找到第一条最短路径后就停止即可。
      * */
     public static List<List<String>> findLadders2(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
