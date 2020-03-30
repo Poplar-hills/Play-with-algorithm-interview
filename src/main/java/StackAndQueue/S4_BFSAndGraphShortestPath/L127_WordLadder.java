@@ -20,7 +20,7 @@ import static Utils.Helpers.log;
  *     3. You may assume no duplicates in the word list.
  *     4. You may assume beginWord and endWord are non-empty and are not the same.
  *
- * - 注意：本题求的是最短路径上的顶点数（包含头尾顶点），而非最短路径的上步数（L279 中求的是步数），这个要区分清楚。
+ * - 注意：本题求的是最短路径上的顶点数（包含头尾顶点），而非最短路径的上步数（L279 中求的是步数，即顶点数-1），这个要区分清楚。
  * */
 
 public class L127_WordLadder {
@@ -241,7 +241,7 @@ public class L127_WordLadder {
      *     3. 关于 steps 数组：
      *        a). steps[i] = n 表示 beginWord 到 wordList[i] 的最小步数为 n。
      *        b). BFS 过程中，每个顶点 i 都可能被当做其他顶点的相邻顶点而被多次访问，但只有第一次访问时才能给 steps[i] 赋值，
-     *            ∵ BFS 的最大特点就是从起点扩散性的向外访问 ∴ 第一次访问到某个顶点时走过的路径就是从起点到该顶点的最短路径。
+     *            ∵ BFS 的最大特点就是从起点扩散性的向外逐层访问顶点 ∴ 第一次访问到某个顶点时走过的路径就是从起点到该顶点的最短路径。
      *        c). ∵ 不会重复给 steps 中的元素赋值 ∴ steps 实际上起到了解法1-4中 visited/unvisited 的作用。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
@@ -288,7 +288,7 @@ public class L127_WordLadder {
     }
 
     /*
-     * 解法6：生成 Graph + Bi-directional BFS
+     * 解法6：先构建 Graph + Bi-directional BFS
      * - 思路：在解法5的邻接矩阵的基础上使用 Bi-directional BFS。
      * - 实现：不同于解法3、4中两个方向交替进行查找的方式，该解法中：
      *     1. 同时从起点和终点开始进行 BFS。

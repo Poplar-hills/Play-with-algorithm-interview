@@ -8,6 +8,14 @@ import static Utils.Helpers.log;
  * Word Ladder II
  *
  * - 题目与 L127 一致，区别在于要返回所有的最短路径。
+ *
+ * - 👉该题是非常有助于理解 BFS、DFS 的各自优势和局限性，以及在如何各尽所能相互配合。
+ *
+ * - // TODO:
+ *   - dijkastra
+ *   - BFS vs dijkastra: https://www.quora.com/What-is-the-difference-between-dijkastra-and-bfs
+ *   - find the 1st shortest path on graph
+ *   - 解法2中的字符替换方式 -> L127
  * */
 
 public class L126_WordLadderII {
@@ -54,16 +62,17 @@ public class L126_WordLadderII {
     }
 
     /*
-     * 解法1：构建邻接表 + BFS + Backtracking
-     * - 思路：L127 解法5中先构建了 graph，然后在 BFS 过程中生成 steps 数组。而 steps 中记录了从起点到达每个顶点的最小步数
-     *   ∴ 只要借助 steps 对 graph 进行回溯搜索，并记录下沿途的顶点即可获得所有最短路径。
+     * 解法1：构建邻接表 + BFS + DFS
+     * - 思路：BFS 在求解“单条最短路径步数”问题时非常好用，但对于“求所有最短路径”问题则会产生超高复杂度（👆超时解）。改进方法是
+     *   通过扩散性的 BFS 生成一个对 DFS 友好的辅助数据结构（即 L127 解法5中的 steps 数组），记录从起点到达每个顶点的最小步数，
+     *   再基于该结构使用纵深性的 DFS 快速找到所有最短路径（即需要配合使用 BFS、DFS）。
      * - 实现：
-     *   1. 本解法中构建的 graph 是无向邻接表（Adjacency List），若用邻接矩阵则会超时。
+     *   1. 在 BFS 之前要生成 graph，而本解法中构建的 graph 是无向邻接表（Adjacency List），若用邻接矩阵则会超时。
      *   2. 为了便于查找，本解法中的 steps 使用 Map 实现。
-     *   3. 回溯过程：从 beginWord 出发，借助 steps 中的信息查找哪个（或哪几个）相邻 word 是最短路径上的下一个顶点，如此重复
+     *   3. DFS 过程：从 beginWord 出发，借助 steps 中的信息查找哪个（或哪几个）相邻 word 是最短路径上的下一个顶点，如此重复
      *      直到到达 endWord，并记录下沿途的顶点即可获得最短路径。
-     * - 👉注意：说起“回溯”，其实就是指 DFS ∵ DFS 是基于回溯的（SEE: https://mp.weixin.qq.com/s/sAutzAzhaGArkl2Ban5guA）
-     *   ∴ 本解法其实就是 BFS + DFS。
+     * - 👉注意：DFS 的实现是基于回溯法的（SEE: https://mp.weixin.qq.com/s/sAutzAzhaGArkl2Ban5guA）。一般说起“回溯”，
+     *   指的也就是 DFS，这两个词是 interchangable 的。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static List<List<String>> findLadders00(String beginWord, String endWord, List<String> wordList) {
@@ -71,14 +80,14 @@ public class L126_WordLadderII {
         if (!wordList.contains(endWord)) return res;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
-        List<List<Integer>> graph = buildGraph(wordList);                    // 先构建无向邻接表
+        List<List<Integer>> graph = buildGraph(wordList);                // 先构建无向邻接表
 
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
-        Map<Integer, Integer> steps = bfs(graph, beginIndex, wordList);      // 通过 BFS 来填充 steps map
+        Map<Integer, Integer> steps = bfs(graph, beginIndex, wordList);  // 通过 BFS 来填充 steps map
 
-        List<Integer> path = new ArrayList<>(beginIndex);                    // 待填充的最短路径（存储最短路径上每个顶点的 index）
-        backTrack(graph, beginIndex, endIndex, wordList, steps, path, res);  // 通过回溯搜索填充 path，再转换成 word path 后放入 res
+        List<Integer> path = new ArrayList<>(beginIndex);                // 回溯中待填充的路径（存储最短路径上每个顶点的 index）
+        dfs(graph, beginIndex, endIndex, wordList, steps, path, res);    // 通过 DFS 搜索填充 path，再转换成 word path 后放入 res
 
         return res;
     }
@@ -121,8 +130,8 @@ public class L126_WordLadderII {
         return steps;
     }
 
-    private static void backTrack(List<List<Integer>> graph, int i, int endIndex, List<String> wordList,
-                            Map<Integer, Integer> steps, List<Integer> path, List<List<String>> res) {  // 每层递归找到最短路径上的一个顶点，放入 path
+    private static void dfs(List<List<Integer>> graph, int i, int endIndex, List<String> wordList,  // 每层递归找到最短路径上的一个顶点，放入 path
+                            Map<Integer, Integer> steps, List<Integer> path, List<List<String>> res) {
         if (!path.isEmpty() && path.get(path.size() - 1) == endIndex) {  // 到达 endWord 时递归到底
             res.add(getWords(path, wordList));         // 到达 endWord 时最短路径 path 被填充完整 ∴ 要为其中的每个 index 找到对应的 word，形成一个解
             return;
@@ -130,7 +139,7 @@ public class L126_WordLadderII {
         for (int adj : graph.get(i)) {                 // 遍历所有相邻顶点的 index
             if (steps.get(adj) == steps.get(i) + 1) {  // 检查索引为 adj 的顶点是否是最短路径上的下一个顶点（保证 path 是最短路径；可能有多个最短路径）
                 path.add(adj);
-                backTrack(graph, adj, endIndex, wordList, steps, path, res);  // 从 adj 开始继续往深处搜索
+                dfs(graph, adj, endIndex, wordList, steps, path, res);  // 从 adj 开始继续往深处搜索
                 path.remove(path.size() - 1);          // 返回上层递归之前将 adj 移除，恢复原来的状态（回溯的标志性操作）
             }
         }
@@ -154,108 +163,123 @@ public class L126_WordLadderII {
     }
 
     /*
-     * 解法2：更简洁更高效的解法（TODO: 没有完全看懂）
+     * 解法2：Bi-directional BFS + DFS
+     * - 思路：与解法1类似，总体思路都是使用发散性的 BFS 生成一个对 DFS 友好的辅助数据结构，再使用纵深性的 DFS 找到所有最短路径。
+     * - 实现：与解法1的不同点：
+     *     1. 辅助数据结构是一棵用 Map 表达的树，其 key 记录 BFS 过程中在走过所有最短路径之前访问过的所有顶点，value 记录每个
+     *        顶点的所有相邻顶点（之所以能只记录走过所有最短路径之前的顶点，是因为充分利用了 BFS 的性质，SEE👇的💎）；
+     *     2. BFS 过程采用双向 BFS（类似 L127 解法3）；
+     *     3. 不为 BFS 事先构建 graph，而是在 BFS 过程中现为每个顶点搜索相邻顶点。
+     * - 💎总结：
+     *     1. BFS 的最大特点是从起点扩散性的向外逐层访问顶点 ∴ 最先到达终点的一定是最短路径，若存在多条最短路径；
+     *     2. 该解法中的辅助数据结构使用 Map 表达树 —— 是一个很经典且常用的技巧。
+     *   则它们都会在同一轮遍历（对最外圈顶点的遍历）中到达终点。
+     * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static List<List<String>> findLadders2(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
         if (!wordList.contains(endWord)) return res;
 
-        HashMap<String, List<String>> nextMap = new HashMap<>();
+        Set<String> unvisited = new HashSet<>(wordList);
         Set<String> beginSet = new HashSet<>();
         Set<String> endSet = new HashSet<>();
-        Set<String> wordSet = new HashSet<>(wordList);
         beginSet.add(beginWord);
         endSet.add(endWord);
-        bfs(beginSet, endSet, wordSet, nextMap, true);  // 通过 bfs 计算各个节点的相邻节点，并放入 nextMap
+        HashMap<String, List<String>> adjMap = new HashMap<>();  // 用 Map 表达的树，记录 { 顶点: [所有相邻顶点] }
+        biDirBfs(beginSet, endSet, unvisited, adjMap, true);     // 通过双向 BFS 搜索各个顶点的相邻顶点，并放入 adjMap
 
-        List<String> currList = new ArrayList<>();
-        currList.add(beginWord);
-        dfs(beginWord, endWord, nextMap, currList, res);
+        List<String> path = new ArrayList<>();                   // 回溯中待填充的路径
+        path.add(beginWord);
+        dfs(beginWord, endWord, adjMap, path, res);              // 基于 adjMap 进行回溯搜索，生成最短路径，并放入 res
 
         return res;
     }
 
-    private static void bfs(Set<String> beginSet, Set<String> endSet, Set<String> wordList, HashMap<String, List<String>> nextMap, boolean isForwardSearch) {
-        wordList.removeAll(beginSet);
-        wordList.removeAll(endSet);
-        boolean connected = false;
+    private static void biDirBfs(Set<String> beginSet, Set<String> endSet, Set<String> unvisited,
+                                 HashMap<String, List<String>> adjMap, boolean isForward) {
+        unvisited.removeAll(beginSet);
+        unvisited.removeAll(endSet);
+        boolean hasMet = false;
         Set<String> neighbours = new HashSet<>();
 
         for (String word : beginSet) {
-            for (int i = 0, l = word.length(); i < l; i++) {
-                StringBuilder transformed = new StringBuilder(word);
+            for (int i = 0; i < word.length(); i++) {
+                char[] chars = word.toCharArray();     // 这种替换字符的方式比 L127 解法2、3更简便
                 for (char c = 'a'; c <= 'z'; c++) {
-                    if (c == word.charAt(i)) continue;
-                    transformed.setCharAt(i, c);
-                    String tWord = transformed.toString();
-                    if (endSet.contains(tWord) || (!connected && wordList.contains(tWord))) {
-                        if (endSet.contains(tWord)) connected = true;
-                        else neighbours.add(tWord);
+                    chars[i] = c;
+                    String tWord = new String(chars);
 
-                        String nextWord = isForwardSearch ? tWord : word;
-                        String currWord = isForwardSearch ? word : tWord;
-                        List<String> nextWords = nextMap.containsKey(currWord) ? nextMap.get(currWord) : new ArrayList<>();
-                        nextWords.add(nextWord);
-                        nextMap.put(currWord, nextWords);
+                    String key = isForward ? word : tWord;  // ∵ adjMap 中的 path 是从起点到终点 ∴ 在反向 BFS 时需要与正向 BFS 统一顺序
+                    String adj = isForward ? tWord : word;
+                    List<String> adjWords = adjMap.getOrDefault(key, new ArrayList<>());
+
+                    if (endSet.contains(tWord)) {  // 若正反向 BFS 相遇，找到一条最短路径
+                        hasMet = true;             // ∵ 要继续遍历完这一轮的所有顶点，以找到所有最短路径 ∴ 这里只设置标志位，不 return
+                        adjWords.add(adj);
+                        adjMap.put(key, adjWords);
+                    }
+                    if (!hasMet && unvisited.contains(tWord)) {  // TODO: 这里还没有完全明白
+                        neighbours.add(tWord);
+                        adjWords.add(adj);
+                        adjMap.put(key, adjWords);
                     }
                 }
             }
         }
 
-        if (!connected && !neighbours.isEmpty()) {  // 若已经找到最短路径则不再继续递归
-            if (beginSet.size() > endSet.size())
-                bfs(endSet, neighbours, wordList, nextMap, !isForwardSearch);
-            else
-                bfs(neighbours, endSet, wordList, nextMap, isForwardSearch);
-        }
+        if (hasMet || neighbours.isEmpty()) return;  // 在找到所有最短路径后就不再继续递归（此时 adjMap 中已经包含了所有最短路径上的顶点）
+
+        if (beginSet.size() > endSet.size())         // 双向 BFS 的性能优化技巧：选顶点较少的一边进行下一轮递归
+            biDirBfs(endSet, neighbours, unvisited, adjMap, !isForward);
+        else
+            biDirBfs(neighbours, endSet, unvisited, adjMap, isForward);
     }
 
-    private static void dfs(String currWord, String endWord, HashMap<String, List<String>> nextMap, List<String> currList, List<List<String>> res) {
-        if (currWord.equals(endWord)) {          // 递归到底的条件是到达 endWord
-            res.add(new ArrayList<>(currList));  // 到达 endWord 后将该最短路径以复制的方式 add 到 res 里（new ArrayList(currList) 就是复制 currList）
+    private static void dfs(String currWord, String endWord, HashMap<String, List<String>> pathMap,  // 标准的 DFS（回溯）实现
+                            List<String> path, List<List<String>> res) {
+        if (currWord.equals(endWord)) {
+            res.add(new ArrayList<>(path));
             return;
         }
-        if (!nextMap.containsKey(currWord)) return;
-        List<String> nextWords = nextMap.get(currWord);
-
-        for (String next : nextWords) {  // 对每个顶点的对每个分支路径进行 DFS，找出该路径上的所有顶点并放入 currList，再切换到下一个分支上继续
-            currList.add(next);
-            dfs(next, endWord, nextMap, currList, res);
-            currList.remove(currList.size() - 1);  // 递归到底后，在每次从下层顶点返回上层顶点之前都移除 currList 的最后一个元素，从而在有分叉的路径上可以改变方向进行检索
+        if (!pathMap.containsKey(currWord)) return;
+        for (String adj : pathMap.get(currWord)) {  // 从 pathMap 中找到 currWord 的所有相邻顶点，为他们递归地进行 DFS
+            path.add(adj);
+            dfs(adj, endWord, pathMap, path, res);
+            path.remove(path.size() - 1);           // 返回上层递归之前将 adj 移除，恢复原来的状态，从而在有分叉的顶点上可以改变方向继续搜索
         }
     }
 
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(findLadders("hit", "cog", wordList));
+        log(findLadders2("hit", "cog", wordList));
         // expects [["hit","hot","dot","dog","cog"], ["hit","hot","lot","log","cog"]]
 
         List<String> wordList2 = new ArrayList<>(Arrays.asList("hot", "cog", "dot", "dog", "hit", "lot", "log"));
-        log(findLadders("hit", "cog", wordList2));
+        log(findLadders2("hit", "cog", wordList2));
         // expects [["hit","hot","dot","dog","cog"], ["hit","hot","lot","log","cog"]]
 
         List<String> wordList3 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(findLadders("a", "c", wordList3));
+        log(findLadders2("a", "c", wordList3));
         // expects [["a","c"]]
 
         List<String> wordList4 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(findLadders("red", "tax", wordList4));
+        log(findLadders2("red", "tax", wordList4));
         // expects [["red","ted","tad","tax"], [red, ted, tad, tax], [red, rex, tex, tax]]
 
         List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(findLadders("hit", "cog", wordList5));
+        log(findLadders2("hit", "cog", wordList5));
         // expects []
 
         List<String> wordList6 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(findLadders("hot", "dog", wordList6));
+        log(findLadders2("hot", "dog", wordList6));
         // expects []
 
         List<String> wordList7 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(findLadders("leet", "code", wordList7));
+        log(findLadders2("leet", "code", wordList7));
         // expects [["leet","lest","lost","lose","lode","code"]]
 
         List<String> wordList8 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(findLadders("kiss", "tusk", wordList8));
+        log(findLadders2("kiss", "tusk", wordList8));
         // expects [[kiss, miss, muss, musk, tusk], [kiss, diss, disk, dusk, tusk]]
     }
 }
