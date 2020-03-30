@@ -228,7 +228,7 @@ public class L127_WordLadder {
     }
 
     /*
-     * 解法5：先生成 Graph，再 BFS
+     * 解法5：先构建 Graph + BFS 生成 steps 数组
      * - 思路：
      *     1. 不同于解法1-4中遍历到某个顶点时再现去搜索相邻顶点，该解法先构建邻接矩阵（Adjacency Matrix），从而在后面的 BFS
      *        过程可以直接从邻接矩阵中取得任意顶点所有相邻顶点；

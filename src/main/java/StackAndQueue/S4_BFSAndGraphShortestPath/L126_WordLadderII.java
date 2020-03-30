@@ -54,45 +54,45 @@ public class L126_WordLadderII {
     }
 
     /*
-     * 解法1：构建邻接表 + BFS + 回溯（TODO: 学完回溯法后再来 review）
-     * - 思路：在 L127 解法5中，
-     *
-     * ∵ 要找到所有最短路径 ∴ 不能再在 BFS 中记录步数直接返回，而是：
-     *   1. 要通过 BFS 计算起点到每个顶点的最少步数，保存在 steps 中；
-     *   2. 再根据 steps 进行回溯查找，找到所有最短路径。回溯的逻辑本质上是 DFS：
-     *      a. 从 beginWord 出发，根据 steps 中的信息不断查找最短路径上的下一个相邻顶点，直到到达 endWord，并一路上记录下该路径所经顶点，得到路径。
-     *      b. 在查找最短路径上的下一个相邻顶点时，若遇到路径分叉（存在多条最短路径），则每条都要尝试一遍。
+     * 解法1：构建邻接表 + BFS + Backtracking
+     * - 思路：L127 解法5中先构建了 graph，然后在 BFS 过程中生成 steps 数组。而 steps 中记录了从起点到达每个顶点的最小步数
+     *   ∴ 只要借助 steps 对 graph 进行回溯搜索，并记录下沿途的顶点即可获得所有最短路径。
+     * - 实现：
+     *   1. 本解法中构建的 graph 是无向邻接表（Adjacency List），若用邻接矩阵则会超时。
+     *   2. 为了便于查找，本解法中的 steps 使用 Map 实现。
+     *   3. 回溯过程：从 beginWord 出发，借助 steps 中的信息查找哪个（或哪几个）相邻 word 是最短路径上的下一个顶点，如此重复
+     *      直到到达 endWord，并记录下沿途的顶点即可获得最短路径。
+     * - 👉注意：说起“回溯”，其实就是指 DFS ∵ DFS 是基于回溯的（SEE: https://mp.weixin.qq.com/s/sAutzAzhaGArkl2Ban5guA）
+     *   ∴ 本解法其实就是 BFS + DFS。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+    public static List<List<String>> findLadders00(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
         if (!wordList.contains(endWord)) return res;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
-        List<List<Integer>> graph = buildAdjacencyList(wordList);  // 构建无向邻接表（若使用邻接矩阵则会超时）
+        List<List<Integer>> graph = buildGraph(wordList);                    // 先构建无向邻接表
+
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
+        Map<Integer, Integer> steps = bfs(graph, beginIndex, wordList);      // 通过 BFS 来填充 steps map
 
-        Map<Integer, Integer> steps = new HashMap<>();  // 保存 { 顶点: 起点到该顶点的最少步数 }
-        bfs(graph, beginIndex, steps);                  // 通过 BFS 来 populate steps
-
-        List<Integer> path = new ArrayList<>();    // 用于回溯，存储最短路径上每个顶点的 index
-        path.add(beginIndex);
-        dfsBackTrace(graph, beginIndex, endIndex, wordList, steps, path, res);  // 根据 steps 回溯，找到所有最短路径
+        List<Integer> path = new ArrayList<>(beginIndex);                    // 待填充的最短路径（存储最短路径上每个顶点的 index）
+        backTrack(graph, beginIndex, endIndex, wordList, steps, path, res);  // 通过回溯搜索填充 path，再转换成 word path 后放入 res
 
         return res;
     }
 
-    private static List<List<Integer>> buildAdjacencyList(List<String> wordList) {
-        List<List<Integer>> graph = new ArrayList<>();
-        int n = wordList.size();
+    private static List<List<Integer>> buildGraph(List<String> worList) {
+        int n = worList.size();
+        List<List<Integer>> graph = new ArrayList<>(n);
 
         for (int i = 0; i < n; i++)
-            graph.add(new ArrayList<>());  // 先为 graph 填充 n 个 list（这样后面就可以一次给两个 list 赋值，不需要遍历 n × n 次）
+            graph.add(new ArrayList<>());   // 先为 graph 填充 n 个 list（这样后面就可以一次给两个 list 赋值，不需要遍历 n × n 次）
 
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {  // j 从 i+1 开始，不重复的遍历 wordList 中所有的两两组合
-                if (isSimilar(wordList.get(i), wordList.get(j))) {
+                if (isSimilar(worList.get(i), worList.get(j))) {
                     graph.get(i).add(j);       // 找到相邻单词后一次给两个 list 赋值
                     graph.get(j).add(i);
                 }
@@ -102,41 +102,45 @@ public class L126_WordLadderII {
         return graph;
     }
 
-    private static void bfs(List<List<Integer>> graph, int beginIndex, Map<Integer, Integer> steps) {
+    private static Map<Integer, Integer> bfs(List<List<Integer>> graph, int beginIndex, List<String> wordList) {
+        Map<Integer, Integer> steps = new HashMap<>();  // 存储 { wordIndex: beginWord 到该 word 的最小步数 }
+        steps.put(beginIndex, 1);
         Queue<Integer> q = new LinkedList<>();
         q.offer(beginIndex);
-        steps.put(beginIndex, 0);
 
         while (!q.isEmpty()) {
-            int currIndex = q.poll();
-            for (int adjIndex : graph.get(currIndex)) {  // 遍历所有相邻节点的顶点的 index
-                if (!steps.containsKey(adjIndex)) {  // 若 adjIndex 存在于 steps 中，说明之前已找到过更短的到达路径 ∴ 不能再覆盖
-                    steps.put(adjIndex, steps.get(currIndex) + 1);
-                    q.offer(adjIndex);
+            int i = q.poll();
+            for (int adj : graph.get(i)) {      // 遍历所有相邻节点的顶点的 index
+                if (!steps.containsKey(adj)) {  // 若 steps 中已有 adj，说明之前已找到了更短的路径 ∴ 不能再覆盖
+                    steps.put(adj, steps.get(i) + 1);
+                    q.offer(adj);
                 }
             }
         }
+
+        return steps;
     }
 
-    private static void dfsBackTrace(List<List<Integer>> graph, int currIndex, int endIndex, List<String> wordList, Map<Integer, Integer> steps, List<Integer> indexPath, List<List<String>> res) {
-        if (!indexPath.isEmpty() && indexPath.get(indexPath.size() - 1) == endIndex) {  // 检查是否到达 endWord
-            res.add(getPath(indexPath, wordList));  // 若到达则说明 indexPath 中的索引组成了一条最短路径，将对应的 word path 添加到 res 中
+    private static void backTrack(List<List<Integer>> graph, int i, int endIndex, List<String> wordList,
+                            Map<Integer, Integer> steps, List<Integer> path, List<List<String>> res) {  // 每层递归找到最短路径上的一个顶点，放入 path
+        if (!path.isEmpty() && path.get(path.size() - 1) == endIndex) {  // 到达 endWord 时递归到底
+            res.add(getWords(path, wordList));         // 到达 endWord 时最短路径 path 被填充完整 ∴ 要为其中的每个 index 找到对应的 word，形成一个解
             return;
         }
-        for (int adjIndex : graph.get(currIndex)) {                 // 遍历所有邻居顶点的 index
-            if (steps.get(adjIndex) == steps.get(currIndex) + 1) {  // 检查 adjIndex 所指顶点是否是最短路径上的下一个顶点
-                indexPath.add(adjIndex);
-                dfsBackTrace(graph, adjIndex, endIndex, wordList, steps, indexPath, res);  // 递归查找下一个 adjIndex
-                indexPath.remove(indexPath.size() - 1);      // 递归结束后将 adjIndex 移除，放入下一个再继续查找
+        for (int adj : graph.get(i)) {                 // 遍历所有相邻顶点的 index
+            if (steps.get(adj) == steps.get(i) + 1) {  // 检查索引为 adj 的顶点是否是最短路径上的下一个顶点（保证 path 是最短路径；可能有多个最短路径）
+                path.add(adj);
+                backTrack(graph, adj, endIndex, wordList, steps, path, res);  // 从 adj 开始继续往深处搜索
+                path.remove(path.size() - 1);          // 返回上层递归之前将 adj 移除，恢复原来的状态（回溯的标志性操作）
             }
         }
     }
 
-    private static List<String> getPath(List<Integer> tres, List<String> wordList) {
-        List<String> path = new ArrayList<>();
-        for (int index : tres)
-            path.add(wordList.get(index));
-        return path;
+    private static List<String> getWords(List<Integer> path, List<String> wordList) {
+        List<String> wordPath = new ArrayList<>();
+        for (int i : path)
+            wordPath.add(wordList.get(i));
+        return wordPath;
     }
 
     private static boolean isSimilar(String w1, String w2) {
