@@ -27,11 +27,11 @@ public class L787_CheapestFlightsWithinKStops {
      * */
     public static int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
-            .collect(Collectors.groupingBy(f -> f[0]));
+            .collect(Collectors.groupingBy(f -> f[0]));  // 按 city 进行索引
 
         Queue<int[]> q = new LinkedList<>();
-        q.offer(new int[]{src, 0, -1});
-
+        q.offer(new int[]{src, 0, -1});  // q[i] 中的三个元素：[ciry, src->ciry 的 price, 当前线路上的 stop 个数]
+                                         // 让 stop 个数从-1开始，这样经过1段航线后 stop 个数为0，经过2段航线后 stop 个数为1，符合题意
         int cheapestPrice = Integer.MAX_VALUE;
 
         while (!q.isEmpty()) {
