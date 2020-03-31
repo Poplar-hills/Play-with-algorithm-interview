@@ -18,7 +18,8 @@ import static Utils.Helpers.log;
 public class L787_CheapestFlightsWithinKStops {
     /*
      * 超时解：BFS
-     * - 思路：先构建 graph，在 graph 上进行完整的 BFS（遍历所有顶点，而不是到达了终点就提前结束）。
+     * - 思路：先构建 graph，在 graph 上进行完整的 BFS（遍历所有顶点，而不是到达了终点就提前结束），并在 BFS 过程中不断比较，
+     *   找到 cheapest price。
      * - 实现：∵ graph 的作用是在 BFS 时能够快速查询从任一 city 出发的所有航线，即能按 city 进行查找 ∴ 其结构应该是
      *   {city: List<flight>}。
      * - 时间复杂度：构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)；而完整的 BFS 过程是 O(V+E)；∴ 整体是 O(V+E)，
@@ -26,7 +27,7 @@ public class L787_CheapestFlightsWithinKStops {
      * */
     public static int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
-            .collect(Collectors.groupingBy(f -> f[0]));  // O(n)
+            .collect(Collectors.groupingBy(f -> f[0]));
 
         Queue<int[]> q = new LinkedList<>();
         q.offer(new int[]{src, 0, -1});
