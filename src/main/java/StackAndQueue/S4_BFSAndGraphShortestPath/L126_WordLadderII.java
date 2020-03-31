@@ -12,7 +12,6 @@ import static Utils.Helpers.log;
  * - 👉该题是非常有助于理解 BFS、DFS 的各自优势和局限性，以及在如何各尽所能相互配合。
  *
  * - // TODO:
- *   - 解法2中的字符替换方式 -> L127
  *   - DFS, BFS 复杂度
  *   - dijkastra
  *   - BFS vs dijkastra: https://www.quora.com/What-is-the-difference-between-dijkastra-and-bfs
@@ -207,6 +206,7 @@ public class L126_WordLadderII {
             for (int i = 0; i < word.length(); i++) {
                 char[] chars = word.toCharArray();     // 这种替换字符的方式比 L127 解法2、3更简便
                 for (char c = 'a'; c <= 'z'; c++) {
+                    if (c == chars[i]) continue;
                     chars[i] = c;
                     String tWord = new String(chars);
 

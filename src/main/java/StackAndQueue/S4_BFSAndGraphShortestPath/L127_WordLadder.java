@@ -193,7 +193,7 @@ public class L127_WordLadder {
     /*
      * 解法4：解法3的递归版
      * - 思路：每轮递归都从正或反方向进行一步 BFS，查找出这一侧最外层顶点的相邻顶点。
-     * - 实现：使用解法2中的字母替换匹配方式。
+     * - 实现：字母替换匹配的方式与解法2中的方式稍有区别，采用 char[] 而非 StringBuilder。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int ladderLength4(String beginWord, String endWord, List<String> wordList) {
@@ -208,11 +208,11 @@ public class L127_WordLadder {
 
         for (String word : beginSet) {                  // 遍历 beginSet 中的单词
             for (int i = 0; i < word.length(); i++) {   // 开始为每个单词的每个字母进行替换匹配
-                StringBuilder wordSb = new StringBuilder(word);
+                char[] chars = word.toCharArray();
                 for (char c = 'a'; c <= 'z'; c++) {
-                    if (c == word.charAt(i)) continue;
-                    wordSb.setCharAt(i, c);
-                    String tWord = wordSb.toString();
+                    if (c == chars[i]) continue;
+                    chars[i] = c;
+                    String tWord = new String(chars);
                     if (endSet.contains(tWord)) return stepCount;  // tWord 在对面最外层出现说明正反向 BFS 相遇，得到最短路径
                     if (unvisited.contains(tWord)) {
                         neighbours.add(tWord);
@@ -349,31 +349,31 @@ public class L127_WordLadder {
 
     public static void main(String[] args) {
         List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
-        log(ladderLength5("hit", "cog", wordList));
+        log(ladderLength4("hit", "cog", wordList));
         // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
         List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        log(ladderLength5("a", "c", wordList2));
+        log(ladderLength4("a", "c", wordList2));
         // expects 2. ("a" -> "c")
 
         List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
-        log(ladderLength5("red", "tax", wordList3));
+        log(ladderLength4("red", "tax", wordList3));
         // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
 
         List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
-        log(ladderLength5("hit", "cog", wordList4));
+        log(ladderLength4("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
         List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
-        log(ladderLength5("hot", "dog", wordList5));
+        log(ladderLength4("hot", "dog", wordList5));
         // expects 0. (No solution)
 
         List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
-        log(ladderLength5("leet", "code", wordList6));
+        log(ladderLength4("leet", "code", wordList6));
         // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
         List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
-        log(ladderLength5("kiss", "tusk", wordList7));
+        log(ladderLength4("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
 }
