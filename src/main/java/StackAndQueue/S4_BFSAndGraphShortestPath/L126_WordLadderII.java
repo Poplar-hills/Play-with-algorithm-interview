@@ -10,12 +10,6 @@ import static Utils.Helpers.log;
  * - 题目与 L127 一致，区别在于要返回所有的最短路径。
  *
  * - 👉该题是非常有助于理解 BFS、DFS 的各自优势和局限性，以及在如何各尽所能相互配合。
- *
- * - // TODO:
- *   - DFS, BFS 复杂度
- *   - dijkastra
- *   - BFS vs dijkastra: https://www.quora.com/What-is-the-difference-between-dijkastra-and-bfs
- *   - find the 1st shortest path on graph
  * */
 
 public class L126_WordLadderII {
@@ -74,6 +68,7 @@ public class L126_WordLadderII {
      * - 👉注意：DFS 的实现是基于回溯法的（SEE: https://mp.weixin.qq.com/s/sAutzAzhaGArkl2Ban5guA）。一般说起“回溯”，
      *   指的也就是 DFS，这两个词是 interchangable 的。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 👉注意：一般来说 DFS、BFS 的时间复杂度都是 O(V+E)，但具体要看数据结构，对于邻接矩阵是 O(V^2)，对于邻接表是 O(V+E)。
      * */
     public static List<List<String>> findLadders00(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
