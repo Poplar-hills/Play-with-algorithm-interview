@@ -1,5 +1,8 @@
 package StackAndQueue.S4_BFSAndGraphShortestPath;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static Utils.Helpers.log;
 
 /*
@@ -14,13 +17,35 @@ import static Utils.Helpers.log;
 
 public class L787_CheapestFlightsWithinKStops {
     /*
-     * 解法1：
-     * - 思路：
-     * - 实现：
-     * - 时间复杂度 O()
+     * 超时解：BFS
+     * - 思路：先构建 graph，在 graph 上进行完整的 BFS（遍历所有顶点，而不是到达了终点就提前结束）。
+     * - 实现：∵ graph 的作用是在 BFS 时能够快速查询从任一 city 出发的所有航线，即能按 city 进行查找 ∴ 其结构应该是
+     *   {city: List<flight>}。
+     * - 时间复杂度：构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)；而完整的 BFS 过程是 O(V+E)；∴ 整体是 O(V+E)，
+     *   即 O(n+m)，其中 m 为 flights.length。
      * */
     public static int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
-        return 0;
+        Map<Integer, List<int[]>> graph = Arrays.stream(flights)
+            .collect(Collectors.groupingBy(f -> f[0]));  // O(n)
+
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{src, 0, -1});
+
+        int cheapestPrice = Integer.MAX_VALUE;
+
+        while (!q.isEmpty()) {
+            int[] curr = q.poll();
+            int city = curr[0], price = curr[1], stop = curr[2];
+
+            if (!graph.containsKey(city) || stop == K) continue;
+            for (int[] f : graph.get(city)) {
+                if (f[1] == dst)
+                    cheapestPrice = Math.min(cheapestPrice, price + f[2]);
+                q.offer(new int[]{f[1], price + f[2], stop + 1});
+            }
+        }
+
+        return cheapestPrice == Integer.MAX_VALUE ? -1 : cheapestPrice;
     }
 
     public static void main(String[] args) {
@@ -53,6 +78,6 @@ public class L787_CheapestFlightsWithinKStops {
         log(findCheapestPrice(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
         log(findCheapestPrice(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
         log(findCheapestPrice(8, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice(8, flights2, 2, 1, 10));  // expects -1
+        log(findCheapestPrice(8, flights2, 2, 0, 10));  // expects -1
     }
 }
