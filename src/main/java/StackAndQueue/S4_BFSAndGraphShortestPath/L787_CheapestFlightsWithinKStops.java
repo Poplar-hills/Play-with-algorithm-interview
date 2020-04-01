@@ -17,15 +17,17 @@ import static Utils.Helpers.log;
 
 public class L787_CheapestFlightsWithinKStops {
     /*
-     * 超时解：BFS
-     * - 思路：先构建 graph，在 graph 上进行完整的 BFS（遍历所有顶点，而不是到达了终点就提前结束），并在 BFS 过程中不断比较，
-     *   找到 cheapest price。
+     * 解法1：BFS
+     * - 思路：先构建 graph，在 graph 上进行完整的 BFS（遍历所有顶点，而不是到达了终点就提前结束）。在 BFS 过程中，将路径的
+     *   price 和 stop 个数带在每个节点上，若 stop 个数达到 K 则停止查找当前路径，每次查找到达终点时都将总 price 与之前的
+     *   相比，找到 cheapest price。
      * - 实现：∵ graph 的作用是在 BFS 时能够快速查询从任一 city 出发的所有航线，即能按 city 进行查找 ∴ 其结构应该是
      *   {city: List<flight>}。
      * - 时间复杂度：构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)；而完整的 BFS 过程是 O(V+E)；∴ 整体是 O(V+E)，
-     *   即 O(n+m)，其中 m 为 flights.length。
+     *   即 O(n+m)，其中 m 为航线条数（flights.length）。
+     * - 空间复杂度 O(n+m)。
      * */
-    public static int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
+    public static int findCheapestPrice0(int n, int[][] flights, int src, int dst, int K) {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
             .collect(Collectors.groupingBy(f -> f[0]));  // 按 city 进行索引
 
@@ -39,11 +41,55 @@ public class L787_CheapestFlightsWithinKStops {
             int city = curr[0], price = curr[1], stop = curr[2];
 
             if (!graph.containsKey(city) || stop == K) continue;
+
             for (int[] f : graph.get(city)) {
+                if (price + f[2] >= cheapestPrice) continue;
                 if (f[1] == dst)
                     cheapestPrice = Math.min(cheapestPrice, price + f[2]);
                 q.offer(new int[]{f[1], price + f[2], stop + 1});
             }
+        }
+
+        return cheapestPrice == Integer.MAX_VALUE ? -1 : cheapestPrice;
+    }
+
+    /*
+     * 解法2：BFS2
+     * - 思路：与解法1一致。
+     * - 实现：与解法1相比：
+     *   1. graph 的生成采用普通遍历（putIfAbsent 方法），并且去掉了每条航线的起点，只保留终点和 price 两个元素；
+     *   2. while 内部采用一次遍历完该层所有顶点的实现；
+     *   3. ∵ 每轮 while 遍历完一层的所有顶点，而从起点到每层的各个顶点的步数是一样的 ∴ 可以在 while 外部记录经过的 stop
+     *      个数（numOfStop），而不用将该信息带在 q 中的每个顶点上。
+     * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
+     * */
+    public static int findCheapestPrice1(int n, int[][] flights, int src, int dst, int K) {
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int[] f : flights) {
+            graph.putIfAbsent(f[0], new ArrayList<>());
+            graph.get(f[0]).add(new int[]{f[1], f[2]});
+        }
+
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{src, 0});
+        int numOfStop = -1;
+        int cheapestPrice = Integer.MAX_VALUE;
+
+        while (!q.isEmpty()) {
+            for (int i = 0, qSize = q.size(); i < qSize; i++) {  // qSize is fixed
+                int[] curr = q.poll();
+                int city = curr[0], price = curr[1];
+
+                if (!graph.containsKey(city) || numOfStop == K) continue;
+
+                for (int[] f : graph.get(city)) {
+                    if (f[0] == dst)
+                        cheapestPrice = Math.min(cheapestPrice, price + f[1]);
+                    if (price + f[1] >= cheapestPrice) continue;
+                    q.offer(new int[]{f[0], price + f[1]});
+                }
+            }
+            if (++numOfStop == K) break;  // 在每层顶点遍历完之后再让 numOfStop++，并再与 K 比较一次（性能优化）
         }
 
         return cheapestPrice == Integer.MAX_VALUE ? -1 : cheapestPrice;
@@ -59,8 +105,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice1(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice1(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = new int[][]{
             {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -76,9 +122,9 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice(8, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice(8, flights2, 2, 0, 10));  // expects -1
+        log(findCheapestPrice1(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice1(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice1(8, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice1(8, flights2, 2, 0, 10));  // expects -1
     }
 }
