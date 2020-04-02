@@ -103,7 +103,28 @@ public class L787_CheapestFlightsWithinKStops {
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static int findCheapestPrice3(int n, int[][] flights, int src, int dst, int K) {
-        
+        Map<Integer, List<int[]>> graph = Arrays.stream(flights)
+            .collect(Collectors.groupingBy(f -> f[0]));
+
+        Stack<int[]> stack = new Stack<>();
+        stack.push(new int[]{src, 0, -1});
+        int cheapestPrice = Integer.MAX_VALUE;
+
+        while (!stack.isEmpty()) {
+            int[] curr = stack.pop();
+            int city = curr[0], price = curr[1], stop = curr[2];
+
+            if (!graph.containsKey(city) || stop == K) continue;
+
+            for (int[] f : graph.get(city)) {
+                if (price + f[2] >= cheapestPrice) continue;
+                if (f[1] == dst)
+                    cheapestPrice = Math.min(cheapestPrice, price + f[2]);
+                stack.push(new int[]{f[1], price + f[2], stop + 1});
+            }
+        }
+
+        return cheapestPrice == Integer.MAX_VALUE ? -1 : cheapestPrice;
     }
 
     public static void main(String[] args) {
