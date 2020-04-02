@@ -24,7 +24,9 @@ public class L787_CheapestFlightsWithinKStops {
      *     1. 要进行 BFS，需要先构建 graph，而 ∵ graph 的作用是在 BFS 时能够快速找到从任一 city 出发的所有航线（找相邻顶点），
      *        即能按 city 进行查找 ∴ 其结构应该是 {city: List<flight>}；
      *     2. 在 BFS 过程中，将路径的 price 和 stop 个数带在每个节点上。
-     *     3. 在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 cheapestPrice，则需要进行剪枝 —— 关键性能优化点。
+     *     3. 在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 cheapestPrice，则需要进行剪枝，这是最关键的
+     *        性能优化点，若没有会超时。
+     *     4. BFS 过程中不能对顶点使用类似 L127 中 visited/unvisited 的重复访问检查 ∵ 要找的是 price 最小的路径 ∴ 要
      * - 时间复杂度：构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)；而完整的 BFS 过程是 O(V+E)；∴ 整体是 O(V+E)，
      *   即 O(n+m)，其中 m 为航线条数（flights.length）。
      * - 空间复杂度 O(n+m)。
@@ -56,7 +58,7 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     /*
-     * 解法2：BFS 2
+     * 解法2：BFS（解法1的一次一层版）
      * - 思路：与解法1一致。
      * - 实现：与解法1相比：
      *   1. graph 的生成采用普通遍历（putIfAbsent 方法），并且去掉了每条航线的起点，只保留终点和 price 两个元素；
@@ -128,6 +130,33 @@ public class L787_CheapestFlightsWithinKStops {
         return cheapestPrice == Integer.MAX_VALUE ? -1 : cheapestPrice;
     }
 
+    /*
+     * 解法4：DFS（解法3的递归版）
+     * - 思路：与解法3一致。
+     * - 时间复杂度 O()，空间复杂度 O()。
+     * */
+    private static int cheapestPrice = Integer.MAX_VALUE;
+
+    public static int findCheapestPrice4(int n, int[][] flights, int src, int dst, int K) {
+        Map<Integer, List<int[]>> graph = Arrays.stream(flights)
+            .collect(Collectors.groupingBy(f -> f[0]));
+        helper(graph, src, dst, K, 0, -1);
+        return cheapestPrice == Integer.MAX_VALUE ? -1 : cheapestPrice;
+    }
+
+    private static void helper(Map<Integer, List<int[]>> graph, int city, int dst, int K, int currPrice, int currStop) {
+        if (currStop > K) return;
+        if (city == dst) {
+            cheapestPrice = currPrice;
+            return;
+        }
+        if (!graph.containsKey(city)) return;
+        for (int[] f : graph.get(city)) {
+            if (currPrice + f[2] >= cheapestPrice) continue;  // 剪枝（Pruning）
+            helper(graph, f[1], dst, K, currPrice + f[2], currStop + 1);
+        }
+    }
+
     public static void main(String[] args) {
         int[][] flights1 = new int[][]{{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
         /*
@@ -138,8 +167,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice3(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice3(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice4(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice4(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = new int[][]{
             {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -155,9 +184,9 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice3(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice3(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice3(8, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice3(8, flights2, 2, 0, 10));  // expects -1
+        log(findCheapestPrice4(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice4(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice4(8, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice4(8, flights2, 2, 0, 10));  // expects -1
     }
 }
