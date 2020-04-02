@@ -24,6 +24,7 @@ public class L787_CheapestFlightsWithinKStops {
      *     1. 要进行 BFS，需要先构建 graph，而 ∵ graph 的作用是在 BFS 时能够快速找到从任一 city 出发的所有航线（找相邻顶点），
      *        即能按 city 进行查找 ∴ 其结构应该是 {city: List<flight>}；
      *     2. 在 BFS 过程中，将路径的 price 和 stop 个数带在每个节点上。
+     *     3. 在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 cheapestPrice，则需要进行剪枝 —— 关键性能优化点。
      * - 时间复杂度：构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)；而完整的 BFS 过程是 O(V+E)；∴ 整体是 O(V+E)，
      *   即 O(n+m)，其中 m 为航线条数（flights.length）。
      * - 空间复杂度 O(n+m)。
@@ -44,7 +45,7 @@ public class L787_CheapestFlightsWithinKStops {
             if (!graph.containsKey(city) || stop == K) continue;  // 若该没有从该 city 出发的航线，或 stop 个数达到 K 则停止前进
 
             for (int[] f : graph.get(city)) {
-                if (price + f[2] >= cheapestPrice) continue;
+                if (price + f[2] >= cheapestPrice) continue;      // 剪枝（Pruning）
                 if (f[1] == dst)
                     cheapestPrice = Math.min(cheapestPrice, price + f[2]);
                 q.offer(new int[]{f[1], price + f[2], stop + 1});
@@ -77,16 +78,16 @@ public class L787_CheapestFlightsWithinKStops {
         int cheapestPrice = Integer.MAX_VALUE;
 
         while (!q.isEmpty()) {
-            for (int i = 0, qSize = q.size(); i < qSize; i++) {  // qSize is fixed
+            for (int i = 0, qSize = q.size(); i < qSize; i++) {   // qSize is fixed
                 int[] curr = q.poll();
                 int city = curr[0], price = curr[1];
 
                 if (!graph.containsKey(city) || numOfStop == K) continue;
 
                 for (int[] f : graph.get(city)) {
+                    if (price + f[1] >= cheapestPrice) continue;  // 剪枝（Pruning）
                     if (f[0] == dst)
                         cheapestPrice = Math.min(cheapestPrice, price + f[1]);
-                    if (price + f[1] >= cheapestPrice) continue;
                     q.offer(new int[]{f[0], price + f[1]});
                 }
             }
@@ -99,7 +100,7 @@ public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法3：DFS
      * - 思路：非常 straightforward，从起点开始对由城市和航线组成的图进行完整的 DFS，并找到所有到达终点的路径里的最小 price。
-     * - 实现：
+     * - 实现：与解法1的唯一区别就是用 Stack 代替 Queue 实现 DFS。
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
     public static int findCheapestPrice3(int n, int[][] flights, int src, int dst, int K) {
@@ -117,7 +118,7 @@ public class L787_CheapestFlightsWithinKStops {
             if (!graph.containsKey(city) || stop == K) continue;
 
             for (int[] f : graph.get(city)) {
-                if (price + f[2] >= cheapestPrice) continue;
+                if (price + f[2] >= cheapestPrice) continue;      // 剪枝（Pruning）
                 if (f[1] == dst)
                     cheapestPrice = Math.min(cheapestPrice, price + f[2]);
                 stack.push(new int[]{f[1], price + f[2], stop + 1});
