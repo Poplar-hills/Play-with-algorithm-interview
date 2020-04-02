@@ -193,7 +193,16 @@ public class L787_CheapestFlightsWithinKStops {
      * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
     public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
+        return -1;
+    }
 
+    /*
+     * 解法7：DP
+     * - 思路：
+     * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
+     * */
+    public static int findCheapestPrice7(int n, int[][] flights, int src, int dst, int K) {
+        return -1;
     }
 
     public static void main(String[] args) {
