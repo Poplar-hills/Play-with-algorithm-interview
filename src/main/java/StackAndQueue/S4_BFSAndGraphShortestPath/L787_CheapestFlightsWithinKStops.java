@@ -162,6 +162,7 @@ public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法5：Dijkstra
      * - 思路：
+     * - 💎应用：Dijkstra 适用于有没有负权边的图
      * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
     public static int findCheapestPrice5(int n, int[][] flights, int src, int dst, int K) {
@@ -185,6 +186,15 @@ public class L787_CheapestFlightsWithinKStops {
         return -1;
     }
 
+    /*
+     * 解法6：Bellman-Ford
+     * - 思路：用于
+     * - 💎应用：Bellman-Ford 适用于有负权边的图
+     * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
+     * */
+    public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
+
+    }
 
     public static void main(String[] args) {
         int[][] flights1 = new int[][]{{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
