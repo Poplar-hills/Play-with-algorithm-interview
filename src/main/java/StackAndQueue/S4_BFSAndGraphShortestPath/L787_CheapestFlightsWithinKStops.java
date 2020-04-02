@@ -159,6 +159,33 @@ public class L787_CheapestFlightsWithinKStops {
         }
     }
 
+    /*
+     * 解法5：Dijkstra
+     * - 思路：
+     * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
+     * */
+    public static int findCheapestPrice5(int n, int[][] flights, int src, int dst, int K) {
+        Map<Integer, List<int[]>> graph = Arrays.stream(flights)
+            .collect(Collectors.groupingBy(f -> f[0]));
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((c1, c2) -> c1[1] - c2[1]);  // minheap based on cheapest price
+        pq.offer(new int[]{src, 0, 0});
+
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();  // 每次 poll 到的都是相邻顶点中 price 最小的一组 [ciry, price, numOfStop]
+            int city = curr[0], price = curr[1], numOfStop = curr[2];
+
+            if (city == dst) return price;
+            if (!graph.containsKey(city) || numOfStop > K) continue;
+
+            for (int[] f : graph.get(city))
+                pq.offer(new int[]{f[1], price + f[2], numOfStop + 1});
+        }
+
+        return -1;
+    }
+
+
     public static void main(String[] args) {
         int[][] flights1 = new int[][]{{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
         /*
@@ -169,8 +196,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice2(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice2(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice5(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice5(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = new int[][]{
             {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -186,9 +213,9 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice2(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice2(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice2(8, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice2(8, flights2, 2, 0, 10));  // expects -1
+        log(findCheapestPrice5(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice5(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice5(8, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice5(8, flights2, 2, 0, 10));  // expects -1
     }
 }
