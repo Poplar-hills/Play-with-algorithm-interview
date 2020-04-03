@@ -10,7 +10,7 @@ import static Utils.Helpers.log;
  *
  * - 判断一个字符串是否符合指定 pattern
  *
- * - 💎经验：对比 L205_IsomorphicStrings 可总结出这类题使用查找表的几个经典解法：
+ * - 💎 经验：对比 L205_IsomorphicStrings 可总结出这类题使用查找表的几个经典解法：
  *   1. 用双查找表进行双向匹配
  *   2. 用双查找表映射到统一编码
  *   3. 用双单/查找表匹配上次字符出现位置

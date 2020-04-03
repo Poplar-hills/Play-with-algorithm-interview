@@ -47,7 +47,7 @@ public class L257_BinaryTreePaths {
      * 解法2：Recursion + Post-order Traversal
      * - 思路：不同于解法1，该解法采用后续遍历的思路，即先递归到底，在往上回溯的过程中拼接 path 字符串，并将含有 path 字符串的
      *   结果集返回上层。∴ 递归函数可定义为 f(n)：返回以 n 为根的二叉树的全部 root-to-leaf paths。
-     * - 💎总结：对比解法1、2的思路可领悟前序、后续遍历的精髓。
+     * - 💎 总结：对比解法1、2的思路可领悟前序、后续遍历的精髓。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<String> binaryTreePaths2(TreeNode root) {

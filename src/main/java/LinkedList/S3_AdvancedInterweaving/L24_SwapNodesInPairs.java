@@ -51,7 +51,7 @@ public class L24_SwapNodesInPairs {
      *                          ← f(5) = 5->N
      *                ← f(3) = 4->3->5->N
      *      ← f(1) = 2->1->4->3->5->N
-     * - 💎技巧：在交换节点时，由于是递，所以无需提供 first 的上一个节点。
+     * -  技巧：在交换节点时，由于是递，所以无需提供 first 的上一个节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode swapPairs2(ListNode head) {

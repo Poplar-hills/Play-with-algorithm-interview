@@ -161,22 +161,28 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法5：Dijkstra
-     * - 思路：
-     * - 💎应用：Dijkstra 适用于有没有负权边的图
+     * - 思路：本题是个典型的带权图，而 Dijkstra 算法正适用于计算带权图的最短路径树（即从起点到每个顶点的最短路径）。
+     * - 实现：∵ 本题中需要的只是从起点到终点的最短路径 ∴ 无需对每个顶点进行松弛（relaxation），只要按权值（price）从小到大的
+     *   顺序访问相邻顶点，则第一条到达终点的路径即是 cheapest price 路径。
+     * - 💎 Dijkstra vs. BFS：
+     *   - 本题中的 Dijkstra 实现其实就是采用了 PriorityQueue 的 BFS；
+     *   - Dijkstra 算法依赖于图论的一个特性 —— 图上从 s → t 的最短路径同时也是从 s 到达该路径上任意一个顶点的最短路径。
+     *     例如 test case 2 中，从 0 → 4 的最短路径同时也是 0 → 1、0 → 2 的最短路径。
+     *   - 从另一个角度看，若图上所有边的权值都为1，则 Dijkstra 其实就是 BFS。
      * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
     public static int findCheapestPrice5(int n, int[][] flights, int src, int dst, int K) {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
             .collect(Collectors.groupingBy(f -> f[0]));
 
-        PriorityQueue<int[]> pq = new PriorityQueue<>((c1, c2) -> c1[1] - c2[1]);  // minheap based on cheapest price
+        PriorityQueue<int[]> pq = new PriorityQueue<>((c1, c2) -> c1[1] - c2[1]);  // 基于 price 的最小堆
         pq.offer(new int[]{src, 0, 0});
 
         while (!pq.isEmpty()) {
-            int[] curr = pq.poll();  // 每次 poll 到的都是相邻顶点中 price 最小的一组 [ciry, price, numOfStop]
+            int[] curr = pq.poll();    // ∵ pq 是基于 price 的最小堆 ∴ 每次 poll 到的都是 price 最小相邻 city
             int city = curr[0], price = curr[1], numOfStop = curr[2];
 
-            if (city == dst) return price;
+            if (city == dst) return price;  // 第一个到达终点的路径的 price 即是 cheapest price
             if (!graph.containsKey(city) || numOfStop > K) continue;
 
             for (int[] f : graph.get(city))
@@ -189,7 +195,7 @@ public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法6：Bellman-Ford
      * - 思路：用于
-     * - 💎应用：Bellman-Ford 适用于有负权边的图
+     * - 💎 应用：Bellman-Ford 适用于有负权边的图
      * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
     public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {

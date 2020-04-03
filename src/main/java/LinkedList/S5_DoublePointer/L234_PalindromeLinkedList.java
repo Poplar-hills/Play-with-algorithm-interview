@@ -64,7 +64,7 @@ public class L234_PalindromeLinkedList {
      * 解法3：生成反向链表
      * - 思路：与解法1、2一致。
      * - 实现：生成反向链表后再与原链表逐一对照。
-     * - 💎技巧：若反向链表的过程需要重新创建节点，则可以采用不断将新建节点并插入到 dummyHead 之后的方式来实现对原链表的反向。
+     * - 💎 巧：若反向链表的过程需要重新创建节点，则可以采用不断将新建节点并插入到 dummyHead 之后的方式来实现对原链表的反向。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isPalindrome3(ListNode head) {

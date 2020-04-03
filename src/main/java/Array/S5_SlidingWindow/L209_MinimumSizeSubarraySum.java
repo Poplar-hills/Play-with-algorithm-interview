@@ -16,7 +16,7 @@ public class L209_MinimumSizeSubarraySum {
     /*
      * 解法1：Brute force
      * - 思路：用双重循环遍历所有子串（即遍历子串边界 l、r 的所有组合），再对每个子串中的所有元素求和。
-     * - 💎经验：遍历一个数组的所有子串可以使用双重循环，复杂度为 O(n^2)。
+     * - 💎 经验：遍历一个数组的所有子串可以使用双重循环，复杂度为 O(n^2)。
      * - 时间复杂度 O(n^3)，空间复杂度 O(1)。
      * */
     public static int minSubArrayLen(int s, int[] nums) {
@@ -41,7 +41,7 @@ public class L209_MinimumSizeSubarraySum {
      * - 思路：解法1中的问题在于每遍历到一个子串后就要为其求一次和，多次求和过程中有很多重复计算。对此可采用以空间换时间的
      *   prefix sum 技巧，让 sums[i] 记录 nums[0..i] 的和（例如 sums[2] 记录第0、1、2号元素之和），使得不再需要多次
      *   重复计算序列之和。
-     * - 💎经验：Prefix Sum 本质是为每个位置缓存累加和（cummulative sums），是求解“数组区间求和”类问题时的常用技巧。
+     * - 💎 经验：Prefix Sum 本质是为每个位置缓存累加和（cummulative sums），是求解“数组区间求和”类问题时的常用技巧。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int minSubArrayLen2(int s, int[] nums) {
