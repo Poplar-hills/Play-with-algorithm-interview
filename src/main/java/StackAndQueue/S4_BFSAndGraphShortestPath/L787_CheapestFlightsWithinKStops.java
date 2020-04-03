@@ -12,7 +12,9 @@ import static Utils.Helpers.log;
  *   a price "w". Given all the cities, flights, starting city "src" and the destination "dst", find the
  *   cheapest price from "src" to "dst" with up to "k" stops in the middle. Output -1 if there is no such route.
  *
- * - Note there will not be any duplicated flights or self cycles.
+ * - Note:
+ *   - The price of each flight will be in the range [1, 10000] -- 即不会有负权边。
+ *   - There will not be any duplicated flights or self cycles -- 即没有平行边或自环边。
  * */
 
 public class L787_CheapestFlightsWithinKStops {
@@ -163,15 +165,15 @@ public class L787_CheapestFlightsWithinKStops {
      * 解法5：Dijkstra
      * - 思路：本题是个典型的带权图，而 Dijkstra 算法正适用于计算带权图的单元最短路径树（即从一个起点到每个顶点的最短路径）。
      * - 实现：∵ 本题中需要的只是从起点到终点的最短路径，无需求出起点到每个顶点的最短路径 ∴ 无需对每个顶点进行 relaxation 操作
-     *   （因此该解法是不完整的 Dijkstra），只要按边的权值（price）从小到大的顺序访问相邻顶点，则第一条到达终点的路径即是
-     *    最短（cheapest price）路径。
+     *   （∴ 该解法是不完整的 Dijkstra），只要按边的权值（price）从小到大的顺序访问每个顶点的相邻顶点，则第一条到达终点的路径
+     *    即是最短（cheapest price）路径。
      * - 💎 Dijkstra vs. BFS：
      *   - 本题中的 Dijkstra 实现其实就是采用了 PriorityQueue 的 BFS；
      *   - Dijkstra 算法依赖于图的一个特性 —— 图上从 s → t 的最短路径同时也是从 s 到达该路径上任意一个顶点的最短路径。例如
-     *     test case 2 中，从 0 → 4 的最短路径同时也是 0 → 1、0 → 2 的最短路径 ∴ 反过来利用该特性，通过 BFS 从 s 开始
+     *     test case 2 中，从 0 → 4 的最短路径同时也是 0 → 1、0 → 2 的最短路径 ∴ 反过来利用该特性，从 s 开始通过 BFS
      *     一层层的查找每个顶点的最短邻边，就可以最快地找到 s → t 的最短路径；
      *   - 从另一个角度看，若图上所有边的权值都为1，则 Dijkstra 其实就是 BFS。
-     * - 时间复杂度：
+     * - 时间复杂度：完整的 Dijkstra 实现是 O(ElogV)，但该解法中：
      *   1. 构建 graph 需要遍历所有航线，即 O(m)，其中 m = flights.length；
      *   2. 堆中存放的元素数 = 航线数 ∴ 其 offer、poll 操作为 O(logm)，一共进行 m 次 ∴ 是 O(mlogm)；
      *   3. 在 graph 上为堆中每个元素查找相邻顶点是 O(m)；
@@ -182,10 +184,10 @@ public class L787_CheapestFlightsWithinKStops {
             .collect(Collectors.groupingBy(f -> f[0]));
 
         PriorityQueue<int[]> pq = new PriorityQueue<>((c1, c2) -> c1[1] - c2[1]);  // 基于 price 的最小堆
-        pq.offer(new int[]{src, 0, 0});  // 堆中存储 [city, price, numOfStop]
+        pq.offer(new int[]{src, 0, 0});     // 堆中存储 [city, price, numOfStop]
 
         while (!pq.isEmpty()) {
-            int[] curr = pq.poll();      // ∵ pq 是基于 price 的最小堆 ∴ 每次 poll 到的都是 price 最小相邻 city
+            int[] curr = pq.poll();         // ∵ pq 是基于 price 的最小堆 ∴ 每次 poll 到的都是 price 最小相邻 city
             int city = curr[0], price = curr[1], numOfStop = curr[2];
 
             if (city == dst) return price;  // 第一个到达终点的路径的 price 即是 cheapest price
@@ -200,12 +202,33 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法6：Bellman-Ford
-     * - 思路：用于
-     * - 💎 应用：Bellman-Ford 适用于有负权边的图
-     * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
+     * - 思路：虽然题中说了不会有负权边，但可以使用 Dijkstra 的场景就一定可以使用 Bellman-Ford（虽然算法复杂度大很多）。
+     * - 原理：假设图中可能存在负权边，则经过更多节点的路径可能总距离反而更短。这时 Dijkstra 的贪心策略就会失效，不再能保证
+     *   第一条到达终点的路径就是最短的。此时的解决办法就是反复对每条边进行松弛操作，使得起点到每个顶点的距离逐步逼近其最短距离。
+     * - 实现：
+     *   1. 完整的 Bellman-Ford 算法会迭代 V-1 次，而本题中。
+     * - 💎 Bellman-Ford
+     *
+     * - 时间复杂度：完整的 Bellman-Ford 实现是 O(EV)，但该解法中：
+     * 
      * */
     public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
-        return -1;
+        int[] prices = new int[n];
+        Arrays.fill(prices, Integer.MAX_VALUE);
+        prices[src] = 0;
+
+        for (int i = 0; i <= K; i++) {                   // 迭代 K+1 次
+            int[] temp = Arrays.copyOf(prices, n);
+            for (int[] f : flights) {                    // 每次迭代遍历所有邻边，对每条边进行松弛操作
+                int sCity = f[0], tCity = f[1], price = f[2];
+                if (prices[sCity] == Integer.MAX_VALUE)  // 若该边的源节点还没被访问过则直接跳过
+                    continue;
+                temp[tCity] = Math.min(temp[tCity], prices[sCity] + price);  //
+            }
+            prices = temp;
+        }
+
+        return prices[dst] == Integer.MAX_VALUE ? -1 : prices[dst];  //
     }
 
     /*
@@ -227,8 +250,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice5(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice5(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice6(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice6(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = new int[][]{
             {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -244,9 +267,9 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice5(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice5(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice5(8, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice5(8, flights2, 2, 0, 10));  // expects -1
+        log(findCheapestPrice6(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice6(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice6(8, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice6(8, flights2, 2, 0, 10));  // expects -1
     }
 }
