@@ -167,7 +167,7 @@ public class L787_CheapestFlightsWithinKStops {
      * - 💎 Dijkstra vs. BFS：
      *   - 本题中的 Dijkstra 实现其实就是采用了 PriorityQueue 的 BFS；
      *   - Dijkstra 算法依赖于图论的一个特性 —— 图上从 s → t 的最短路径同时也是从 s 到达该路径上任意一个顶点的最短路径。
-     *     例如 test case 2 中，从 0 → 4 的最短路径同时也是 0 → 1、0 → 2 的最短路径。
+     *     例如 test case 2 中，从 0 → 4 的最短路径同时也是 0 → 1、0 → 2 的最短路径（这也是贪心算法的思路）。
      *   - 从另一个角度看，若图上所有边的权值都为1，则 Dijkstra 其实就是 BFS。
      * - 时间复杂度：
      *   1. 构建 graph 需要遍历所有航线，即 O(m)，其中 m = flights.length；
