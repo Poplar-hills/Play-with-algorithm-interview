@@ -28,7 +28,7 @@ public class L787_CheapestFlightsWithinKStops {
      *        即能按 city 进行查找 ∴ 其结构应该是 {city: List<flight>}；
      *     2. 在 BFS 过程中，将路径的 price 和 stop 个数带在每个顶点上。
      *     3. 在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 cheapestPrice，则需要进行剪枝，这是最关键的
-     *        性能优化点，若没有会超时。
+     *        性能优化点，否则会超时。
      *     4. BFS 过程中不能对顶点使用类似 L127 中 visited/unvisited 的重复访问检查 ∵ 要找的是 price 最小的路径 ∴ 要
      * - 时间复杂度：O(V+E)，即 O(n+m)，其中 m 为航线条数（flights.length）：
      *     1. 构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)，即 O(m)；
@@ -106,7 +106,7 @@ public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法3：DFS
      * - 思路：非常 straightforward，从起点开始对由城市和航线组成的图进行完整的 DFS，并找到所有到达终点的路径里的最小 price。
-     * - 实现：与解法1的唯一区别就是用 Stack 代替 Queue 实现 DFS。
+     * - 实现：与解法1的唯一区别就是用 Stack 代替 Queue 实现 DFS。另外注意仍然要剪枝，否则会超时。
      * - 时间复杂度：在邻接表上进行 DFS 是 O(V+E)，即 O(n+m)；空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
     public static int findCheapestPrice3(int n, int[][] flights, int src, int dst, int K) {
