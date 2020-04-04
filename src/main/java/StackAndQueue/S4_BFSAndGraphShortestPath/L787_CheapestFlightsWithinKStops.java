@@ -13,7 +13,8 @@ import static Utils.Helpers.log;
  *   cheapest price from "src" to "dst" with up to "k" stops in the middle. Output -1 if there is no such route.
  *
  * - Note:
- *   - The price of each flight will be in the range [1, 10000] -- 即不会有负权边。
+ *   - k ∈ [0, n-1]；
+ *   - The price of each flight will be in the range [1, 10000] -- 即不会有负权边；
  *   - There will not be any duplicated flights or self cycles -- 即没有平行边或自环边。
  * */
 
@@ -238,10 +239,33 @@ public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法7：DP
      * - 思路：
-     * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
+     *   - 子问题定义：f(k, c) 表示“在 k-1 个 stop 之内从起点 src 到达城市 c 的最小 price”；
+     *   - 状态转移方程：f(k, c) = min(f(k+1, c), f(k, c+1))。
+     *         k\c |  0   1   2   3   4
+     *        -----+---------------------
+     *          0  |  0   ∞   ∞   ∞   ∞
+     *          1  |  0   50  20  60  ∞
+     *          2  |  0   30  20  50  60
+     *          3  |  0   30  20  50  40
+     *
+     * - 实现：∵ 在 Math.min 时可能发生 Integer.MAX_VALUE + price，超过 int 的上限 ∴ dp 需要声明为 long[][]。
+     * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n^2)。
      * */
     public static int findCheapestPrice7(int n, int[][] flights, int src, int dst, int K) {
-        return -1;
+        long[][] dp = new long[K + 2][n];    // dp[k][c] 表示在 k-1 个 stop 之内从 src 到达城市 c 的最小 price
+        for (long[] row : dp)
+            Arrays.fill(row, Integer.MAX_VALUE);
+        dp[0][src] = 0;
+
+        for (int k = 1; k < K + 2; k++) {    // 迭代 K+1 次
+            dp[k][src] = 0;
+            for (int[] f : flights) {        // 每次迭代都遍历所有邻边
+                int sCity = f[0], tCity = f[1], price = f[2];
+                dp[k][tCity] = Math.min(dp[k][tCity], dp[k - 1][sCity] + price);
+            }
+        }
+
+        return dp[K + 1][dst] == Integer.MAX_VALUE ? -1 : (int)dp[K + 1][dst];
     }
 
     public static void main(String[] args) {
@@ -254,8 +278,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice6(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice6(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice7(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice7(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = new int[][]{
             {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -271,9 +295,9 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice6(8, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice6(8, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice6(8, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice6(8, flights2, 2, 0, 10));  // expects -1
+        log(findCheapestPrice7(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice7(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice7(5, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice7(5, flights2, 2, 0, 4));   // expects -1
     }
 }
