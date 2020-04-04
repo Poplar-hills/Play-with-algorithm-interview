@@ -26,7 +26,7 @@ public class L787_CheapestFlightsWithinKStops {
      * - 实现：
      *     1. 要进行 BFS，需要先构建 graph，而 ∵ graph 的作用是在 BFS 时能够快速找到从任一 city 出发的所有航线（找相邻顶点），
      *        即能按 city 进行查找 ∴ 其结构应该是 {city: List<flight>}；
-     *     2. 在 BFS 过程中，将路径的 price 和 stop 个数带在每个节点上。
+     *     2. 在 BFS 过程中，将路径的 price 和 stop 个数带在每个顶点上。
      *     3. 在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 cheapestPrice，则需要进行剪枝，这是最关键的
      *        性能优化点，若没有会超时。
      *     4. BFS 过程中不能对顶点使用类似 L127 中 visited/unvisited 的重复访问检查 ∵ 要找的是 price 最小的路径 ∴ 要
@@ -204,7 +204,7 @@ public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法6：Bellman-Ford
      * - 思路：虽然题中说了不会有负权边，但可以使用 Dijkstra 的场景就一定可以使用 Bellman-Ford（虽然算法复杂度大很多）。
-     * - 原理：假设图中可能存在负权边，则经过更多节点的路径可能总距离反而更短。这时 Dijkstra 的贪心策略就会失效，不再能保证
+     * - 原理：假设图中可能存在负权边，则经过更多顶点的路径可能总距离反而更短。这时 Dijkstra 的贪心策略就会失效，不再能保证
      *   第一条到达终点的路径就是最短的。此时的解决办法就是反复对所有边进行松弛操作，使得起点到每个顶点的距离逐步逼近其最短距离。
      *   过程演示 SEE：https://www.youtube.com/watch?v=obWXjtg0L64&vl=en（0'35''）。
      * - 实现：
@@ -214,7 +214,7 @@ public class L787_CheapestFlightsWithinKStops {
      *      （若是标准实现，迭代 V-1 次，则不需要这种处理，这一点通过 test case 1、2 可更好的理解）。
      * - 💎 Bellman-Ford vs. Dijkstra：
      *   1. 若图中存在负权边，则应使用 Bellman-Ford，否则使用 Dijkstra 效率更优；
-     *   2. Dijkstra 的实现是基于 BFS，而 Bellman-Ford 不基于 BFS/DFS，而是多次迭代，每次都遍历所有的边，并不在意遍历顺序；
+     *   2. Dijkstra 的实现是基于 BFS，而 Bellman-Ford 采用的是 DP 的思想，在多次迭代中趋近最优解。
      * - 时间复杂度为 O(EV)，即 O(mn)，空间复杂度 O(V)，即 O(n)。
      * */
     public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
@@ -226,7 +226,7 @@ public class L787_CheapestFlightsWithinKStops {
             int[] temp = Arrays.copyOf(prices, n);       // 复制 prices，使得各迭代之间不互相影响
             for (int[] f : flights) {                    // 每次迭代都遍历所有邻边，对每条边进行松弛操作
                 int sCity = f[0], tCity = f[1], price = f[2];
-                if (prices[sCity] == Integer.MAX_VALUE)  // 若该边的源节点还没被访问过则直接跳过（∵ 无法进行松弛操作）
+                if (prices[sCity] == Integer.MAX_VALUE)  // 若该边的源顶点还没被访问过则直接跳过（∵ 无法进行松弛操作）
                     continue;
                 temp[tCity] = Math.min(temp[tCity], prices[sCity] + price);  // 松弛操作
             }
@@ -238,21 +238,22 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法7：DP
-     * - 思路：
+     * - 思路：// TODO
      *   - 子问题定义：f(k, c) 表示“在 k-1 个 stop 之内从起点 src 到达城市 c 的最小 price”；
-     *   - 状态转移方程：f(k, c) = min(f(k+1, c), f(k, c+1))。
      *         k\c |  0   1   2   3   4
      *        -----+---------------------
      *          0  |  0   ∞   ∞   ∞   ∞
-     *          1  |  0   50  20  60  ∞
-     *          2  |  0   30  20  50  60
+     *          1  |  0   50  20  60  ∞       - 在0个 stop 之内从 src → c 的最小 price
+     *          2  |  0   30  20  50  60      - f(2,1) 会被更新两次：∞→50→30；f(2,3) 也会被更新两次：∞→60→50
      *          3  |  0   30  20  50  40
-     *
-     * - 实现：∵ 在 Math.min 时可能发生 Integer.MAX_VALUE + price，超过 int 的上限 ∴ dp 需要声明为 long[][]。
+     * - 实现：
+     *   1. ∵ 在 Math.min 时可能发生 Integer.MAX_VALUE + price，超过 int 的上限 ∴ dp 需要声明为 long[][]；
+     *   2. 在解法6的 Bellman-Ford 中会跳过源顶点还未被访问过的边，而本解法中则仍会访问，而 ∵ 未被访问过的顶点的最短路径是 ∞，
+     *      ∴ 基于 ∞ 去更新目标顶点的最短路径仍会是 ∞。
      * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n^2)。
      * */
     public static int findCheapestPrice7(int n, int[][] flights, int src, int dst, int K) {
-        long[][] dp = new long[K + 2][n];    // dp[k][c] 表示在 k-1 个 stop 之内从 src 到达城市 c 的最小 price
+        long[][] dp = new long[K + 2][n];    // dp[k][c] 表示在 k-1 个 stop 内从 src 到达城市 c 的最小 price
         for (long[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
         dp[0][src] = 0;
@@ -261,7 +262,7 @@ public class L787_CheapestFlightsWithinKStops {
             dp[k][src] = 0;
             for (int[] f : flights) {        // 每次迭代都遍历所有邻边
                 int sCity = f[0], tCity = f[1], price = f[2];
-                dp[k][tCity] = Math.min(dp[k][tCity], dp[k - 1][sCity] + price);
+                dp[k][tCity] = Math.min(dp[k][tCity], dp[k - 1][sCity] + price);  // f(k,tCity) 取决于 f(k-1,sCity) + sCity→tCity 的 price
             }
         }
 
