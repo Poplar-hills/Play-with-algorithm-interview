@@ -13,16 +13,16 @@ import static Utils.Helpers.*;
 public class L23_MergeKSortedLists {
     /*
      * 解法1：PriorityQueue 全排序
-     * - 思路：该题的本质是排序，因此容易想到将 lists 中的所有链表的所有节点放到一起进行排序。可行的排序方式有：
+     * - 思路：该题的本质是排序 ∴ 容易想到将 lists 中的所有链表的所有节点放到一起进行排序。可行的排序方式有：
      *   1. 借助 PriorityQueue 进行堆排序；
-     *   2. 借助 TreeSet 进行 BST 排序（但不适用该题 ∵ BST 不允许重复节点，且该题也不像 L347 解法3那样在 value 相同的情况下可根据 key 排序）；
-     *   3. 归并排序（SEE 解法2、解法3）。
-     *   - 该解法使用 PriorityQueue 进行堆排序。
+     *   2. 借助 TreeSet 进行 BST 排序（但不适用该题 ∵ BST 不允许重复节点，且无法像 L347 解法3那样在 value 相同的情况下可再按 key 排序）；
+     *   3. Merge sort（SEE 解法2、解法3）。
+     * - 实现：该解法采用方案1，使用 PriorityQueue 进行堆排序。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。其中 n 为所有节点数。
      * */
     public static ListNode mergeKLists(ListNode[] lists) {
-        PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));  // 创建最小堆（PriorityQueue 默认创建最小堆）
-        for (ListNode l : lists)  // 将 lists 中的所有链表的所有节点添加到 pq 中，O(nlogn) 操作
+        PriorityQueue<ListNode> pq = new PriorityQueue<>((a, b) -> a.val - b.val);  // 基于 val 的最小堆
+        for (ListNode l : lists)            // 将所有链表的所有节点添加到 pq 中，O(nlogn) 操作
             for (ListNode curr = l; curr != null; curr = curr.next)
                 pq.offer(curr);
 
@@ -31,7 +31,7 @@ public class L23_MergeKSortedLists {
             curr.next = pq.poll();
             curr = curr.next;
         }
-        curr.next = null;  // ∵ 是将 lists 中的各个链表的节点重新拼接 ∴ 需要将拼接后的链表的最后一个节点的 next 置空，否则可能成环
+        curr.next = null;  // 在将各个链表的节点重新链接后，需要将最后一个节点的 next 置空，否则可能成环（如 test case 2）
 
         return dummyHead.next;
     }
@@ -131,7 +131,7 @@ public class L23_MergeKSortedLists {
      * - 时间复杂度 O(nlogk)，空间复杂度 O(k)。其中 k 为链表个数，n 为所有节点数。
      * */
     public static ListNode mergeKLists5(ListNode[] lists) {
-        PriorityQueue<ListNode> pq = new PriorityQueue<>((n1, n2) -> n1.val - n2.val);
+        PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));  // 相当于 (a, b) -> a.val - b.val
         for (ListNode l : lists)        // 把 k 个链表装入最小堆中，因此堆操作的复杂度为 O(logk)
             if (l != null)              // 跳过空链表
                 pq.offer(l);            // 链表头节点进入堆中后会进行排序
@@ -152,17 +152,17 @@ public class L23_MergeKSortedLists {
         ListNode l1 = createLinkedList(new int[]{1, 4, 5});
         ListNode l2 = createLinkedList(new int[]{1, 3, 4});
         ListNode l3 = createLinkedList(new int[]{2, 6});
-        ListNode res = mergeKLists5(new ListNode[]{l1, l2, l3});
+        ListNode res = mergeKLists(new ListNode[]{l1, l2, l3});
         printLinkedList(res);   // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
 
         ListNode l4 = createLinkedList(new int[]{-2, -1, -1, -1});
         ListNode l5 = createLinkedList(new int[]{});
-        ListNode res2 = mergeKLists5(new ListNode[]{l4, l5});
+        ListNode res2 = mergeKLists(new ListNode[]{l4, l5});
         printLinkedList(res2);  // expects -2 -> -1 -> -1 -> -1
 
         ListNode l6 = createLinkedList(new int[]{});
         ListNode l7 = createLinkedList(new int[]{});
-        ListNode res3 = mergeKLists5(new ListNode[]{l6, l7});
+        ListNode res3 = mergeKLists(new ListNode[]{l6, l7});
         printLinkedList(res3);  // expects null
     }
 }
