@@ -7,7 +7,7 @@ import static Utils.Helpers.*;
 /*
  * Merge k Sorted Lists
  *
- * - Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+ * - Merge k sorted linked lists and return it as one sorted list.
  * */
 
 public class L23_MergeKSortedLists {
@@ -126,22 +126,23 @@ public class L23_MergeKSortedLists {
 
     /*
      * 解法5：使用 PriorityQueue 模拟 merge sort
-     * - 思路：与解法1不同，该解法不将所有节点放入 PriorityQueue 中进行排序，而是只放入 k 个节点，但每个节点实际上都是一个链表。
-     *   在 PriorityQueue 中我们只比较链表的首节点大小，不断将 k 个节点中最小的出队，再将其下一个节点入队，以此方式模拟 merge sort
-     *   的过程。
+     * - 思路：与解法1不同，该解法不一次性将所有节点放入 PriorityQueue 中排序，而是先将 k 个链表的头节点放入比较，之后不断将
+     *   堆中最小的节点出队，再将其下一个节点入队，以此方式模拟 merge sort 过程。
      * - 时间复杂度 O(nlogk)，空间复杂度 O(k)。其中 k 为链表个数，n 为所有节点数。
      * */
     public static ListNode mergeKLists5(ListNode[] lists) {
-        PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));
-        for (ListNode l : lists)    // 把 k 个链表装入最小堆中，因此堆操作的复杂度为 O(logk)
-            if (l != null)          // 跳过 lists 中可能存在的空链表
-                pq.offer(l);        // 链表（实际上是链表的首节点）装入堆中后会进行排序
+        PriorityQueue<ListNode> pq = new PriorityQueue<>((n1, n2) -> n1.val - n2.val);
+        for (ListNode l : lists)        // 把 k 个链表装入最小堆中，因此堆操作的复杂度为 O(logk)
+            if (l != null)              // 跳过空链表
+                pq.offer(l);            // 链表头节点进入堆中后会进行排序
 
-        ListNode dummyHead = new ListNode(), curr = dummyHead;
-        while (!pq.isEmpty()) {     // 该循环会遍历所有节点，且每次会有出队、入队操作，因此是 O(nlogk)
-            curr.next = pq.poll();  // 吐出 k 个链表中首节点最小的那个，接到 curr 后面
+        ListNode dummyHead = new ListNode();
+        ListNode curr = dummyHead;
+        while (!pq.isEmpty()) {         // 该循环会遍历所有节点，且每次会有出队、入队操作 ∴ 是 O(nlogk)
+            ListNode node = pq.poll();
+            curr.next = node;
             curr = curr.next;
-            if (curr.next != null) pq.offer(curr.next);  // 将第二个节点装入堆中
+            if (node.next != null) pq.offer(node.next);
         }
 
         return dummyHead.next;
@@ -151,17 +152,17 @@ public class L23_MergeKSortedLists {
         ListNode l1 = createLinkedList(new int[]{1, 4, 5});
         ListNode l2 = createLinkedList(new int[]{1, 3, 4});
         ListNode l3 = createLinkedList(new int[]{2, 6});
-        ListNode res = mergeKLists(new ListNode[]{l1, l2, l3});
-        printLinkedList(res);  // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
+        ListNode res = mergeKLists5(new ListNode[]{l1, l2, l3});
+        printLinkedList(res);   // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
 
         ListNode l4 = createLinkedList(new int[]{-2, -1, -1, -1});
         ListNode l5 = createLinkedList(new int[]{});
-        ListNode res2 = mergeKLists(new ListNode[]{l4, l5});
+        ListNode res2 = mergeKLists5(new ListNode[]{l4, l5});
         printLinkedList(res2);  // expects -2 -> -1 -> -1 -> -1
 
         ListNode l6 = createLinkedList(new int[]{});
         ListNode l7 = createLinkedList(new int[]{});
-        ListNode res3 = mergeKLists(new ListNode[]{l6, l7});
+        ListNode res3 = mergeKLists5(new ListNode[]{l6, l7});
         printLinkedList(res3);  // expects null
     }
 }
