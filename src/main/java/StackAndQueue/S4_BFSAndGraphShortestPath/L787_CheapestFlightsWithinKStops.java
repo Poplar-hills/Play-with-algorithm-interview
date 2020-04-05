@@ -41,7 +41,7 @@ public class L787_CheapestFlightsWithinKStops {
 
         Queue<int[]> q = new LinkedList<>();
         q.offer(new int[]{src, 0, 0});  // q[i] 中的三个元素：[ciry, src->ciry 的 price, 当前线路上的 stop 个数]
-                                         // 让 stop 个数从-1开始，这样经过1段航线后 stop 个数为0，经过2段航线后 stop 个数为1，符合题意
+                                        // 让 stop 个数从-1开始，这样经过1段航线后 stop 个数为0，经过2段航线后 stop 个数为1，符合题意
         int cheapestPrice = Integer.MAX_VALUE;
 
         while (!q.isEmpty()) {
@@ -142,7 +142,7 @@ public class L787_CheapestFlightsWithinKStops {
     private static int cheapestPrice;
 
     public static int findCheapestPrice4(int n, int[][] flights, int src, int dst, int K) {
-        cheapestPrice = Integer.MAX_VALUE;                      // 不在上面赋值是为了让 test case 之间不互相影响
+        cheapestPrice = Integer.MAX_VALUE;     // 不在上面赋值是为了不让 test case 之间互相影响
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
             .collect(Collectors.groupingBy(f -> f[0]));
         helper(graph, src, dst, K + 1, 0);
@@ -169,11 +169,11 @@ public class L787_CheapestFlightsWithinKStops {
      *   （∴ 该解法是不标准的 Dijkstra），只要按边的权值（price）从小到大的顺序访问每个顶点的相邻顶点，则第一条到达终点的路径
      *    即是最短（cheapest price）路径。
      * - 💎 Dijkstra vs. BFS：
-     *   - 本题中的 Dijkstra 实现其实就是采用了 PriorityQueue 的 BFS；
-     *   - Dijkstra 算法依赖于图的一个特性 —— 图上从 s → t 的最短路径同时也是从 s 到达该路径上任意一个顶点的最短路径。例如
-     *     test case 2 中，从 0 → 4 的最短路径同时也是 0 → 1、0 → 2 的最短路径 ∴ 反过来利用该特性，从 s 开始通过 BFS
-     *     一层层的查找每个顶点的最短邻边，就可以最快地找到 s → t 的最短路径；
-     *   - 从另一个角度看，若图上所有边的权值都为1，则 Dijkstra 其实就是 BFS。
+     *   1. 本题中的 Dijkstra 实现其实就是采用了 PriorityQueue 的 BFS；
+     *   2. Dijkstra 算法依赖于图的一个特性 —— 图上从 s → t 的最短路径同时也是从 s 到达该路径上任意一个顶点的最短路径。例如
+     *      test case 2 中，从 0 → 4 的最短路径同时也是 0 → 1、0 → 2 的最短路径 ∴ 反过来利用该特性，从 s 开始通过 BFS
+     *      一层层的查找每个顶点的最短邻边，就可以最快地找到 s → t 的最短路径；
+     *   3. 从另一个角度看，当图上所有边的权值都为1时，Dijkstra 算法就退化成了 BFS。
      * - 时间复杂度：标准的 Dijkstra 实现是 O(ElogV)，但该解法中：
      *   1. 构建 graph 需要遍历所有航线，即 O(m)，其中 m = flights.length；
      *   2. 堆中存放的元素数 = 航线数 ∴ 其 offer、poll 操作为 O(logm)，一共进行 m 次 ∴ 是 O(mlogm)；
@@ -208,7 +208,7 @@ public class L787_CheapestFlightsWithinKStops {
      *   第一条到达终点的路径就是最短的。此时的解决办法就是反复对所有边进行松弛操作，使得起点到每个顶点的距离逐步逼近其最短距离。
      *   过程演示 SEE：https://www.youtube.com/watch?v=obWXjtg0L64&vl=en（0'35''）。
      * - 实现：
-     *   1. 标准的 Bellman-Ford 算法会迭代 V-1 次，而本题中 ∵ 中间 stop 个数最多为 K，而 K = V-2 ∴ 应迭代 K+1 次；
+     *   1. 标准的 Bellman-Ford 算法会迭代 V-1 次，而本题中 ∵ V 与 K 的关系是 V = K+2 ∴ 应迭代 K+1 次；
      *   2. ∵ 只迭代 K+1 次 ∴ 最终得到的 prices 会是一个中间状态，不会包含起点到所有顶点的最短路径 ∴ 需要做到每次迭代之间互不
      *      影响 ∴ 需要在迭代开始之前先 copy 一份 prices，让迭代中的更新都发生在这份 copy 里，迭代结束之后再将其赋给 prices
      *      （若是标准实现，迭代 V-1 次，则不需要这种处理，这一点通过 test case 1、2 可更好的理解）。
@@ -218,7 +218,7 @@ public class L787_CheapestFlightsWithinKStops {
      * - 时间复杂度为 O(EV)，即 O(mn)，空间复杂度 O(V)，即 O(n)。
      * */
     public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
-        int[] prices = new int[n];
+        int[] prices = new int[n];                       // Bellman-Ford 的基本形式是填充路径数组（标准的 Dijkstra 也是）
         Arrays.fill(prices, Integer.MAX_VALUE);
         prices[src] = 0;
 
@@ -238,7 +238,7 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法7：DP
-     * - 思路：// TODO
+     * - 思路：// TODO 补充状态转移方程
      *   - 子问题定义：f(k, c) 表示“在 k-1 个 stop 之内从起点 src 到达城市 c 的最小 price”；
      *         k\c |  0   1   2   3   4
      *        -----+---------------------
