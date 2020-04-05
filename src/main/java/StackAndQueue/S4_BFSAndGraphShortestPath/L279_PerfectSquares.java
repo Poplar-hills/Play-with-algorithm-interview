@@ -16,44 +16,46 @@ import static Utils.Helpers.*;
 public class L279_PerfectSquares {
     /*
      * 解法1：BFS（借助 Queue 实现）
-     * - 思路："正整数 n 最少能用几个完全平方数组成"，这个问题可以转化为"正整数 n 最少减去几个完全平方数后等于0"。如果把 n 和 0
-     *   看成图上的两个顶点，把"减去一个完全平方数"看做两点间的一段路径，则该问题即可转化为"求顶点 n 到 0 之间的最短路径"，即将原
-     *   问题转化为了一个图论问题，重新描述一遍就是：从 n 到 0，每个数字表示一个顶点；若两顶点之间相差一个完全平方数，则链接两顶点，
-     *   由此得到一个有向无权图（方向都是从大顶点指向小顶点），该问题最终转化为了求该无权图中从 n 到 0 的最短路径的步数。例如：
-     *                                    0 -- 1 -- 2               0 -- 1 ---- 2
-     *          0 -- 1 -- 2               |    |    |               |    |    / |
-     *          |         |               |    5    |               |    5 - 6  |
-     *          4 ------- 3               |    |    |               |    |      |
-     *                                    +--- 4 -- 3               +--- 4 ---- 3
-     *        n=4 时最短路径为1步         n=5 时最短路径为2步          n=6 时最短路径为3步
-     * - 实现：求无权图中两点的最短路径可使用 BFS 实现（但有权图不适用，带权图的最短路径可使用 Dijkstra 算法）：
-     *   - 使用 queue 作为辅助数据结构，即从起点开始，入队相邻顶点、访问出队的顶点，再将其相邻顶点入队，直到到达终点为止。
-     *   - ∵ 最终要返回找到的最短路径的步数，因此队列中除了保存顶点之外还要保存步数信息。
+     * - 思路："正整数 n 最少能用几个完全平方数组成"，这个问题可以转化为"正整数 n 最少减去几个完全平方数后等于0"。若把 n、0
+     *   看成图上的两个顶点，把"减去一个完全平方数"看做两点间的一条边，则该问题可转化为"求顶点 n 到 0 之间的最短路径"，即将原
+     *   问题转化为了一个在有向无权图上寻找 n → 0 间最短路径的问题。例如：
+     *                                     0 ← 1 ← 2               0 ← 1 ← ← ← 2
+     *          0 ← 1 ← 2                  ↑   ↑   ↑               ↑   ↑     ↗ ↑
+     *          ↑       ↑                  ↑   5   ↑               ↑   5 ← 6   ↑
+     *          4 → → → 3                  ↑   ↓   ↑               ↑   ↓       ↑
+     *                                     + ← 4 → 3               + ← 4 → → → 3
+     *        n=4 时最短路径为1           n=5 时最短路径为2           n=6 时最短路径为3
+     *
+     * - 💎 实现：
+     *   1. 求无权图中两点的最短路径可使用 BFS（若是带权图的最短路径问题则可使用 Dijkstra）；
+     *   2. ∵ 在无权图上进行 BFS 时，第一次访问某个顶点时的路径一定是从起点到该顶点的最短路径 ∴ 无需重复顶点 ∴ 使用 visited
+     *      数组对访问路径进行剪枝（Pruning）（例如：👆n=6 例子中，6→5→1→0 访问顶点1之后 6→2→1→0 就无需再访问了）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int numSquares1(int n) {
         if (n <= 0) return 0;
-        Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点所走过的步数>
-        q.offer(new Pair<>(n, 0));                 // 顶点 n 作为 BFS 的起点
 
-        boolean[] visited = new boolean[n + 1];    // 记录某个顶点是否已经计算过（n+1 是因为从 n 到 0 需要开 n+1 的空间）
+        Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点的步数>
+        q.offer(new Pair<>(n, 0));                             // 顶点 n 作为 BFS 的起点
+        boolean[] visited = new boolean[n + 1];                // ∵ 要记录的是 [0,n] ∴ 要开 n+1 的空间
         visited[n] = true;
 
         while (!q.isEmpty()) {
             Pair<Integer, Integer> pair = q.poll();
-            int num = pair.getKey();
+            int curr = pair.getKey();
             int step = pair.getValue();
 
-            for (int i = 1; i * i <= num; i++) {  // 当前顶点值 - 每一个完全平方数 = 每一个相邻顶点
-                int next = num - i * i;
-                if (next == 0) return step + 1;   // 若下一步到达终点则返回该路径的步数（第一条到达终点的路径就是最短路径或最短路径之一）
-                if (!visited[next]) {             // 已访问过顶点不入队
-                    q.offer(new Pair<>(next, step + 1));  // 入队下一步顶点
+            for (int i = 1; i * i <= curr; i++) {  // 当前顶点值 - 每一个完全平方数 = 每一个相邻顶点
+                int next = curr - i * i;
+                if (next == 0) return step + 1;    // BFS 中第一条到达终点的路径就是最短路径（之一）
+                if (!visited[next]) {
+                    q.offer(new Pair<>(next, step + 1));
                     visited[next] = true;
                 }
             }
         }
-        throw new IllegalStateException("No Solution.");  // 只要输入参数正确则不会到达这行 ∵ 所有正整数最终都可以用多个1相加得到
+
+        throw new IllegalStateException("No Solution.");  // 只要 n 有效就不会走到这里 ∵ 所有正整数都可以用 n 个1相加得到
     }
 
     /*
@@ -115,9 +117,9 @@ public class L279_PerfectSquares {
     }
 
     public static void main(String[] args) {
-        log(numSquares3(5));   // expects 2. (5 = 4 + 1)
-        log(numSquares3(6));   // expects 3. (6 = 4 + 1 + 1)
-        log(numSquares3(12));  // expects 3. (12 = 4 + 4 + 4)
-        log(numSquares3(13));  // expects 2. (13 = 4 + 9)
+        // log(numSquares3(5));   // expects 2. (5 = 4 + 1)
+        log(numSquares1(6));   // expects 3. (6 = 4 + 1 + 1)
+        // log(numSquares3(12));  // expects 3. (12 = 4 + 4 + 4)
+        // log(numSquares3(13));  // expects 2. (13 = 4 + 9)
     }
 }
