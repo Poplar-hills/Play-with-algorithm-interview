@@ -99,9 +99,11 @@ public class L279_PerfectSquares {
 
     /*
      * 解法3：DP
-     * - 思路：与解法2都是基于已解决的子问题去解决高层次的问题，不同点在于 DP 是 bottom-up 的，即直接从子问题开始求解，而解法2是
-     *   先从高层次问题入手，递归到最基本问题后再开始往上逐层解决。
-     * - DP vs. Memoization, SEE: https://zhuanlan.zhihu.com/p/68059061。
+     * - 思路：与解法2一样都是基于已解决的子问题去解决高层次的问题。状态转移方程都是：f(i) = min(f(i - p) + 1)，
+     *   其中 p 为 <= i 的完全平方数。
+     * - 实现：采用 DP 从下往上 f(0) → f(1) → ... 递归出 f(n) 的解。
+     * - 💎 DP vs. Memoization：DP 是 bottom-up 的，从子问题开始求解，而解法2的 DFS + Memorization 是 top-down，
+     *   即先从高层次问题入手，递归到最基本问题后再开始往上逐层解决（, SEE: https://zhuanlan.zhihu.com/p/68059061）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int numSquares3(int n) {
@@ -109,7 +111,7 @@ public class L279_PerfectSquares {
         Arrays.fill(dp, Integer.MAX_VALUE);  // ∵ 求最小值 ∴ 初值为正无穷
         dp[0] = 0;
 
-        for (int i = 1; i <= n; i++)         // 从 1→n 逐个计算到达0的最少步数，层层递推出原问题 f(n) 的解
+        for (int i = 1; i <= n; i++)         // 从 1→n 逐个计算到达0的最少步数，从下往上层层递推出原问题 f(n) 的解
             for (int j = 1; j * j <= i; j++)
                 dp[i] = Math.min(dp[i], dp[i - j * j] + 1);
 
@@ -117,9 +119,9 @@ public class L279_PerfectSquares {
     }
 
     public static void main(String[] args) {
-        log(numSquares00(5));   // expects 2. (5 = 4 + 1)
-        log(numSquares00(6));   // expects 3. (6 = 4 + 1 + 1)
-        log(numSquares00(12));  // expects 3. (12 = 4 + 4 + 4)
-        log(numSquares00(13));  // expects 2. (13 = 4 + 9)
+        log(numSquares3(5));   // expects 2. (5 = 4 + 1)
+        log(numSquares3(6));   // expects 3. (6 = 4 + 1 + 1)
+        log(numSquares3(12));  // expects 3. (12 = 4 + 4 + 4)
+        log(numSquares3(13));  // expects 2. (13 = 4 + 9)
     }
 }
