@@ -29,15 +29,15 @@ public class L279_PerfectSquares {
      * - 💎 实现：
      *   1. 求无权图中两点的最短路径可使用 BFS（若是带权图的最短路径问题则可使用 Dijkstra）；
      *   2. ∵ 在无权图上进行 BFS 时，第一次访问某个顶点时的路径一定是从起点到该顶点的最短路径 ∴ 无需重复顶点 ∴ 使用 visited
-     *      数组对访问路径进行剪枝（Pruning）（例如：👆n=6 例子中，6→5→1→0 访问顶点1之后 6→2→1→0 就无需再访问了）。
+     *      数组对访问路径进行剪枝（Pruning）（例如：👆n=6 例子中，6→5→1→0 访问顶点1之后就无需再走 6→2→1→0 了）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int numSquares1(int n) {
+    public static int numSquares(int n) {
         if (n <= 0) return 0;
 
         Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点的步数>
         q.offer(new Pair<>(n, 0));                             // 顶点 n 作为 BFS 的起点
-        boolean[] visited = new boolean[n + 1];                // ∵ 要记录的是 [0,n] ∴ 要开 n+1 的空间
+        boolean[] visited = new boolean[n + 1];                // ∵ 顶点取值范围是 [0,n] ∴ 要开 n+1 的空间
         visited[n] = true;
 
         while (!q.isEmpty()) {
@@ -60,12 +60,12 @@ public class L279_PerfectSquares {
 
     /*
      * 超时解：DFS
-     * - 思路：基于解法1中的图论建模，具体实现采用 DFS（SEE: Play-with-algorithms/Graph/Path.java)，即通过 DFS 从 n 顶点
-     *   开始向0顶点方向递归，沿途为每个顶点 i 计算到达0的最少步数 f(i)。∵ 前一顶点到达0的最少步数 = 后一顶点到达0的最少步数 + 1，
-     *   且后一顶点与前一顶点直接差一个完全平方数 ∴ 有 f(i) = min(f(i - s) + 1)，其中 s 为 <= i 的完全平方数。
+     * - 思路：沿用解法1中的图论建模思路。
+     * - 实现：采用 DFS，即从顶点 n 开始向0顶点方向递归查找 ∵ 前一顶点到达0的最少步数 = 后一顶点到达0的最少步数 + 1，且后一
+     *   顶点值与前一顶点值之间差一个完全平方数 ∴ 有 f(i) = min(f(i - p) + 1)，其中 p 为 <= i 的完全平方数。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
-    public static int numSquares(int n) {
+    public static int numSquares0(int n) {
         if (n == 0) return 0;             // 顶点0到达自己的步数为0
 
         int minStep = Integer.MAX_VALUE;  // 用于记录当前顶点到0的最小步数
@@ -77,22 +77,22 @@ public class L279_PerfectSquares {
 
     /*
      * 解法2：Recursion + Memoization（DFS with cache）
-     * - 思路：👆超时解的问题在于大量子问题会被重复计算 ∴ 可以加入 Memoization 机制来优化重叠子问题。
+     * - 思路：👆超时解的问题在于大量子问题会被重复计算 ∴ 加入 Memoization 机制来优化重叠子问题。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int numSquares2(int n) {
-        int[] steps = new int[n + 1];         // 保存每个顶点到达0的最少步数（n+1 是因为从 n 到 0 需要开 n+1 的空间）
+        int[] steps = new int[n + 1];         // 保存每个顶点到达0的最少步数（∵ 顶点取值范围是 [0,n] ∴ 要开 n+1 的空间）
         Arrays.fill(steps, -1);
-        return numSquares2(n, steps);
+        return helper2(n, steps);
     }
 
-    private static int numSquares2(int n, int[] steps) {
+    private static int helper2(int n, int[] steps) {
         if (n == 0) return 0;
         if (steps[n] != -1) return steps[n];  // cache hit
 
         int minStep = Integer.MAX_VALUE;
         for (int i = 1; i * i <= n; i++)
-            minStep = Math.min(minStep, numSquares2(n - i * i, steps) + 1);
+            minStep = Math.min(minStep, helper2(n - i * i, steps) + 1);
 
         return steps[n] = minStep;            // 赋值语句的返回值为所赋的值
     }
@@ -117,9 +117,9 @@ public class L279_PerfectSquares {
     }
 
     public static void main(String[] args) {
-        // log(numSquares3(5));   // expects 2. (5 = 4 + 1)
-        log(numSquares1(6));   // expects 3. (6 = 4 + 1 + 1)
-        // log(numSquares3(12));  // expects 3. (12 = 4 + 4 + 4)
-        // log(numSquares3(13));  // expects 2. (13 = 4 + 9)
+        log(numSquares00(5));   // expects 2. (5 = 4 + 1)
+        log(numSquares00(6));   // expects 3. (6 = 4 + 1 + 1)
+        log(numSquares00(12));  // expects 3. (12 = 4 + 4 + 4)
+        log(numSquares00(13));  // expects 2. (13 = 4 + 9)
     }
 }
