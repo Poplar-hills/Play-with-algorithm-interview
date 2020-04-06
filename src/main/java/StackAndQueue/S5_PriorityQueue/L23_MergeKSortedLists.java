@@ -71,15 +71,15 @@ public class L23_MergeKSortedLists {
     }
 
     /*
-     * 解法3：Merge with divide and conquer
+     * 解法3：Merge by pairing up
      * - 思路：解法2中，将多个链表 reduce 成一个的过程不是二分的，即不是将 lists 中的链表两两 merge，而是每个链表都和第一个
      *   链表 merge，这样会重复遍历第一个链表 k 次，效率较低。该解法中 pair up lists and merge them without handling
      *   any list more than once。
      * - 实现：要将 lists 中的链表两两 pair 并最终合成一个的过程如下：
      *           +-----+
-     *           |     |
+     *           ↓     |
      *       [a, b, c, d, e]  ->  [ae, bd, c, d, e]  ->  [ace, bd, c, d, e]  ->  [abcde, bd, c, d, e]
-     *        |           |        |       |               |    |
+     *        ↑           |        ↑       |               ↑    |
      *        +-----------+        +-------+               +----+
      *   该实现需要两层循环，内层循环负责配对链表（一头一尾），并将尾部的链表 merge 进头部链表中。这样的配对方式在每次循环中只能
      *   merge 一半的链表 ∴ 需要外层循环控制，在没有将所有链表 merge 之前持续运行内存循环。
@@ -101,9 +101,11 @@ public class L23_MergeKSortedLists {
     }
 
     /*
-     * 解法4：解法3的递归版
-     * - 目的：和解法3的目的一样，也是 merge them without handling any list more than once，但实现思路不一样。
-     * - 思路：要让 lists 中的每个链表只被处理一次，可以采用类似归并排序的思路 —— 先对数据不断进行二分，最后两两 merge（而不是排序）。
+     * 解法4：Merge by pairing up (partition + recursion)
+     * - 思路：总体思路与解法3一致，也是使用二分的形式将 lists 中的链表两两配对进行 merge。
+     * - 实现：与解法3不同，该解法：
+     *   1. 使用标准归并排序中的 partition 思路，先对 lists 中的链表不断进行二分，最后再两两 merge；
+     *   2. 用递归完成以上逻辑。
      * - 时间复杂度 O(nlogk)，空间复杂度 O(nlogk)。
      *   空间复杂度是 O(nlogk) 的原因是两个方法都采用了递归，若 merge 用迭代则整体空间复杂度为 O(logk)。
      * */
@@ -112,19 +114,19 @@ public class L23_MergeKSortedLists {
         return partition(lists, 0, lists.length - 1);
     }
 
-    private static ListNode partition(ListNode[] lists, int l, int r) {  // 对 lists 中的链表进行二分，然后两两一组进行 merge
+    private static ListNode partition(ListNode[] lists, int l, int r) {  // 对 lists 中的链表进行二分，然后两两 merge
         if (l == r) return lists[l];
         int mid = (r - l) / 2 + l;
         ListNode l1 = partition(lists, l, mid);
         ListNode l2 = partition(lists, mid + 1, r);
-        return merge(l1, l2);  // 二分到底后开始两两 merge
+        return merge(l1, l2);               // 二分到底后开始两两 merge
     }
 
     private static ListNode merge(ListNode l1, ListNode l2) {  // merge2Lists 的递归版（即 L21_MergeTwoSortedLists 的解法4）
         if (l1 == null) return l2;
         if (l2 == null) return l1;
         if (l1.val < l2.val) {
-            l1.next = merge(l1.next, l2);  // 对链表递归大多是这种模式：l.next = recursiveFn(...]
+            l1.next = merge(l1.next, l2);   // 对链表递归大多是这种模式：l.next = recursiveFn(...)
             return l1;
         } else {
             l2.next = merge(l1, l2.next);
