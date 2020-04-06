@@ -16,7 +16,7 @@ public class L23_MergeKSortedLists {
      * - 思路：该题的本质是排序 ∴ 容易想到将 lists 中的所有链表的所有节点放到一起进行排序。可行的排序方式有：
      *   1. 借助 PriorityQueue 进行堆排序；
      *   2. 借助 TreeSet 进行 BST 排序（但不适用该题 ∵ BST 不允许重复节点，且无法像 L347 解法3那样在 value 相同的情况下可再按 key 排序）；
-     *   3. Merge sort（SEE 解法2、解法3）。
+     *   3. Merge sort（SEE：解法2、3、4）。
      * - 实现：该解法采用方案1，使用 PriorityQueue 进行堆排序。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。其中 n 为所有节点数。
      * */
@@ -101,25 +101,26 @@ public class L23_MergeKSortedLists {
     }
 
     /*
-     * 解法4：Merge by pairing up (partition + recursion)
+     * 解法4：Merge by pairing up (merge sort)
      * - 思路：总体思路与解法3一致，也是使用二分的形式将 lists 中的链表两两配对进行 merge。
      * - 实现：与解法3不同，该解法：
-     *   1. 使用标准归并排序中的 partition 思路，先对 lists 中的链表不断进行二分，最后再两两 merge；
+     *   1. 使用标准归并排序思路，先对 lists 中的链表不断进行二分（partition），最后再两两归并（merge）；
      *   2. 用递归完成以上逻辑。
+     *   - 参考 L75_SortColors 解法2（数组的 merge sort）。
      * - 时间复杂度 O(nlogk)，空间复杂度 O(nlogk)。
      *   空间复杂度是 O(nlogk) 的原因是两个方法都采用了递归，若 merge 用迭代则整体空间复杂度为 O(logk)。
      * */
     public static ListNode mergeKLists4(ListNode[] lists) {
         if (lists == null || lists.length == 0) return null;
-        return partition(lists, 0, lists.length - 1);
+        return mergeSort(lists, 0, lists.length - 1);
     }
 
-    private static ListNode partition(ListNode[] lists, int l, int r) {  // 对 lists 中的链表进行二分，然后两两 merge
+    private static ListNode mergeSort(ListNode[] lists, int l, int r) {  // 对 lists 中的链表进行二分，然后两两归并
         if (l == r) return lists[l];
         int mid = (r - l) / 2 + l;
-        ListNode l1 = partition(lists, l, mid);
-        ListNode l2 = partition(lists, mid + 1, r);
-        return merge(l1, l2);               // 二分到底后开始两两 merge
+        ListNode l1 = mergeSort(lists, l, mid);  // 二分操作（partition）
+        ListNode l2 = mergeSort(lists, mid + 1, r);
+        return merge(l1, l2);                    // 二分到底后开始两两归并（merge）
     }
 
     private static ListNode merge(ListNode l1, ListNode l2) {  // merge2Lists 的递归版（即 L21_MergeTwoSortedLists 的解法4）
@@ -146,8 +147,7 @@ public class L23_MergeKSortedLists {
             if (l != null)              // 跳过空链表
                 pq.offer(l);            // 链表头节点进入堆中后会进行排序
 
-        ListNode dummyHead = new ListNode();
-        ListNode curr = dummyHead;
+        ListNode dummyHead = new ListNode(), curr = dummyHead;
         while (!pq.isEmpty()) {         // 该循环会遍历所有节点，且每次会有出队、入队操作 ∴ 是 O(nlogk)
             ListNode node = pq.poll();
             curr.next = node;
