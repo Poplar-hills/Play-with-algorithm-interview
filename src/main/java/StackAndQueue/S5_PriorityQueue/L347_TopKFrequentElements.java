@@ -117,9 +117,9 @@ public class L347_TopKFrequentElements {
     }
 
     /*
-     * 解法5：
-     * - 思路：创建 n+1 大小的 buckets 数组，下标为频次，内容为有相同频次的键值 list。这使得我们不再需要借助堆，而是通过空间换时间
-     *   的方式达到从 map 中选出频率最高的 k 个 key 的目的。
+     * 解法5：Buckets 数组
+     * - 思路：创建大小为 buckets 数组，下标为频次，内容为有相同频次的键值 list（例如 buckets[i] = List(num) 表示 buckets[i]
+     *   中存储所有频次为 i 的元素）。这样无需再借助堆，而是通过空间换时间的方式从 map 中选出频率最高的 k 个 key。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> topKFrequent5(int[] nums, int k) {
@@ -127,47 +127,28 @@ public class L347_TopKFrequentElements {
         if (nums.length == 0) return res;
 
         Map<Integer, Integer> freq = new HashMap<>();
-        for (int n : nums)  // O(n)
-            freq.put(n, freq.getOrDefault(n, 0) + 1);
+        for (int n : nums)
+            freq.merge(n, 1, Integer::sum);
 
-        List[] buckets = new List[nums.length + 1];  // buckets 数组（频率最大时是 n，因此数组大小为 n+1），下标为频次，内容为有相同频次的键值 list
-        for (int key : freq.keySet()) {  // O(n)
+        List[] buckets = new List[nums.length + 1];  // buckets 数组（频率最大时是 n ∴ 数组大小为 n+1）
+        for (int key : freq.keySet()) {
             int f = freq.get(key);
-            if (buckets[f] == null) buckets[f] = new ArrayList<>();
+            if (buckets[f] == null)
+                buckets[f] = new ArrayList<>();
             buckets[f].add(key);
         }
 
-        for (int i = buckets.length - 1; i >= 0 && res.size() < k; i--)  // O(n)。从频率最大的一端开始遍历
+        for (int i = buckets.length - 1; i >= 0 && res.size() < k; i--)  // 从频率最大的一端开始遍历
             if (buckets[i] != null)
                 res.addAll(buckets[i]);
 
         return res;
     }
 
-
-    public static List<Integer> topKFrequent000(int[] nums, int k) {
-        List<Integer> res = new ArrayList<>();
-        if (nums == null || nums.length == 0) return res;
-
-        Map<Integer, Integer> map = new HashMap<>();
-        for (int n : nums)
-            map.merge(n, 1, Integer::sum);
-
-        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> map.get(a) - map.get(b));  // minheap
-
-        for (int key : map.keySet()) {
-            if (pq.size() > k) pq.poll();
-            pq.offer(key);
-        }
-        if (pq.size() > k) pq.poll();
-
-        return new ArrayList<>(pq);
-    }
-
     public static void main(String[] args) {
-        log(topKFrequent000(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
-        log(topKFrequent000(new int[]{4, 1, -1, 2, -1, 2, 3}, 2));   // expects [-1, 2] or [2, -1]
-        log(topKFrequent000(new int[]{1}, 1));                       // expects [1]
-        log(topKFrequent000(new int[]{}, 1));                        // expects []
+        log(topKFrequent5(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
+        log(topKFrequent5(new int[]{4, 1, -1, 2, -1, 2, 3}, 2));   // expects [-1, 2] or [2, -1]
+        log(topKFrequent5(new int[]{1}, 1));                       // expects [1]
+        log(topKFrequent5(new int[]{}, 1));                        // expects []
     }
 }
