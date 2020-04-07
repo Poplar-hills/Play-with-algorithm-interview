@@ -20,8 +20,7 @@ public class L100_SameTree {
      * */
     public static boolean isSameTree(TreeNode p, TreeNode q) {
         if (p == null && q == null) return true;
-        if (p == null || q == null) return false;
-        if (p.val != q.val) return false;
+        if (p == null || q == null || p.val != q.val) return false;
         return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
     }
 
@@ -50,13 +49,13 @@ public class L100_SameTree {
 
     /*
      * 解法3：Iteration (DFS)
-     * - 思路：与解法2的逻辑一致，与 L226_InvertBinaryTree 解法3的思路一致，不同点在于：
-     *   1. DFS 使用 Stack 实现。
-     *   2. 采用双 Stack<TreeNode> 而不是解法1中的一个 Stack<Pair<TreeNode, TreeNode>>。
+     * - 思路：与解法2的逻辑一致，与 L226_InvertBinaryTree 解法3的思路一致。
+     * - 实现：不同与解法2，该解法：
+     *   1. DFS 使用 Stack 实现；
+     *   2. 采用2个 Stack<TreeNode> 而不是一个 Queue 中存储 Pair<TreeNode, TreeNode>。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSameTree3(TreeNode p, TreeNode q) {
-        if (p == null && q == null) return true;
         Stack<TreeNode> pStack = new Stack<>();
         Stack<TreeNode> qStack = new Stack<>();
         pStack.push(p);
@@ -83,9 +82,7 @@ public class L100_SameTree {
         /*
          * expects true.
          *      1         1
-         *     / \
-         *
-         * return true;  / \
+         *     / \       / \
          *    2   3     2   3
          * */
 
@@ -93,11 +90,9 @@ public class L100_SameTree {
         TreeNode q2 = createBinaryTreeBreadthFirst(new Integer[]{1, null, 2});
         log(isSameTree3(p2, q2));
         /*
-         * expects false.
+         * expects false. (值相同而结构不同)
          *      1         1
-         *     /
-         *
-         * return true;    \
+         *     /           \
          *    2             2
          * */
 
@@ -105,7 +100,7 @@ public class L100_SameTree {
         TreeNode q3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 2});
         log(isSameTree3(p3, q3));
         /*
-         * expects false.
+         * expects false.（结构相同而值不同）
          *      1         1
          *     / \       / \
          *    2   1     1   2
