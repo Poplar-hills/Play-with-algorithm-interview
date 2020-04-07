@@ -27,7 +27,7 @@ public class L101_SymmetricTree {
      *   对应上了才说明是 palindrome；
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
-    public static boolean isSymmetric0(TreeNode root) {
+    public static boolean isSymmetric(TreeNode root) {
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
 
@@ -58,7 +58,9 @@ public class L101_SymmetricTree {
 
     /*
      * 解法2：DFS（递归）
-     * - 思路：若一棵树是对称的，则其左右子树应互为镜像。若两棵树互为镜像，则：
+     * - 思路：另一种思路是，若一棵树是对称的，则其左右子树应互为镜像 ∴ 可以用这棵树与自身进行对照 —— 这就将问题转化为了两棵树
+     *   之间的对比问题。
+     * - 实现：若两棵树互为镜像，则：
      *     1. 他们的根节点的节点值相同；
      *     2. 树1的左子树和树2的右子树互为镜像；
      *     3. 树1的右子树和树2的左子树互为镜像。
@@ -68,12 +70,12 @@ public class L101_SymmetricTree {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isSymmetric2(TreeNode root) {
-        return isMirror(root, root);  // 递归入口需要特殊处理一下，以符合递归函数的语义
+        return isMirror(root, root);  // 检查两棵树是否互为镜像
     }
 
-    private static boolean isMirror(TreeNode t1, TreeNode t2) {  // 检查两棵树是否互为镜像
-        if (t1 == null && t2 == null) return true;               // 同时有节点
-        if (t1 == null || t2 == null) return false;              // 同时没有节点
+    private static boolean isMirror(TreeNode t1, TreeNode t2) {
+        if (t1 == null && t2 == null) return true;   // 同时有节点
+        if (t1 == null || t2 == null) return false;  // 同时没有节点
         return t1.val == t2.val && isMirror(t1.left, t2.right) && isMirror(t1.right, t2.left);
     }
 
