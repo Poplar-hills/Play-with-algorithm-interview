@@ -108,7 +108,7 @@ public class L101_SymmetricTree {
 
     /*
      * 解法4：BFS（迭代）
-     * - 思路：与解法1、2一致。
+     * - 思路：与解法2、3一致。
      * - 实现：只使用一个 Queue，同时入队左右两棵子树的节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -134,7 +134,8 @@ public class L101_SymmetricTree {
 
     /*
      * 解法5：DFS（迭代）
-     * - 思路：与解法3思路一致，区别是使用 DFS（只有数据结构改成了 Stack），即对树同时从左右两边进行 DFS。
+     * - 思路：与解法2、3、4一致。
+     * - 思路：与解法3的区别是使用 DFS（只有数据结构改成了 Stack），即对树同时从左右两边对树进行 DFS。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSymmetric5(TreeNode root) {
@@ -144,15 +145,14 @@ public class L101_SymmetricTree {
         s.add(root);
 
         while (!s.isEmpty()) {
-            TreeNode node1 = s.pop();
-            TreeNode node2 = s.pop();
-            if (node1 == null && node2 == null) continue;
-            if (node1 == null || node2 == null) return false;
-            if (node1.val != node2.val) return false;
-            s.add(node1.left);
-            s.add(node2.right);  // 这里同解法3，需对称入栈
-            s.add(node1.right);
-            s.add(node2.left);
+            TreeNode n1 = s.pop(), n2 = s.pop();
+            if (n1 == null && n2 == null) continue;
+            if (n1 == null || n2 == null || n1.val != n2.val) return false;
+
+            s.add(n1.left);  // 这里同解法4，需对称入栈
+            s.add(n2.right);
+            s.add(n1.right);
+            s.add(n2.left);
         }
 
         return true;
