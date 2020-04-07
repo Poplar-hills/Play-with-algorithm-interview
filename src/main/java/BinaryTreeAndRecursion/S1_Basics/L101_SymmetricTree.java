@@ -19,7 +19,45 @@ import Utils.Helpers.TreeNode;
 
 public class L101_SymmetricTree {
     /*
-     * 解法1：Recursion (DFS)
+     * 解法1：BFS（Level palindrome）
+     * - 思路：最 instinctive 的思路就是检查树中每层节点是否是一个 palindrome —— 通过 BFS 进行层序遍历，将每层节点放入一个
+     *   线性结构中，然后检查其该是否是 palindrome。
+     * - 实现：注意 ∵ 题中 symmetric 的定义是 structure 和 value 都对应 ∴ 若只将非空节点放入线性结构则只能验证 value 是否
+     *   对应，而无法验证 structure 对应（如 test case 4、5）∴ 还需要将 null 节点也放入线性结构，只有 null 节点的位置也
+     *   对应上了才说明是 palindrome；
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    public static boolean isSymmetric0(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+
+        while (!q.isEmpty()) {
+            for (int i = 0, size = q.size(); i < size; i++) {
+                TreeNode node = q.poll();
+                if (node != null) {
+                    q.offer(node.left);
+                    q.offer(node.right);
+                }
+            }
+            if (!isPalindrome(new ArrayList<>(q)))  // ∵ isPalindrome 方法需要随机访问元素 ∴ 需要先转换为支持随机访问的数据结构
+                return false;
+        }
+
+        return true;
+    }
+
+    private static boolean isPalindrome(List<TreeNode> list) {
+        for (int i = 0; i < list.size(); i++) {
+            TreeNode l = list.get(i);
+            TreeNode r = list.get(list.size() - 1 - i);
+            if (l == null && r == null) continue;   // 除了 TreeNode 节点，还要验证 null 节点是否对应
+            if (l == null || r == null || l.val != r.val) return false;
+        }
+        return true;
+    }
+
+    /*
+     * 解法2：DFS（递归）
      * - 思路：若一棵树是对称的，则其左右子树应互为镜像。若两棵树互为镜像，则：
      *     1. 他们的根节点的节点值相同；
      *     2. 树1的左子树和树2的右子树互为镜像；
@@ -29,7 +67,7 @@ public class L101_SymmetricTree {
      *     2. 若有节点，则节点值相同。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
-    public static boolean isSymmetric(TreeNode root) {
+    public static boolean isSymmetric2(TreeNode root) {
         return isMirror(root, root);  // 递归入口需要特殊处理一下，以符合递归函数的语义
     }
 
@@ -40,11 +78,11 @@ public class L101_SymmetricTree {
     }
 
     /*
-     * 解法2：Iteration (BFS)
+     * 解法3：BFS（迭代）
      * - 思路：对树同时从两个方向进行层序遍历，注意 null 节点也要入队检查。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static boolean isSymmetric2(TreeNode root) {
+    public static boolean isSymmetric3(TreeNode root) {
         if (root == null) return true;
         Queue<TreeNode> q1 = new LinkedList<>();
         Queue<TreeNode> q2 = new LinkedList<>();
@@ -67,11 +105,11 @@ public class L101_SymmetricTree {
     }
 
     /*
-     * 解法3：Iteration (BFS)
+     * 解法4：BFS（迭代）
      * - 思路：与解法2思路一致，区别是在实现上使用一个 Queue 同时入队左右两棵子树的节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static boolean isSymmetric3(TreeNode root) {
+    public static boolean isSymmetric4(TreeNode root) {
         if (root == null) return true;
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
@@ -93,11 +131,11 @@ public class L101_SymmetricTree {
     }
 
     /*
-     * 解法4：Iteration (DFS)
+     * 解法5：DFS（迭代）
      * - 思路：与解法3思路一致，区别是使用 DFS（只有数据结构改成了 Stack），即对树同时从左右两边进行 DFS。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static boolean isSymmetric4(TreeNode root) {
+    public static boolean isSymmetric5(TreeNode root) {
         if (root == null) return true;
         Stack<TreeNode> s = new Stack<>();
         s.add(root);
@@ -116,13 +154,6 @@ public class L101_SymmetricTree {
         }
 
         return true;
-    }
-
-
-
-
-    public static boolean isSymmetric0(TreeNode root) {
-        return false;
     }
 
     public static void main(String[] args) {
