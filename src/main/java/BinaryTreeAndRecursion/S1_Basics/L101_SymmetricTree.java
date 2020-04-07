@@ -81,7 +81,8 @@ public class L101_SymmetricTree {
 
     /*
      * 解法3：BFS（迭代）
-     * - 思路：对树同时从两个方向进行层序遍历，注意 null 节点也要入队检查。
+     * - 思路：与解法1一致。
+     * - 实现：使用 BFS 对树同时从两个方向进行层序遍历，注意 null 节点也要入队检查。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSymmetric3(TreeNode root) {
@@ -92,15 +93,14 @@ public class L101_SymmetricTree {
         q2.offer(root);
 
         while (!q1.isEmpty()) {
-            TreeNode node1 = q1.poll();
-            TreeNode node2 = q2.poll();
-            if (node1 == null && node2 == null) continue;
-            if (node1 == null || node2 == null) return false;
-            if (node1.val != node2.val) return false;
-            q1.offer(node1.left);   // q1 先入队 node1.left
-            q1.offer(node1.right);
-            q2.offer(node2.right);  // q2 先入队 node2.right
-            q2.offer(node2.left);
+            TreeNode n1 = q1.poll(), n2 = q2.poll();
+            if (n1 == null && n2 == null) continue;
+            if (n1 == null || n2 == null || n1.val != n2.val) return false;
+
+            q1.offer(n1.left);   // q1 先入队 n1.left
+            q1.offer(n1.right);
+            q2.offer(n2.right);  // q2 先入队 n2.right
+            q2.offer(n2.left);
         }
 
         return true;
@@ -108,7 +108,8 @@ public class L101_SymmetricTree {
 
     /*
      * 解法4：BFS（迭代）
-     * - 思路：与解法2思路一致，区别是在实现上使用一个 Queue 同时入队左右两棵子树的节点。
+     * - 思路：与解法1、2一致。
+     * - 实现：只使用一个 Queue，同时入队左右两棵子树的节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSymmetric4(TreeNode root) {
@@ -118,15 +119,14 @@ public class L101_SymmetricTree {
         q.offer(root);
 
         while (!q.isEmpty()) {
-            TreeNode node1 = q.poll();
-            TreeNode node2 = q.poll();
-            if (node1 == null && node2 == null) continue;
-            if (node1 == null || node2 == null) return false;
-            if (node1.val != node2.val) return false;
-            q.offer(node1.left);
-            q.offer(node2.right);  // 注意这里跟解法2中的入队顺序不同，需对称入队
-            q.offer(node1.right);
-            q.offer(node2.left);
+            TreeNode n1 = q.poll(), n2 = q.poll();
+            if (n1 == null && n2 == null) continue;
+            if (n1 == null || n2 == null || n1.val != n2.val) return false;
+
+            q.offer(n1.left);  // 注意这里跟解法2中的入队顺序不同，需对称入队
+            q.offer(n2.right);
+            q.offer(n1.right);
+            q.offer(n2.left);
         }
 
         return true;
@@ -160,7 +160,7 @@ public class L101_SymmetricTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 4, 3});
-        log(isSymmetric0(t1));
+        log(isSymmetric(t1));
         /*
          * expects true.
          *        1
@@ -171,7 +171,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, null, null, 3});
-        log(isSymmetric0(t2));
+        log(isSymmetric(t2));
         /*
          * expects true.
          *        1
@@ -182,7 +182,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 3, 4});
-        log(isSymmetric0(t3));
+        log(isSymmetric(t3));
         /*
          * expects false.
          *        1
@@ -193,7 +193,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, null, 3, null, 3});
-        log(isSymmetric0(t4));
+        log(isSymmetric(t4));
         /*
          * expects false.
          *        1
@@ -204,7 +204,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 2, null, 2});
-        log(isSymmetric0(t5));
+        log(isSymmetric(t5));
         /*
          * expects false.
          *        1
