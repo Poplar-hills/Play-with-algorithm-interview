@@ -2,7 +2,9 @@ package BinaryTreeAndRecursion.S1_Basics;
 
 import static Utils.Helpers.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -116,9 +118,16 @@ public class L101_SymmetricTree {
         return true;
     }
 
+
+
+
+    public static boolean isSymmetric0(TreeNode root) {
+        return false;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 4, 3});
-        log(isSymmetric4(t1));
+        log(isSymmetric0(t1));
         /*
          * expects true.
          *        1
@@ -129,7 +138,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, null, null, 3});
-        log(isSymmetric4(t2));
+        log(isSymmetric0(t2));
         /*
          * expects true.
          *        1
@@ -140,7 +149,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 3, 4});
-        log(isSymmetric4(t3));
+        log(isSymmetric0(t3));
         /*
          * expects false.
          *        1
@@ -151,7 +160,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, null, 3, null, 3});
-        log(isSymmetric4(t4));
+        log(isSymmetric0(t4));
         /*
          * expects false.
          *        1
@@ -159,6 +168,17 @@ public class L101_SymmetricTree {
          *      2   2
          *       \   \
          *        3   3
+         * */
+
+        TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 2, null, 2});
+        log(isSymmetric0(t5));
+        /*
+         * expects false.
+         *        1
+         *       / \
+         *      2   2
+         *     /   /
+         *    2   2
          * */
     }
 }
