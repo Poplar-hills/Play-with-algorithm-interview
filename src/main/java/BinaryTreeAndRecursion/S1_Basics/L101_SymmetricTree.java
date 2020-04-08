@@ -74,9 +74,9 @@ public class L101_SymmetricTree {
     }
 
     private static boolean isMirror(TreeNode t1, TreeNode t2) {
-        if (t1 == null && t2 == null) return true;   // 同时有节点
-        if (t1 == null || t2 == null) return false;  // 同时没有节点
-        return t1.val == t2.val && isMirror(t1.left, t2.right) && isMirror(t1.right, t2.left);
+        if (t1 == null && t2 == null) return true;
+        if (t1 == null || t2 == null || t1.val != t2.val) return false;
+        return isMirror(t1.left, t2.right) && isMirror(t1.right, t2.left);
     }
 
     /*
@@ -160,7 +160,7 @@ public class L101_SymmetricTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 4, 3});
-        log(isSymmetric(t1));
+        log(isSymmetric2(t1));
         /*
          * expects true.
          *        1
@@ -171,7 +171,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, null, null, 3});
-        log(isSymmetric(t2));
+        log(isSymmetric2(t2));
         /*
          * expects true.
          *        1
@@ -182,7 +182,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 4, 3, 4});
-        log(isSymmetric(t3));
+        log(isSymmetric2(t3));
         /*
          * expects false.
          *        1
@@ -193,7 +193,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, null, 3, null, 3});
-        log(isSymmetric(t4));
+        log(isSymmetric2(t4));
         /*
          * expects false.
          *        1
@@ -204,7 +204,7 @@ public class L101_SymmetricTree {
          * */
 
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 2, null, 2});
-        log(isSymmetric(t5));
+        log(isSymmetric2(t5));
         /*
          * expects false.
          *        1
