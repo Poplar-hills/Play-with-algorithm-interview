@@ -158,8 +158,23 @@ public class L110_BalancedBinaryTree {
          *     4   4
          * */
 
-        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 3, null, null, 4, 4});
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1,2,2,3,3,3,3,4,4,4,4,4,4,null,null,5,5});
         log(isBalanced(t4));
+        /*
+         * expects true.
+         *            1
+         *         /     \
+         *        2       2
+         *       / \     / \
+         *      3   3   3   3
+         *     / \ / \ / \
+         *     4 4 4 4 4 4
+         *    / \
+         *    5 5
+         * */
+
+        TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 3, null, null, 4, 4});
+        log(isBalanced(t5));
         /*
          * expects false.
          *           1
@@ -171,8 +186,8 @@ public class L110_BalancedBinaryTree {
          *     4   4
          * */
 
-        TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, null, null, 3, 4, null, null, 4});
-        log(isBalanced(t5));
+        TreeNode t6 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, null, null, 3, 4, null, null, 4});
+        log(isBalanced(t6));
         /*
          * expects false.
          *           1
