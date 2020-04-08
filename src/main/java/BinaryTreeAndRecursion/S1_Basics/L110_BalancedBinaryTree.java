@@ -18,8 +18,8 @@ import Utils.Helpers.TreeNode;
 public class L110_BalancedBinaryTree {
     /*
      * 解法1：DFS (Recursion)
-     * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树深度差 <= 1” ∴ 按照该定义设计程序，自底向上为每个节点计算
-     *   其左右子树的深度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
+     * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树的深度差 <= 1” ∴ 按照该定义设计程序，自下而上为每个节点
+     *   计算其左右子树的深度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced(TreeNode root) {
@@ -37,31 +37,32 @@ public class L110_BalancedBinaryTree {
 
     /*
      * 解法2：DFS (Iteration, post-order traversal)
-     * - 思路：要知道一棵树是否平衡，需要先知道其左右子树的最大深度，即先访问左右子节点，再访问父节点，这其实就是二叉树的后续遍历。
-     *   ∴ 需要做的就是在后续遍历的基础上将访问每个节点的逻辑替换成计算树的最大深度的逻辑即可。
+     * - 思路：与解法1一致，都是使用 DFS 自下而上的为每个节点计算最大深度，判断以该节点为根的二叉树是否平衡。
+     * - 实现：∵ 是自下而上 ∴ 需要先获得其左右子树的深度，即先访问左右子节点，再访问父节点，这其实就是二叉树后续遍历的过程。
+     *   ∴ 只要在后续遍历的基础上将访问每个节点的逻辑替换成计算以该节点为根的树的深度即可。
      * - 👉 回顾：再反观解法1，其实就是二叉树后续遍历的递归实现（先为左右子节点进行计算，再为父节点计算）。
      * - 💎 总结：该解法是二叉树后续遍历的典型应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isBalanced2(TreeNode root) {
         if (root == null) return true;
-        Map<TreeNode, Integer> map = new HashMap<>();  // 使用 map 记录<节点, 以该节点为根的树的最大深度>
+        Map<TreeNode, Integer> map = new HashMap<>();  // 记录 <节点, 以该节点为根的树的最大深度>
         Stack<TreeNode> stack = new Stack<>();         // 后续遍历是 DFS 的一种 ∴ 使用 stack 结构进行辅助
         stack.push(root);
 
         while (!stack.isEmpty()) {
             TreeNode node = stack.pop();
             boolean isLeafNode = node.left == null && node.right == null;
-            boolean leftDone = map.containsKey(node.left);
-            boolean rightDone = map.containsKey(node.right);
-            boolean childrenDone = (leftDone && rightDone) || (node.left == null && rightDone) || (node.right == null && leftDone);
+            boolean lDone = map.containsKey(node.left);
+            boolean rDone = map.containsKey(node.right);
+            boolean childrenDone = (lDone && rDone) || (node.left == null && rDone) || (node.right == null && lDone);
 
             if (isLeafNode || childrenDone) {  // 若是叶子节点，或其左右子子树已经被访问过，则访问该节点并加入 map
-                int leftDepth = map.getOrDefault(node.left, 0);
-                int rightDepth = map.getOrDefault(node.right, 0);
-                if (Math.abs(leftDepth - rightDepth) > 1) return false;
-                map.put(node, 1 + Math.max(leftDepth, rightDepth));
-            } else {                           // 若不是叶子节点，且左右子节点中还有没被访问过的，则放回栈中待后面访问
+                int lDepth = map.getOrDefault(node.left, 0);
+                int rDepth = map.getOrDefault(node.right, 0);
+                if (Math.abs(lDepth - rDepth) > 1) return false;
+                map.put(node, Math.max(lDepth, rDepth) + 1);
+            } else {                           // 若既不是叶子节点，且左右子节点中还有没被访问过的，则放回栈中待后面访问
                 stack.push(node);
                 if (node.right != null) stack.push(node.right);
                 if (node.left != null) stack.push(node.left);
@@ -81,7 +82,7 @@ public class L110_BalancedBinaryTree {
         Map<TreeNode, Integer> map = new HashMap<>();
         Stack<TreeNode> stack = new Stack<>();
         stack.push(root);
-        TreeNode lastVisited = null, curr = root;
+        TreeNode prev = null, curr = root;
 
         while (curr != null || !stack.isEmpty()) {
             while (curr != null) {
@@ -89,14 +90,14 @@ public class L110_BalancedBinaryTree {
                 curr = curr.left;
             }
             curr = stack.pop();
-            if (curr.right == null || curr.right == lastVisited) {
-                int leftDepth = map.getOrDefault(curr.left, 0);  // 对节点的访问逻辑是一样的
-                int rightDepth = map.getOrDefault(curr.right, 0);
-                if (Math.abs(leftDepth - rightDepth) > 1) return false;
-                map.put(curr, 1 + Math.max(leftDepth, rightDepth));
+            if (curr.right == null || curr.right == prev) {
+                int lDepth = map.getOrDefault(curr.left, 0);  // 对节点的访问逻辑是一样的
+                int rDepth = map.getOrDefault(curr.right, 0);
+                if (Math.abs(lDepth - rDepth) > 1) return false;
+                map.put(curr, 1 + Math.max(lDepth, rDepth));
 
-                lastVisited = curr;  // 访问完后将 curr 标记为已访问
-                curr = null;         // 置空 curr，好在 stack.isEmpty() 时能退出 while 循环
+                prev = curr;  // 访问完后将 curr 标记为已访问
+                curr = null;  // 置空 curr，好在 stack.isEmpty() 时能退出 while 循环
             } else {
                 stack.push(curr);
                 curr = curr.right;
