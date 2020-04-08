@@ -18,48 +18,32 @@ import Utils.Helpers.TreeNode;
 public class L110_BalancedBinaryTree {
     /*
      * 解法1：DFS (Recursion)
+     * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树深度差 <= 1” ∴ 按照该定义设计程序，自底向上为每个节点计算
+     *   其左右子树的深度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced(TreeNode root) {
-        int[] depths = getDepths(root);
-        return depths[0] - depths[1] <= 1;
-    }
-
-    private static int[] getDepths(TreeNode root) {
-        if (root == null) return new int[]{0, 0};
-        int[] l = getDepths(root.left);
-        int[] r = getDepths(root.right);
-        int maxDepth = Math.max(l[0], r[0]) + 1;
-        int minDepth = Math.min(l[1], r[1]) + 1;
-        return new int[]{maxDepth, minDepth};
-    }
-
-    /*
-     * 解法2：DFS (Recursion)
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
-     * */
-    public static boolean isBalanced2(TreeNode root) {
         return maxDepth(root) != -1;
     }
 
-    private static int maxDepth(TreeNode root) {  // 计算左右子树的最大深度，若深度差 > 1，则返回 -1，否则返回最大深度
+    private static int maxDepth(TreeNode root) {
         if (root == null) return 0;
-        int left = maxDepth(root.left);
-        if (left == -1) return -1;
-        int right = maxDepth(root.right);
-        if (right == -1) return -1;
-        return Math.abs(left - right) <= 1 ? 1 + Math.max(left, right) : -1;
+        int l = maxDepth(root.left);
+        if (l == -1) return -1;
+        int r = maxDepth(root.right);
+        if (r == -1) return -1;
+        return Math.abs(l - r) <= 1 ? Math.max(l, r) + 1 : -1;
     }
 
     /*
-     * 解法3：DFS (Iteration, post-order traversal)
+     * 解法2：DFS (Iteration, post-order traversal)
      * - 思路：要知道一棵树是否平衡，需要先知道其左右子树的最大深度，即先访问左右子节点，再访问父节点，这其实就是二叉树的后续遍历。
      *   ∴ 需要做的就是在后续遍历的基础上将访问每个节点的逻辑替换成计算树的最大深度的逻辑即可。
      * - 👉 回顾：再反观解法1，其实就是二叉树后续遍历的递归实现（先为左右子节点进行计算，再为父节点计算）。
      * - 💎 总结：该解法是二叉树后续遍历的典型应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static boolean isBalanced3(TreeNode root) {
+    public static boolean isBalanced2(TreeNode root) {
         if (root == null) return true;
         Map<TreeNode, Integer> map = new HashMap<>();  // 使用 map 记录<节点, 以该节点为根的树的最大深度>
         Stack<TreeNode> stack = new Stack<>();         // 后续遍历是 DFS 的一种 ∴ 使用 stack 结构进行辅助
@@ -88,11 +72,11 @@ public class L110_BalancedBinaryTree {
     }
 
     /*
-     * 解法4：DFS (Iteration, post-order traversal)
+     * 解法3：DFS (Iteration, post-order traversal)
      * - 思路：与解法2一致，只是采用后续遍历非递归的另一种实现。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
-    public static boolean isBalanced4(TreeNode root) {
+    public static boolean isBalanced3(TreeNode root) {
         if (root == null) return true;
         Map<TreeNode, Integer> map = new HashMap<>();
         Stack<TreeNode> stack = new Stack<>();
@@ -148,7 +132,7 @@ public class L110_BalancedBinaryTree {
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 3, null, 3, 4, 4});
         log(isBalanced(t3));
         /*
-         * expects true. (注意这个是平衡树 ∵ 本题中平衡树的定义是任意节点的左右子树的深度差最大不超过1)
+         * expects true. (注意这个是平衡树 ∵ 本题中平衡树的定义是任意节点的左右子树的最大深度差不超过1)
          *           1
          *          / \
          *         2   2
