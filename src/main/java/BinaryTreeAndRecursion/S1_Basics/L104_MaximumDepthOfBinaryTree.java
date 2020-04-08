@@ -16,7 +16,7 @@ import java.util.Stack;
 
 public class L104_MaximumDepthOfBinaryTree {
     /*
-     * 解法1：Recursion (DFS)
+     * 解法1：DFS (Recursion)
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int maxDepth(TreeNode root) {
@@ -25,8 +25,8 @@ public class L104_MaximumDepthOfBinaryTree {
     }
 
     /*
-     * 解法2：Iteration (BFS)
-     * - 思路：逻辑与 L102_BinaryTreeLevelOrderTraversal 解法1一致。
+     * 解法2：BFS (Level lists in res)
+     * - 思路：与 L102_BinaryTreeLevelOrderTraversal 解法1一致。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth2(TreeNode root) {
@@ -42,9 +42,7 @@ public class L104_MaximumDepthOfBinaryTree {
 
             if (level == res.size())
                 res.add(new ArrayList<>());
-
-            List<TreeNode> list = res.get(level);
-            list.add(node);
+            res.get(level).add(node);
 
             if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
             if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
@@ -54,14 +52,14 @@ public class L104_MaximumDepthOfBinaryTree {
     }
 
     /*
-     * 解法3：Iteration (BFS)（解法2的简化版）
+     * 解法3：BFS（解法2的简化版）
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth3(TreeNode root) {
         if (root == null) return 0;
-        int depth = 0;
         Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
         q.offer(new Pair<>(root, 1));
+        int depth = 0;
 
         while (!q.isEmpty()) {
             Pair<TreeNode, Integer> pair = q.poll();
@@ -77,7 +75,7 @@ public class L104_MaximumDepthOfBinaryTree {
     }
 
     /*
-     * 解法4：Iteration (BFS)（解法3的简化版）
+     * 解法4：BFS（解法3的简化版）
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth4(TreeNode root) {
@@ -100,9 +98,9 @@ public class L104_MaximumDepthOfBinaryTree {
     }
 
     /*
-     * 解法5：Iteration (DFS)
-     * - 思路：∵ 深度优先遍历 ∴ 无法采用解法4的方式一次性将一层节点全部遍历完 ∴ 只能采用解法3的方式将层级信息携带在节点上。
-     *   跟解法3的区别只是采用了 Stack。
+     * 解法5：DFS (Iteration)
+     * - 思路：DFS 无法采用解法4中一次性将一层节点全部遍历完的方式，只能采用解法3的方式将层级信息携带在节点上。
+     * - 实现：跟解法3的区别只是采用了 Stack。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth5(TreeNode root) {
@@ -127,7 +125,7 @@ public class L104_MaximumDepthOfBinaryTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(maxDepth5(t1));
+        log(maxDepth2(t1));
         /*
          * expects 3.
          *      3
@@ -138,7 +136,7 @@ public class L104_MaximumDepthOfBinaryTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, null, null, 5});
-        log(maxDepth5(t2));
+        log(maxDepth2(t2));
         /*
          * expects 3.
          *      1

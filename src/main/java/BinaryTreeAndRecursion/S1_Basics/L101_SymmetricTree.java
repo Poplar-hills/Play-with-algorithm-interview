@@ -19,7 +19,7 @@ import Utils.Helpers.TreeNode;
 
 public class L101_SymmetricTree {
     /*
-     * 解法1：BFS（Level palindrome）
+     * 解法1：BFS (Level palindrome)
      * - 思路：最 instinctive 的思路就是检查树中每层节点是否是一个 palindrome —— 通过 BFS 进行层序遍历，将每层节点放入一个
      *   线性结构中，然后检查其该是否是 palindrome。
      * - 实现：注意 ∵ 题中 symmetric 的定义是 structure 和 value 都对应 ∴ 若只将非空节点放入线性结构则只能验证 value 是否
@@ -57,7 +57,7 @@ public class L101_SymmetricTree {
     }
 
     /*
-     * 解法2：DFS（递归）
+     * 解法2：DFS (Recursion)
      * - 思路：另一种思路是，若一棵树是对称的，则其左右子树应互为镜像 ∴ 可以用这棵树与自身进行对照 —— 这就将问题转化为了两棵树
      *   之间的对比问题。
      * - 实现：若两棵树互为镜像，则：
@@ -80,7 +80,7 @@ public class L101_SymmetricTree {
     }
 
     /*
-     * 解法3：BFS（迭代）
+     * 解法3：BFS
      * - 思路：与解法1一致。
      * - 实现：使用 BFS 对树同时从两个方向进行层序遍历，注意 null 节点也要入队检查。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -107,7 +107,7 @@ public class L101_SymmetricTree {
     }
 
     /*
-     * 解法4：BFS（迭代）
+     * 解法4：BFS
      * - 思路：与解法2、3一致。
      * - 实现：只使用一个 Queue，同时入队左右两棵子树的节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -133,7 +133,7 @@ public class L101_SymmetricTree {
     }
 
     /*
-     * 解法5：DFS（迭代）
+     * 解法5：DFS (Iteration)
      * - 思路：与解法2、3、4一致。
      * - 思路：与解法3的区别是使用 DFS（只有数据结构改成了 Stack），即对树同时从左右两边对树进行 DFS。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
