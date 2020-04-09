@@ -6,7 +6,7 @@ import static Utils.Helpers.log;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import Utils.Helpers.TreeNode;
+import Utils.Helpers.*;
 
 /*
  * Minimum Depth of Binary Tree
@@ -59,25 +59,53 @@ public class L111_MinimumDepthOfBinaryTree {
     }
 
     /*
-     * 解法3：Iteration (BFS, Level-order Traversal)
-     * - 思路：对树进行层序遍历的过程中，若碰到叶子节点，则该叶子节点所在的等深度就是该二叉树的最小深度。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。该解法统计性能应比解法1好 ∵ 遇到叶子节点会立即结束遍历，而解法1会遍历到底后再返回。
+     * 解法3：BFS
+     * - 思路：使用 BFS 对树进行层序遍历，找到的第一个叶子节点的深度即是整个树的最小深度。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int minDepth3(TreeNode root) {
         if (root == null) return 0;
-        int depth = 1;  // 只要根节点不为 null 则最小树高就至少是1
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(root, 1));
+
+        while (!q.isEmpty()) {
+            Pair<TreeNode, Integer> pair = q.poll();
+            TreeNode node = pair.getKey();
+            int level = pair.getValue();
+
+            if (node.left == null && node.right == null)
+                return level;
+
+            if (node.left != null)
+                q.offer(new Pair<>(node.left, level + 1));
+            if (node.right != null)
+                q.offer(new Pair<>(node.right, level + 1));
+        }
+
+        throw new IllegalArgumentException("No solution");
+    }
+
+    /*
+     * 解法4：BFS
+     * - 思路：与解法3一致。
+     * - 实现：采用一次性遍历一层节点的方式。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int minDepth4(TreeNode root) {
+        if (root == null) return 0;
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
+        int depth = 1;                 // 只要根节点不为 null 则最小树高就至少是1
 
         while (!q.isEmpty()) {
             int levelSize = q.size();
-            while (--levelSize >= 0) {  // 将同一层的节点一次性消费完
+            while (levelSize-- > 0) {  // 将同一层的节点一次性消费完
                 TreeNode node = q.poll();
                 if (node.left == null && node.right == null) return depth;  // 若碰到叶子节点则找到了最小深度，提前结束遍历
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
-            depth++;                    // 消费完同一层节点还没有碰到叶子节点则给最小深度+1
+            depth++;                   // 消费完同一层节点还没有碰到叶子节点则给最小深度+1
         }
 
         return depth;
