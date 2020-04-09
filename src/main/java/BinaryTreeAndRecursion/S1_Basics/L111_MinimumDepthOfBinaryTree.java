@@ -18,7 +18,7 @@ import Utils.Helpers.TreeNode;
 public class L111_MinimumDepthOfBinaryTree {
     /*
      * 解法1：DFS (Recursion)
-     * - 思路：用 DFS 查找树的最小深度有两种思路：
+     * - 思路：与 L104_MaximumDepthOfBinaryTree 一样，用 DFS 查找树的最小深度有两种思路：
      *   1. 从上到下遍历所有分支，从根节点开始向下层层传递节点的深度，在每找到一个叶子节点时就检查/更新最小深度；
      *   2. 从下到上层层递推每个节点的最小深度 —— 每个节点的最小深度 = min(左子树最小深度, 右子树最小深度) + 1。
      * - 实现：本解法采用思路1。
