@@ -15,26 +15,27 @@ import Utils.Helpers.TreeNode;
  *   all nodes in the last level are as far left as possible (注：堆使用的就是完全二叉树).
  *
  * - 复习：
- *   1. 注意区分完全二叉树和满二叉树；
+ *   1. 注意区分完全二叉树和满二叉树（SEE: Play-with-data-structure/BST）；
  *   2. 完全二叉树非最后一层的节点数为 2^h，最后一层的节点数为 1~2^h，其中 h 为层的深度；
  *   3. 完美二叉树的总结点数为 2^h - 1。
  * */
 
 public class L222_CountCompleteTreeNodes {
     /*
-     * 解法1：Recursion (DFS)
+     * 解法1：DFS (Recursion)
+     * - 思路：最 intuitive 的方式就是遍历所有节点并数数。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int countNodes(TreeNode root) {
         if (root == null) return 0;
-        return 1 + countNodes(root.left) + countNodes(root.right);
+        return countNodes(root.left) + countNodes(root.right) + 1;
     }
 
-    /*
-     * 解法2：Iteration (BFS, level-order traversal)
-     * - 思路：采用层序遍历，边遍历边计数。
-     * - 实现：将 Queue 改为 Stack 即是相同思路下的 DFS 实现。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+	/*
+     * 解法2：BFS (Iteration)
+     * - 思路：与解法1一致。
+     * - 实现：将 Queue 改为 Stack 即是相同思路的 DFS 实现。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int countNodes2(TreeNode root) {
         if (root == null) return 0;
@@ -52,9 +53,34 @@ public class L222_CountCompleteTreeNodes {
         return count;
     }
 
+	/*
+     * 解法3：BFS (Recursion)
+     * - 思路：与解法1、2一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    private static int count;
+
+    public static int countNodes3(TreeNode root) {
+        if (root == null) return 0;
+        count = 0;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        helper3(q);        // BFS 的递归是对 queue 进行的（即替换解法2的 while 循环）
+        return count;
+    }
+
+    private static void helper3(Queue<TreeNode> q) {
+        if (q.isEmpty()) return;
+        TreeNode node = q.poll();
+        count++;
+        if (node.left != null) q.offer(node.left);
+        if (node.right != null) q.offer(node.right);
+        helper3(q);
+	}
+
     /*
-     * 解法3：Recursion（解法1的时间空间优化版）
-     * - 思路：不同于解法1、2，本解法利用了2个性质：
+     * 解法4：Recursion（解法1的时间空间优化版）
+     * - 思路：不同于解法1、2、3，本解法利用了2个性质：
      *     1. 完美二叉树的节点总数：2^h-1，其中 h 为树高；
      *     2. 完全二叉树左、右子树中至少有一个是完美二叉树（见 test cases）；
      *   根据这两个性质，可在解法1的基础上进行优化：在递归左右子树之前先计算树的左右深度，若左右深度相同则说明是完美二叉树，可
@@ -68,7 +94,7 @@ public class L222_CountCompleteTreeNodes {
      *   ∴ 整体复杂度为 O(logn^2)。
      * - 空间复杂度 O(logn)：∵ 完全二叉树也是平衡树，不会退化成链表。
      * */
-    public static int countNodes3(TreeNode root) {
+    public static int countNodes4(TreeNode root) {
         if (root == null) return 0;
         int leftDepth = leftDepth(root);
         int rightDepth = rightDepth(root);
@@ -86,11 +112,11 @@ public class L222_CountCompleteTreeNodes {
     }
 
     /*
-     * 解法4：Recursion
+     * 解法5：Recursion
      * - 思路：也是利用上述的完全二叉树的两个性质进行优化，比解法3更精简，但逻辑也更绕一些。
      * - 时间复杂度 O(logn^2)，空间复杂度 O(logn)。
      * */
-    public static int countNodes4(TreeNode root) {
+    public static int countNodes5(TreeNode root) {
         int h = leftDepth(root);               // 先计算整棵树的左侧高度 h
         if (h == 0)	return 0;
         return leftDepth(root.right) == h - 1  // 若右子树的左侧高度 = h-1，即左右子树的左侧高度相等，此时左子树一定完美，右子树不一定（test case 1,2）
@@ -100,7 +126,7 @@ public class L222_CountCompleteTreeNodes {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6, 7});
-        log(countNodes4(t1));
+        log(countNodes3(t1));
         /*
          * expects 7.
          *        1
@@ -111,7 +137,7 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5, 6});
-        log(countNodes4(t2));
+        log(countNodes3(t2));
         /*
          * expects 6.
          *        1
@@ -122,7 +148,7 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4, 5});
-        log(countNodes4(t3));
+        log(countNodes3(t3));
         /*
          * expects 5.
          *        1
@@ -133,7 +159,7 @@ public class L222_CountCompleteTreeNodes {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 4});
-        log(countNodes4(t4));
+        log(countNodes3(t4));
         /*
          * expects 4.
          *        1
