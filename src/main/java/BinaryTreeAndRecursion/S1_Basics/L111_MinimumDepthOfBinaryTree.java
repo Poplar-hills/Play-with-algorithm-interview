@@ -17,27 +17,53 @@ import Utils.Helpers.TreeNode;
 
 public class L111_MinimumDepthOfBinaryTree {
     /*
-     * 解法1：Recursion (DFS)
-     * - 思路：先考虑求一个节点最小深度的所有可能的情况：
-     *   1. 若左右子树都没有，则该节点的最小深度为1；
-     *   2. 若左右子树都有，则该节点的最小深度由两边深度更小的一边决定；
-     *   3. 若只有左子树或只有右子树，则该节点的最小深度由有子树的一边决定。
-     *   注意，情况3是最容易忽略的情况，若 test case 2 中不考虑该情况则会得到错误结果1；
+     * 解法1：DFS (Recursion)
+     * - 思路：用 DFS 查找树的最小深度有两种思路：
+     *   1. 从上到下遍历所有分支，从根节点开始向下层层传递节点的深度，在每找到一个叶子节点时就检查/更新最小深度；
+     *   2. 从下到上层层递推每个节点的最小深度 —— 每个节点的最小深度 = min(左子树最小深度, 右子树最小深度) + 1。
+     * - 实现：本解法采用思路1。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
+    private static int minDepth;
+
     public static int minDepth(TreeNode root) {
         if (root == null) return 0;
-        if (root.left == null) return 1 + minDepth(root.right);  // 若左右子树只有一边时，最小深度由有子树的一边决定
-        if (root.right == null) return 1 + minDepth(root.left);
-        return 1 + Math.min(minDepth(root.left), minDepth(root.right));
+        minDepth = Integer.MAX_VALUE;
+        helper(root, 1);
+        return minDepth;
+    }
+
+    private static void helper(TreeNode root, int level) {
+        if (root == null) return;                     // 遇到空节点不处理
+        if (root.left == null && root.right == null)  // 遇到叶子节点更新 minDepth
+            minDepth = Math.min(minDepth, level);
+        helper(root.left, level + 1);
+        helper(root.right, level + 1);
     }
 
     /*
-     * 解法2：Iteration (BFS, Level-order Traversal)
+     * 解法2：DFS (Recursion)
+     * - 思路：采用解法1中的思路2 —— 从下到上层层递推：每个节点的最小深度 = min(左子树最小深度, 右子树最小深度) + 1。
+     *   但要注意，根据题中对 minimum depth 的定义可知，当一个节点只有左/右子树中的一边，而另一边为空时，该节点的最小深度
+     *   并非是 min(0, 非空子树最小深度) + 1 = 1，而应该取决于非空子树那一边的最小深度（test case 2） ∴ 需要分情况讨论：
+     *     1. 若左右子树同时存在，则该节点的最小深度 = min(左子树最小深度, 右子树最小深度) + 1；
+     *     2. 若左右子树都不存在，则该节点的最小深度 = 1；
+     *     3. 若左右子树只存在一边，则该节点的最小深度 = 非空子树的最小深度 + 1。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    public static int minDepth2(TreeNode root) {
+        if (root == null) return 0;
+        if (root.left == null) return minDepth(root.right) + 1;
+        if (root.right == null) return minDepth(root.left) + 1;
+        return Math.min(minDepth(root.left), minDepth(root.right)) + 1;
+    }
+
+    /*
+     * 解法3：Iteration (BFS, Level-order Traversal)
      * - 思路：对树进行层序遍历的过程中，若碰到叶子节点，则该叶子节点所在的等深度就是该二叉树的最小深度。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。该解法统计性能应比解法1好 ∵ 遇到叶子节点会立即结束遍历，而解法1会遍历到底后再返回。
      * */
-    public static int minDepth2(TreeNode root) {
+    public static int minDepth3(TreeNode root) {
         if (root == null) return 0;
         int depth = 1;  // 只要根节点不为 null 则最小树高就至少是1
         Queue<TreeNode> q = new LinkedList<>();
