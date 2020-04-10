@@ -67,7 +67,7 @@ public class L112_PathSum {
     /*
      * 解法3：BFS (Iteration)
      * - 思路：与解法1、2一致。
-     * - 实现：采用 BFS，使用 Queue 同时记录节点和剩余 sum。
+     * - 实现：采用 BFS 的迭代实现，使用 Queue 同时记录节点和剩余 sum。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean hasPathSum3(TreeNode root, int sum) {
@@ -92,9 +92,37 @@ public class L112_PathSum {
         return false;
     }
 
+    /*
+     * 解法4：BFS (Recursion)
+     * - 思路：与解法1、2、3一致。
+     * - 实现：采用 BFS 的递归实现，递归对象是 queue，递归退出条件是找到解或 q 中元素耗尽。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean hasPathSum4(TreeNode root, int sum) {
+        if (root == null) return false;
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(root, sum));
+        return helper4(q);
+    }
+
+    private static boolean helper4(Queue<Pair<TreeNode, Integer>> q) {
+        if (q.isEmpty()) return false;  // 若 q 中节点已经耗尽则说明无解
+
+        Pair<TreeNode, Integer> pair = q.poll();
+        TreeNode node = pair.getKey();
+        int remindingSum = pair.getValue();
+
+        if (node.left == null && node.right == null && remindingSum == node.val)
+            return true;                // 若叶子节点符合条件则返回 true，否则也不返回 false，而是继续递归，从 q 中出队
+                                        // 下一个节点（若这里返回 false 则会提前退出递归，导致无法遍历 q 中剩下的节点）
+        if (node.left != null) q.offer(new Pair<>(node.left, remindingSum - node.val));
+        if (node.right != null) q.offer(new Pair<>(node.right, remindingSum - node.val));
+        return helper4(q);
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1});
-        log(hasPathSum3(t1, 22));
+        log(hasPathSum4(t1, 22));
         /*
          * expects true. (5 -> 4 -> 11 -> 2)
          *         5
@@ -107,7 +135,7 @@ public class L112_PathSum {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, -2, -3, 1, 3, -2, null, -1});
-        log(hasPathSum3(t2, -1));
+        log(hasPathSum4(t2, -1));
         /*
          * expects true. (1 -> -2 -> 1 -> -1)
          *          1
@@ -120,7 +148,7 @@ public class L112_PathSum {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 4, 8, 11, null, 13, 4});
-        log(hasPathSum3(t3, 9));
+        log(hasPathSum4(t3, 9));
         /*
          * expects false. (注意：5 -> 4 虽然和为9，但不是一条 root-to-leaf path)
          *         5
@@ -131,7 +159,7 @@ public class L112_PathSum {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(hasPathSum3(t4, 1));
+        log(hasPathSum4(t4, 1));
         /*
          * expects false.
          * */
