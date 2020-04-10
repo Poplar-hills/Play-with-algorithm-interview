@@ -19,8 +19,9 @@ import Utils.Helpers.TreeNode;
 public class L112_PathSum {
     /*
      * 解法1：DFS (Recursion)
-     * - 注意：递归过程中，若在非叶子节点上有 sum == 0，不能就此返回 true，因为这不是一条 root-to-leaf path。所以递归终止条
-     *   件不能写成 if (root == null) return sum == 0; 还需加入该节点是否是叶子节点的判断才行。
+     * - 思路：使用 DFS 遍历树上节点，并在递归层级中传递剩余 sum，当找到能使剩余 sum 为0的叶子节点时即找到了解。
+     * - 实现：当有非叶子节点能使 sum == 0 时，不能就此返回 true ∵ 这不是一条 root-to-leaf path ∴ 递归终止条件需加入
+     *   该节点是否是叶子节点的判断才行。
      * - 👉 递归终止条件较复杂的还有 L111 的解法1，可以顺便看一下。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
