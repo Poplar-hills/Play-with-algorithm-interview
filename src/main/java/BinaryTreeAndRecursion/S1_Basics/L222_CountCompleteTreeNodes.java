@@ -56,6 +56,7 @@ public class L222_CountCompleteTreeNodes {
 	/*
      * 解法3：BFS (Recursion)
      * - 思路：与解法1、2一致。
+     * - 实现：BFS 的递归是对 queue 进行的（即替换解法2的 while 循环）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     private static int count;
@@ -65,7 +66,7 @@ public class L222_CountCompleteTreeNodes {
         count = 0;
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
-        helper3(q);        // BFS 的递归是对 queue 进行的（即替换解法2的 while 循环）
+        helper3(q);     // 对 queue 进行递归（即替换解法2的 while 循环）
         return count;
     }
 
