@@ -98,8 +98,8 @@ public class L222_CountCompleteTreeNodes {
         if (root == null) return 0;
         int lDepth = getLeftDepth(root);
         int rDepth = getRightDepth(root);
-        return lDepth == rDepth
-            ? (1 << lDepth) - 1                                      // 若是完美二叉树，则总节点数为 2^h-1
+        return lDepth == rDepth                                      // 若是完美二叉树
+            ? (1 << lDepth) - 1                                      // 直接计算总节点数 2^h-1
             : countNodes4(root.left) + countNodes4(root.right) + 1;  // 若不完美则递归左右子树（其中至少有一个是完美的）
     }
 
