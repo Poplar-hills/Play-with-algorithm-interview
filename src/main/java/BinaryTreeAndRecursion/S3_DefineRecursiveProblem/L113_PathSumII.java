@@ -4,10 +4,12 @@ import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import Utils.Helpers.TreeNode;
 
@@ -24,7 +26,7 @@ import Utils.Helpers.TreeNode;
 
 public class L113_PathSumII {
     /*
-     * 解法1：Recursion (DFS)
+     * 解法1：DFS (Recursion)
      * - 思路：从根节点开始递归生成路径 path，若到达叶子节点且剩余 sum 为0，则说明该 path 是符合要求的路径，添加到结果集 res 中。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -77,28 +79,28 @@ public class L113_PathSumII {
 
     /*
      * 解法3：DFS (Recursion)
-     * - 思路：与 L257_BinaryTreePaths 解法1的思路一致。递归函数 f(n, sum) 定义为：返回以 n 为根的二叉树上的所有节点值之和
-     *   为 sum 的 root-to-leaf paths。
+     * - 思路：不同于解法1、2，该解法先递归到底，找到符合要求的 path，然后在回程路上开始自底向上拼接 path（与 L257_BinaryTreePaths
+     *   解法1的思路一致）∴ 递归函数 f(node, sum) 定义为：返回以 node 为根的二叉树上节点值之和为 sum 的 root-to-leaf paths。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<List<Integer>> pathSum3(TreeNode root, int sum) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
 
-        if (root.left == null && root.right == null && sum == root.val) {  // 若该路径符合要求，则在 res 中创建包含该节点的新列表
+        if (root.left == null && root.right == null && sum == root.val) {  // 若找到解则创建 path 并塞入 res
             List<Integer> path = new ArrayList<>();
             path.add(root.val);
             res.add(path);
             return res;
         }
 
-        List<List<Integer>> paths = pathSum3(root.left, sum - root.val);  // 将左右子树返回的 res 连接起来
-        paths.addAll(pathSum3(root.right, sum - root.val));
+        List<List<Integer>> leftPaths = pathSum3(root.left, sum - root.val);  // 分别对左右子树进行递归
+        List<List<Integer>> rightPaths = pathSum3(root.right, sum - root.val);
 
-        return paths.stream().map(path -> {  // 向连接后的 res 中的每个 path 头部添加当前节点值
-            path.add(0, root.val);
-            return path;
-        }).collect(Collectors.toList());
+        return Stream.of(leftPaths, rightPaths)
+            .flatMap(Collection::stream)      // 将左右子树返回的结果合起来（或者 leftPaths.addAll(rightPaths) 也可以）
+            .map(path -> { path.add(0, root.val); return path; })  // 向连接后的 res 中的每个 path 头部添加当前节点值
+            .collect(Collectors.toList());
     }
 
 	/*
@@ -191,7 +193,7 @@ public class L113_PathSumII {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 6, null, 5, -2, 2, 8, null, null, 7, 9});
-        log(pathSum0(t1, 9));
+        log(pathSum3(t1, 9));
         /*
          * expects [[1,3,-2,7], [1,3,5]].（注意 [1,2,6] 不是）
          *            1
@@ -204,7 +206,7 @@ public class L113_PathSumII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(pathSum0(t2, 1));
+        log(pathSum3(t2, 1));
         /*
          * expects [].
          * */
