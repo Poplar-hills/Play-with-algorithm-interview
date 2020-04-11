@@ -25,33 +25,34 @@ import Utils.Helpers.TreeNode;
 public class L113_PathSumII {
     /*
      * 解法1：Recursion (DFS)
-     * - 思路：与 L257_BinaryTreePaths 解法1的思路一致。递归函数 f(n, sum) 定义为：返回以 n 为根的二叉树上的所有节点值之和
-     *   为 sum 的 root-to-leaf paths。
+     * - 思路：从根节点开始递归生成路径 path，若到达叶子节点且剩余 sum 为0，则说明该 path 是符合要求的路径，添加到结果集 res 中。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<List<Integer>> pathSum(TreeNode root, int sum) {
         List<List<Integer>> res = new ArrayList<>();
-        if (root == null) return res;
-
-        if (root.left == null && root.right == null && sum == root.val) {  // 若该路径符合要求，则在 res 中创建包含该节点的新列表
-            List<Integer> path = new ArrayList<>();
-            path.add(root.val);
-            res.add(path);
-            return res;
-        }
-
-        List<List<Integer>> paths = pathSum(root.left, sum - root.val);  // 将左右子树返回的 res 连接起来
-        paths.addAll(pathSum(root.right, sum - root.val));
-
-        return paths.stream().map(path -> {  // 向连接后的 res 中的每个 path 头部添加当前节点值
-            path.add(0, root.val);
-            return path;
-        }).collect(Collectors.toList());
+        helper(root, sum, new ArrayList<>(), res);
+        return res;
     }
 
+    private static void helper(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
+        if (root == null) return;
+        path.add(root.val);
+
+        if (root.left == null && root.right == null && root.val == sum) {
+            res.add(path);
+            return;
+        }
+        helper(root.left, sum - root.val, new ArrayList<>(path), res);
+        helper(root.right, sum - root.val, new ArrayList<>(path), res);
+	}
+
     /*
-     * 解法2：Recursion (DFS)
-     * - 思路：从根节点开始递归生成路径 path，若到达叶子节点且剩余 sum 为0，则说明该 path 是符合要求的路径，添加到结果集 res 中。
+     * 解法2：DFS + Backtracking (解法2的简化版)
+     * - 思路：与解法1一致。
+     * - 实现：与解法1不同之处在于该解法：
+     *   1. 使用回溯技巧使得 path 从始至终都是复用的 —— ∵ 递归会先往左下递归到底再返回上层递归右子树 ∴ 若要继续复用 path 对象，
+     *      则需在递归返回上一层之前将 path 恢复原状（这也是回溯的关键）；
+     *   2. 只有在确定该 path 符合条件时才会被复制进 res（这也是该解法比其他解法快的原因）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<List<Integer>> pathSum2(TreeNode root, int sum) {
@@ -65,41 +66,40 @@ public class L113_PathSumII {
         path.add(root.val);
 
         if (root.left == null && root.right == null && root.val == sum) {
-            res.add(path);
-            return;
-        }
-        helper2(root.left, sum - root.val, new ArrayList<>(path), res);
-        helper2(root.right, sum - root.val, new ArrayList<>(path), res);
-	}
-
-    /*
-     * 解法3：DFS + Backtracking (解法2的简化版)
-     * - 思路：与解法2一致。
-     * - 实现：与解法2不同之处在于该解法：
-     *   1. 使用回溯技巧使得 path 从始至终都是复用的 —— ∵ 递归会先往左下递归到底再返回上层递归右子树 ∴ 若要继续复用 path 对象，
-     *      则需在递归返回上一层之前将 path 恢复原状（这也是回溯的关键）；
-     *   2. 只有在确定该 path 符合条件时才会被复制进 res（这也是该解法比其他解法快的原因）。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
-     * */
-    public static List<List<Integer>> pathSum3(TreeNode root, int sum) {
-        List<List<Integer>> res = new ArrayList<>();
-        helper3(root, sum, new ArrayList<>(), res);
-        return res;
-    }
-
-    private static void helper3(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
-        if (root == null) return;
-        path.add(root.val);
-
-        if (root.left == null && root.right == null && root.val == sum) {
             res.add(new ArrayList<>(path));  // 若是符合要求的 path，则复制进 res 里
             path.remove(path.size() - 1);    // 返回上层递归之前将添加的元素移除，让 path 恢复原状，这样回到上层后才能继续复用 path
             return;
         }
-        helper3(root.left, sum - root.val, path, res);  // 则继续递归并复用 path
-        helper3(root.right, sum - root.val, path, res);
+        helper2(root.left, sum - root.val, path, res);  // 则继续递归并复用 path
+        helper2(root.right, sum - root.val, path, res);
         path.remove(path.size() - 1);        // 同样在返回上层递归之前要将 path 恢复原状
-	}
+    }
+
+    /*
+     * 解法3：DFS (Recursion)
+     * - 思路：与 L257_BinaryTreePaths 解法1的思路一致。递归函数 f(n, sum) 定义为：返回以 n 为根的二叉树上的所有节点值之和
+     *   为 sum 的 root-to-leaf paths。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    public static List<List<Integer>> pathSum3(TreeNode root, int sum) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+
+        if (root.left == null && root.right == null && sum == root.val) {  // 若该路径符合要求，则在 res 中创建包含该节点的新列表
+            List<Integer> path = new ArrayList<>();
+            path.add(root.val);
+            res.add(path);
+            return res;
+        }
+
+        List<List<Integer>> paths = pathSum3(root.left, sum - root.val);  // 将左右子树返回的 res 连接起来
+        paths.addAll(pathSum3(root.right, sum - root.val));
+
+        return paths.stream().map(path -> {  // 向连接后的 res 中的每个 path 头部添加当前节点值
+            path.add(0, root.val);
+            return path;
+        }).collect(Collectors.toList());
+    }
 
 	/*
      * 解法4：Iteration (DFS) (解法2的迭代版)
