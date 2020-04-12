@@ -78,9 +78,12 @@ public class L113_PathSumII {
     }
 
     /*
-     * 解法3：DFS (Recursion)
-     * - 思路：不同于解法1、2，该解法先递归到底，找到符合要求的 path，然后在回程路上开始自底向上拼接 path（与 L257_BinaryTreePaths
-     *   解法1的思路一致）∴ 递归函数 f(node, sum) 定义为：返回以 node 为根的二叉树上节点值之和为 sum 的 root-to-leaf paths。
+     * 解法3：DFS + Concat path (Recursion)
+     * - 思路：
+     *   1. 不同于解法1、2中的递归是从上到下的，该解法采用从下到上的递归思路，即先递归到底，找到符合要求的 path，然后在回程路上
+     *      开始自底向上拼接 path（与 L257_BinaryTreePaths 解法1的思路一致）；
+     *   2. ∵ 递归思路不同 ∴ 递归函数的语义也与不同：f(n, sum) 返回以 n 为根的二叉树上节点值之和为 sum 的 root-to-leaf paths。
+     *   👉 采用从上到下、从下到上两种递归思路的题目还有 L111_MinimumDepthOfBinaryTree。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<List<Integer>> pathSum3(TreeNode root, int sum) {
