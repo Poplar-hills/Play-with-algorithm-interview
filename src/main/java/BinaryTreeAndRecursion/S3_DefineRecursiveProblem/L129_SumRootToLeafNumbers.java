@@ -17,28 +17,51 @@ import Utils.Helpers.TreeNode;
 
 public class L129_SumRootToLeafNumbers {
     /*
-     * 解法1：Recursion (DFS)
+     * 解法1：DFS (Recursion)
+     * - 思路：从根节点开始从上到下逐层累积当前 path 的 pathNum，当到达叶子节点时加到外部的 sum 上去。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    private static int sum;
+
+    public static int sumNumbers(TreeNode root) {
+        sum = 0;
+        helper(root, root.val);
+        return sum;
+    }
+
+    private static void helper(TreeNode root, int pathNum) {
+        if (root == null) return;
+        if (root.left == null && root.right == null) {
+            sum += pathNum;
+            return;
+        }
+        helper(root.left, pathNum * 10 + root.left.val);
+        helper(root.right, pathNum * 10 + root.right.val);
+    }
+
+    /*
+     * 解法2：Recursion (DFS)
      * - 思路：从根节点开始逐层累积当前 path 的 pathNum，直到叶子节点开始逐层返回，具体返回的是左、右子树的所有 pathNum 之和。
      *   根据该思路，需将每层累积的 pathNum 当做参数传递给下层递归函数。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
-    public static int sumNumbers(TreeNode root) {
-        return helper(root, 0);
+    public static int sumNumbers2(TreeNode root) {
+        return helper2(root, 0);
     }
 
-    private static int helper(TreeNode root, int pathNum) {  // 返回以 root 为根的二叉树的所有 pathNum 之和
+    private static int helper2(TreeNode root, int pathNum) {  // 返回以 root 为根的二叉树的所有 pathNum 之和
         if (root == null) return 0;
         pathNum = pathNum * 10 + root.val;
         if (root.left == null && root.right == null) return pathNum;
-        return helper(root.left, pathNum) + helper(root.right, pathNum);
+        return helper2(root.left, pathNum) + helper2(root.right, pathNum);
     }
 
     /*
-     * 解法2：Iteration (DFS) (解法1的非递归版)
+     * 解法3：Iteration (DFS) (解法2的非递归版)
      * - 同理：只需将 Stack 替换为 Queue 就得到了 BFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int sumNumbers2(TreeNode root) {
+    public static int sumNumbers3(TreeNode root) {
         if (root == null) return 0;
         int sum = 0;
         Stack<Pair<TreeNode, Integer>> stack = new Stack<>();  // 存储 <节点, 当前节点的 pathSum>
