@@ -75,27 +75,28 @@ public class L129_SumRootToLeafNumbers {
     }
 
     /*
-     * 解法3：Iteration (DFS) (解法2的非递归版)
-     * - 同理：只需将 Stack 替换为 Queue 就得到了 BFS 解法。
+     * 解法3：DFS (Iteration)
+     * - 思路：与解法1、2一致，都是将当前路径的 pathNum 带在每个节点上，一层层往下传递。
+     * - 实现：只需将 Stack 替换为 Queue 就得到了 BFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int sumNumbers3(TreeNode root) {
         if (root == null) return 0;
         int sum = 0;
         Stack<Pair<TreeNode, Integer>> stack = new Stack<>();  // 存储 <节点, 当前节点的 pathSum>
-        stack.push(new Pair<>(root, root.val));
+        stack.push(new Pair<>(root, 0));
 
         while (!stack.isEmpty()) {
             Pair<TreeNode, Integer> pair = stack.pop();
             TreeNode node = pair.getKey();
-            int pathNum = pair.getValue();
+            int pathNum = pair.getValue() * 10 + node.val;
 
             if (node.left == null && node.right == null)
                 sum += pathNum;
             if (node.left != null)
-                stack.push(new Pair<>(node.left, pathNum * 10 + node.left.val));
+                stack.push(new Pair<>(node.left, pathNum));
             if (node.right != null)
-                stack.push(new Pair<>(node.right, pathNum * 10 + node.right.val));
+                stack.push(new Pair<>(node.right, pathNum));
         }
 
         return sum;
@@ -103,7 +104,7 @@ public class L129_SumRootToLeafNumbers {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
-        log(sumNumbers(t1));
+        log(sumNumbers3(t1));
         /*
          * expects 25. (12 + 13)
          *        1
@@ -112,7 +113,7 @@ public class L129_SumRootToLeafNumbers {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{4, 9, 0, 5, 1});
-        log(sumNumbers(t2));
+        log(sumNumbers3(t2));
         /*
          * expects 1026. (495 + 491 + 40)
          *        4
