@@ -26,7 +26,7 @@ import Utils.Helpers.TreeNode;
 
 public class L113_PathSumII {
     /*
-     * 解法1：DFS (Recursion)
+     * 解法1：DFS (Pre-order traversal)
      * - 思路：从根节点开始递归生成路径 path，若到达叶子节点且剩余 sum 为0，则说明该 path 是符合要求的路径，添加到结果集 res 中。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -49,7 +49,7 @@ public class L113_PathSumII {
 	}
 
     /*
-     * 解法2：DFS + Backtracking (解法2的简化版)
+     * 解法2：DFS + Backtracking (Pre-order traversal) (解法1的性能优化版)
      * - 思路：与解法1一致。
      * - 实现：与解法1不同之处在于该解法：
      *   1. 使用回溯技巧使得 path 从始至终都是复用的 —— ∵ 递归会先往左下递归到底再返回上层递归右子树 ∴ 若要继续复用 path 对象，
@@ -78,12 +78,13 @@ public class L113_PathSumII {
     }
 
     /*
-     * 解法3：DFS + Concat path (Recursion)
+     * 解法3：DFS + Concat path (Post-order traversal)
      * - 思路：
      *   1. 不同于解法1、2中的递归是从上到下的，该解法采用从下到上的递归思路，即先递归到底，找到符合要求的 path，然后在回程路上
-     *      开始自底向上拼接 path（与 L257_BinaryTreePaths 解法1的思路一致）；
+     *      开始自底向上拼接 path（∴ 是 Post-order traversal，与 L257_BinaryTreePaths 解法1一致）；
      *   2. ∵ 递归思路不同 ∴ 递归函数的语义也与不同：f(n, sum) 返回以 n 为根的二叉树上节点值之和为 sum 的 root-to-leaf paths。
      *   👉 采用从上到下、从下到上两种递归思路的题目还有 L111_MinimumDepthOfBinaryTree。
+     * - 💎 总结：对比解法2、3可加深对前序、后续遍历的理解。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<List<Integer>> pathSum3(TreeNode root, int sum) {

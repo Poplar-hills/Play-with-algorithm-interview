@@ -20,7 +20,7 @@ import Utils.Helpers.TreeNode;
 
 public class L257_BinaryTreePaths {
     /*
-     * 解法1：DFS + Backtracking (Recursion)
+     * 解法1：DFS + Backtracking (Pre-order Traversal)
      * - 思路：通过 DFS 将每条路径上的节点收集到 path 列表中，当到达叶子节点时，将 path 转为 String 放入结果集。
      * - 实现：∵ 要在不同路径上通过回溯复用 path 对象 ∴ 需要在每次返回上层递归之前将 path 恢复原状。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
@@ -34,7 +34,7 @@ public class L257_BinaryTreePaths {
 
     private static void helper(TreeNode root, List<TreeNode> path, List<String> res) {
         if (root == null) return;
-        path.add(root);                                 // 访问节点
+        path.add(root);                                 // 访问节点（pre-order traversal）
 
         if (root.left == null && root.right == null) {  // 找到一条 root-to-leaf path 后将其转为 String
             res.add(toPathString(path));
@@ -57,7 +57,7 @@ public class L257_BinaryTreePaths {
     }
 
     /*
-     * 解法2：DFS (Recursion)
+     * 解法2：DFS (Pre-order Traversal)
      * - 思路：与解法1一致。
      * - 实现：在解法1的基础上进行化简，直接使用 "" 代替解法1中的 path 列表。∵ String 是 immutable 的 ∴ 直接拼接字符串时
      *   不存在解法1中 path 是否能在不同分支路径上复用的问题 ∴ 也就不需要每次 return 之前的 remove 操作。
@@ -83,24 +83,29 @@ public class L257_BinaryTreePaths {
 	}
 
     /*
-     * 解法3：Recursion + Post-order Traversal
-     * - 思路：不同于解法2，该解法采用后续遍历的思路，即先递归到底，在往上回溯的过程中拼接 path 字符串，并将含有 path 字符串的
-     *   结果集返回上层。∴ 递归函数可定义为 f(n)：返回以 n 为根的二叉树的全部 root-to-leaf paths。
-     * - 💎 总结：对比解法2、3的思路可领悟前序、后续遍历的精髓。
+     * 解法3：DFS + Concat path (Post-order traversal)
+     * - 思路：类似 L113_PathSumII 解法3，采用后续遍历 —— 即先递归到底，在回程的路上拼接字符串，并返回上层：
+     *               1          [["1->2->4"],["1->3"]]
+     *             /   \               ↗       ↖
+     *            2     3   -->   ["2->4"]     ["3"]
+     *             \                   ↖
+     *              4                  ["4"]
+     *   ∴ 递归函数可定义为：f(n) 返回以 n 为根的二叉树的全部 root-to-leaf paths。
+     * - 💎 总结：对比解法2、3可加深对前序、后续遍历的理解。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<String> binaryTreePaths3(TreeNode root) {
         if (root == null) return new ArrayList<>();
 
-        List<String> res = binaryTreePaths(root.left);  // 先递归到底，并将左右子树的递归结果合并到结果集 res 中
-        res.addAll(binaryTreePaths(root.right));
+        List<String> paths = binaryTreePaths(root.left);  // 先递归到底，并将左右子树的递归结果合并到结果集 res 中
+        paths.addAll(binaryTreePaths(root.right));
 
-        if (res.size() == 0) {                    // 若是叶子节点，则只往 res 中添加节点值字符串即可
-            res.add(Integer.toString(root.val));
-            return res;
+        if (paths.size() == 0) {                  // 若是叶子节点，则只需往 res 中添加节点值即可
+            paths.add(root.val + "");
+            return paths;
         }
 
-        return res.stream()
+        return paths.stream()
             .map(path -> root.val + "->" + path)  // 若不是叶子节点，则要给 res 中的每个 path 头部都拼接当前节点值
             .collect(Collectors.toList());
     }
@@ -186,7 +191,7 @@ public class L257_BinaryTreePaths {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 4});
-        log(binaryTreePaths(t1));
+        log(binaryTreePaths3(t1));
         /*
          * expects ["1->2->4", "1->3"].
          *       1
@@ -197,7 +202,7 @@ public class L257_BinaryTreePaths {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 4, 5, 6, null, null, 7});
-        log(binaryTreePaths(t2));
+        log(binaryTreePaths3(t2));
         /*
          * expects ["1->2->4", "1->3->5->7", "1->3->6"].
          *        1
