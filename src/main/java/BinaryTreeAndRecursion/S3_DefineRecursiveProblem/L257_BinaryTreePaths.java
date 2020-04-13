@@ -61,6 +61,9 @@ public class L257_BinaryTreePaths {
      * - 思路：与解法1一致。
      * - 实现：在解法1的基础上进行化简，直接使用 "" 代替解法1中的 path 列表。∵ String 是 immutable 的 ∴ 直接拼接字符串时
      *   不存在解法1中 path 是否能在不同分支路径上复用的问题 ∴ 也就不需要每次 return 之前的 remove 操作。
+     * - 💎 语言特性：Java 中的 String 对象之所以是 immutable 的因为：
+     *   1. String 类内部成员变量全部使用 final 修饰 ∴ 无法修改而只能通过构造函数来创建新对象；
+     *   2. String 类中可访问内部成员变量的方法（如 toCharArray()），返回时一律构造新的 String 对象或 byte[] 或 char[]。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<String> binaryTreePaths2(TreeNode root) {
