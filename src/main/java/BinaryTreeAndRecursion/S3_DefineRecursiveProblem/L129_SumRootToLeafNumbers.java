@@ -67,7 +67,7 @@ public class L129_SumRootToLeafNumbers {
         return helper2(root, 0);
     }
 
-    private static int helper2(TreeNode root, int pathNum) {  // 返回以 root 为根的二叉树的所有 pathNum 之和
+    private static int helper2(TreeNode root, int pathNum) {  // 返回以 pathNum 为基数、以 root 为根的二叉树的 root-to-leaf numbers 之和
         if (root == null) return 0;
         pathNum = pathNum * 10 + root.val;
         if (root.left == null && root.right == null) return pathNum;
