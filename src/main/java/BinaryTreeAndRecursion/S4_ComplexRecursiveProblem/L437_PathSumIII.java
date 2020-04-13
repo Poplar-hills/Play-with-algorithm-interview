@@ -83,22 +83,24 @@ public class L437_PathSumIII {
         log(pathSum2(t1, 8));
         /*
          * expects 4. (5->3, 5->2->1, -3->11, 10->5->3->-10)
-         *         10
-         *        /  \
-         *       5   -3
-         *      / \    \
-         *     3   2   11
-         *    / \   \
-         *   3 -10   1
+         *            10
+         *           /  \
+         *          5   -3
+         *         / \    \
+         *        3   2   11
+         *       / \   \
+         *      3 -10   1
          * */
 
-        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{10, 8, -2});
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{10, 8, -2, -10});
         log(pathSum2(t2, 8));
         /*
-         * expects 2. (8, 10->-2)
+         * expects 3. (8, 10->8->-10, 10->-2)
          *         10
          *        /  \
          *       8   -2
+         *      /
+         *    -10
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1});
