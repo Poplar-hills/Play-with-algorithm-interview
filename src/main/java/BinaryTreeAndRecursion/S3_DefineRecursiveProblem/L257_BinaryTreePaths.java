@@ -57,22 +57,24 @@ public class L257_BinaryTreePaths {
     }
 
     /*
-     * 解法2：Recursion + Pre-order Traversal
-     * - 思路：使用前序遍历的思路，在从根节点往下遍历的过程中拼接 path 字符串，并往下传递，在抵达叶子节点后放入结果集中。
-     *   ∴ 递归函数可定义为 f(n, path, res)：在以 n 为根的二叉树中对每个分支生成 path 字符串并放入结果集 res 中。
+     * 解法2：DFS (Recursion)
+     * - 思路：与解法1一致。
+     * - 实现：在解法1的基础上进行化简，直接使用 "" 代替解法1中的 path 列表。∵ String 是 immutable 的 ∴ 直接拼接字符串时
+     *   不存在解法1中 path 是否能在不同分支路径上复用的问题 ∴ 也就不需要每次 return 之前的 remove 操作。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<String> binaryTreePaths2(TreeNode root) {
         List<String> res = new ArrayList<>();
-        if (root != null) helper2(root, "", res);
+        if (root != null)
+            helper2(root, "", res);
         return res;
     }
 
     private static void helper2(TreeNode root, String path, List<String> res) {
         if (root == null) return;
-        path += root.val;  // += 操作符对 String 同样有效
+        path += root.val;          // += 操作符对 String 同样有效
 
-        if (root.left == null && root.right == null) {  // 若当前 path 已经到底
+        if (root.left == null && root.right == null) {
             res.add(path);
             return;
         }
