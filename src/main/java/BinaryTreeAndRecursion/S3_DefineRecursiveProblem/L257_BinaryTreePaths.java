@@ -111,8 +111,8 @@ public class L257_BinaryTreePaths {
     }
 
 	/*
-     * 解法4：Iteration (BFS)
-     * - 思路：与 L70_ClimbingStairs 解法4一致。
+     * 解法4：BFS
+     * - 思路：与 L113_PathSumII 解法4、L70_ClimbingStairs 解法4一致。
      * - 同理：只需将 Queue 替换为 Stack 就得到了 DFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -130,7 +130,7 @@ public class L257_BinaryTreePaths {
             TreeNode lastNode = path.get(path.size() - 1);  // 得到节点列表中的最后一个节点
 
             if (lastNode.left == null && lastNode.right == null) {  // 若是叶子节点则将该节点列表转化为路径字符串并放入结果集
-                res.add(convertToString(path));
+                res.add(toPathString(path));
                 continue;
             }
 
@@ -147,19 +147,10 @@ public class L257_BinaryTreePaths {
         return res;
     }
 
-    private static String convertToString(List<TreeNode> path) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < path.size(); i++) {
-            builder.append(Integer.toString(path.get(i).val));
-            if (i != path.size() - 1)
-                builder.append("->");
-        }
-        return builder.toString();
-    }
-
 	/*
-     * 解法5：Iteration (BFS) (解法3的简化版)
-     * - 思路：观察解法4可知，对 queue 中的节点列表我们唯一关心的只有最后一个节点，存储其他节点只是为了最后能转化为路径字符串。
+     * 解法5：BFS (解法4的简化版)
+     * - 思路：与解法4一致。
+     * - 实现：观察解法4可知，对 queue 中的节点列表我们唯一关心的只有最后一个节点，存储其他节点只是为了最后能转化为路径字符串。
      *   基于此可以进行优化 —— 在 queue 中只存储当前路径上的最后一个节点，以及当前路径的路径字符串即可。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -173,7 +164,7 @@ public class L257_BinaryTreePaths {
         while (!q.isEmpty()) {
             Pair<TreeNode, String> pair = q.poll();
             TreeNode node = pair.getKey();
-            String pathStr = pair.getValue() + node.val;  // 拼接路径字符串
+            String pathStr = pair.getValue() + node.val;       // 访问节点，拼接路径字符串
 
             if (node.left == null && node.right == null) {
                 res.add(pathStr);
