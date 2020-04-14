@@ -56,12 +56,13 @@ public class L437_PathSumIII {
     /*
      * 解法2：DFS + Prefix sum + Backtracking
      * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，即二叉树上的区间求和问题 ∴ 同样可采用 Prefix Sum 技巧来
-     *   优化性能，例如 test case 1 中 pathSum(5->3->3) = pathSum(10->5->3->3) - 10。基于这个思路，可通过递归遍历所有
-     *   节点，为每个节点累积 prefix sum（即根节点到当前节点的路径和），并用 map 检查是否有（以及有几个）其他的子路径和能使得
-     *   prefix sum - 子路径和 = target sum，记录这样的子路径和的个数。
-     * - 更多解释 SEE：https://leetcode.com/problems/path-sum-iii/discuss/91878/17-ms-O(n)-java-Prefix-sum-method
-     *   中 kekezi 的评论。
-     * - 👉 总结：该题与 L560_SubarraySumEqualsK 都是 Prefix Sum 和 Two Sum 思想的经典应用。
+     *   优化性能，例如 test case 1 中 pathSum(3->3) = pathSum(10->5->3->3) - pathSum(10->5)。
+     * - 实现：将 L560 解法4的实现搬到二叉树上：
+     *   1. 使用 DFS 遍历每个节点，为每个节点累积 preSum（根节点到当前节点的路径和）；
+     *   2. 使用 map 检查之前遍历过的子路径中，是否有/有几个子路径的路径和能使得 preSum - 子路径的路径和 = target sum；
+     *   3. 将该 preSum 纳入到之前遍历过的子路径中（放到 map 里）；
+     *   4. 在回溯到另一个分支上之前，需要先让 map 恢复原状。
+     * - 👉 总结：该题与 L560 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int pathSum2(TreeNode root, int sum) {
