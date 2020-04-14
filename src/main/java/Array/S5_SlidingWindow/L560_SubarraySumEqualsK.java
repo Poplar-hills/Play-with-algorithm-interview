@@ -11,7 +11,7 @@ import java.util.Map;
  * - Given an array of integers and an integer k, you need to find the total number of continuous subarrays
  *   whose sum equals to k.
  *
- * - 这道题非常经典，5个解法，从超时 -> O(n^3) -> O(n^2) -> O(n) -> 代码优化，层层递进，且涉及多种解决经典问题的技巧。
+ * - 👉 此题非常经典，5个解法，从超时 -> O(n^3) -> O(n^2) -> O(n) -> 代码优化，层层递进，且涉及多种解决经典问题的技巧。
  *
  * - 分析：若该题中的数组元素都是正数，则可以通过滑动窗口轻易解决（类似 L209_MinimumSizeSubarraySum 解法3）。但由于元素既可以
  *   是正也可以是负（如 test case 4、5）∴ 当窗口中元素之和 > k 时无法判断是应该移动左界还是移动右界 ∴ 无法使用单纯的滑动窗口。
@@ -21,17 +21,17 @@ public class L560_SubarraySumEqualsK {
     /*
      * 超时解：Brute Force
      * - 思路：找到 nums 中的所有 subarray，为每个 subarray 求元素之和，并与 k 比较。遍历过程如下：
-     *   [4, 2, -1, 5]
-     *    -
-     *    ----
-     *    --------
-     *    -----------
-     *       -
-     *       -----
-     *       --------
-     *          --
-     *          -----
-     *              -
+     *   nums=[4, 2, -1, 5], k=4
+     *         -              √
+     *         ----
+     *         --------
+     *         -----------
+     *            -
+     *            -----
+     *            --------
+     *               --
+     *               -----    √
+     *                   -
      * - 实现：1. 找到一个数组的所有 subarray：双指针遍历（l ∈ [0,n), r ∈ [l,n)）；
      *        2. 求一个 subarray 的元素之和：单指针遍历（i ∈ [l, r]）。
      *        ∴ 整个过程使用三个指针、三重循环实现。
@@ -76,7 +76,7 @@ public class L560_SubarraySumEqualsK {
      * - 思路：类似 L209_MinimumSizeSubarraySum。解法1中通过双指针遍历所有 subarray 的过程若用区间和的方式来表达：
      *   nums[l..r] 之和 = nums[0..r] 之和 - nums[0..l) 之和。即通过区间和相减的方式即可得到所有的 subarray 的元素之和
      *   （即 nums[l..r] 之和）。而要快速得到任意 nums[l..r] 之和，则要使用 Prefix sums，用 sums[i] 来表示 nums[0..i] 之和。
-     * - 💎 经验：Prefix Sum 本质是记录每个位置的累加和（cummulative sums），是求解“数组区间求和”（或叫“子串求和”）问题时的常用技巧。
+     * - 💎 经验：Prefix Sum 本质是记录每个位置的累加和（cummulative sums），是求解“数组区间求和”（或叫“子串求和”）问题的常用技巧。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int subarraySum2(int[] nums, int k) {
@@ -100,13 +100,13 @@ public class L560_SubarraySumEqualsK {
      * - 思路：解法2通过双重循遍历所有的 subarray 来检查是否存在 sums[r] - sums[l] + nums[l] == k，该过程是个典型的
      *   Two Sum 问题 ∴ 可以采用 L1_TwoSum 解法4的思路将时间复杂度再降低一个次方。
      * - 实现：
-     *     1. 一边累积 sum（即 nums[0..i] 之和）；
-     *     2. 一边检查其 complement（sum - k）是否存在于 Map 中（注意不能是 k - sum）；
-     *     3. 一边将 sum 在 Map 中插入或更新。
+     *     1. 一边累积 sum[i]（即 nums[0..i] 之和）；
+     *     2. 一边检查 sum[i] 的 complement（即 sum[i] - k）是否存在于 Map 中（注意不能是 k - sum[i]）；
+     *     3. 一边将 sum[i] 在 Map 中插入或更新。
      * - 注意：代码中 count += 的必须是 sum-k 的频率，而不能是 count++。举例说明：在👆最后一行中，complimenet=5 在 Map
      *   中值为2的意义是“能与当前 prefix sum 相减等于 k（即 10 - sums[0..j-1] == 5）的 subarray 一共有2个”（sum[0..2]
      *   和 sum[0..4]）∴ 要把这个个数加到 count 上。
-     * - 👉总结：该题与 L437_PathSumIII 都是 Prefix Sum 和 Two Sum 思想的经典应用。
+     * - 👉 总结：该题与 L437_PathSumIII 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum3(int[] nums, int k) {
@@ -115,8 +115,8 @@ public class L560_SubarraySumEqualsK {
         map.put(0, 1);                                // 需要先插入 {0:1} 用于 sum == k 的情况（例如👆sum=10 的情况）
 
         for (int n : nums) {
-            sum += n;                          // 累积 prefix sum
-            int complement = sum - k;          // 得到其 complement（sum - complement == k）
+            sum += n;                                 // 累积 prefix sum
+            int complement = sum - k;                 // 得到其 complement（sum - complement == k）
             if (map.containsKey(complement))
                 count += map.get(complement);  // 给 count 加上 complement 的频次（即能与 sum 相加 == k 的 subarray 个数）
             map.put(sum, map.getOrDefault(sum, 0) + 1);  // 插入或更新 sum 频率
@@ -130,14 +130,14 @@ public class L560_SubarraySumEqualsK {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum4(int[] nums, int k) {
-        int count = 0, preSum = 0;
+        int count = 0, sum = 0;
         Map<Integer, Integer> map = new HashMap<>();
         map.put(0, 1);
 
         for (int n : nums) {
-            preSum += n;
-            count += map.getOrDefault(preSum - k, 0);  // 💎技巧：map.containsKey + map.get = map.getOrDefault
-            map.merge(preSum, 1, Integer::sum);        // 💎技巧：相当于 map.put(sum, map.getOrDefault(sum) + 1)
+            sum += n;
+            count += map.getOrDefault(sum - k, 0);  // 技巧：map.containsKey + map.get = map.getOrDefault
+            map.merge(sum, 1, Integer::sum);        // 技巧：相当于 map.put(sum, map.getOrDefault(sum) + 1)
         }
 
         return count;

@@ -54,10 +54,10 @@ public class L437_PathSumIII {
     }
 
     /*
-     * 解法2：Recursion (DFS) + Memoization
-     * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，本质上也是区间求和问题 ∴ 可以在二叉树上采用 Prefix Sum
-     *   的思路，例如 test case 1 中 5->3 的路径和 = 10->5->3->3 的路径和 - 10 的路径和。基于这个思路，可通过递归遍历所有
-     *   节点，对每个节点累积 prefix sum（即根节点到当前节点的路径和），并用 map 检查是否有（以及有几个）其他的子路径和能使得
+     * 解法2：DFS + Prefix sum + Backtracking
+     * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，即二叉树上的区间求和问题 ∴ 同样可采用 Prefix Sum 技巧来
+     *   优化性能，例如 test case 1 中 pathSum(5->3->3) = pathSum(10->5->3->3) - 10。基于这个思路，可通过递归遍历所有
+     *   节点，为每个节点累积 prefix sum（即根节点到当前节点的路径和），并用 map 检查是否有（以及有几个）其他的子路径和能使得
      *   prefix sum - 子路径和 = target sum，记录这样的子路径和的个数。
      * - 更多解释 SEE：https://leetcode.com/problems/path-sum-iii/discuss/91878/17-ms-O(n)-java-Prefix-sum-method
      *   中 kekezi 的评论。
@@ -65,7 +65,7 @@ public class L437_PathSumIII {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int pathSum2(TreeNode root, int sum) {
-        Map<Integer, Integer> map = new HashMap<>();  // 存储 <prefixSum, frequency>
+        Map<Integer, Integer> map = new HashMap<>();  // 存储 {prefixSum: count}
         map.put(0, 1);
         return helper2(root, 0, sum, map);
     }
