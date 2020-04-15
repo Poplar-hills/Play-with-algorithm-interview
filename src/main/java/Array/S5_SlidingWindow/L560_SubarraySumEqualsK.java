@@ -118,7 +118,7 @@ public class L560_SubarraySumEqualsK {
             sum += n;                                 // 累积 prefix sum
             int complement = sum - k;                 // 得到其 complement（sum - complement == k）
             if (map.containsKey(complement))
-                count += map.get(complement);  // 给 count 加上 complement 的频次（即能与 sum 相加 == k 的 subarray 个数）
+                count += map.get(complement);         // map 中 complement 的频次即是能与 sum 相加 == k 的 subarray 的个数
             map.put(sum, map.getOrDefault(sum, 0) + 1);  // 插入或更新 sum 频率
         }
 
