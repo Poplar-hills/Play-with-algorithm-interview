@@ -91,15 +91,15 @@ public class L98_ValidateBinarySearchTree {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isValidBST3(TreeNode root) {
-        return withinBounds(root, null, null);  // ∵ 节点值可能不在整型取值范围内 ∴ 不能使用 Integer.MIN_VALUE、Integer.MAX_VALUE
+        return helper3(root, null, null);  // ∵ 节点值可能不在整型取值范围内 ∴ 不能使用 Integer.MIN_VALUE、Integer.MAX_VALUE
     }
 
-    private static boolean withinBounds(TreeNode root, Integer lower, Integer upper) {
+    private static boolean helper3(TreeNode root, Integer lowerBound, Integer upperBound) {
         if (root == null) return true;
-        if (lower != null && root.val <= lower) return false;
-        if (upper != null && root.val >= upper) return false;
-        return withinBounds(root.left, lower, root.val)    // 父节点的下界也是左子节点的下界，父节点本身是左子节点的上界
-            && withinBounds(root.right, root.val, upper);  // 父节点的上界也是右子节点的上界，父节点本身是右子节点的下界
+        if (lowerBound != null && root.val <= lowerBound) return false;
+        if (upperBound != null && root.val >= upperBound) return false;
+        return helper3(root.left, lowerBound, root.val)
+            && helper3(root.right, root.val, upperBound);
     }
 
     /*
