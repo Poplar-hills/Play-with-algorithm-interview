@@ -172,7 +172,7 @@ public class L98_ValidateBinarySearchTree {
      * */
     private static Integer prev;
 
-    public static boolean isValidBST0(TreeNode root) {
+    public static boolean isValidBST6(TreeNode root) {
         prev = null;           // 为了防止 test case 之间冲突
         return helper6(root);
     }
@@ -188,7 +188,7 @@ public class L98_ValidateBinarySearchTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{2, 1, 3});
-        log(isValidBST0(t1));
+        log(isValidBST6(t1));
         /*
          * expects true.
          *       2
@@ -197,7 +197,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 5, 0, 2, 4, 6});
-        log(isValidBST0(t2));
+        log(isValidBST6(t2));
         /*
          * expects true.
          *         3
@@ -208,7 +208,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, 4, null, null, 3, 6});
-        log(isValidBST0(t3));
+        log(isValidBST6(t3));
         /*
          * expects false.
          *       5
@@ -219,7 +219,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, 1});
-        log(isValidBST0(t4));
+        log(isValidBST6(t4));
         /*
          * expects false. (等值节点的情况)
          *       1
@@ -228,7 +228,7 @@ public class L98_ValidateBinarySearchTree {
          * */
 
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{10, 5, 15, null, null, 6, 20});
-        log(isValidBST0(t5));
+        log(isValidBST6(t5));
         /*
          * expects false. (跨层级的情况：6 < 10)
          *      10
