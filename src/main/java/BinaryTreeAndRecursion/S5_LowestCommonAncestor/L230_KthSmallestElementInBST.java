@@ -90,10 +90,12 @@ public class L230_KthSmallestElementInBST {
         throw new IllegalArgumentException("There's no kth node in this BST.");
     }
 
-
-
-
-    public static int kthSmallest0(TreeNode root, int k) {
+    /*
+     * 解法4：BFS + Max heap
+     * - 思路：
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int kthSmallest4(TreeNode root, int k) {
         PriorityQueue<TreeNode> pq = new PriorityQueue<>((a, b) -> b.val - a.val);  // max heap
         pq.offer(root);
         Queue<TreeNode> q = new LinkedList<>();
@@ -117,7 +119,7 @@ public class L230_KthSmallestElementInBST {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 4, null, 2});
-        log(kthSmallest0(t1, 1));
+        log(kthSmallest3(t1, 1));
         /*
          * expects 1.
          *       3
@@ -128,7 +130,7 @@ public class L230_KthSmallestElementInBST {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, null, 1});
-        log(kthSmallest0(t2, 3));
+        log(kthSmallest3(t2, 3));
         /*
          * expects 3.
          *          5
@@ -141,7 +143,7 @@ public class L230_KthSmallestElementInBST {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1});
-        log(kthSmallest0(t3, 1));
+        log(kthSmallest3(t3, 1));
         /*
          * expects 1.
          * */

@@ -89,7 +89,7 @@ public class L347_TopKFrequentElements {
     }
 
     /*
-     * 解法4：Map + PriorityQueue (最小堆)
+     * 解法4：Map + Min heap
      * - 思路：The trick of this problem is that it does not need to be fully sorted. 与前三种解法不同，该解法不
      *   进行全排序，而是充分利用最小堆的特性 —— 让频率小的 key 不断被 sift up 到堆顶，最后被移除出去，从而最后堆中只剩下
      *   频率最大的 k 个 key。

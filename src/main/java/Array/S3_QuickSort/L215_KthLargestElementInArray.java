@@ -19,7 +19,7 @@ import static Utils.Helpers.swap;
  *      上，此时 nums[k-1] 即是第 k 大元素。
  * */
 
-public class L215_LargestElementInArray {
+public class L215_KthLargestElementInArray {
     /*
      * 解法1：Heap sort（堆排序）
      * - 思路：基于上面分析中的思路1，先对数组进行整体排序，再取 k 个元素，该解法中选择堆排序作为具体的排序算法。
