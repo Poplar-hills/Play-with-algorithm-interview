@@ -4,8 +4,12 @@ import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.log;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 import Utils.Helpers.TreeNode;
 
@@ -23,21 +27,21 @@ import Utils.Helpers.TreeNode;
 
 public class L230_KthSmallestElementInBST {
     /*
-     * 解法1：Recursion（DFS, In-order Traversal）
+     * 解法1：DFS（In-order traversal）
      * - 思路：∵ BST 的中序遍历是从小到大遍历节点的 ∴ 只要返回中序遍历结果列表中的第 k 个元素即可。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int kthSmallest(TreeNode root, int k) {
-        List<Integer> arr = new ArrayList<>();
-        inorder(root, arr);
-        return arr.get(k - 1);
+        List<Integer> list = new ArrayList<>();
+        inorder(root, list);
+        return list.get(k - 1);
     }
 
-    private static void inorder(TreeNode node, List<Integer> arr) {
+    private static void inorder(TreeNode node, List<Integer> list) {
         if (node == null) return;
-        inorder(node.left, arr);
-        arr.add(node.val);
-        inorder(node.right, arr);
+        inorder(node.left, list);
+        list.add(node.val);
+        inorder(node.right, list);
     }
 
     /*
@@ -86,9 +90,34 @@ public class L230_KthSmallestElementInBST {
         throw new IllegalArgumentException("There's no kth node in this BST.");
     }
 
+
+
+
+    public static int kthSmallest0(TreeNode root, int k) {
+        PriorityQueue<TreeNode> pq = new PriorityQueue<>((a, b) -> b.val - a.val);  // max heap
+        pq.offer(root);
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+
+        while (!q.isEmpty()) {
+            TreeNode node = q.poll();
+
+            Consumer<TreeNode> fn = n -> {
+                q.offer(n);
+                pq.offer(n);
+                if (pq.size() == k + 1) pq.poll();
+            };
+
+            if (node.left != null) fn.accept(node.left);
+            if (node.right != null) fn.accept(node.right);
+        }
+
+        return pq.poll().val;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 4, null, 2});
-        log(kthSmallest2(t1, 1));
+        log(kthSmallest0(t1, 1));
         /*
          * expects 1.
          *       3
@@ -99,7 +128,7 @@ public class L230_KthSmallestElementInBST {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, null, 1});
-        log(kthSmallest2(t2, 3));
+        log(kthSmallest0(t2, 3));
         /*
          * expects 3.
          *          5
@@ -109,6 +138,12 @@ public class L230_KthSmallestElementInBST {
          *      2   4
          *     /
          *    1
+         * */
+
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1});
+        log(kthSmallest0(t3, 1));
+        /*
+         * expects 1.
          * */
     }
 }
