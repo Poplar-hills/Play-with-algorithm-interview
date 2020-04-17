@@ -20,9 +20,9 @@ public class L108_ConvertSortedArrayToBST {
      * 解法1：Recursion + 二分查找
      * - 思路：∵ BST 中的节点天生就是以二分的形式排布的 ∴ 从有序数组建立 BST 的过程实际上就是对数组不断进行二分查找的过程：
      *       [-6, -4, -2, 0, 1, 3, 5]
-     *                    ↑               - 先找到数组中央元素 mid，作为根节点
-     *             ↑            ↑         - 再从分别从 [0..mid)、(mid..n] 中找到根节点的左、右子节点
-     *         ↑       ↑     ↑     ↑      - 以此类推
+     *                    ⌾               - 先找到数组中央元素 mid，作为根节点
+     *             ⌾            ⌾         - 再从分别从 [0..mid)、(mid..n] 中找到根节点的左、右子节点
+     *         ⌾       ⌾     ⌾     ⌾      - 以此类推
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
      * */
     public static TreeNode sortedArrayToBST(int[] nums) {
@@ -31,7 +31,7 @@ public class L108_ConvertSortedArrayToBST {
     }
 
     private static TreeNode helper(int[] nums, int l, int r) {
-        if (l > r) return null;
+        if (l > r) return null;     // l == r 的情况下面已经涵盖了 ∴ 这里只讨论 l > r 的情况即可
         int mid = (r - l) / 2 + l;
         TreeNode node = new TreeNode(nums[mid]);
         node.left = helper(nums, l, mid - 1);
@@ -51,7 +51,7 @@ public class L108_ConvertSortedArrayToBST {
     private static class NodeCell {
         TreeNode node;
         int lower, upper;
-        
+
         public NodeCell(TreeNode node, int lower, int upper) {
             this.node = node;
             this.lower = lower;
@@ -98,7 +98,7 @@ public class L108_ConvertSortedArrayToBST {
          *                                             0
          * */
 
-        TreeNode t2 = sortedArrayToBST2(new int[]{-10, -3, 0, 5, 9});
+        TreeNode t2 = sortedArrayToBST(new int[]{-10, -3, 0, 5, 9});
         printBinaryTreeBreadthFirst(t2);
         /*
          * expects [0,-10,5,null,-3,null,9] or [0,-3,5,-10,null,null,9] etc. (there are more valid solutions).
