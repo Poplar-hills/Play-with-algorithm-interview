@@ -27,7 +27,7 @@ import Utils.Helpers.TreeNode;
 
 public class L230_KthSmallestElementInBST {
     /*
-     * 解法1：DFS（In-order traversal）
+     * 解法1：DFS (In-order traversal)
      * - 思路：∵ BST 的中序遍历具有从小到大有序的性质 ∴ 只要返回中序遍历结果列表中的第 k 个元素即可。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -45,15 +45,17 @@ public class L230_KthSmallestElementInBST {
     }
 
     /*
-     * 解法2：Recursion（解法1的性能优化版）
-     * - 思路：解法1会先中序遍历所有节点，最后再取第 k 大的，而该解法则是在遍历到第 k 大的节点时就返回，不再继续遍历 ∴ 性能优于解法1。
-     * - 实现：count 要实现为类成员变量。若实现为用 Integer 包装 count，并在函数中传递并不能达到传引用的效果 ∵ Integer 源码
-     *   中 value 是 final 的，即一旦 Integer 对象创建之后其值就不能被修改 ∴ count++ 时只会创建一个新对象。
+     * 解法2：DFS (In-order traversal) (解法1的性能优化版)
+     * - 思路：与解法1一致。
+     * - 实现：
+     *   1. 解法1中序遍历所有节点，而该解法则是在遍历到第 k 大的节点时就返回，不再继续遍历 ∴ 性能优于解法1；
+     *   2. count 要实现为类成员变量。若实现为用 Integer 包装 count，并在函数中传递并不能达到传引用的效果 ∵ Integer 源码
+     *      中 value 是 final 的，即一旦 Integer 对象创建之后其值就不能被修改 ∴ count++ 时只会创建一个新对象。
      * - 时间复杂度 O(h+k)，其中 h 是树高 ∵ 中序遍历在访问到第一个节点之前要先走到最左边的节点，该过程最大是 h 的时间，再加上
      *   访问找到第 k 大节点 ∴ 整体是 O(h+k)，对于平衡树是 O(logn+k)，对于完全不平衡树则是 O(n+k)。
      * - 空间复杂度 O(h)。
      * */
-    private static int count;  // 类成员变量
+    private static int count;
 
     public static int kthSmallest2(TreeNode root, int k) {
         count = 0;
@@ -63,13 +65,13 @@ public class L230_KthSmallestElementInBST {
     private static Integer inorder2(TreeNode node, int k) {
         if (node == null) return null;
         Integer res = inorder2(node.left, k);
-        if (res != null) return res;        // 若在左子树中找到了结果，则直接返回（不再往下执行）
-        if (++count == k) return node.val;  // 若在该节点就是第 k 大，则返回它
-        return inorder2(node.right, k);     // 若左子树中没有找到，同时也不是该节点，则一定在右子树中
+        if (res != null) return res;           // 若在左子树中找到了结果，则直接返回（不再往下执行）
+        if (++count == k) return node.val;     // 若在该节点就是第 k 大的元素，则返回它
+        return inorder2(node.right, k);        // 若左子树中没有找到，同时也不是该节点，则一定在右子树中
     }
 
     /*
-     * 解法3：Iteration (DFS, In-order Traversal) (解法2的非递归实现)
+     * 解法3：DFS (In-order traversal, Iteration) (解法2的非递归实现)
      * - 时间复杂度 O(h+k)，解释同解法2；
      * - 空间复杂度 O(h+k) ∵ stack 中最多有 h+k 个节点。
      * */
@@ -83,7 +85,7 @@ public class L230_KthSmallestElementInBST {
                 curr = curr.left;
             }
             TreeNode node = stack.pop();
-            if (--k == 0) return node.val;
+            if (--k == 0) return node.val;  // 访问节点
             curr = node.right;
         }
 
