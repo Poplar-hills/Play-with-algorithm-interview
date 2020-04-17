@@ -17,7 +17,7 @@ import Utils.Helpers.TreeNode;
 
 public class L108_ConvertSortedArrayToBST {
     /*
-     * 解法1：Recursion + 二分查找
+     * 解法1：DFS + Binary search（Recursion）
      * - 思路：∵ BST 中的节点天生就是以二分的形式排布的 ∴ 从有序数组建立 BST 的过程实际上就是对数组不断进行二分查找的过程：
      *       [-6, -4, -2, 0, 1, 3, 5]
      *                    ⌾               - 先找到数组中央元素 mid，作为根节点
@@ -40,22 +40,24 @@ public class L108_ConvertSortedArrayToBST {
     }
 
     /*
-     * 解法2：Iteration（解法1的非递归版）
-     * - 思路：1. 创建 NodeCell 类来封装 <节点, 节点值下界, 节点值上界>，∴ 一个 NodeCell 代表了一个节点以及其取值范围；
-     *        2. 前序遍历待生成的 BST 上的每一个节点位置：
-     *           a). 出栈该位置上的 NodeCell，并根据其中取值范围计算出节点值，形成完整的节点。
-     *           b). 通过对 nums 二分来获得该节点的子节点的取值范围，生成 NodeCell 并入栈；
-     * - 实现：该过程使用 DFS（Stack）或 BFS（Queue）是一样的。
+     * 解法2：DFS + Binary search（解法1的迭代版）
+     * - 思路：与解法1一致。
+     * - 实现：
+     *   1. 创建 NodeCell 类来封装 <节点, 节点值下界, 节点值上界>，∴ 一个 NodeCell 代表了一个节点以及其取值范围；
+     *   2. 前序遍历待生成的 BST 上的每一个节点位置：
+     *      a). 出栈该位置上的 NodeCell，并根据其中取值范围计算出节点值，形成完整的节点。
+     *      b). 通过对 nums 二分来获得该节点的子节点的取值范围，生成 NodeCell 并入栈；
+     *   - 将 Stack 换成 Queue 即是 BFS 的实现。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     private static class NodeCell {
         TreeNode node;
-        int lower, upper;
+        int l, r;
 
-        public NodeCell(TreeNode node, int lower, int upper) {
+        public NodeCell(TreeNode node, int l, int r) {
+            this.l = l;
+            this.r = r;
             this.node = node;
-            this.lower = lower;
-            this.upper = upper;
         }
     }
 
@@ -68,16 +70,16 @@ public class L108_ConvertSortedArrayToBST {
 
         while (!stack.isEmpty()) {
             NodeCell cell = stack.pop();           // 为出栈的 NodeCell 更新节点值
-            int mid = (cell.upper - cell.lower) / 2 + cell.lower;
-            cell.node.val = nums[mid];             // nums[mid] 即是该节点的真正节点值，替换原来的占位节点值
+            int mid = (cell.r - cell.l) / 2 + cell.l;
+            cell.node.val = nums[mid];             // 在访问节点时计算该节点的真正节点值，并替换原来的占位节点值
 
-            if (cell.lower != mid) {               // 若 nums[mid] 左侧还有元素
+            if (cell.l != mid) {                   // 若 nums[mid] 左侧还有元素
                 cell.node.left = new TreeNode(0);  // 创建左子占位节点（这里先创建两节点之间的连接关系，节点值会在后面出栈时再更新）
-                stack.push(new NodeCell(cell.node.left, cell.lower, mid - 1));
+                stack.push(new NodeCell(cell.node.left, cell.l, mid - 1));
             }
-            if (cell.upper != mid) {               // 若 nums[mid] 右侧还有元素
+            if (cell.r != mid) {                   // 若 nums[mid] 右侧还有元素
                 cell.node.right = new TreeNode(0);
-                stack.push(new NodeCell(cell.node.right, mid + 1, cell.upper));
+                stack.push(new NodeCell(cell.node.right, mid + 1, cell.r));
             }
         }
 
