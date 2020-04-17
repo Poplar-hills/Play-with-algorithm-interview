@@ -45,8 +45,8 @@ public class L108_ConvertSortedArrayToBST {
      * - 实现：
      *   1. 创建 NodeCell 类来封装 <节点, 节点值下界, 节点值上界>，∴ 一个 NodeCell 代表了一个节点以及其取值范围；
      *   2. 前序遍历待生成的 BST 上的每一个节点位置：
-     *      a). 出栈该位置上的 NodeCell，并根据其中取值范围计算出节点值，形成完整的节点。
-     *      b). 通过对 nums 二分来获得该节点的子节点的取值范围，生成 NodeCell 并入栈；
+     *      a). 出栈该位置上的 NodeCell，并根据其中取值范围计算出节点值，形成完整的节点；
+     *      b). 通过对 nums 二分来获得该节点的子节点的取值范围，生成 NodeCell 并入栈。
      *   - 将 Stack 换成 Queue 即是 BFS 的实现。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */

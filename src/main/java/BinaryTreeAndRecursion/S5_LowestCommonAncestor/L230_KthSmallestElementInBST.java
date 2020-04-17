@@ -49,13 +49,14 @@ public class L230_KthSmallestElementInBST {
      *   访问找到第 k 大节点 ∴ 整体是 O(h+k)，对于平衡树是 O(logn+k)，对于完全不平衡树则是 O(n+k)。
      * - 空间复杂度 O(h)。
      * */
-    private int count = 0;  // 类成员变量
+    private static int count;  // 类成员变量
 
-    public int kthSmallest2(TreeNode root, int k) {
+    public static int kthSmallest2(TreeNode root, int k) {
+        count = 0;
         return inorder2(root, k);
     }
 
-    private Integer inorder2(TreeNode node, int k) {
+    private static Integer inorder2(TreeNode node, int k) {
         if (node == null) return null;
         Integer res = inorder2(node.left, k);
         if (res != null) return res;        // 若在左子树中找到了结果，则直接返回（不再往下执行）
@@ -87,11 +88,7 @@ public class L230_KthSmallestElementInBST {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 1, 4, null, 2});
-        log(kthSmallest3(t1, 1));
-
-        L230_KthSmallestElementInBST s1 = new L230_KthSmallestElementInBST();  // 解法2的调用方式
-        log(s1.kthSmallest2(t1, 1));
-
+        log(kthSmallest2(t1, 1));
         /*
          * expects 1.
          *       3
@@ -102,10 +99,7 @@ public class L230_KthSmallestElementInBST {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, null, 1});
-        log(kthSmallest3(t2, 3));
-
-        L230_KthSmallestElementInBST s2 = new L230_KthSmallestElementInBST();
-        log(s2.kthSmallest2(t2, 3));
+        log(kthSmallest2(t2, 3));
         /*
          * expects 3.
          *          5
