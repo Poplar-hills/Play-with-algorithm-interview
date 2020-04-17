@@ -28,7 +28,7 @@ import Utils.Helpers.TreeNode;
 public class L230_KthSmallestElementInBST {
     /*
      * 解法1：DFS（In-order traversal）
-     * - 思路：∵ BST 的中序遍历是从小到大遍历节点的 ∴ 只要返回中序遍历结果列表中的第 k 个元素即可。
+     * - 思路：∵ BST 的中序遍历具有从小到大有序的性质 ∴ 只要返回中序遍历结果列表中的第 k 个元素即可。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int kthSmallest(TreeNode root, int k) {
@@ -92,11 +92,12 @@ public class L230_KthSmallestElementInBST {
 
     /*
      * 解法4：BFS + Max heap
-     * - 思路：
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 思路：类似解法 L215_KthLargestElementInArray 解法2，开辟 k+1 大小的最小堆，然后在遍历 BST 的过程中将所有大于第
+     *    k 个节点的节点从堆中移出，最后留在堆顶的即是第 k 小的节点。
+     * - 时间复杂度 O(nlogk)，空间复杂度 O(n)。
      * */
     public static int kthSmallest4(TreeNode root, int k) {
-        PriorityQueue<TreeNode> pq = new PriorityQueue<>((a, b) -> b.val - a.val);  // max heap
+        PriorityQueue<TreeNode> pq = new PriorityQueue<>(k + 1, (a, b) -> b.val - a.val);  // max heap
         pq.offer(root);
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
