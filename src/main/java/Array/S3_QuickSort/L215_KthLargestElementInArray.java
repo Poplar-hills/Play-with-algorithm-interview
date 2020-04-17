@@ -96,7 +96,8 @@ public class L215_KthLargestElementInArray {
 
     /*
      * 解法4：Quick Select（解法3的简化版）
-     * - 思路：基于两路快排的 partition，同样是从大到小排序：
+     * - 思路：与解法3一致。
+     * - 实现：基于两路快排的 partition，同样是从大到小排序：
      *   [v|--- >v ---|--- ≤v ---|.....]
      *    l            lt         i   r      - [l,lt) 位置上的元素 >v，[lt,i) 位置上的元素 <v
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。

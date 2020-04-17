@@ -90,12 +90,13 @@ public class L347_TopKFrequentElements {
 
     /*
      * 解法4：Map + Min heap
-     * - 思路：The trick of this problem is that it does not need to be fully sorted. 与前三种解法不同，该解法不
-     *   进行全排序，而是充分利用最小堆的特性 —— 让频率小的 key 不断被 sift up 到堆顶，最后被移除出去，从而最后堆中只剩下
-     *   频率最大的 k 个 key。
+     * - 思路：与前三种解法不同，该解法不进行全排序，而是充分利用最小堆的特性 —— 让频率小的 key 不断被 sift up 到堆顶，最后被
+     *   移除出去，从而最后堆中只剩下频率最大的 k 个 key。
      * - 实现：
      *   1. 同一时间堆中最多存在 k+1 个元素，此时要先 poll 出去其中的最小元素，然后才能继续添加新元素；
      *   2. 注意 ∵ 使用的是最小堆，而最小堆的遍历顺序是从小到大 ∴ 最后结果中的元素顺序可能跟前三种解法不同。
+     * - 👉 本质：其实在生成了 freq map 之后，该问题就转化成了如何找到 map 中 value 第 k 大的项，本质上就是
+     *   L215_KthLargestElementInArray 问题 ∴ 可以采用类似的解法。
      * - 时间复杂度 O(nlogk)，空间复杂度 O(n)。
      * */
     public static List<Integer> topKFrequent4(int[] nums, int k) {
