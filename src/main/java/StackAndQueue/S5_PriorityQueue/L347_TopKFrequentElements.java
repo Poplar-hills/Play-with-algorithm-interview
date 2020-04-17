@@ -107,7 +107,7 @@ public class L347_TopKFrequentElements {
         for (int n : nums)
             freq.merge(n, 1, Integer::sum);
 
-        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(freq::get));  // 创建最小堆
+        PriorityQueue<Integer> pq = new PriorityQueue<>(k + 1, Comparator.comparingInt(freq::get));  // 创建最小堆
         for (int key : freq.keySet()) {      // O(nlogk)
             if (pq.size() > k) pq.poll();    // 若 pq 中存在 k+1 个元素时，先去除最小的，再添加新的
             pq.offer(key);
@@ -147,9 +147,9 @@ public class L347_TopKFrequentElements {
     }
 
     public static void main(String[] args) {
-        log(topKFrequent5(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
-        log(topKFrequent5(new int[]{4, 1, -1, 2, -1, 2, 3}, 2));   // expects [-1, 2] or [2, -1]
-        log(topKFrequent5(new int[]{1}, 1));                       // expects [1]
-        log(topKFrequent5(new int[]{}, 1));                        // expects []
+        log(topKFrequent4(new int[]{1, 1, 1, 2, 2, 3}, 2));        // expects [1, 2] or [2, 1]
+        log(topKFrequent4(new int[]{4, 1, -1, 2, -1, 2, 3}, 2));   // expects [-1, 2] or [2, -1]
+        log(topKFrequent4(new int[]{1}, 1));                       // expects [1]
+        log(topKFrequent4(new int[]{}, 1));                        // expects []
     }
 }
