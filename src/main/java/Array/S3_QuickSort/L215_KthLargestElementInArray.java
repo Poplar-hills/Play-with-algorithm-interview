@@ -21,7 +21,7 @@ import static Utils.Helpers.swap;
 
 public class L215_KthLargestElementInArray {
     /*
-     * 解法1：Heap sort（堆排序）
+     * 解法1：Heap sort（全排序）
      * - 思路：基于上面分析中的思路1，先对数组进行整体排序，再取 k 个元素，该解法中选择堆排序作为具体的排序算法。
      * - 实现：∵ 要取的是第 k 大的元素 ∴ 使用最大堆。
      * - 时间复杂度 O((n+k)logn)，空间复杂度 O(n)。
@@ -34,7 +34,7 @@ public class L215_KthLargestElementInArray {
     }
 
     /*
-     * 解法2：Heap sort（堆排序）
+     * 解法2：Min heap（最小堆排序 k+1 个元素）
      * - 思路：上面分析中的思路2，不对数组进行整体排序，而是使用最小堆。具体来说，在往堆中添加元素的过程中，让堆大小一直保持在 k，
      *   只要堆大小一超过 k 就将堆中最小的元素移除，这样留在堆中的都是当前遍历过的最大的 k 个元素 ∴ 当遍历结束后，堆中保留的就是
      *   整个数组中最大的 k 个元素，而堆顶元素就是第 k 大的。
@@ -44,7 +44,7 @@ public class L215_KthLargestElementInArray {
         PriorityQueue<Integer> pq = new PriorityQueue<>(k + 1);  // 最小堆（∵ 后面要判断堆大小是否超过 k ∴ 这里开辟 k+1 的空间）
         for (int n : nums) {
             pq.add(n);
-            if (pq.size() > k)  // 在往堆中添加元素过程中，一旦堆大小超过 k 就移除堆中最小的元素
+            if (pq.size() == k + 1)  // 在往堆中添加元素过程中，一旦堆大小超过 k 就移除堆中最小的元素
                 pq.poll();
         }
         return pq.poll();
