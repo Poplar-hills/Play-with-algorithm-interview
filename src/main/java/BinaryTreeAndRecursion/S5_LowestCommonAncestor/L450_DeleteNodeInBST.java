@@ -19,7 +19,11 @@ import Utils.Helpers.TreeNode;
 public class L450_DeleteNodeInBST {
     /*
      * 解法1：Hibbard Deletion (Recursion)
-     * - 思路：与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致。
+     * - 思路：与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致，总的来说是：
+     *   1. 先找到 val == key 的节点 node；
+     *   2. 从以 node 为根的 BST 的右子树中找到最小节点 successor；
+     *   3. 为 successor 的左右子树赋值；
+     *   4. 让 successor 接替 node 并放回到原 BST 的相应位置上。
      * - 时间复杂度 O(logn)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode deleteNode(TreeNode root, int key) {
@@ -33,7 +37,7 @@ public class L450_DeleteNodeInBST {
         return root;
     }
 
-    private static TreeNode deleteRoot(TreeNode root) {  // 返回移除根节点之后的 BST
+    private static TreeNode deleteRoot(TreeNode root) {  // 从以 root 为根的二叉树中删除根节点，并返回以 succssor 为根的二叉树
         if (root.left == null) return root.right;
         if (root.right == null) return root.left;
         TreeNode successor = getMin(root.right);
@@ -63,17 +67,16 @@ public class L450_DeleteNodeInBST {
 
         while (curr != null && curr.val != key) {  // 找到待删除节点及其父节点
             prev = curr;
-            if (key < curr.val) curr = curr.left;
-            else if (key > curr.val) curr = curr.right;
+            curr = key < curr.val ? curr.left : curr.right;
         }
 
-        if (prev == null) return deleteRootNode(curr);            // 待删除节点就是二叉树的根节点的情况
-        if (curr == prev.left) prev.left = deleteRootNode(curr);  // 待删除节点是 prev.left 的情况
-        else prev.right = deleteRootNode(curr);                   // 待删除节点是 prev.right 的情况
+        if (prev == null) return deleteRoot2(curr);            // 待删除节点就是二叉树的根节点的情况
+        if (curr == prev.left) prev.left = deleteRoot2(curr);  // 待删除节点是 prev.left 的情况
+        else prev.right = deleteRoot2(curr);                   // 待删除节点是 prev.right 的情况
         return root;
     }
 
-    private static TreeNode deleteRootNode(TreeNode root) {  // 从以 root 为根的二叉树中删除根节点，并返回以 succssor 为根的二叉树
+    private static TreeNode deleteRoot2(TreeNode root) {  // 从以 root 为根的二叉树中删除根节点，并返回以 succssor 为根的二叉树
         if (root == null) return null;
         if (root.left == null) return root.right;
         if (root.right == null) return root.left;
