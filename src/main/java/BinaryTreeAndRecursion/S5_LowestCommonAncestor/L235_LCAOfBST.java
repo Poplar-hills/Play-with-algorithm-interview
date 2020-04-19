@@ -27,8 +27,7 @@ public class L235_LCAOfBST {
      * - 时间复杂度 O(h)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        if (root == null)
-            return null;
+        if (root == null) return null;
         if (p.val < root.val && q.val < root.val)
             return lowestCommonAncestor(root.left, p, q);
         if (p.val > root.val && q.val > root.val)

@@ -25,11 +25,11 @@ public class L236_LCAOfBinaryTree {
     /*
      * 解法1：Recursion (DFS, Pre-order Traversal)
      * - 思路：在每次进入下层递归之前先通过 contains 方法确定 p、q 在哪边的子树上。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * - 时间复杂度 O(n*h)：contains 方法是 O(n)，而 lowestCommonAncestor 是个二分操作 ∴ 是 O(n*h)；
+     * - 空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        if (root == null)
-            return null;
+        if (root == null) return null;
         if (contains(root.left, p) && contains(root.left, q))
             return lowestCommonAncestor(root.left, p, q);
         if (contains(root.right, p) && contains(root.right, q))
@@ -44,7 +44,20 @@ public class L236_LCAOfBinaryTree {
     }
 
     /*
-     * 解法2：Recursion (DFS Post-order Traversal + Backtracking)
+     * 解法2：DFS (Recursion, Post-order traversal)
+     * - 思路：不同与解法1，该解法在递归回程路上根据左右子递归的返回值机进行判断。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    public static TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == p || root == q) return root;
+        TreeNode left = lowestCommonAncestor2(root.left, p, q);
+        TreeNode right = lowestCommonAncestor2(root.right, p, q);
+        if (left != null && right != null) return root;
+        return left != null ? left : right;
+    }
+
+    /*
+     * 解法3：Recursion (DFS Post-order Traversal + Backtracking)
      * - 思路：解法1采用的是前序遍历，但 ∵ 每次要先对左、右子树进行搜索后才能对当前节点下结论 ∴ 时间复杂度较高。基于此，我们可以
      *   采用更优也更自然的方式 —— 后续遍历 + 回溯法：
      *   1. 后续遍历 —— 先遍历过左、右子树后再确定当前节点是否符合条件；
@@ -65,7 +78,7 @@ public class L236_LCAOfBinaryTree {
      * */
     private static TreeNode lca = null;  // lca 节点的指针作为类成员变量
 
-    public static TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+    public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
         helper(root, p, q);
         return lca;
     }
@@ -83,7 +96,7 @@ public class L236_LCAOfBinaryTree {
     }
 
     /*
-     * 解法3：Iteration (DFS) + Map + Set (非常有意思的思路！利用多种数据结构)
+     * 解法4：Iteration (DFS) + Map + Set (非常有意思的思路！利用多种数据结构)
      * - 思路：两个节点的 LCA 其实就是两节点所在路径的第一个交叉点 ∴ 该题可以转化为求两链表的交叉点（即
      *   L160_IntersectionOfTwoLinkedLists）。但树与链表不同，无法从子节点走到父节点 ∴ 需要一个能够记录这种子节点 -> 父节点
      *   的数据结构作为辅助。Map 刚好可以满足这个需求 ∴ 总体逻辑就是：1. 先遍历树上节点建立这样一个 map；2. 再根据 map 求出
@@ -92,7 +105,7 @@ public class L236_LCAOfBinaryTree {
      * - 限制：∵ Map 无法插入多个相同的 key ∴ 只能用于 BST，而无法用于一般的二叉树。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
+    public static TreeNode lowestCommonAncestor4(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null) return null;
         Stack<TreeNode> stack = new Stack<>();              // 用于存储 p 节点及其所有祖先节点
         Map<TreeNode, TreeNode> treeMap = new HashMap<>();  // 用于存储 <节点, 父节点>（即用 map 表达 BST，类似 TreeMap）
@@ -128,7 +141,7 @@ public class L236_LCAOfBinaryTree {
     }
 
     public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 5, 1, 6, 2, 0, 8, null, null, 7, 4});
+        TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 5, 1, 6, 2, 0, 8, null, null, 7, 4});
         /*
          *           3
          *        /     \
@@ -139,9 +152,9 @@ public class L236_LCAOfBinaryTree {
          *       7   4
          * */
 
-        log(lowestCommonAncestor3(t1, t1.get(5), t1.get(1)));  // expects 3. (The LCA of nodes 5 and 1 is 3.)
-        log(lowestCommonAncestor3(t1, t1.get(7), t1.get(0)));  // expects 3.
-        log(lowestCommonAncestor3(t1, t1.get(5), t1.get(4)));  // expects 5.
-        log(lowestCommonAncestor3(t1, t1.get(4), t1.get(6)));  // expects 5.
+        log(lowestCommonAncestor2(t, t.get(5), t.get(1)));  // expects 3. (The LCA of nodes 5 and 1 is 3.)
+        log(lowestCommonAncestor2(t, t.get(7), t.get(0)));  // expects 3.
+        log(lowestCommonAncestor2(t, t.get(5), t.get(4)));  // expects 5.
+        log(lowestCommonAncestor2(t, t.get(4), t.get(6)));  // expects 5.
     }
 }
