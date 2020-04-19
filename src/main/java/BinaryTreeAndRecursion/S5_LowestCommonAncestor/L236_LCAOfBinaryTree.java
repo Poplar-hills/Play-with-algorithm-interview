@@ -97,45 +97,47 @@ public class L236_LCAOfBinaryTree {
 
     /*
      * 解法4：DFS (Iteration) + Map + Set (非常有意思的思路！利用多种数据结构)
-     * - 思路：两个节点的 LCA 其实就是两节点所在路径的第一个交叉点 ∴ 该题可以转化为求两链表的交叉点（即
-     *   L160_IntersectionOfTwoLinkedLists）。但树与链表不同，无法从子节点走到父节点 ∴ 需要一个能够记录这种子节点 -> 父节点
-     *   的数据结构作为辅助。Map 刚好可以满足这个需求 ∴ 总体逻辑就是：1. 先遍历树上节点建立这样一个 map；2. 再根据 map 求出
-     *   p、q 两条路径的第一个交叉点。
-     * - 实现：Step 2、3就是在求两个链表的交叉点，即 L160_IntersectionOfTwoLinkedLists 解法1的经典应用。
-     * - 限制：∵ Map 无法插入多个相同的 key ∴ 只能用于 BST，而无法用于一般的二叉树。
+     * - 思路：换一个角度思考，两个节点的 LCA 其实就是两节点所在路径的第一个交叉点 ∴ 该题可转化为求两链表的交叉点（即
+     *   L160_IntersectionOfTwoLinkedLists）求解。
+     * - 实现：∵ 树与链表不同，无法从子节点走到父节点 ∴ 需要使用辅助结构 Map 来记录、查找子节点 -> 父节点的路径 ∴ 总体流程是：
+     *     1. 用 DFS 遍历树上节点，同时建立 Map<子节点, 父节点>；
+     *     2. 根据 Map 求出 p、q 两条路径的第一个交叉点（采用 L160 解法1）：
+     *        1. 将一条路径上的节点都放入 Set；
+     *        2. 遍历另一条路径上的节点，第一个出现于 Set 中的节点即是交叉点，也就是 LCA。
+     * - 注意：∵ Map 无法插入多个相同的 key ∴ 该解法只能用于 BST，而无法用于一般的二叉树。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode lowestCommonAncestor4(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null) return null;
-        Stack<TreeNode> stack = new Stack<>();              // 用于存储 p 节点及其所有祖先节点
-        Map<TreeNode, TreeNode> treeMap = new HashMap<>();  // 用于存储 <节点, 父节点>（即用 map 表达 BST，类似 TreeMap）
+        Stack<TreeNode> stack = new Stack<>();          // 用于 DFS
         stack.push(root);
-        treeMap.put(root, null);
+        Map<TreeNode, TreeNode> map = new HashMap<>();  // 用于存储 <节点, 父节点>（即用 map 表达 BST，类似 TreeMap）
+        map.put(root, null);
 
-        // Step 1: 建立 treetMap（即用 map 表达 tree）
-        while (!treeMap.containsKey(p) || !treeMap.containsKey(q)) {  // 若 p、q 被收录进了 map 则说明他们的所
-            TreeNode node = stack.pop();                                  // 有祖先节点也都已被收录进了 map
+        // Step 1: 建立子节点 -> 父节点的 Map（即用 Map 表达该 BST）
+        while (!map.containsKey(p) || !map.containsKey(q)) {  // 若 p、q 存在于 map 中，说明他们的所有祖先节点也都已经在 map 中了
+            TreeNode node = stack.pop();
 
             if (node.left != null) {
-                treeMap.put(node.left, node);  // 收录子节点（∵ 要与其父节点配对 ∴ 只能在这里收录）
                 stack.push(node.left);
+                map.put(node.left, node);  // 记录子节点 -> 父节点关系
             }
             if (node.right != null) {
-                treeMap.put(node.right, node);  // 收录子节点
                 stack.push(node.right);
+                map.put(node.right, node);
             }
         }
 
-        // Step 2: 将 p 节点及其所有祖先节点并放入 set
-        Set<TreeNode> pFamilySet = new HashSet<>();
+        // Step 2.1: 将 p 节点及其所有祖先节点并放入 set
+        Set<TreeNode> pFamilyTree = new HashSet<>();
         while (p != null) {
-            pFamilySet.add(p);
-            p = treeMap.get(p);
+            pFamilyTree.add(p);
+            p = map.get(p);
         }
 
-        // Step 3: 沿着 q 所在的路径从下往上依次查询每一个节点是否在 pFamilySet 中，在其中的第一个节点就是 LCA
-        while (!pFamilySet.contains(q))
-            q = treeMap.get(q);
+        // Step 2.2: 沿着 q 所在的路径从下到上查找第一个出现在 pFamilySet 中的节点
+        while (!pFamilyTree.contains(q))
+            q = map.get(q);
 
         return q;
     }
