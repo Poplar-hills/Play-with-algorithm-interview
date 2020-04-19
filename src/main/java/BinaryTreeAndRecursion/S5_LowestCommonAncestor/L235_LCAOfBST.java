@@ -22,7 +22,7 @@ import Utils.Helpers.TreeNode;
 
 public class L235_LCAOfBST {
     /*
-     * 解法1：Recursion (DFS)
+     * 解法1：DFS (Recursion)
      * - 思路：在从上到下遍历 BST 的过程中，第一个使得 p 和 q 不在同一边的节点就是 p 和 q 的 LCA 节点。
      * - 时间复杂度 O(h)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -37,7 +37,7 @@ public class L235_LCAOfBST {
     }
 
     /*
-     * 解法2：Iteration (DFS) (解法1的非递归版)
+     * 解法2：DFS (Iteration，解法1的非递归版)
      * - 时间复杂度 O(h)，空间复杂度 O(1)。
      * */
     public static TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
@@ -84,7 +84,6 @@ public class L235_LCAOfBST {
         return null;
     }
 
-
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{6, 2, 8, 0, 4, 7, 9, null, null, 3, 5});
         /*
@@ -97,9 +96,9 @@ public class L235_LCAOfBST {
          *       3   5
          * */
 
-        log(lowestCommonAncestor3(t, t.get(2), t.get(8)));   // expects 6. (The LCA of nodes 2 and 8 is 6.)
-        log(lowestCommonAncestor3(t, t.get(3), t.get(7)));   // expects 6.
-        log(lowestCommonAncestor3(t, t.get(2), t.get(4)));   // expects 2.
-        log(lowestCommonAncestor3(t, t.get(0), t.get(5)));   // expects 2.
+        log(lowestCommonAncestor(t, t.get(2), t.get(8)));  // expects 6. (The LCA of nodes 2 and 8 is 6.)
+        log(lowestCommonAncestor(t, t.get(3), t.get(7)));  // expects 6.
+        log(lowestCommonAncestor(t, t.get(2), t.get(4)));  // expects 2.
+        log(lowestCommonAncestor(t, t.get(0), t.get(5)));  // expects 2.
     }
 }
