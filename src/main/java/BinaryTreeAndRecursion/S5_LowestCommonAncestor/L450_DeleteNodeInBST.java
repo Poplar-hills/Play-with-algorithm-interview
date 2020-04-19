@@ -18,8 +18,8 @@ import Utils.Helpers.TreeNode;
 
 public class L450_DeleteNodeInBST {
     /*
-     * 解法1：Recursion + Hibbard Deletion 方法
-     * - 思路：思路与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致。
+     * 解法1：Hibbard Deletion (Recursion)
+     * - 思路：与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致。
      * - 时间复杂度 O(logn)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode deleteNode(TreeNode root, int key) {
@@ -28,15 +28,18 @@ public class L450_DeleteNodeInBST {
             root.left = deleteNode(root.left, key);
         else if (key > root.val)
             root.right = deleteNode(root.right, key);
-        else {
-            if (root.left == null) return root.right;
-            if (root.right == null) return root.left;
-            TreeNode successor = getMin(root.right);  // 若左右子树都有，则使用 Hibbard Deletion 方法
-            successor.right = removeMin(root.right);
-            successor.left = root.left;
-            root = successor;
-        }
+        else
+            root = deleteRoot(root);
         return root;
+    }
+
+    private static TreeNode deleteRoot(TreeNode root) {  // 返回移除根节点之后的 BST
+        if (root.left == null) return root.right;
+        if (root.right == null) return root.left;
+        TreeNode successor = getMin(root.right);
+        successor.right = removeMin(root.right);  // 注意要先给右子树赋值（SEE: https://coding.imooc.com/learn/questiondetail/84029.html）
+        successor.left = root.left;
+        return successor;
     }
 
     private static TreeNode getMin(TreeNode node) {
@@ -50,7 +53,7 @@ public class L450_DeleteNodeInBST {
     }
 
     /*
-     * 解法2：Iteration + Hibbard Deletion 方法 (解法1的非递归版)
+     * 解法2：Hibbard Deletion (解法1的非递归版)
      * - 思路：总体思路是：1. 先找到以待删除节点为根的子树； 2. 删除其父节点。具体移动过程比较复杂，要画图来辅助思考。
      * - 👉 总结：二叉树操作的非递归实现通常都需要拿到：1. 待操作节点；2. 待操作节点的父节点。
      * - 时间复杂度 O(logn)，空间复杂度 O(1)。
@@ -90,7 +93,7 @@ public class L450_DeleteNodeInBST {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, null, null, 7});
-        printBinaryTreeBreadthFirst(deleteNode2(t1, 3));
+        printBinaryTreeBreadthFirst(deleteNode(t1, 3));
         /*
          * expects [5,2,6,null,null,null,7]
          *       5                  5
@@ -101,7 +104,7 @@ public class L450_DeleteNodeInBST {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, null, 4, null, 7});
-        printBinaryTreeBreadthFirst(deleteNode2(t2, 3));
+        printBinaryTreeBreadthFirst(deleteNode(t2, 3));
         /*
          * expects [5,4,6,null,null,null,7]
          *       5                  5
@@ -111,17 +114,17 @@ public class L450_DeleteNodeInBST {
          *       4   7                  7
          * */
 
-        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{7, 3, 8, 1, 5, null, 9, 0, 2, 4, 6});
-        printBinaryTreeBreadthFirst(deleteNode2(t3, 3));
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{7, 3, 8, 1, 5, null, 9, 0, 2, null, 6});
+        printBinaryTreeBreadthFirst(deleteNode(t3, 3));
         /*
-         * expects [7,4,8,1,5,null,9,0,2,null,6] or [7,2,8,1,5,null,9,0,null,4,6]
+         * expects [7,5,8,1,6,null,9,0,2] or [7,2,8,1,5,null,9,0,null,null,6]
          *          7                   7                    7
          *         / \                 / \                  / \
-         *        3   8               4   8                2   8
+         *        3   8               5   8                2   8
          *       / \   \     -->     / \   \      or      / \   \
-         *      1   5   9           1   5   9            1   5   9
-         *     / \ / \             / \   \              /   / \
-         *    0  2 4  6           0   2   6            0   4   6
+         *      1   5   9           1   6   9            1   5   9
+         *     / \   \             / \                  /     \
+         *    0   2   6           0   2                0       6
          * */
     }
 }
