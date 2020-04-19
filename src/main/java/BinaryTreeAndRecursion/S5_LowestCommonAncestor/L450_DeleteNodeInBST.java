@@ -93,33 +93,35 @@ public class L450_DeleteNodeInBST {
         printBinaryTreeBreadthFirst(deleteNode2(t1, 3));
         /*
          * expects [5,2,6,null,null,null,7]
-         *       5                              5
-         *      / \       After deleting       / \
-         *     3   6     --------------->     2   6
-         *    /     \       the node 3             \
-         *   2       7                              7
+         *       5                  5
+         *      / \                / \
+         *     3   6      -->     2   6
+         *    /     \                  \
+         *   2       7                  7
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, null, 4, null, 7});
         printBinaryTreeBreadthFirst(deleteNode2(t2, 3));
         /*
          * expects [5,4,6,null,null,null,7]
-         *       5                              5
-         *      / \       After deleting       / \
-         *     3   6     --------------->     4   6
-         *      \   \       the node 3             \
-         *       4   7                              7
+         *       5                  5
+         *      / \                / \
+         *     3   6      -->     4   6
+         *      \   \                  \
+         *       4   7                  7
          * */
 
-        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, 7});
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{7, 3, 8, 1, 5, null, 9, 0, 2, 4, 6});
         printBinaryTreeBreadthFirst(deleteNode2(t3, 3));
         /*
-         * expects [5,4,6,2,null,null,7] or [5,2,6,null,4,null,7]
-         *       5                              5                  5
-         *      / \       After deleting       / \                / \
-         *     3   6     --------------->     4   6      or      2   6
-         *    / \   \       the node 3       /     \              \   \
-         *   2   4   7                      2       7              4   7
+         * expects [7,4,8,1,5,null,9,0,2,null,6] or [7,2,8,1,5,null,9,0,null,4,6]
+         *          7                   7                    7
+         *         / \                 / \                  / \
+         *        3   8               4   8                2   8
+         *       / \   \     -->     / \   \      or      / \   \
+         *      1   5   9           1   5   9            1   5   9
+         *     / \ / \             / \   \              /   / \
+         *    0  2 4  6           0   2   6            0   4   6
          * */
     }
 }
