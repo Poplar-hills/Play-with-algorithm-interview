@@ -15,13 +15,12 @@ import java.util.Queue;
  *
  * - A mapping of digit to letters (just like on the telephone buttons) is given below:
  *     +--------+--------+--------+
- *     | 1-*    | 2-abc  | 3-def  |
+ *     | 1-*    | 2-abc  | 3-def  |      - Note that 1 does not map to any letters
  *     +--------+--------+--------+
  *     | 4-ghi  | 5-jkl  | 6-mno  |
  *     +--------+--------+--------+
  *     | 7-pqrs | 8-tuv  | 9-wxyz |
  *     +--------+--------+--------+
- *   Note that 1 does not map to any letters.
  *
  * - 💎 回溯法总结：
  *   - “回溯”指的是递归结束后返回上一层的行为。
@@ -48,8 +47,8 @@ public class L17_LetterCombinationsOfPhoneNumber {
      *   ∴ 一共有 3*3*4 种组合方式。
      * - 空间复杂度 O(len(digits))。
      * */
-    private static final String[] letterMap =     // 用数组实现映射表最方便（前两个空字符串是为了便于随机访问）
-        new String[]{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    private static final String[] letterMap =
+        {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};  // 前两个空字符串是为了便于随机访问
 
     public static List<String> letterCombinations(String digits) {
         List<String> res = new ArrayList<>();
@@ -58,16 +57,13 @@ public class L17_LetterCombinationsOfPhoneNumber {
     }
 
     public static void backtrack(String digits, int i, String combo, List<String> res) {
-        if (digits.isEmpty()) return;
-        String letterStr = letterMap[digits.charAt(i) - '0'];  // 将 char 转换为 int（'5'-'0'的结果为5）
-
-        for (char l : letterStr.toCharArray()) {
-            String newCombo = combo + l;          // append 每个字母以生成不同的组合
-            if (i == digits.length() - 1)         // 若到达叶子节点则将组合放入结果集中
-                res.add(newCombo);
-            else                                  // 否则继续递归
-                backtrack(digits, i + 1, newCombo, res);
+        if (i == digits.length()) {
+            res.add(combo);
+            return;
         }
+        String letters = letterMap[digits.charAt(i) - '0'];  // 将 char 转换为 int（'5'-'0'的结果为5）
+        for (Character c : letters.toCharArray())
+            backtrack(digits, i + 1, combo + c, res);
     }
 
     /*
@@ -130,7 +126,7 @@ public class L17_LetterCombinationsOfPhoneNumber {
     }
 
     public static void main(String[] args) {
-        log(letterCombinations3("23"));  // expects ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
-        log(letterCombinations3(""));    // expects []
+        log(letterCombinations("23"));  // expects ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+        log(letterCombinations(""));    // expects []
     }
 }
