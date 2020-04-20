@@ -30,7 +30,7 @@ import java.util.Queue;
  *               2     3      - 当遍历了 1->2->4 之后，为了遍历其他的可能，需要从“4”回到“2”，才能去遍历“5”；
  *              / \   / \     - 当遍历了 1->2->5 之后，再从“5”回到“2”再回到“1”，才能继续搜索树的右半边。
  *             4   5 6   7
- *   - DFS 就是回溯思想的一个具体实现。
+ *   - DFS 就是回溯思想的一个具体应用。
  *   - 回溯法的时间效率一般比较低 ∵ 要遍历到所有叶子节点（通常是指数级别，即 O(2^n)）。
  *   - 回溯法是暴力解法的一个主要实现方式，尤其是在不能简单使用循环遍历（不知道要循环几遍）的情况下（例如树形结构中）。
  *   - “剪枝”对于回溯的效率至关重要，通过避免到达所有叶子节点来优化时间复杂度。
@@ -95,14 +95,14 @@ public class L17_LetterCombinationsOfPhoneNumber {
     public static List<String> letterCombinations2(String digits) {
         List<String> res = new ArrayList<>();
         if (digits.isEmpty()) return res;
-        res.add("");                  // 注意这里要先放入一个 trigger 才能启动后面的逻辑填入数据
+        res.add("");                    // 注意这里要先放入一个 trigger 才能启动后面的逻辑填入数据
 
         for (char d : digits.toCharArray()) {
             List<String> temp = new ArrayList<>();
             String letters = letterMap[d - '0'];
 
             for (char l : letters.toCharArray())
-                for (String s : res)  // 将 res 中已有的字符串再拿出来拼接上 l
+                for (String s : res)    // 将 res 中已有的字符串再拿出来拼接上 l
                     temp.add(s + l);
 
             res = temp;

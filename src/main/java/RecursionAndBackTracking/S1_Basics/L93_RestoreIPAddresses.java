@@ -96,7 +96,7 @@ public class L93_RestoreIPAddresses {
     public static void main(String[] args) {
         log(restoreIpAddresses2("25525511135"));  // expects ["255.255.11.135", "255.255.111.35"]
         log(restoreIpAddresses2("123456789"));    // expects ["123.45.67.89"]
-        log(restoreIpAddresses2("123456"));       // expects ["1.2.3.45", "1.2.34.5", "1.23.4.5", "12.3.4.5"]
+        log(restoreIpAddresses2("12345"));        // expects ["1.2.3.45", "1.2.34.5", "1.23.4.5", "12.3.4.5"]
         log(restoreIpAddresses2("02095"));        // expects ["0.2.0.95", "0.20.9.5"]
     }
 }
