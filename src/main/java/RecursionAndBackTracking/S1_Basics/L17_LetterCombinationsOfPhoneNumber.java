@@ -73,7 +73,7 @@ public class L17_LetterCombinationsOfPhoneNumber {
     }
 
     /*
-     * 解法2：Iteration (解法1的非递归版)
+     * 解法2：循环
      * - 思路：纯用循环遍历实现：对于 digits="23" 来说：
      *                       res = [""]                 - 将 res 中的每一个元素与"2"对应的每一个字母组合
      *            / "a"  ->  ""+"a" -> temp=["a"]
@@ -99,9 +99,9 @@ public class L17_LetterCombinationsOfPhoneNumber {
 
         for (char d : digits.toCharArray()) {
             List<String> temp = new ArrayList<>();
-            String letterStr = letterMap[d - '0'];
+            String letters = letterMap[d - '0'];
 
-            for (char l : letterStr.toCharArray())
+            for (char l : letters.toCharArray())
                 for (String s : res)  // 将 res 中已有的字符串再拿出来拼接上 l
                     temp.add(s + l);
 
@@ -112,8 +112,13 @@ public class L17_LetterCombinationsOfPhoneNumber {
     }
 
     /*
-     * 解法3：Iteration (解法2的简化版)
-     * - 思路：解法2通过一个临时列表 temp 实现了对 res 中的元素进行加工和添加的功能，而这个过程其实可以采用 Queue 来化简。
+     * 解法3：循环 (解法2的简化版)
+     * - 思路：解法2通过一个临时列表 temp 实现了对 res 中的元素进行加工和添加的功能，而这个过程其实可以采用 Queue 来化简：
+     *   [""]
+     *    -> ["a","b","c"]
+     *    -> ["b","c","ad","ae","af"]
+     *    -> ["c","ad","ae","af","bd","be","bf"]
+     *    -> ["ad","ae","af","bd","be","bf","cd","ce","cf"]
      * - 时间复杂度 O(3^n * 4^m)，空间复杂度 O(3^n * 4^m)。
      * */
     public static List<String> letterCombinations3(String digits) {
@@ -123,8 +128,8 @@ public class L17_LetterCombinationsOfPhoneNumber {
 
         while (q.peek().length() != digits.length()) {  // 若队首元素长度 = digits 长度，说明所有组合都已找到
             String combo = q.poll();                    // 出队下一个代加工的组合
-            String letterStr = letterMap[digits.charAt(combo.length()) - '0'];  // 根据该组合的长度找到加工原料
-            for (char l : letterStr.toCharArray())      // 加工
+            String letters = letterMap[digits.charAt(combo.length()) - '0'];  // 根据该组合的长度找到加工原料
+            for (char l : letters.toCharArray())        // 加工
                 q.offer(combo + l);
         }
 
