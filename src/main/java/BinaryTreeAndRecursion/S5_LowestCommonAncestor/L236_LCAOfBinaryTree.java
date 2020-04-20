@@ -129,14 +129,14 @@ public class L236_LCAOfBinaryTree {
         }
 
         // Step 2.1: 将 p 节点及其所有祖先节点并放入 set
-        Set<TreeNode> pFamilyTree = new HashSet<>();
+        Set<TreeNode> pFamily = new HashSet<>();
         while (p != null) {
-            pFamilyTree.add(p);
+            pFamily.add(p);
             p = map.get(p);
         }
 
-        // Step 2.2: 沿着 q 所在的路径从下到上查找第一个出现在 pFamilySet 中的节点
-        while (!pFamilyTree.contains(q))
+        // Step 2.2: 沿着 q 所在的路径从下到上查找第一个出现在 pFamily 中的节点
+        while (!pFamily.contains(q))
             q = map.get(q);
 
         return q;
