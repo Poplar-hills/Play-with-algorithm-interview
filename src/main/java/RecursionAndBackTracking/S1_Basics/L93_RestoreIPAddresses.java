@@ -95,17 +95,17 @@ public class L93_RestoreIPAddresses {
     /*
      * 解法3：Iteration
      * - 思路：∵ IP 地址只有四段 ∴ 可以使用三重循环遍历所有将 s 分割成四段的可能，若每段都是 valid 的，则整个 IP 地址 valid：
-     *        "1  2  3  4  5  6"
-     *            i  j  k           - "1.2.3.456" - s4 is invalid
-     *            i  j     k        - "1.2.34.56" - valid
-     *            i  j        k     - "1.2.345.6" - s3 is invalid
-     *            i     j  k        - "1.23.4.56" - valid
-     *            i     j     k     - "1.23.45.6" - valid
-     *            i        j  k     - "1.234.5.6" - valid
-     *               i  j  k        - "12.3.4.56" - valid
-     *               i  j     k     - "12.3.45.6" - valid
-     *               i     j  k     - "12.34.5.6" - valid
-     *                  i  j  k     - "123.4.5.6" - valid
+     *        "0   2   0   9   5   4"
+     *           |   |   |              - "0.2.0.954" -> ×
+     *           |   |       |          - "0.2.09.54" -> ×
+     *           |   |           |      - "0.2.095.4" -> ×
+     *           |       |   |          - "0.20.9.54" -> √
+     *           |       |       |      - "0.20.95.4" -> √
+     *           |           |   |      - "0.209.5.4" -> √
+     *               |   |   |          - "02.0.9.54" -> ×
+     *               |   |       |      - "02.0.95.4" -> ×
+     *               |       |   |      - "02.09.5.4" -> ×
+     *                   |   |   |      - "020.9.5.4" -> ×
      *
      * - 时间复杂度 O(n^3)，空间复杂度 O(1)，其中 n 为 s 的长度（注：O(2^n) 只是量级，并不精确）。
      * */
@@ -115,27 +115,22 @@ public class L93_RestoreIPAddresses {
 
         for (int i = 1; i < 4 && i < len - 2; i++) {  // i、j、k 的活动范围都要 <4，即每段地址最多3位；同时 i < len-2，给 j、k 留出余地
             for (int j = i + 1; j < i + 4 && j < len - 1; j++) {    // 同样 j < len-1，即 k 留出余地
-                for (int k = j + 1; k < j + 4 && k < len; k++) {    // k 是最内层循环 ∴ 可以指向最后一个元素，只要 < len 即可
-                    String s1 = s.substring(0, i), s2 = s.substring(i, j);
-                    String s3 = s.substring(j, k), s4 = s.substring(k, len);
-                    if (isValid3(s1) && isValid3(s2) && isValid3(s3) && isValid3(s4))
-                        res.add(String.join(".", s1, s2, s3, s4));  // String.join 的第2个参数即可以是一个数组，也可以是多个字符串
+                for (int k = j + 1; k < j + 4 && k < len; k++) {    // k 是最内层循环，可以指向最后一个元素 ∴ 只要 < len 即可
+                    String c1 = s.substring(0, i), c2 = s.substring(i, j);
+                    String c3 = s.substring(j, k), c4 = s.substring(k, len);
+                    if (isValidIpComp(c1) && isValidIpComp(c2) && isValidIpComp(c3) && isValidIpComp(c4))
+                        res.add(String.join(".", c1, c2, c3, c4));  // String.join 的第2个参数即可以是一个数组，也可以是多个字符串
                 }
             }
         }
         return res;
     }
 
-    private static boolean isValid3(String comp) {
-        return !(comp.length() > 3
-            || (comp.length() > 1 && comp.startsWith("0"))
-            || Integer.parseInt(comp) > 255);
-    }
-
     public static void main(String[] args) {
-        log(restoreIpAddresses2("25525511135"));  // expects ["255.255.11.135", "255.255.111.35"]
-        log(restoreIpAddresses2("123456789"));    // expects ["123.45.67.89"]
-        log(restoreIpAddresses2("12345"));        // expects ["1.2.3.45", "1.2.34.5", "1.23.4.5", "12.3.4.5"]
-        log(restoreIpAddresses2("02095"));        // expects ["0.2.0.95", "0.20.9.5"]
+        log(restoreIpAddresses3("25525511135"));  // expects ["255.255.11.135", "255.255.111.35"]
+        log(restoreIpAddresses3("123456789"));    // expects ["123.45.67.89"]
+        log(restoreIpAddresses3("12345"));        // expects ["1.2.3.45", "1.2.34.5", "1.23.4.5", "12.3.4.5"]
+        log(restoreIpAddresses3("02095"));        // expects ["0.2.0.95", "0.20.9.5"]
+        log(restoreIpAddresses3("020954"));       // expects ["0.20.9.54", "0.20.95.4", "0.209.5.4"]
     }
 }
