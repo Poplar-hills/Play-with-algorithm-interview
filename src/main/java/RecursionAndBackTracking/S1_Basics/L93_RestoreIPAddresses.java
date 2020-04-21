@@ -25,7 +25,7 @@ public class L93_RestoreIPAddresses {
      *       ...    ...    ...      ...    ...     ...       ×
      * - 实现：
      *   1. 其中通过判断 ip 的有效性来为回溯进行剪枝（Pruning）：
-     *     - 若一个 ip 已有4个 component，但 i 还未到达 s 末尾（tooMuchDigits 情况），则该 ip 无效；
+     *     - 若一个 ip 已有4个 component，但 i 还未到达 s 末尾（tooManyDigits 情况），则该 ip 无效；
      *     - 若一个 ip 中的 component 个数 < 3，但 i 已到达 s 末尾（notEnoughDigits 情况），则该 ip 无效；
      *   2. 还要判断 ip component 的有效性：
      *     - 若一个 component 位数 > 1 但以"0"开头，则该 component 无效；
@@ -67,9 +67,9 @@ public class L93_RestoreIPAddresses {
     }
 
     /*
-     * 解法2：Recursion + Backtracking
+     * 解法2：Recursion + Backtracking（解法1的简化版）
      * - 思路：与解法1一致。
-     * - 实现：
+     * - 实现：与解法1不同之处在于该解法在递归之间直接拼接 ip 字符串，并用 count 记录当前已有多少个 ip component。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static List<String> restoreIpAddresses2(String s) {
@@ -78,18 +78,17 @@ public class L93_RestoreIPAddresses {
         return res;
     }
 
-    private static void backtrack2(String s, int i, String restoredIp, int count, List<String> res) {
-        if (count > 4) return;
-        if (count == 4 && i == s.length()) res.add(restoredIp);
+    private static void backtrack2(String s, int i, String ip, int count, List<String> res) {
+        if (count > 4) return;                           // tooManyDigits 的情况
+        if (count == 4 && i == s.length()) res.add(ip);  // notEnoughDigits 的情况
 
-        for (int n = 1; n <= 3; n++) {
-            if (i + n > s.length()) break;
-
-            String comp = s.substring(i, i + n);
-            if ((comp.startsWith("0") && comp.length() > 1) || Integer.parseInt(comp) > 255) continue;
-
-            String newIp = restoredIp + comp + (count == 3 ? "" : ".");
-            backtrack2(s, i + n, newIp, count + 1, res);
+        for (int j = 0; j < 3; j++) {
+            if (i + j >= s.length()) break;
+            String comp = s.substring(i, i + j + 1);
+            if (isValidIpComp(comp)) {
+                String newIp = ip + comp + (count == 3 ? "" : ".");  // 拼接 ip
+                backtrack2(s, i + j + 1, newIp, count + 1, res);
+            }
         }
     }
 
@@ -134,9 +133,9 @@ public class L93_RestoreIPAddresses {
     }
 
     public static void main(String[] args) {
-        log(restoreIpAddresses("25525511135"));  // expects ["255.255.11.135", "255.255.111.35"]
-        log(restoreIpAddresses("123456789"));    // expects ["123.45.67.89"]
-        log(restoreIpAddresses("12345"));        // expects ["1.2.3.45", "1.2.34.5", "1.23.4.5", "12.3.4.5"]
-        log(restoreIpAddresses("02095"));        // expects ["0.2.0.95", "0.20.9.5"]
+        log(restoreIpAddresses2("25525511135"));  // expects ["255.255.11.135", "255.255.111.35"]
+        log(restoreIpAddresses2("123456789"));    // expects ["123.45.67.89"]
+        log(restoreIpAddresses2("12345"));        // expects ["1.2.3.45", "1.2.34.5", "1.23.4.5", "12.3.4.5"]
+        log(restoreIpAddresses2("02095"));        // expects ["0.2.0.95", "0.20.9.5"]
     }
 }
