@@ -15,20 +15,20 @@ import java.util.List;
 public class L131_PalindromePartitioning {
     /*
      * 解法1：Recursion + Backtracking
-     * - 思路：该题是一个组合问题 ∴ 可以转化为树形问题，采用回溯进行搜索。例如对于 "aabb" 来说：
-     *                    ""
-     *             /      |      \
-     *          "a"      "aa"    "aabb"   - 得到解 ["aabb"]（当递归到底时，整条路径就是一个解）
-     *           |       /  \
-     *          "a"    "b"  "bb"          - 得到解 ["aa","bb"]
-     *          /  \    |
-     *        "b" "bb" "b"                - 得到解 ["a","a","bb"]、["aa","b","b"]
-     *         |
-     *        "b"                         - 得到解 ["a","a","b","b"]
+     * - 思路：该题是一个组合问题 ∴ 可以转化为树形问题，采用回溯进行搜索。例如对于 s="aabb" 来说：
+     *                          [ ]
+     *               /           |           \
+     *           [a]            [aa]          [aabb]    - 得到解 ["aabb"]
+     *            |            /    \
+     *          [a,a]       [aa,b] [aa,bb]              - 得到解 ["aa","bb"]
+     *         /     \        |
+     *    [a,a,b] [a,a,bb] [aa,b,b]                     - 得到解 ["a","a","bb"]、["aa","b","b"]
+     *       |
+     *   [a,a,b,b]                                      - 得到解 ["a","a","b","b"]
      *
      * - 时间复杂度 O(2^n * n^2)：一个长度为 n 的字符串有 n-1 个间隔，而在每个间隔上都有2种选择：切分或不切分 ∴ 该字符串共有
-     *   2^(n-1) 种切分方式，即需要 2^(n-1) 次递归 ∴ 是 O(2^n) 量级的复杂度。而每次递归需要复制字符串列表 + 执行 isPalindrome
-     *   ，这两个都是 O(n) 操作 ∴ 总复杂度为 O(n^2 * 2^n)。
+     *   2^(n-1) 种切分方式，即需要 2^(n-1) 次递归 ∴ 是 O(2^n) 量级的复杂度。而每次递归需要复制 list + 执行 isPalindrome，
+     *   这两个都是 O(n) 操作 ∴ 总复杂度为 O(n^2 * 2^n)。
      * - 空间复杂度 O(n)。
      * */
     public static List<List<String>> partition(String s) {
