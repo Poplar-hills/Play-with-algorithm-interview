@@ -41,7 +41,7 @@ public class L17_LetterCombinationsOfPhoneNumber {
     /*
      * 解法1：Recursion + Backtracking
      * - 思路：该题是一个组合问题，但可以转化为树形问题求解（类似 L494_TargetSum 解法1）。例如对于 digits="23"，根据
-     *   digit->letter 的映射可将其表达为三叉树，并使用回溯法求解：
+     *   digit->letter 的映射可将其表达为三叉树，并在树上使用回溯法进行搜索：
      *                        ②
      *               a/      b|       c\
      *             ③         ③         ③

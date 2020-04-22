@@ -15,16 +15,17 @@ import java.util.List;
 public class L131_PalindromePartitioning {
     /*
      * 解法1：Recursion + Backtracking
-     * - 思路：该题是一个组合问题 ∴ 可以转化为树形问题求解，具体来说可采用类似 L17、L93 中解法1的回溯法。例如对于 "aabb" 来说：
+     * - 思路：该题是一个组合问题 ∴ 可以转化为树形问题，采用回溯进行搜索。例如对于 "aabb" 来说：
      *                    ""
      *             /      |      \
-     *          "a"      "aa"    "aabb"
+     *          "a"      "aa"    "aabb"   - 得到解 ["aabb"]（当递归到底时，整条路径就是一个解）
      *           |       /  \
-     *          "a"    "b"  "bb"
+     *          "a"    "b"  "bb"          - 得到解 ["aa","bb"]
      *          /  \    |
-     *        "b" "bb" "b"
+     *        "b" "bb" "b"                - 得到解 ["a","a","bb"]、["aa","b","b"]
      *         |
-     *        "b"
+     *        "b"                         - 得到解 ["a","a","b","b"]
+     *
      * - 时间复杂度 O(2^n * n^2)：一个长度为 n 的字符串有 n-1 个间隔，而在每个间隔上都有2种选择：切分或不切分 ∴ 该字符串共有
      *   2^(n-1) 种切分方式，即需要 2^(n-1) 次递归 ∴ 是 O(2^n) 量级的复杂度。而每次递归需要复制字符串列表 + 执行 isPalindrome
      *   ，这两个都是 O(n) 操作 ∴ 总复杂度为 O(n^2 * 2^n)。
@@ -32,7 +33,7 @@ public class L131_PalindromePartitioning {
      * */
     public static List<List<String>> partition(String s) {
         List<List<String>> res = new ArrayList<>();
-        if (s.equals("")) return res;
+        if (s == null || s.isEmpty()) return res;
         backtrack(s, 0, new ArrayList<>(), res);
         return res;
     }
@@ -42,12 +43,12 @@ public class L131_PalindromePartitioning {
             res.add(list);
             return;
         }
-        for (int j = i + 1; j <= s.length(); j++) {  // ∵ j 是作为 substring 时的 endIndex ∴ j 最大取值可以为 s.length()
-            String str = s.substring(i, j);
-            if (isPalindrome(str)) {
+        for (int j = i + 1; j <= s.length(); j++) {  // j 的语义是 substring 方法中的 endIndex ∴ j ∈ [i+1, s.length()]
+            String comp = s.substring(i, j);
+            if (isPalindrome(comp)) {
                 List<String> newPath = new ArrayList<>(list);  // 复制字符串列表
-                newPath.add(str);
-                backtrack(s, j, newPath, res);  // ∵ 要继续递归的对象是剩下没处理的字符串 ∴ 继续往下递归时的起点为 j
+                newPath.add(comp);
+                backtrack(s, j, newPath, res);       // 下一层递归的起点为 j
             }
         }
     }
@@ -61,29 +62,30 @@ public class L131_PalindromePartitioning {
 
     /*
      * 解法2：Recursion + Backtracking (解法1的性能优化版)
+     * 具体来说可采用类似 L17、L93 中解法1的回溯法
      * - 思路：与解法1一致。
-     * - 实现：不在每次分支时复制 list，而只在递归到底找到符合条件的 list 时将其复制进 res 中 ∴ 减少了 list 的复制，从而一定
-     *   程度上提升性能。但要注意在返回上一层递归时要去掉最后一个加入 list 的元素，以恢复上一层中 list 的状态。
+     * - 实现：该解法不在每次分支时复制 list，而只在递归到底找到符合条件的 list 时将其复制进 res 中 ∴ 减少了 list 的复制，
+     *   从而提升性能。但要注意在返回上一层递归时要去掉最后一个加入 list 的元素，以恢复上一层中 list 的状态。
      * - 时间复杂度 O(n * 2^n)，空间复杂度 O(n)。
      * */
     public static List<List<String>> partition2(String s) {
         List<List<String>> res = new ArrayList<>();
-        if (s.equals("")) return res;
-        dfs2(s, 0, new ArrayList<>(), res);
+        if (s == null || s.isEmpty()) return res;
+        backtrack2(s, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void dfs2(String s, int i, List<String> list, List<List<String>> res) {
+    private static void backtrack2(String s, int i, List<String> list, List<List<String>> res) {
         if (i == s.length()) {
-            res.add(new ArrayList<>(list));    // 递归到底后再将 list 复制进 res 中
+            res.add(new ArrayList<>(list));       // ∵ list 在回溯过程中是复用的 ∴ 只需在最后将 list 复制进 res 中即可
             return;
         }
-        for (int j = i + 1; j <= s.length(); j++) {
-            String str = s.substring(i, j);
-            if (isPalindrome(str)) {
-                list.add(str);
-                dfs2(s, j, list, res);
-                list.remove(list.size() - 1);  // 恢复上一层中 list 的状态，以便继续回溯查找
+        for (int j = i; j < s.length(); j++) {    // j 的语义是截取 s 时的右边界 s[i..j]
+            String comp = s.substring(i, j + 1);
+            if (isPalindrome(comp)) {
+                list.add(comp);
+                backtrack2(s, j + 1, list, res);  // 下一层的递归起点为 j+1
+                list.remove(list.size() - 1);     // 恢复上一层中 list 的状态，以便继续回溯查找
             }
         }
     }
