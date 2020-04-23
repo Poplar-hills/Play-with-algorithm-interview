@@ -59,9 +59,9 @@ public class L46_Permutations {
      * - 思路：与解法1一致。
      * - 实现：但每次递归中采用原地交换元素的方式获得新的排列：
      *                            [1,2,3]
-     *                    /          |           \            - 将0号元素交换到不同位置去
+     *                    /          |           \             - 将0号元素交换到 [0..n) 号位置上
      *              [1,2,3]       [2,1,3]        [2,3,1]
-     *              /    \        /    \         /     \      - 将1号元素交换到不同位置去
+     *              /    \        /    \         /     \       - 将1号元素交换到 [1..n) 号位置上
      *        [1,2,3] [1,3,2] [2,1,3] [2,3,1] [2,3,1] [2,1,3]
      *
      * - 👉 技巧：将 int[] 转为 List<Integer> 的另一种写法是：
@@ -76,13 +76,13 @@ public class L46_Permutations {
     }
 
     private static void backtrack2(int[] nums, int i, List<List<Integer>> res) {
-        if (i == nums.length - 1) {              // 递归到底
-            List<Integer> list = new ArrayList<>();
-            for (int n : nums) list.add(n);      // 将数组转化为列表后再放入 res
+        if (i == nums.length - 1) {                  // 递归到底
+            List<Integer> list = new ArrayList<>();  // 将数组转化为列表后再放入 res
+            for (int n : nums) list.add(n);
             res.add(list);
             return;
         }
-        for (int j = i; j < nums.length; j++) {  // 注意 j ∈ [i..)
+        for (int j = i; j < nums.length; j++) {  // 注意 j ∈ [i..n)
             swap(nums, i, j);
             backtrack2(nums, i + 1, res);
             swap(nums, i, j);                    // 在回到上一层之前将 nums 恢复原状
