@@ -55,7 +55,42 @@ public class L46_Permutations {
     }
 
     /*
-     * 解法2：Iteration
+     * 解法2：Recursion + Backtracking + In-place swap
+     * - 思路：与解法1一致。
+     * - 实现：但每次递归中采用原地交换元素的方式获得新的排列：
+     *                            [1,2,3]
+     *                    /          |           \            - 将0号元素交换到不同位置去
+     *              [1,2,3]       [2,1,3]        [2,3,1]
+     *              /    \        /    \         /     \      - 将1号元素交换到不同位置去
+     *        [1,2,3] [1,3,2] [2,1,3] [2,3,1] [2,3,1] [2,1,3]
+     *
+     * - 👉 技巧：将 int[] 转为 List<Integer> 的另一种写法是：
+     *   Arrays.stream(nums).boxed().collect(Collectors.toList())。
+     * - 时间复杂度 O(n!)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> permute2(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums.length == 0) return res;
+        backtrack2(nums, 0, res);
+        return res;
+    }
+
+    private static void backtrack2(int[] nums, int i, List<List<Integer>> res) {
+        if (i == nums.length - 1) {              // 递归到底
+            List<Integer> list = new ArrayList<>();
+            for (int n : nums) list.add(n);      // 将数组转化为列表后再放入 res
+            res.add(list);
+            return;
+        }
+        for (int j = i; j < nums.length; j++) {  // 注意 j ∈ [i..)
+            swap(nums, i, j);
+            backtrack2(nums, i + 1, res);
+            swap(nums, i, j);                    // 在回到上一层之前将 nums 恢复原状
+        }
+    }
+
+    /*
+     * 解法3：Iteration
      * - 思路：采用类似 L17_LetterCombinationsOfPhoneNumber 解法2的思路，对于 nums 中的每个元素，都放到 res 中的每个列表
      *   里的每个插入点上，生成一个新的排列。例如，对于 [1,2,3] 来说：
      *                           /--> [3,2,1]
@@ -73,7 +108,7 @@ public class L46_Permutations {
      * - 时间复杂度 O(n * n!)：n 个元素的全排列有 n! 种结果，而每个结果中又有 n 个元素。
      * - 空间复杂度 O(1)。
      * */
-    public static List<List<Integer>> permute2(int[] nums) {
+    public static List<List<Integer>> permute3(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums.length == 0) return res;
         res.add(new ArrayList<>());        // 需要一个 trigger 元素
@@ -94,11 +129,11 @@ public class L46_Permutations {
     }
 
     /*
-     * 解法3：Iteration (解法2的简化版)
+     * 解法4：Iteration (解法3的简化版)
      * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法1中对 res 中元素加工和添加的过程。
      * - 时间复杂度 O(n * n!)，空间复杂度 O(n * n!)。
      * */
-    public static List<List<Integer>> permute3(int[] nums) {
+    public static List<List<Integer>> permute4(int[] nums) {
         Queue<List<Integer>> q = new LinkedList<>();
         if (nums.length == 0) return new ArrayList<>();
         q.offer(new ArrayList<>());
@@ -117,43 +152,10 @@ public class L46_Permutations {
         return new ArrayList<>(q);
     }
 
-    /*
-     * 解法4：Recursion + Backtracking + In-place swap
-     * - 思路：与解法3类似，但每次递归中采用原地交换元素的方式获得新的排列：
-     *                                   [1,2,3]
-     *                           /          |           \
-     *                     [1,2,3]       [2,1,3]        [2,3,1]
-     *                     /    \        /    \         /     \
-     *               [1,2,3] [1,3,2] [2,1,3] [2,3,1] [2,3,1] [2,1,3]
-     *
-     * - 实现：将 int[] 转为 List<Integer> 的另一种写法是：Arrays.stream(nums).boxed().collect(Collectors.toList())。
-     * - 时间复杂度 O(n!)，空间复杂度 O(n)。
-     * */
-    public static List<List<Integer>> permute4(int[] nums) {
-        List<List<Integer>> res = new ArrayList<>();
-        if (nums.length == 0) return res;
-        helper4(nums, 0, res);
-        return res;
-    }
-
-    private static void helper4(int[] nums, int i, List<List<Integer>> res) {
-        if (i == nums.length) {                  // 递归到底
-            List<Integer> list = new ArrayList<>();
-            for (int n : nums) list.add(n);      // 将 int[] 转化为 List<Integer> 后才能放入 res
-            res.add(list);
-            return;
-        }
-        for (int j = i; j < nums.length; j++) {  // 注意 j 要从 i 开始（∵ 最终只将最后一层的排列放入结果集）
-            swap(nums, i, j);
-            helper4(nums, i + 1, res);
-            swap(nums, i, j);                    // 在回到上一层之前将 nums 恢复原状
-        }
-    }
-
     public static void main(String[] args) {
-        log(permute0(new int[]{1, 2, 3}));  // expects [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
-        log(permute0(new int[]{1, 2}));     // expects [[1,2], [2,1]]
-        log(permute0(new int[]{1}));        // expects [[1]]
-        log(permute0(new int[]{}));         // expects []
+        log(permute2(new int[]{1, 2, 3}));  // expects [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+        log(permute2(new int[]{1, 2}));     // expects [[1,2], [2,1]]
+        log(permute2(new int[]{1}));        // expects [[1]]
+        log(permute2(new int[]{}));         // expects []
     }
 }
