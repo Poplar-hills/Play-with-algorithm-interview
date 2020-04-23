@@ -49,7 +49,7 @@ public class L46_Permutations {
                 used[i] = true;
                 backtrack(nums, list, used, res);
                 list.remove(list.size() - 1);
-                used[i] = false;                  
+                used[i] = false;
             }
         }
     }
@@ -76,25 +76,25 @@ public class L46_Permutations {
     public static List<List<Integer>> permute2(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums.length == 0) return res;
-        res.add(new ArrayList<>());                        // 需要一个 trigger 元素
+        res.add(new ArrayList<>());        // 需要一个 trigger 元素
 
         for (int n : nums) {
-            List<List<Integer>> temp = new ArrayList<>();
+            List<List<Integer>> newRes = new ArrayList<>();  // ∵ 下面要遍历 res 中的元素，不能一边遍历一遍添加 ∴ 这里要创建一个新的
             for (List<Integer> list : res) {
-                for (int j = 0; j <= list.size(); j++) {   // 遍历 list 的每一个插入点（包括尾部的插入点）
+                for (int i = 0; i <= list.size(); i++) {     // 遍历 list 的每一个插入点（包括尾部的插入点）
                     List<Integer> newList = new ArrayList<>(list);
-                    newList.add(j, n);                     // 往复制出来的 list 的插入点 j 处放入元素 n
-                    temp.add(newList);
+                    newList.add(i, n);                       // 往 i 处插入元素 n
+                    newRes.add(newList);
                 }
             }
-            res = temp;                                    // 替换原 res
+            res = newRes;
         }
 
         return res;
     }
 
     /*
-     * 解法3：Iteration (解法1的简化版)
+     * 解法3：Iteration (解法2的简化版)
      * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法1中对 res 中元素加工和添加的过程。
      * - 时间复杂度 O(n * n!)，空间复杂度 O(n * n!)。
      * */
@@ -148,23 +148,6 @@ public class L46_Permutations {
             helper4(nums, i + 1, res);
             swap(nums, i, j);                    // 在回到上一层之前将 nums 恢复原状
         }
-    }
-
-
-
-
-
-    public static List<List<Integer>> permute0(int[] nums) {
-        List<List<Integer>> res = new ArrayList<>();
-        if (nums == null || nums.length == 0) return res;
-        res.add(new ArrayList<>());
-
-        for (int i = 0; i < res.size(); i++) {
-
-
-        }
-
-        return res;
     }
 
     public static void main(String[] args) {
