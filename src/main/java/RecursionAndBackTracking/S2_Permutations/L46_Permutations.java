@@ -55,7 +55,7 @@ public class L46_Permutations {
     }
 
     /*
-     * 解法2：Recursion + Backtracking + In-place swap
+     * 解法2：Recursion + Backtracking + In-place swap（解法1的性能优化版）
      * - 思路：与解法1一致。
      * - 实现：但每次递归中采用原地交换元素的方式获得新的排列：
      *                            [1,2,3]
