@@ -10,7 +10,7 @@ import java.util.Queue;
 /*
  * Permutations
  *
- * - Given a collection of distinct integers, return all possible permutations (求 n 个数字的全排列).
+ * - Given a collection of distinct integers, return all possible permutations (求 n 个不重复数字的全排列).
  *
  * - 💎 总结：排列问题（Permutation）通常可以转化为树形问题，并通过回溯法解决。
  * */
@@ -82,7 +82,7 @@ public class L46_Permutations {
             res.add(list);
             return;
         }
-        for (int j = i; j < nums.length; j++) {  // 注意 j ∈ [i..n)
+        for (int j = i; j < nums.length; j++) {  // j ∈ [i..n)，即让第 i 个元素分别与 [i..n) 个元素 swap
             swap(nums, i, j);
             backtrack2(nums, i + 1, res);
             swap(nums, i, j);                    // 在回到上一层之前将 nums 恢复原状
@@ -131,7 +131,7 @@ public class L46_Permutations {
     /*
      * 解法4：Iteration (解法3的简化版)
      * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法1中对 res 中元素加工和添加的过程。
-     * - 时间复杂度 O(n * n!)，空间复杂度 O(n * n!)。
+     * - 时间复杂度 O(n * n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permute4(int[] nums) {
         Queue<List<Integer>> q = new LinkedList<>();

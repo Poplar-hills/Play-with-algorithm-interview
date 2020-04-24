@@ -19,17 +19,17 @@ import java.util.Set;
 public class L47_PermutationsII {
     /*
      * 解法1：Recursion + Backtracking + Set
-     * - 思路：在 L46_Permutations 解法3的基础上加入用于去重的 Set。
-     * - 时间复杂度 O(n^n)，空间复杂度 O(n^n)。
+     * - 思路：在 L46_Permutations 解法1的基础上加入用于去重的 Set。
+     * - 时间复杂度 O(n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permuteUnique(int[] nums) {
         if (nums.length == 0) return new ArrayList<>();
         Set<List<Integer>> set = new HashSet<>();
-        helper(nums, new ArrayList<>(), new boolean[nums.length], set);
+        backtrack(nums, new ArrayList<>(), new boolean[nums.length], set);
         return new ArrayList<>(set);
     }
 
-    private static void helper(int[] nums, List<Integer> list, boolean[] used, Set<List<Integer>> set) {
+    private static void backtrack(int[] nums, List<Integer> list, boolean[] used, Set<List<Integer>> set) {
         if (list.size() == nums.length) {
             set.add(new ArrayList<>(list));
             return;
@@ -38,7 +38,7 @@ public class L47_PermutationsII {
             if (!used[i]) {
                 list.add(nums[i]);
                 used[i] = true;
-                helper(nums, list, used, set);
+                backtrack(nums, list, used, set);
                 list.remove(list.size() - 1);
                 used[i] = false;
             }
@@ -47,8 +47,8 @@ public class L47_PermutationsII {
 
     /*
      * 解法2：Iteration + Set
-     * - 思路：在 L46_Permutations 解法2的基础上加入用于去重的 Set。
-     * - 时间复杂度 O(n * n!)，空间复杂度 O(n * n!)。
+     * - 思路：在 L46_Permutations 解法4的基础上加入用于去重的 Set。
+     * - 时间复杂度 O(n * n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permuteUnique2(int[] nums) {
         if (nums.length == 0) return new ArrayList<>();
@@ -70,19 +70,19 @@ public class L47_PermutationsII {
     }
 
     /*
-     * 解法3：Iteration + In-place swap + Set
+     * 解法3：Recursion + In-place swap + Set
      * - 思路：在 L46_Permutations 解法4的基础上加入用于去重的 Set。
      * - 时间复杂度 O(n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permuteUnique3(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums.length == 0) return res;
-        helper3(nums, 0, res);
+        backtrack3(nums, 0, res);
         return new ArrayList<>(new HashSet<>(res));  // 最后 Set 去重
     }
 
-    private static void helper3(int[] nums, int i, List<List<Integer>> res) {
-        if (i == nums.length) {
+    private static void backtrack3(int[] nums, int i, List<List<Integer>> res) {
+        if (i == nums.length - 1) {
             List<Integer> list = new ArrayList<>();
             for (int n : nums) list.add(n);
             res.add(list);
@@ -90,48 +90,49 @@ public class L47_PermutationsII {
         }
         for (int j = i; j < nums.length; j++) {
             swap(nums, i, j);
-            helper3(nums, i + 1, res);
+            backtrack3(nums, i + 1, res);
             swap(nums, i, j);
         }
     }
 
     /*
      * 解法4：Recursion + Backtracking + Inner Set
-     * - 思路：不同于解法1、2、3使用 Set 对结果集进行去重，本解法根本根本不产生重复解。具体来说，先观察 test case，例如，
-     *   对于 nums = [1,2,1] 来说：
+     * - 思路：与解法1一致。
+     * - 实现：不同于解法1、2、3使用 Set 对结果集进行去重，本解法对树进行剪枝，从而不产生重复解。例如对于 nums=[1,2,1] 来说：
      *                              []
      *                  1/          2|          1\
-     *               [1]            [2]            [1]
+     *              [1]             [2]             [1]
      *           2/     1\       1/    1\        1/    2\
      *         [1,2]   [1,1]   [2,1]   [2,1]   [1,1]   [1,2]
      *          1|      2|      1|      1|      2|      1|
      *        [1,2,1] [1,1,2] [2,1,1] [2,1,1] [1,1,2] [1,2,1]
      *
-     *   可见在对 []、[2] 进行分支时，都出现了重复的分支 ∴ 需要一种能消除重复的分支的方法。而消除重复分支的关键在于判断 nums
-     *   中的重复元素 ∴ 可以采用 Set 实现。
+     *   在对 []、[2] 进行分支时，都出现了重复的分支，而剪掉重复分支的关键在于判断 nums 中的重复元素 ∴ 可以在解法1的基础上
+     *   使用 Set 进行判断。
      * - 时间复杂度 O(n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permuteUnique4(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums.length == 0) return res;
-        helper4(nums, new ArrayList<>(), new boolean[nums.length], res);
+        backtrack4(nums, new ArrayList<>(), new boolean[nums.length], res);
         return res;
     }
 
-    private static void helper4(int[] nums, List<Integer> list, boolean[] used, List<List<Integer>> res) {
+    private static void backtrack4(int[] nums, List<Integer> list, boolean[] used, List<List<Integer>> res) {
         if (list.size() == nums.length) {
             res.add(new ArrayList<>(list));
             return;
         }
-        Set<Integer> set = new HashSet<>();                  // 创建 Set 用于
+        Set<Integer> set = new HashSet<>();
         for (int i = 0; i < nums.length; i++) {
-            if (used[i] || set.contains(nums[i])) continue;  // 这里通过 Set 识别 nums 中的重复元素
-            set.add(nums[i]);
-            list.add(nums[i]);
-            used[i] = true;
-            helper4(nums, list, used, res);
-            list.remove(list.size() - 1);
-            used[i] = false;
+            if (!used[i] && !set.contains(nums[i])) {  // 通过 Set 识别 nums 中未使用过的元素是否与之前使用过的重复
+                set.add(nums[i]);
+                list.add(nums[i]);
+                used[i] = true;
+                backtrack4(nums, list, used, res);
+                list.remove(list.size() - 1);
+                used[i] = false;
+            }
         }
     }
 
@@ -195,11 +196,11 @@ public class L47_PermutationsII {
     }
 
     public static void main(String[] args) {
-        log(permuteUnique6(new int[]{1, 1, 2}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
-        log(permuteUnique6(new int[]{1, 2, 1}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
-        log(permuteUnique6(new int[]{1, 1, 2, 1}));  // expects [[1,1,1,2], [1,1,2,1], [1,2,1,1], [2,1,1,1]]
-        log(permuteUnique6(new int[]{1, 2}));        // expects [[1,2], [2,1]]
-        log(permuteUnique6(new int[]{1}));           // expects [[1]]
-        log(permuteUnique6(new int[]{}));            // expects []
+        log(permuteUnique3(new int[]{1, 1, 2}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
+        log(permuteUnique3(new int[]{1, 2, 1}));     // expects [[1,1,2], [1,2,1], [2,1,1]]
+        log(permuteUnique3(new int[]{1, 1, 2, 1}));  // expects [[1,1,1,2], [1,1,2,1], [1,2,1,1], [2,1,1,1]]
+        log(permuteUnique3(new int[]{1, 2}));        // expects [[1,2], [2,1]]
+        log(permuteUnique3(new int[]{1}));           // expects [[1]]
+        log(permuteUnique3(new int[]{}));            // expects []
     }
 }
