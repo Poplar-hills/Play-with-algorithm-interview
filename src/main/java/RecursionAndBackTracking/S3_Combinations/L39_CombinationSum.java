@@ -143,7 +143,7 @@ public class L39_CombinationSum {
         for (int i = 0; i <= target; i++) {
             List<List<Integer>> comboList = new ArrayList<>();  // 和为 i 的组合
 
-            for (int j = 0; j < candidates.length && candidates[j] <= i; j++) {  // 找到所有和为 i 的组合
+            for (int j = 0; j < candidates.length && candidates[j] <= i; j++) {  // 找到所有和为 i 的组合 j ∈ [0,i]
                 int c = candidates[j];
                 if (c == i) {
                     comboList.add(Arrays.asList(c));     // c == i 的情况需特殊处理
@@ -164,9 +164,9 @@ public class L39_CombinationSum {
     }
 
     public static void main(String[] args) {
-        log(combinationSum(new int[]{2, 7, 3, 6}, 7));  // expects [[7], [2,2,3]]
-        log(combinationSum(new int[]{2, 3, 5}, 8));     // expects [[2,2,2,2], [2,3,3], [3,5]]
-        log(combinationSum(new int[]{2, 3, 5}, 5));     // expects [[2,3], [5]]
-        log(combinationSum(new int[]{3}, 8));           // expects []
+        log(combinationSum4(new int[]{2, 7, 3, 6}, 7));  // expects [[7], [2,2,3]]
+        log(combinationSum4(new int[]{2, 3, 5}, 8));     // expects [[2,2,2,2], [2,3,3], [3,5]]
+        log(combinationSum4(new int[]{2, 3, 5}, 5));     // expects [[2,3], [5]]
+        log(combinationSum4(new int[]{3}, 8));           // expects []
     }
 }
