@@ -17,7 +17,7 @@ import java.util.List;
 public class L90_SubsetsII {
     /*
      * 解法1：Recursion + Backtracking
-     * - 思路：该题与 L78_Subsets 解法1类似，区别在于加上了
+     * - 思路：该题与 L78_Subsets 解法1类似，区别在于该解法中加上了对重复分支的判断（∵ 重复分支会产生重复解）。
      *   例如对于 [2,1,2] 来说，排序后为 [1,2,2]：
      *                  []
      *            1/    2|    2\
@@ -27,6 +27,7 @@ public class L90_SubsetsII {
      *       2|
      *     [1,2,2]
      *
+     * - 实现：对重复分支的判断逻辑与 L40_CombinationSumII 一致。
      * - 时间复杂度 O(2^n)：分析方法与 L78_Subsets 解法1一样，但 ∵ 该题中会跳过某些路径 ∴ 复杂度 < O(2^n)。
      * - 空间复杂度 O(n)。
      * */

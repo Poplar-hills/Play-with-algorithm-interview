@@ -50,7 +50,7 @@ public class L40_CombinationSumII {
         }
         for (int j = i; j < candidates.length && target >= candidates[j]; j++) {
             int c = candidates[j];
-            if (j > i && c == candidates[j - 1]) continue;     // 跳过可能产生重复解的元素
+            if (j > i && c == candidates[j - 1]) continue;     // 跳过可能产生重复解的元素（注意 j>i，而不能是 j>0）
             list.add(c);
             backtrack(candidates, target - c, j + 1, list, res);  // 下一层递归从第 j+1 个元素开始遍历，以保证不使用已用过的元素
             list.remove(list.size() - 1);
