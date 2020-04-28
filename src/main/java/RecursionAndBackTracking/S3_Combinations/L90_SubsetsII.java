@@ -68,9 +68,9 @@ public class L90_SubsetsII {
 
         int size = 0, start;
         for (int i = 0; i < nums.length; i++) {
-            start = (i > 0 && nums[i] == nums[i - 1]) ? size : 0;  // 若元素重复，则使用上轮遍历之前（上上轮遍历之后）记录的 res.size
-            size = res.size();                                     // 作为遍历起点；若不是重复元素，则正常从0开始
-            for (int j = start; j < size; j++) {  // 遍历 res 中从索引 start 处开始的 subset
+            start = (i > 0 && nums[i] == nums[i - 1]) ? size : 0;  // 若元素重复，则使用上轮遍历之前记录的 res.size 作为遍历起点；若不是重复元素，则正常从0开始
+            size = res.size();                                     // 在遍历之前记录 res.size
+            for (int j = start; j < size; j++) {                   // 遍历 res 中从索引 start 处开始的 subset
                 List<Integer> list = new ArrayList<>(res.get(j));
                 list.add(nums[i]);
                 res.add(list);
