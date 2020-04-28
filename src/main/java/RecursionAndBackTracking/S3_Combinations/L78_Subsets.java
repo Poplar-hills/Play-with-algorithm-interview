@@ -32,15 +32,15 @@ public class L78_Subsets {
     public static List<List<Integer>> subsets(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length == 0) return res;
-        helper(nums, 0, new ArrayList<>(), res);
+        backtrack(nums, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void helper(int[] nums, int i, List<Integer> list, List<List<Integer>> res) {
+    private static void backtrack(int[] nums, int i, List<Integer> list, List<List<Integer>> res) {
         res.add(new ArrayList<>(list));          // 收集所有中间、最终结果
         for (int j = i; j < nums.length; j++) {
             list.add(nums[j]);
-            backtrack0(nums, j + 1, list, res);
+            backtrack(nums, j + 1, list, res);
             list.remove(list.size() - 1);
         }
     }
