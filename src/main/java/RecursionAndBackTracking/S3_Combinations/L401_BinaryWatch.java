@@ -82,6 +82,8 @@ public class L401_BinaryWatch {
 
     /*
      * 解法2：Iteration
+     * - 思路：// TODO: ???。
+     * - 语言：Integer.bitCount(i) 返回整型 i 的二进制表示中1的个数。
      * - 时间复杂度 O(12 * 60)，空间复杂度 O(1)。
      * */
     public static List<String> readBinaryWatch2(int num) {
