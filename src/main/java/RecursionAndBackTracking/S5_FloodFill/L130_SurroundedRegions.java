@@ -41,46 +41,48 @@ public class L130_SurroundedRegions {
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
 
-    private static boolean[][] filled;
     private static int l, w;
+    private static boolean[][] filled;
     private static int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
     public static void solve(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
-        l = board.length;
-        w = board[0].length;
-        filled = new boolean[l][w];
 
-        for (int m = 0; m < l; m++) {
-            for (int n = 0; n < w; n++) {
-                if (board[m][n] == 'O' && !filled[m][n]) {
-                    List<Pair<Integer, Integer>> list = new ArrayList<>();  // 用于暂存当前 region 的所有格子
-                    if (validRegion(board, m, n, list))        // 若该 region 有效，则 flip 该其中的所有 'O'
-                        for (Pair<Integer, Integer> p : list)
-                            board[p.getKey()][p.getValue()] = 'X';
+        w = board.length;     // 行数
+        l = board[0].length;  // 列数
+        filled = new boolean[w][l];
+
+        for (int r = 0; r < w; r++) {
+            for (int c = 0; c < l; c++) {
+                if (board[r][c] == 'O' && !filled[r][c]) {
+                    List<int[]> region = new ArrayList<>();  // 用于暂存当前 region 的所有格子
+                    if (isValidRegion(board, r, c, region))  // 若该 region 有效，则 flip 该其中的所有 'O'
+                        for (int[] p : region)
+                            board[p[0]][p[1]] = 'X';
                 }
             }
         }
     }
 
-    private static boolean validRegion(char[][] board, int m, int n, List<Pair<Integer, Integer>> list) {
-        filled[m][n] = true;
-        list.add(new Pair<>(m, n));
+    private static boolean isValidRegion(char[][] board, int r, int c, List<int[]> list) {
         boolean isValid = true;  // ∵ 要一次性遍历完当前 region，不能发现无效就中途 return ∴ 采用变量记录该 region 是否有效
+        filled[r][c] = true;
+        list.add(new int[]{r, c});
 
-        for (int[] d : directions) {
-            int newM = m + d[0], newN = n + d[1];
-            if (!validPos(newM, newN)) isValid = false;  // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效
-            else if (board[newM][newN] == 'O' && !filled[newM][newN])
-                if (!validRegion(board, newM, newN, list))
+        for (int[] dir : directions) {
+            int newR = r + dir[0], newC = c + dir[1];
+            if (!isValidPos(newR, newC))
+                isValid = false;       // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效
+            else if (board[newR][newC] == 'O' && !filled[newR][newC])
+                if (!isValidRegion(board, newR, newC, list))
                     isValid = false;
         }
 
         return isValid;  // 遍历完后再该 region 是否有效的信息返回
     }
 
-    private static boolean validPos(int m, int n) {
-        return m >= 0 && m < l && n >= 0 && n < w;
+    private static boolean isValidPos(int r, int c) {
+        return r >= 0 && r < w && c >= 0 && c < l;
     }
 
     /*
@@ -120,7 +122,7 @@ public class L130_SurroundedRegions {
 
             for (int[] d : directions) {
                 int newM = oldM + d[0], newN = oldN + d[1];
-                if (!validPos(newM, newN))
+                if (!isValidPos(newM, newN))
                     isValid = false;
                 else if (board[newM][newN] == 'O' && !filled[newM][newN])
                     q.offer(new Pair<>(newM, newN));
@@ -166,7 +168,7 @@ public class L130_SurroundedRegions {
         board[m][n] = '*';
         for (int[] d : directions) {
             int newM = m + d[0], newN = n + d[1];
-            if (validPos(newM, newN) && board[newM][newN] == 'O')
+            if (isValidPos(newM, newN) && board[newM][newN] == 'O')
                 floodFill3(board, newM, newN);
         }
     }
@@ -256,43 +258,6 @@ public class L130_SurroundedRegions {
         return m * w + n;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private static int l0, w0;
-
-    public static void solve0(char[][] board) {
-        if (board == null || board.length == 0 || board[0].length == 0) return;
-
-        w0 = board.length;     // 行数
-        l0 = board[0].length;  // 列数
-
-        for (int r = 0; r < w0; r++) {
-            for (int c = 0; c < l0; c++) {
-                if (board[r][c] == 'O') {
-                    floodFill0(board, r, c);
-                }
-            }
-        }
-    }
-
-    private static void floodFill0(char[][] board, int r, int c) {
-        if ()
-    }
-
     public static void main(String[] args) {
         char[][] board1 = {
             {'X', 'X', 'X', 'X'},
@@ -300,7 +265,7 @@ public class L130_SurroundedRegions {
             {'X', 'X', 'O', 'X'},
             {'X', 'O', 'X', 'X'}
         };
-        solve4(board1);
+        solve(board1);
         log(board1);
         /*
          * expects:
@@ -317,7 +282,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'O', 'X', 'O'}
         };
-        solve4(board2);
+        solve(board2);
         log(board2);
         /*
          * expects: (nothing changes)
@@ -334,7 +299,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'X', 'X', 'O'}   // 该行第2个元素与 board2 中不同
         };
-        solve4(board3);
+        solve(board3);
         log(board3);
         /*
          * expects: (nothing changes)
