@@ -30,14 +30,13 @@ public class L130_SurroundedRegions {
      *     2. 立即退出当前 Flood Fill，不再继续遍历该 region，而是在 board 上搜索下一个 region；
      *   若采用方案2，只将该 region 中遍历过的 '0' 标记为已填充，同时留有未遍历的 'O'，则 test case 3 会出错：
      *
-     *      O O O O       X X X X   - ∵ 第一排与边界相邻 ∴ 顺时针遍历邻居时马上就会越界，从而马上退出（但已标记为已填充）。
-     *      X O X O  -->  X O X O   - 而到遍历到 [1,1] 时 ∵ [1,0] 在刚才已经被 flip ∴ 不会再访问，从未无法知道它处于与
-     *      X O O X       X O O X     边界相邻的 region 中 ∴ 会误认为该 region 是有效的。
-     *      X X X O       X X X O
+     *        O O O O      O O O O    - ∵ 第一排与边界相邻 ∴ 顺时针遍历邻居时马上就会越界，从而马上退出（但已标记为已填充）。
+     *        X O X O  ->  X X X O    - 而当遍历到 [1,1] 时 ∵ [1,0] 在刚才已经被标记为已填充 ∴ 不会再访问。从而会误认为
+     *        X O O X      X X X X      [1,1]、[2,1]、[2,2] 是一个有效的 region 而将他们 flip。
+     *        X X X O      X X X O
      *
-     *   ∴ 若采用方案2，则在遍历 region 时不能将已遍历过的 'O' 标记为已填充（不能 flip），只能遍历碰壁后重新在 board 上搜索
-     *   来一个格一个格的进行 Flood Fill，这样效率很低 ∴ 我们应该采用方案1，一次性遍历完整个 region，即使发现该 region 无效
-     *   也先不退出，等所有 'O' 都被标记为已填充（被 flip）后才可以安心继续在 board 上搜索下一个 region。
+     *   ∴ 应该采用方案1，一次性遍历完整个 region，即使发现该 region 无效也先不退出，而是等所有 'O' 都被标记为已填充之后再
+     *   继续安心的在 board 上搜索下一个 region。
      *
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
@@ -255,6 +254,43 @@ public class L130_SurroundedRegions {
 
     private static int node(int m, int n) {  // 将二维坐标映射到一维数组索引上
         return m * w + n;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private static int l0, w0;
+
+    public static void solve0(char[][] board) {
+        if (board == null || board.length == 0 || board[0].length == 0) return;
+
+        w0 = board.length;     // 行数
+        l0 = board[0].length;  // 列数
+
+        for (int r = 0; r < w0; r++) {
+            for (int c = 0; c < l0; c++) {
+                if (board[r][c] == 'O') {
+                    floodFill0(board, r, c);
+                }
+            }
+        }
+    }
+
+    private static void floodFill0(char[][] board, int r, int c) {
+        if ()
     }
 
     public static void main(String[] args) {
