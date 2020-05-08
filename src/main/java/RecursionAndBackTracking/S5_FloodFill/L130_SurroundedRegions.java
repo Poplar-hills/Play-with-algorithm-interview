@@ -17,27 +17,27 @@ import java.util.Queue;
 public class L130_SurroundedRegions {
     /*
      * 解法1：Inside-out Flood Fill + Recursion (DFS)
-     * - 思路：首先一眼可知该题属于连通性问题，而连通性问题可用 Flood Fill 或 Union Find 求解。只是在不同于
-     *   L200_NumberOfIslands，该题中对有效 region 的定义是四周都是 'X' 的 'O'，而与边界相邻的 'O' 则是无效的 region。
-     *      -> 如此一来，程序的主体仍然可以是 Flood Fill，只需要在遍历 'O' 的邻居时加入对边界的判断 —— 若该 'O' 与边界相邻
-     *         则整个 region 无效，只有当 Flood Fill 在没有碰到边界的情况下正常结束时才算找到了有效的 region，进而再将其中
-     *         的所有 'O' 都 flip 成 'X'。
-     *         -> ∵ 要先遍历整个 region 后才能知道是否有效 ∴ 需要一个列表来暂存当前 region 中所有坐标，若遍历之后 region
-     *            有效则 flip 其中的所有坐标，否则直接丢弃即可。
+     * - 思路：首先一眼可知该题属于连通性问题，而连通性问题可用 Flood Fill 或 Union Find 求解。只是不同于 L200_NumberOfIslands，
+     *   该题中对有效 region 的定义是四周都是 'X' 的 'O'，而与边界相邻的 'O' 则是无效的 region。
+     *   -> 如此一来，程序的主体仍然可以是 Flood Fill，只需要在遍历 'O' 的邻居时加入对边界的判断 —— 若该 'O' 与边界相邻则
+     *      整个 region 无效，只有当 Flood Fill 在没有碰到边界的情况下正常结束时才算找到了有效的 region，进而再将其中的所有
+     *      'O' 都 flip 成 'X'。
+     *      -> ∵ 要先遍历整个 region 后才能知道是否有效 ∴ 需要一个列表来暂存当前 region 中所有坐标，若遍历之后 region
+     *         有效则 flip 其中的所有坐标，否则直接丢弃即可。
      *
      * - 实现：在遍历 region 时，一旦发现某个 'O' 的邻居越界（意味着该 region 无效），此时我们有两种方案：
-     *     1. 则立即退出当前 Flood Fill，不再继续遍历该 region，在 board 上搜索下一个 region；
-     *     2. 继续当前 Flood Fill，遍历完该 region；
-     *   ∵ 已经发现该 region 无效，所以肯定不会 flip 它 ∴ 这两种方案的不同点在于是否一次性遍历完该 region，并将其中的所有 'O'
-     *   标记为已填充。若不一次性遍历完（方案1），让该 region 中留有未遍历的 'O'，那么后面结果可能出错，例如 test case 3：
+     *     1. 继续当前 Flood Fill，遍历完该 region，并将其中的所有 'O' 标记为已填充；
+     *     2. 立即退出当前 Flood Fill，不再继续遍历该 region，而是在 board 上搜索下一个 region；
+     *   若采用方案2，只将该 region 中遍历过的 '0' 标记为已填充，同时留有未遍历的 'O'，则 test case 3 会出错：
      *
-     *      O O O O       O O O O   - ∵ 第一排与边界相邻 ∴ 顺时针遍历邻居时马上就会越界，从而马上退出（但已标记为已填充）
-     *      X O X O  -->  X X X O   - 而同一个 region 的 [1,1] 还未填充 ∴ 在访问它并顺时针遍历它的邻居时 ∵ 它上面的 'O'
-     *      X O O X       X X X X     已填充 ∴ 不会再访问，从未无法知道它是与边界相邻的 ∴ 仍然认为该 region 是有效的。
+     *      O O O O       X X X X   - ∵ 第一排与边界相邻 ∴ 顺时针遍历邻居时马上就会越界，从而马上退出（但已标记为已填充）。
+     *      X O X O  -->  X O X O   - 而到遍历到 [1,1] 时 ∵ [1,0] 在刚才已经被 flip ∴ 不会再访问，从未无法知道它处于与
+     *      X O O X       X O O X     边界相邻的 region 中 ∴ 会误认为该 region 是有效的。
      *      X X X O       X X X O
      *
-     *   ∴ 只能采用方案2，一次性将一个 region 遍历完，即使发现该 region 无效也先不退出，等所有 'O' 都被标记为已填充后才可以
-     *   安心继续在 board 上搜索下一个 region。
+     *   ∴ 若采用方案2，则在遍历 region 时不能将已遍历过的 'O' 标记为已填充（不能 flip），只能遍历碰壁后重新在 board 上搜索
+     *   来一个格一个格的进行 Flood Fill，这样效率很低 ∴ 我们应该采用方案1，一次性遍历完整个 region，即使发现该 region 无效
+     *   也先不退出，等所有 'O' 都被标记为已填充（被 flip）后才可以安心继续在 board 上搜索下一个 region。
      *
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
