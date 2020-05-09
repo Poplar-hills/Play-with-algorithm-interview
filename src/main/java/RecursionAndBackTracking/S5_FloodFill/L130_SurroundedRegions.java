@@ -87,45 +87,49 @@ public class L130_SurroundedRegions {
 
     /*
      * 解法2：Inside-out Flood Fill + Iteration (BFS)
-     * - 思路：与 L200_NumberOfIslands 解法2一致。
+     * - 思路：与解法1一致。
+     * - 实现：
+     *   1. 解法1中的 Flood Fill 采用的是基于 DFS 的回溯，而该解法中采用基于 BFS 的回溯。
+     *   2. Queue
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     public static void solve2(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
-        l = board.length;
-        w = board[0].length;
-        filled = new boolean[l][w];
-        List<Pair<Integer, Integer>> list = new ArrayList<>();  // 用于暂存当前 region 的所有格子
 
-        for (int m = 0; m < l; m++) {
-            for (int n = 0; n < w; n++) {
-                if (board[m][n] == 'O' && !filled[m][n]) {
-                    list.clear();                               // 每次使用前先清空
-                    if (validRegion2(board, m, n, list))        // 若该 region 有效，则 flip 该其中的所有 'O'
-                        for (Pair<Integer, Integer> p : list)
-                            board[p.getKey()][p.getValue()] = 'X';
+        w = board.length;
+        l = board[0].length;
+        filled = new boolean[w][l];
+        List<int[]> region = new ArrayList<>();  // 用于暂存当前 region 的所有格子
+
+        for (int r = 0; r < w; r++) {
+            for (int c = 0; c < l; c++) {
+                if (board[r][c] == 'O' && !filled[r][c]) {
+                    region.clear();                               // 每次使用前先清空
+                    if (validRegion2(board, r, c, region))        // 若该 region 有效，则 flip 该其中的所有 'O'
+                        for (int[] p : region)
+                            board[p[0]][p[1]] = 'X';
                 }
             }
         }
     }
 
-    private static boolean validRegion2(char[][] board, int m, int n, List<Pair<Integer, Integer>> list) {
+    private static boolean validRegion2(char[][] board, int r, int c, List<int[]> region) {
         boolean isValid = true;
-        Queue<Pair<Integer, Integer>> q = new LinkedList<>();
-        q.offer(new Pair<>(m, n));
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{r, c});
 
         while (!q.isEmpty()) {
-            Pair<Integer, Integer> pair = q.poll();
-            int oldM = pair.getKey(), oldN = pair.getValue();
-            list.add(new Pair<>(oldM, oldN));
-            filled[oldM][oldN] = true;
+            int[] pos = q.poll();
+            int oldR = pos[0], oldC = pos[1];
+            region.add(new int[]{oldR, oldC});
+            filled[oldR][oldC] = true;
 
             for (int[] d : directions) {
-                int newM = oldM + d[0], newN = oldN + d[1];
-                if (!isValidPos(newM, newN))
+                int newR = oldR + d[0], newC = oldC + d[1];
+                if (!isValidPos(newR, newC))
                     isValid = false;
-                else if (board[newM][newN] == 'O' && !filled[newM][newN])
-                    q.offer(new Pair<>(newM, newN));
+                else if (board[newR][newC] == 'O' && !filled[newR][newC])
+                    q.offer(new int[]{newR, newC});
             }
         }
 
@@ -265,7 +269,7 @@ public class L130_SurroundedRegions {
             {'X', 'X', 'O', 'X'},
             {'X', 'O', 'X', 'X'}
         };
-        solve(board1);
+        solve2(board1);
         log(board1);
         /*
          * expects:
@@ -282,7 +286,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'O', 'X', 'O'}
         };
-        solve(board2);
+        solve2(board2);
         log(board2);
         /*
          * expects: (nothing changes)
@@ -299,7 +303,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'X', 'X', 'O'}   // 该行第2个元素与 board2 中不同
         };
-        solve(board3);
+        solve2(board3);
         log(board3);
         /*
          * expects: (nothing changes)
