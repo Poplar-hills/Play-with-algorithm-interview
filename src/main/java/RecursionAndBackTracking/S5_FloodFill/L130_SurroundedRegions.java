@@ -16,7 +16,7 @@ import java.util.Queue;
 
 public class L130_SurroundedRegions {
     /*
-     * 解法1：Inside-out Flood Fill + Recursion (DFS)
+     * 解法1：Inside-out Flood Fill (DFS, Recursion)
      * - 思路：首先一眼可知该题属于连通性问题，而连通性问题可用 Flood Fill 或 Union Find 求解。只是不同于 L200_NumberOfIslands，
      *   该题中对有效 region 的定义是四周都是 'X' 的 'O'，而与边界相邻的 'O' 则是无效的 region。
      *   -> 如此一来，程序的主体仍然可以是 Flood Fill，只需要在遍历 'O' 的邻居时加入对边界的判断 —— 若该 'O' 与边界相邻则
@@ -86,7 +86,7 @@ public class L130_SurroundedRegions {
     }
 
     /*
-     * 解法2：Inside-out Flood Fill + Iteration (BFS)
+     * 解法2：Inside-out Flood Fill (BFS, Iteration)
      * - 思路：与解法1一致。
      * - 实现：解法1中的 Flood Fill 采用的是基于 DFS 的回溯，而该解法中采用基于 BFS 的回溯，比解法1更直观。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
@@ -136,10 +136,10 @@ public class L130_SurroundedRegions {
     }
 
     /*
-     * 解法3：Outside-in Flood Fill + Recursion (DFS)
+     * 解法3：Outside-in Flood Fill (DFS, Recursion)
      * - 思路：另一种聪明的思路是，从 board 边界上的 'O' 开始 Flood Fill，将这些无效的 region 用特殊符号 '*' 填充。当所有
-     *   的无效 region 被填充完之后，board 上剩余的 'O' 就都是有效的 region 了 ∴ 只需再将所有的 'O' flip 成 'X'，最后再
-     *   将所有的 '*' 替换回 'O' 即可。
+     *   的无效 region 被填充完之后，board 上剩余的 'O' 就都是有效的 region 了 ∴ 最后只需再将所有的 'O' flip 成 'X'、将
+     *   所有的 '*' 替换回 'O' 即可。
      * - 实现：相比解法1、2，该解法更加简洁，原因是：
      *     1. 先处理无效的 'O' ∴ 只需使用标准的 Flood Fill 即可，无需任何修改；
      *     2. 将遍历过的 'O' 替换成了 '*' ∴ 有 '*' 的格子即是被访问过的，无需再单独开辟 boolean[][]；
@@ -148,31 +148,31 @@ public class L130_SurroundedRegions {
      * */
     public static void solve3(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
-        l = board.length;
-        w = board[0].length;
+        w = board.length;
+        l = board[0].length;
 
-        for (int m = 0; m < l; m++) {  // 遍历左、右两条边界，并从上面的每个 'O' 开始 Flood Fill
-            if (board[m][0] == 'O') floodFill3(board, m, 0);
-            if (board[m][w - 1] == 'O') floodFill3(board, m, w - 1);
+        for (int r = 0; r < w; r++) {
+            if (board[r][0] == 'O') floodFill3(board, r, 0);          // 遍历左边界
+            if (board[r][l - 1] == 'O') floodFill3(board, r, l - 1);  // 遍历右边界
         }
-        for (int n = 0; n < w; n++) {  // 遍历上、下两条边界，并从上面的每个 'O' 开始 Flood Fill
-            if (board[0][n] == 'O') floodFill3(board, 0, n);
-            if (board[l - 1][n] == 'O') floodFill3(board, l - 1, n);
+        for (int c = 0; c < l; c++) {
+            if (board[0][c] == 'O') floodFill3(board, 0, c);          // 遍历上边界
+            if (board[w - 1][c] == 'O') floodFill3(board, w - 1, c);  // 遍历下边界
         }
-        for (int m = 0; m < l; m++) {  // 最后完成替换
-            for (int n = 0; n < w; n++) {
-                if (board[m][n] == 'O') board[m][n] = 'X';
-                if (board[m][n] == '*') board[m][n] = 'O';
+        for (int r = 0; r < w; r++) {                                 // 最后完成替换
+            for (int c = 0; c < l; c++) {
+                if (board[r][c] == 'O') board[r][c] = 'X';
+                if (board[r][c] == '*') board[r][c] = 'O';
             }
         }
     }
 
-    private static void floodFill3(char[][] board, int m, int n) {  // 标准的 Flood Fill，用 '*' 填充遍历到的格子
-        board[m][n] = '*';
+    private static void floodFill3(char[][] board, int r, int c) {  // 标准的 Flood Fill，用 '*' 填充遍历到的格子
+        board[r][c] = '*';
         for (int[] d : directions) {
-            int newM = m + d[0], newN = n + d[1];
-            if (isValidPos(newM, newN) && board[newM][newN] == 'O')
-                floodFill3(board, newM, newN);
+            int newR = r + d[0], newC = c + d[1];
+            if (isValidPos(newR, newC) && board[newR][newC] == 'O')
+                floodFill3(board, newR, newC);
         }
     }
 
@@ -268,7 +268,7 @@ public class L130_SurroundedRegions {
             {'X', 'X', 'O', 'X'},
             {'X', 'O', 'X', 'X'}
         };
-        solve2(board1);
+        solve3(board1);
         log(board1);
         /*
          * expects:
@@ -285,7 +285,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'O', 'X', 'O'}
         };
-        solve2(board2);
+        solve3(board2);
         log(board2);
         /*
          * expects: (nothing changes)
@@ -302,7 +302,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'X', 'X', 'O'}   // 该行第2个元素与 board2 中不同
         };
-        solve2(board3);
+        solve3(board3);
         log(board3);
         /*
          * expects: (nothing changes)
