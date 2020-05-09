@@ -179,13 +179,14 @@ public class L130_SurroundedRegions {
     /*
      * 解法4：Flood Fill + Union Find
      * - 思路：
-     *     1. 与 L200_NumberOfIslands 类似，该问题也是连通性问题 ∴ 同样可以使用并查集求解；
-     *     2. 程序的总体思路借鉴解法3，即先标记出无效的 'O'（与边界联通的 'O'），而剩下的 'O' 就都是有效的、需要被 flip 的了。
-     *   结合1、2得到具体思路：在并查集中将所有无效的 'O' 连接到一个虚拟节点上，之后遍历 board 上的所有 'O'，若它与虚拟节点不
-     *   联通，则说明是有效的 'O'，从而需要 flip。
+     *     1. ∵ 该问题是连通性问题 ∴ 可使用并查集求解；
+     *     2. 总体思路借鉴解法3，即先标记出无效（与边界联通）的 'O'，剩下的 'O' 就都是有效的、需要被 flip 的了。
+     *   结合1、2得到具体思路：
+     *     1. 先在并查集中将所有无效的 'O' 连接到一个虚拟节点上；
+     *     2. 之后遍历 board 上的所有 'O'，若它与虚拟节点不联通，则说明是有效的 'O'，从而进行 flip。
      * - 实现：
-     *     1. 并查集的实现比较标准，没有做过多改变，需要的修改（如二维坐标到一维的映射）都放到主逻辑中，从而让并查集保持纯粹；
-     *     2. 并查集若不做优化则会 Time Limit Exceeded ∴ 加入 path compression 优化，和基于 rank 的优化。
+     *     1. 并查集的实现比较标准，没有过多改变，需要的修改（如二维坐标到一维的映射）都放到主逻辑中，从而让并查集保持纯粹；
+     *     2. 并查集若不做优化则会 Time Limit Exceeded ∴ 加入 path compression 和基于 rank 的优化。
      * - 👉 理解：该解法是真正理解并查集（及其优化方式）的极好题目，一定要下断点跟踪 parents 每一步的变化来加深理解。
      * - 时间复杂度 O(l*w)：基于 path-compression + rank 的并查集的效率接近 O(1)；
      * - 空间复杂度 O(l*w)。
@@ -194,7 +195,7 @@ public class L130_SurroundedRegions {
         private int [] parents;
         private int [] ranks;
 
-        public UnionFind(int size) {  // 对比 L200 中的并查集，该并查集的构造方法无需传入整个 board，只需其 size 即可
+        public UnionFind(int size) {  // 对比 L200 中的并查集，该并查集的构造方法无需传入整个 board，只使用其 size 即可
             parents = new int[size];
             ranks = new int[size];
             for (int i = 0; i < size; i++) {
@@ -232,33 +233,35 @@ public class L130_SurroundedRegions {
 
     public static void solve4(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
-        l = board.length;
-        w = board[0].length;
+
+        w = board.length;
+        l = board[0].length;
         UnionFind uf = new UnionFind(l * w + 1);  // 最后多开辟1的空间存放虚拟节点
         int dummyNode = l * w;
 
-        for (int m = 0; m < l; m++) {             // 遍历 board 上所有的 'O'
-            for (int n = 0; n < w; n++) {
-                if (board[m][n] != 'O') continue;
-                if (m == 0 || m == l - 1 || n == 0 || n == w - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
-                    uf.union(node(m, n), dummyNode);
+        for (int r = 0; r < w; r++) {             // 遍历 board 上所有的 'O'
+            for (int c = 0; c < l; c++) {
+                if (board[r][c] != 'O') continue;
+                if (r == 0 || r == l - 1 || c == 0 || c == w - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
+                    uf.union(node(r, c), dummyNode);
                 else {                            // 若 'O' 不在边界上，则与四周相邻的 'O' 连通
                     for (int[] d : directions) {
-                        int newM = m + d[0], newN = n + d[1];
-                        if (board[newM][newN] == 'O')
-                            uf.union(node(m, n), node(newM, newN));
+                        int newR = r + d[0], newC = c + d[1];
+                        if (board[newR][newC] == 'O')
+                            uf.union(node(r, c), node(newR, newC));
                     }
                 }
             }
         }
-        for (int m = 1; m < l - 1; m++)      // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
-            for (int n = 1; n < w - 1; n++)
-                if (!uf.isConnected(node(m, n), dummyNode))
-                    board[m][n] = 'X';
+
+        for (int r = 1; r < l - 1; r++)      // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
+            for (int c = 1; c < w - 1; c++)
+                if (!uf.isConnected(node(r, c), dummyNode))
+                    board[r][c] = 'X';
     }
 
-    private static int node(int m, int n) {  // 将二维坐标映射到一维数组索引上
-        return m * w + n;
+    private static int node(int r, int c) {  // 将二维坐标映射到一维数组索引上
+        return r * w + c;
     }
 
     public static void main(String[] args) {
