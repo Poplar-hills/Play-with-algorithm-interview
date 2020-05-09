@@ -236,16 +236,16 @@ public class L130_SurroundedRegions {
 
         w = board.length;
         l = board[0].length;
-        UnionFind uf = new UnionFind(l * w + 1);  // 最后多开辟1的空间存放虚拟节点
+        UnionFind uf = new UnionFind(l * w + 1);      // 最后多开辟1的空间存放虚拟节点
         int dummyNode = l * w;
 
-        for (int r = 0; r < w; r++) {             // 遍历 board 上所有的 'O'
+        for (int r = 0; r < w; r++) {                 // 遍历 board 上所有的 'O'
             for (int c = 0; c < l; c++) {
                 if (board[r][c] != 'O') continue;
-                if (r == 0 || r == l - 1 || c == 0 || c == w - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
+                if (r == 0 || r == w - 1 || c == 0 || c == l - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
                     uf.union(node(r, c), dummyNode);
-                else {                            // 若 'O' 不在边界上，则与四周相邻的 'O' 连通
-                    for (int[] d : directions) {
+                else {                                // 将不在边界上的 'O' 与四周相邻的 'O' 连通，从而让有效的跟有效
+                    for (int[] d : directions) {      // 的连通，无效的跟无效的连通
                         int newR = r + d[0], newC = c + d[1];
                         if (board[newR][newC] == 'O')
                             uf.union(node(r, c), node(newR, newC));
@@ -271,7 +271,7 @@ public class L130_SurroundedRegions {
             {'X', 'X', 'O', 'X'},
             {'X', 'O', 'X', 'X'}
         };
-        solve3(board1);
+        solve4(board1);
         log(board1);
         /*
          * expects:
@@ -288,7 +288,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'O', 'X', 'O'}
         };
-        solve3(board2);
+        solve4(board2);
         log(board2);
         /*
          * expects: (nothing changes)
@@ -305,7 +305,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'X', 'X', 'O'}   // 该行第2个元素与 board2 中不同
         };
-        solve3(board3);
+        solve4(board3);
         log(board3);
         /*
          * expects: (nothing changes)
