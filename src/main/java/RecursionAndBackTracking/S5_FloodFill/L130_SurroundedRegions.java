@@ -69,8 +69,8 @@ public class L130_SurroundedRegions {
         filled[r][c] = true;
         list.add(new int[]{r, c});
 
-        for (int[] dir : directions) {
-            int newR = r + dir[0], newC = c + dir[1];
+        for (int[] d : directions) {
+            int newR = r + d[0], newC = c + d[1];
             if (!isValidPos(newR, newC))
                 isValid = false;       // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效
             else if (board[newR][newC] == 'O' && !filled[newR][newC])
@@ -88,9 +88,7 @@ public class L130_SurroundedRegions {
     /*
      * 解法2：Inside-out Flood Fill + Iteration (BFS)
      * - 思路：与解法1一致。
-     * - 实现：
-     *   1. 解法1中的 Flood Fill 采用的是基于 DFS 的回溯，而该解法中采用基于 BFS 的回溯。
-     *   2. Queue
+     * - 实现：解法1中的 Flood Fill 采用的是基于 DFS 的回溯，而该解法中采用基于 BFS 的回溯，比解法1更直观。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     public static void solve2(char[][] board) {
@@ -104,8 +102,8 @@ public class L130_SurroundedRegions {
         for (int r = 0; r < w; r++) {
             for (int c = 0; c < l; c++) {
                 if (board[r][c] == 'O' && !filled[r][c]) {
-                    region.clear();                               // 每次使用前先清空
-                    if (validRegion2(board, r, c, region))        // 若该 region 有效，则 flip 该其中的所有 'O'
+                    region.clear();                           // 每次使用前先清空
+                    if (isValidRegion2(board, r, c, region))  // 若该 region 有效，则 flip 该其中的所有 'O'
                         for (int[] p : region)
                             board[p[0]][p[1]] = 'X';
                 }
@@ -113,19 +111,20 @@ public class L130_SurroundedRegions {
         }
     }
 
-    private static boolean validRegion2(char[][] board, int r, int c, List<int[]> region) {
+    private static boolean isValidRegion2(char[][] board, int initR, int initC, List<int[]> region) {
         boolean isValid = true;
-        Queue<int[]> q = new LinkedList<>();
-        q.offer(new int[]{r, c});
+        Queue<int[]> q = new LinkedList<>();  // 用 Queue 实现基于 BFS 的回溯
+        q.offer(new int[]{initR, initC});
 
         while (!q.isEmpty()) {
             int[] pos = q.poll();
-            int oldR = pos[0], oldC = pos[1];
-            region.add(new int[]{oldR, oldC});
-            filled[oldR][oldC] = true;
+            int r = pos[0], c = pos[1];
+
+            region.add(new int[]{r, c});
+            filled[r][c] = true;
 
             for (int[] d : directions) {
-                int newR = oldR + d[0], newC = oldC + d[1];
+                int newR = r + d[0], newC = c + d[1];
                 if (!isValidPos(newR, newC))
                     isValid = false;
                 else if (board[newR][newC] == 'O' && !filled[newR][newC])
