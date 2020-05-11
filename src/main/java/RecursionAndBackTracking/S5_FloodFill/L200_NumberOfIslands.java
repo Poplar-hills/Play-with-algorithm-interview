@@ -123,12 +123,15 @@ public class L200_NumberOfIslands {
 
     /*
      * 解法3：Flood Fill + Union Find
-     * - 思路：该问题可以建模为一个联通性问题，即 grid 中的所有 land 是否两两联通，若联通则属于同一个 island。由此问题转化为
-     *   求 grid 上任意两个是 land 的格子是否联通，而 Union Find 是专门解决连通性问题的数据结构 ∴ 根据该思路可设计程序：
-     *     1. 初始化并查集（此时并查集中每个 land 格子都是一个 island）；
-     *     2. 遍历 grid 上的每个 land 格子；
-     *     3. 不断将相邻的 land 格子 union 起来（让他们在并查集中共享一个 island id）。
-     * - 改进：UnionFind 有很多优化策略：基于树大小、基于树高、基于路径压缩等方式，具体 SEE: play-with-data-structure/UnionFind
+     * - 思路：该问题是一个联通性问题，即 grid 中的所有 land 是否两两联通，若联通则属于同一个 island。而 Union Find 是专门
+     *   解决连通性问题的数据结构 ∴ 整体思路可以是：
+     *     1. 对 grid 上的所有 '1' 进行 Flood Fill，并在并查集中将相邻的 '1' 进行连通；
+     *     2. 并查集返回连通区域的个数。
+     * - 实现：为了能让并查集返回连通区域的个数，需要对并查集进行设计：
+     *     1. 初始化时，grid 中的每个 '1' 都被认为是一个独立的 island ∴ 每个 '1' 在并查集中都有自己的集合编号；而所有 '0'
+     *        则在并查集中共享同一个集合编号；
+     *     2. 在 Flood Filled 进行过程中不断将相邻的 island 在并查集中连通，共享同一个集合编号；
+     * - 改进：UnionFind 有很多优化策略：基于树大小、基于树高、基于路径压缩等方式，具体 SEE: Play-with-data-structure/UnionFind
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     private static class UnionFind {
