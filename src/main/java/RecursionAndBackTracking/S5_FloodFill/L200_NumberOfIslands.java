@@ -3,8 +3,10 @@ package RecursionAndBackTracking.S5_FloodFill;
 
 import static Utils.Helpers.*;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 /*
  * Number of Islands
@@ -75,12 +77,12 @@ public class L200_NumberOfIslands {
     }
 
     /*
-     * 解法2：Flood Fill + Iteration (BFS)
+     * 解法2：Flood Fill + (BFS, Iteration)
      * - 思路：与解法1一致。
      * - 实现：与解法1有两处不同：
-     *     1. 解法1中的 floodFill 方法采用的回溯本质上是 DFS，而该解法中 floodFill2 方法采用 BFS 实现；
-     *     2. 解法1中单独创建了 boolean[][] 用于记录哪些格子已被填充，而该解法中采用 in-place modification，即每到达一个
-     *        格子，就在 grid 中将这个格子标记为'0'，从而也能达到不重复填充的目的。
+     *   1. 采用基于 BFS 实现 Flood Fill；
+     *   2. 解法1中单独创建了 boolean[][] 用于记录哪些格子已被填充，而该解法中采用 in-place modification，即每到达一个
+     *      格子，就在 grid 中将这个格子标记为'0'，从而也能达到不重复填充的目的。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     public static int numIslands2(char[][] grid) {
@@ -163,47 +165,49 @@ public class L200_NumberOfIslands {
 
     public static int numIslands3(char[][] grid) {
         if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;
-        l = grid.length;
-        w = grid[0].length;
-        UnionFind uf = new UnionFind(grid);       // 初始化并查集
 
-        for (int m = 0; m < l; m++) {
-            for (int n = 0; n < w; n++) {
-                if (grid[m][n] == '1') {          // 遍历 grid 上的每个 land 格子
-                    for (int[] d : directions) {  // 将每个 land 格子与其相邻的 land 格子进行 union
-                        int newM = m + d[0], newN = n + d[1];
-                        if (isValidPos(newM, newN) && grid[newM][newN] == '1')
-                            uf.union(m * w + n, newM * w + newN);  // 对格子 [m,n] 和 [newM,newN] 进行编码
-                    }
-                }
-            }
-        }
+        w = grid.length;
+        l = grid[0].length;
+        UnionFind uf = new UnionFind(grid);  // 初始化并查集
+
+        for (int r = 0; r < w; r++)
+            for (int c = 0; c < l; c++)
+                if (grid[r][c] == '1')
+                    floodFill3(grid, r, c, uf);
 
         return uf.count;  // 最后返回并查集中的 count
     }
 
+    private static void floodFill3(char[][] grid, int r, int c, UnionFind uf) {
+        for (int[] d : directions) {                   // 将每个 land 格子与其相邻的 land 格子进行 union
+            int newR = r + d[0], newC = c + d[1];
+            if (isValidPos(newR, newC) && grid[newR][newC] == '1')
+                uf.union(r * l + c, newR * l + newC);  // 将 [r,c]、[newR,newC] 进行一维化编码
+        }
+    }
+
     public static void main(String[] args) {
-        log(numIslands(new char[][] {  // expects 3
+        log(numIslands3(new char[][] {  // expects 3
             {'1', '1', '0', '0', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '1', '0', '0'},
             {'0', '0', '0', '1', '1'},
         }));
 
-        log(numIslands(new char[][] {  // expects 1
+        log(numIslands3(new char[][] {  // expects 1
             {'1', '1', '1', '1', '0'},
             {'1', '1', '0', '1', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '0', '0', '0'},
         }));
 
-        log(numIslands(new char[][] {  // expects 2
+        log(numIslands3(new char[][] {  // expects 2
             {'0', '0', '0'},
             {'0', '1', '1'},
             {'1', '0', '0'},
         }));
 
-        log(numIslands(new char[][] {  // expects 1
+        log(numIslands3(new char[][] {  // expects 1
             {'1'},
         }));
     }
