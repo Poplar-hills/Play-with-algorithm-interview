@@ -139,14 +139,14 @@ public class L200_NumberOfIslands {
         private int count;                     // 并查集中维护 island 的个数
 
         UnionFind(char[][] grid) {
-            int l = grid.length, w = grid[0].length;
+            int w = grid.length, l = grid[0].length;
             parents = new int[l * w];          // parents 的大小即 grid 的大小
 
-            for (int m = 0; m < l; m++) {
-                for (int n = 0; n < w; n++) {
-                    if (grid[m][n] == '1') {   // 初始化时给每个 land 格子一个唯一的 id
-                        int id = m * w + n;    // id 的生成公式（∵ m ∈ [0,l)，n ∈ [0,w) ∴ m*w+n ∈ [0,l*w)，正好是 parents 的大小）
-                        parents[id] = id;      // 💎 相当于通过 m*w+n 这个公式，把二维平面映射到了一维数组上
+            for (int r = 0; r < w; r++) {
+                for (int c = 0; c < l; c++) {
+                    if (grid[r][c] == '1') {   // 初始化时给每个 land 格子一个唯一的 id
+                        int id = r * l + c;    // 将二维坐标映射到一维
+                        parents[id] = id;
                         count++;               // 初始化时每个 land 格子都是一个 island（之后再把相邻的 land 不断 union 起来）
                     }
                 }
