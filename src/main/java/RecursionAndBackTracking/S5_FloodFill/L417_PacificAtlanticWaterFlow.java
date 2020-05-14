@@ -127,7 +127,7 @@ public class L417_PacificAtlanticWaterFlow {
     }
 
     public static void main(String[] args) {
-        log(pacificAtlantic0(new int[][] {
+        log(pacificAtlantic(new int[][] {
           {1, 2, 2, 3, 5},
           {3, 2, 3, 4, 4},
           {2, 4, 5, 3, 1},
@@ -146,7 +146,7 @@ public class L417_PacificAtlanticWaterFlow {
          *          -   -   -   -   - Atlantic
          * */
 
-        log(pacificAtlantic0(new int[][] {
+        log(pacificAtlantic(new int[][] {
             {2, 9, 5, 3, 7},
             {5, 7, 2, 4, 3},
             {6, 6, 6, 8, 4}

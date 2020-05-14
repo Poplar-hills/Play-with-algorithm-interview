@@ -213,8 +213,8 @@ public class L130_SurroundedRegions {
             else if (ranks[pRoot] > ranks[qRoot])
                 parents[qRoot] = pRoot;
             else {
-                parents[qRoot] = pRoot;
-                ranks[pRoot] += 1;
+                parents[pRoot] = qRoot;
+                ranks[qRoot]++;
             }
         }
 
