@@ -3,10 +3,8 @@ package RecursionAndBackTracking.S5_FloodFill;
 
 import static Utils.Helpers.*;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Set;
 
 /*
  * Number of Islands
@@ -77,7 +75,7 @@ public class L200_NumberOfIslands {
     }
 
     /*
-     * 解法2：Flood Fill + (BFS, Iteration)
+     * 解法2：Flood Fill (BFS, Iteration)
      * - 思路：与解法1一致。
      * - 实现：与解法1有两处不同：
      *   1. 采用基于 BFS 实现 Flood Fill；
@@ -125,12 +123,13 @@ public class L200_NumberOfIslands {
      * 解法3：Flood Fill + Union Find
      * - 思路：该问题是一个联通性问题，即 grid 中的所有 land 是否两两联通，若联通则属于同一个 island。而 Union Find 是专门
      *   解决连通性问题的数据结构 ∴ 整体思路可以是：
-     *     1. 对 grid 上的所有 '1' 进行 Flood Fill，并在并查集中将相邻的 '1' 进行连通；
+     *     1. 对 grid 上的所有 '1' 进行 Flood Fill，并在并查集中将相邻的 '1' 连通；
      *     2. 并查集返回连通区域的个数。
      * - 实现：为了能让并查集返回连通区域的个数，需要对并查集进行设计：
      *     1. 初始化时，grid 中的每个 '1' 都被认为是一个独立的 island ∴ 每个 '1' 在并查集中都有自己的集合编号；而所有 '0'
      *        则在并查集中共享同一个集合编号；
-     *     2. 在 Flood Filled 进行过程中不断将相邻的 island 在并查集中连通，共享同一个集合编号；
+     *     2. 并查集维护 island 的个数。初始化时 island 个数为 '1' 的个数；之后 Flood Filled 中每次将相邻的 island 在
+     *        并查集中连通时都让 island 个数 -1；
      * - 改进：UnionFind 有很多优化策略：基于树大小、基于树高、基于路径压缩等方式，具体 SEE: Play-with-data-structure/UnionFind
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
