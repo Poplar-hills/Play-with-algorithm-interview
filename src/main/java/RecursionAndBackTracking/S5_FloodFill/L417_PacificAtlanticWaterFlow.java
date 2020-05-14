@@ -44,7 +44,7 @@ public class L417_PacificAtlanticWaterFlow {
      * - 时间复杂度 O(l*w * l*w)，空间复杂度 O(l*w)。
      * */
 
-    private static int l, w;
+    private static int w, l;
     private static int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
     public static List<List<Integer>> pacificAtlantic(int[][] matrix) {
@@ -71,16 +71,16 @@ public class L417_PacificAtlanticWaterFlow {
         if (set.size() == 2) return;                // 当1和0都有时说明本次 Flood Fill 已经找到解了
 
         for (int[] d : directions) {
-            int newR = r + d[0], newC = c + d[1];
-            if (validPos(matrix, newR, newC) && matrix[r][c] >= matrix[newR][newC] && !filled[newR][newC]) {
-                reachSeas(matrix, newR, newC, set, filled);
+            int newM = r + d[0], newN = c + d[1];
+            if (validPos(matrix, newM, newN) && matrix[r][c] >= matrix[newM][newN] && !filled[newM][newN]) {
+                reachSeas(matrix, newM, newN, set, filled);
                 if (set.size() == 2) return;        // 若已经找到解则提前退出遍历
             }
         }
     }
 
     private static boolean validPos(int[][] matrix, int r, int c) {
-        return r >= 0 && r < l && c >= 0 && c < w;
+        return r >= 0 && r < w && c >= 0 && c < l;
     }
 
     /*
@@ -94,23 +94,23 @@ public class L417_PacificAtlanticWaterFlow {
     public static List<List<Integer>> pacificAtlantic2(int[][] matrix) {
         List<List<Integer>> res = new ArrayList<>();
         if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return res;
-        l = matrix.length;
-        w = matrix[0].length;
-        boolean[][] reachPacific = new boolean[l][w];
-        boolean[][] reachAtlantic = new boolean[l][w];
+        w = matrix.length;
+        l = matrix[0].length;
+        boolean[][] reachPacific = new boolean[w][l];
+        boolean[][] reachAtlantic = new boolean[w][l];
 
-        for (int m = 0; m < l; m++) {
+        for (int m = 0; m < w; m++) {
             floodFill(matrix, m, 0, reachPacific);       // 第一列
-            floodFill(matrix, m, w - 1, reachAtlantic);  // 最后一列
+            floodFill(matrix, m, l - 1, reachAtlantic);  // 最后一列
         }
 
-        for (int n = 0; n < w; n++) {
+        for (int n = 0; n < l; n++) {
             floodFill(matrix, 0, n, reachPacific);       // 第一行
-            floodFill(matrix, l - 1, n, reachAtlantic);  // 最后一行
+            floodFill(matrix, w - 1, n, reachAtlantic);  // 最后一行
         }
 
-        for (int m = 0; m < l; m++)
-            for (int n = 0; n < w; n++)
+        for (int m = 0; m < w; m++)
+            for (int n = 0; n < l; n++)
                 if (reachPacific[m][n] && reachAtlantic[m][n])
                     res.add(Arrays.asList(m, n));
 
