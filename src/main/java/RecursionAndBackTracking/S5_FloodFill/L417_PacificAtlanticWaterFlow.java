@@ -35,12 +35,12 @@ public class L417_PacificAtlanticWaterFlow {
      *
      * - 实现：根据以上思路可设计程序：
      *     1. 主程序遍历 matrix，对每个格进行 Flood Fill；
-     *     2. Flood Fill 中的递归函数定义为：f(m,n) 表示从格子 [m,n] 开始进行 Flood Fill，若能到达左/上以及右/下则返回
-     *   Set(1,0)，若只到达左/上则返回 Set(1)，若只到达右/下则返回 Set(0)；
-     *     3. 若某分支走到某格已经获得 Set(1,0)，则可以提前返回，而若 Set 中只有一个数字则还需继续走下去；
-     *     4. 若某分支已经返回 Set(1,0)，则上层递归无需在走完其他分支，可以提前返回；
+     *     2. 在 Flood Fill 之前创建2个标志位，到达了一个海边就将一个标志位置为 true；
+     *     3. 若某分支走到某格时两个标志位都为 true，则可以提前返回；若只有一个标志位为 true 则还需继续走下去；
+     *     4. 若某分支的两个标志位都已为 true，则上层递归无需在走完其他分支，可以提前返回；
      *     5. 每次 Flood Fill 过程中一个格子只能经过一次（否则可能产生无限循环），而不同的 Flood Fill 过程之间互不相干。
      *
+     * - 改进：∵ 该解法要通过 Flood Fill 检查每一格子最终是否到达了海边，并且过程中没有缓存中间计算结果 ∴ 存在很多重复计算。
      * - 时间复杂度 O(l*w * l*w)，空间复杂度 O(l*w)。
      * */
 
@@ -55,31 +55,31 @@ public class L417_PacificAtlanticWaterFlow {
 
         for (int r = 0; r < w; r++) {
             for (int c = 0; c < l; c++) {
-                Set<Integer> set = new HashSet<>();
-                reachSeas(matrix, r, c, set, new boolean[w][l]);
-                if (set.size() == 2)
+                boolean[] reached = new boolean[2];
+                reachSeas(matrix, r, c, reached, new boolean[w][l]);
+                if (reached[0] && reached[1])
                     res.add(Arrays.asList(r, c));
             }
         }
         return res;
     }
 
-    private static void reachSeas(int[][] matrix, int r, int c, Set<Integer> set, boolean[][] filled) {
+    private static void reachSeas(int[][] matrix, int r, int c, boolean[] reached, boolean[][] filled) {
         filled[r][c] = true;
-        if (r == 0 || c == 0) set.add(1);           // 1代表抵达了左/上界
-        if (r == w - 1 || c == l - 1) set.add(0);   // 0代表抵达了右/下界
-        if (set.size() == 2) return;                // 当1和0都有时说明本次 Flood Fill 已经找到解了
+        if (r == 0 || c == 0) reached[0] = true;          // 抵达了左/上界
+        if (r == w - 1 || c == l - 1) reached[1] = true;  // 抵达了右/下界
+        if (reached[0] && reached[1]) return;             // 当都为 true 时说明已找到解
 
         for (int[] d : directions) {
-            int newM = r + d[0], newN = c + d[1];
-            if (validPos(matrix, newM, newN) && matrix[r][c] >= matrix[newM][newN] && !filled[newM][newN]) {
-                reachSeas(matrix, newM, newN, set, filled);
-                if (set.size() == 2) return;        // 若已经找到解则提前退出遍历
+            int newR = r + d[0], newC = c + d[1];
+            if (isValidPos(matrix, newR, newC) && matrix[r][c] >= matrix[newR][newC] && !filled[newR][newC]) {
+                reachSeas(matrix, newR, newC, reached, filled);
+                if (reached[0] && reached[1]) return;     // 若已经找到解则提前退出遍历
             }
         }
     }
 
-    private static boolean validPos(int[][] matrix, int r, int c) {
+    private static boolean isValidPos(int[][] matrix, int r, int c) {
         return r >= 0 && r < w && c >= 0 && c < l;
     }
 
@@ -121,7 +121,7 @@ public class L417_PacificAtlanticWaterFlow {
         filled[m][n] = true;
         for (int[] d : directions) {
             int newM = m + d[0], newN = n + d[1];
-            if (validPos(matrix, newM, newN) && matrix[m][n] <= matrix[newM][newN] && !filled[newM][newN])
+            if (isValidPos(matrix, newM, newN) && matrix[m][n] <= matrix[newM][newN] && !filled[newM][newN])
                 floodFill(matrix, newM, newN, filled);  // 注意上面判断条件是由低水位流向高水位 ∵ 是从边界向内陆 Flood Fill
         }
     }
