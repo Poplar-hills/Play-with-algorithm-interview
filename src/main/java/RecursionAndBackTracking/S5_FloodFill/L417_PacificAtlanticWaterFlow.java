@@ -25,14 +25,13 @@ import java.util.Set;
 
 public class L417_PacificAtlanticWaterFlow {
     /*
-     * 解法1：Inside-out Flood Fill + Recursion (DFS)
+     * 解法1：Inside-out Flood Fill (DFS, Recursion)
      * - 思路：首先一眼可知该题属于连通性问题，而连通性问题可用 Flood Fill 或 Union Find 求解。而不同于 L130 和 L200，
      *   该题中对”联通”的限制为：
-     *     1. 联通的标志是要能到达左/上边界以及右/下边界；
+     *     1. 联通的标志是要能到达左/上边界、右/下边界；
      *     2. 联通的过程是只能由高水位到达同级或更低水位。
-     *   第二点很容易判断，只需在 Flood Fill 遍历每个格子的邻居时对水位进行判断即可；而第一点的判断时机则是在 Flood Fill 的
-     *   某个分支抵达边界时进行，若有单个分支能同时抵达左/上以及右/下，过多个分支分别抵达左/上以及右/下则说明该 Flood Fill 的
-     *   起始格子是一个有效解。
+     *   第二点很容易判断，只需在 Flood Fill 遍历相邻格子时对水位进行判断即可；而第一点的判断时机则是在 Flood Fill 的某个
+     *   分支抵达边界时进行，若有单个分支能同时抵或多个分支分别抵达左/上、右/下，则说明该 Flood Fill 的起始格子是一个有效解。
      *
      * - 实现：根据以上思路可设计程序：
      *     1. 主程序遍历 matrix，对每个格进行 Flood Fill；
@@ -51,42 +50,41 @@ public class L417_PacificAtlanticWaterFlow {
     public static List<List<Integer>> pacificAtlantic(int[][] matrix) {
         List<List<Integer>> res = new ArrayList<>();
         if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return res;
-        l = matrix.length;
-        w = matrix[0].length;
+        w = matrix.length;
+        l = matrix[0].length;
 
-        for (int m = 0; m < l; m++) {
-            for (int n = 0; n < w; n++) {
+        for (int r = 0; r < w; r++) {
+            for (int c = 0; c < l; c++) {
                 Set<Integer> set = new HashSet<>();
-                boolean[][] filled = new boolean[l][w];  // 在每次 Flood Fill 过程中记录经过的格子
-                reachSeas(matrix, m, n, set, filled);
+                reachSeas(matrix, r, c, set, new boolean[w][l]);
                 if (set.size() == 2)
-                    res.add(Arrays.asList(m, n));
+                    res.add(Arrays.asList(r, c));
             }
         }
         return res;
     }
 
-    private static void reachSeas(int[][] matrix, int m, int n, Set<Integer> set, boolean[][] filled) {
-        filled[m][n] = true;
-        if (m == 0 || n == 0) set.add(1);           // 1代表抵达了左/上界
-        if (m == l - 1 || n == w - 1) set.add(0);   // 0代表抵达了右/下界
+    private static void reachSeas(int[][] matrix, int r, int c, Set<Integer> set, boolean[][] filled) {
+        filled[r][c] = true;
+        if (r == 0 || c == 0) set.add(1);           // 1代表抵达了左/上界
+        if (r == w - 1 || c == l - 1) set.add(0);   // 0代表抵达了右/下界
         if (set.size() == 2) return;                // 当1和0都有时说明本次 Flood Fill 已经找到解了
 
         for (int[] d : directions) {
-            int newM = m + d[0], newN = n + d[1];
-            if (validPos(matrix, newM, newN) && matrix[m][n] >= matrix[newM][newN] && !filled[newM][newN]) {
-                reachSeas(matrix, newM, newN, set, filled);
+            int newR = r + d[0], newC = c + d[1];
+            if (validPos(matrix, newR, newC) && matrix[r][c] >= matrix[newR][newC] && !filled[newR][newC]) {
+                reachSeas(matrix, newR, newC, set, filled);
                 if (set.size() == 2) return;        // 若已经找到解则提前退出遍历
             }
         }
     }
 
-    private static boolean validPos(int[][] matrix, int m, int n) {
-        return m >= 0 && m < l && n >= 0 && n < w;
+    private static boolean validPos(int[][] matrix, int r, int c) {
+        return r >= 0 && r < l && c >= 0 && c < w;
     }
 
     /*
-     * 解法2：Outside-in Flood Fill + Recursion (DFS)
+     * 解法2：Outside-in Flood Fill (DFS, Recursion)
      * - 思路：类似 L130_SurroundedRegions 解法3的思路，从边界向内陆进行 Flood Fill。具体来说，从 Pacific 的两边进行
      *   Flood Fill，将与 Pacific 连通的格子进行标记，然后再从 Atlantic 的两边进行 Flood Fill，同样将与 Atlantic 连通
      *   的格子进行标记，若同一个格子被标记过两次，则说明该格子是一个解。
@@ -129,7 +127,7 @@ public class L417_PacificAtlanticWaterFlow {
     }
 
     public static void main(String[] args) {
-        log(pacificAtlantic2(new int[][] {
+        log(pacificAtlantic(new int[][] {
           {1, 2, 2, 3, 5},
           {3, 2, 3, 4, 4},
           {2, 4, 5, 3, 1},
@@ -148,7 +146,7 @@ public class L417_PacificAtlanticWaterFlow {
          *          -   -   -   -   - Atlantic
          * */
 
-        log(pacificAtlantic2(new int[][] {
+        log(pacificAtlantic(new int[][] {
             {2, 9, 5, 3, 7},
             {5, 7, 2, 4, 3},
             {6, 6, 6, 8, 4}
