@@ -40,8 +40,10 @@ public class L51_NQueens {
      *   方向中是否还有其他皇后存在。
      *
      * - 实现：该解法中采用 boolean[][] attackable 来标记哪些格子处在已放置皇后的攻击范围内。每当放置一个皇后之后，都更新
-     *   attackable，将其可攻击到的格子标记为 true。而每当要返回上层递归时，先要将 attackable 的状态恢复原状，但注意这里在
-     *   恢复时不能直接将格子标记为 false（∵ 该格子可能在置为 true 之前就是已经是 true 了）∴ 要使用 tmp 变量保存原来的状态。
+     *   attackable，将其可攻击到的格子标记为 true。而每当要返回上层递归时，先要将 attackable 的状态恢复原状。但注意在恢复
+     *   原状时不能直接将格子标记为 false，这是 ∵ 该格子在被置为 true 之前可能就是已经是 true 了（即当前皇后与之前皇后的攻击
+     *   范围有所重叠）∴ 需要在将格子置为 true 之前先用 tmp 记录 attackable 原来的状态，以便在返回上层前能进行恢复，又不会
+     *   破坏之前皇后的攻击范围。
      *
      * - 时间复杂度 O(n^n)；空间复杂度 O(n^2)。
      * */
@@ -51,7 +53,7 @@ public class L51_NQueens {
         List<List<String>> res = new ArrayList<>();
         if (n <= 0) return res;
         attackable = new boolean[n][n];
-        putQueen0(0, n, new ArrayList<>(), res);
+        putQueen0(0, n, new ArrayList<>(), res);  // 从第0行开始尝试放置皇后，并将放置的纵坐标记录在 pos 中
         return res;
     }
 
@@ -114,17 +116,22 @@ public class L51_NQueens {
     }
 
     /*
-     * 解法1：Backtracking
-     * - 思路：
-     *     - 横：∵ 每行只会放一个皇后，放置之后就进入下一行 ∴ 无需额外逻辑进行判断；
-     *     - 竖：可使用一个 n 位数组 col[i] 来记录第 i 列是否已有皇后；
-     *     - 斜：若也想用数组 dia1[i]、dia2[i] 来分别记录两个对角方向上第 i 条对角线上是否有皇后，则需知道：
-     *            1. 共有多少条对角线（即 dia 数组大小）；
-     *            2. 如何标记一条对角线（即如何访问 dia 中元素）。
-     *          通过找规律可知：
-     *            - n*n 的棋盘共有 2*n-1 条对角线 ∴ dia1、dia2 的大小都应为 2*n-1；
-     *            - 对于 / 方向，每条对角线经过的格子的横纵坐标之和都相同，分别是0，1，2，3，4，5，6 ∴ 可将 i+j 作为索引使用；
-     *            - 对于 \ 方向，每条对角线经过的格子的横纵坐标之差都相同，分别是-3，-2，-1，0，1，2，3 ∴ 可将 i-j 加上偏移量 n-1 作为索引使用。
+     * 解法2：Backtracking (Recursion, DFS) (解法1的化简版)
+     * - 思路：与解法1一致。
+     * - 分析：在判断一个格子是否能放置皇后时，解法1采用 boolean[][] attackable 来标记已放置的皇后的攻击范围。而 ∵ 新放置的
+     *   皇后的攻击范围可能与之前皇后的攻击范围有所重叠 ∴ 需要在为新皇后更新 attackable 时先记录原有状态，以便在返回上层前能
+     *   进行恢复，又不会破坏之前皇后的攻击范围 —— 这就导致代码比较臃肿，且空间效率较低。
+     * - 实现：该解法中不再采用 boolean[][] 标记攻击范围，而是采用3个数组来标记每个格子在 |、/、\ 3个方向上是否有皇后，而又
+     *   ∵ 已有皇后的方向上无法再放置皇后 ∴ 同一方向上不会被重复标记 ∴ 也就不存破坏之前标记的问题 ∴ 也就避免了解法1中先记录原有
+     *   状态，之后再用它来恢复的麻烦。3个数组的定义：
+     *     - | 方向：用数组 col[i] 来标记第 i 列中是否已有皇后；
+     *     - /、\ 方向：若也想用数组 dia1[i]、dia2[i] 来标记两个对角方向上第 i 条对角线上是否有皇后，则需知道：
+     *       1. 共有多少条对角线（即 dia 数组大小）；
+     *       2. 如何访问 dia[] 中的元素。通过找规律可知：
+     *          - n*n 的棋盘共有 2*n-1 条对角线 ∴ dia1[]、dia2[] 的大小都应为 2*n-1；
+     *          - 对于 / 方向，每条对角线经过的格子的横纵坐标之和相同，分别是0，1，2，3，4，5，6 ∴ 可将 i+j 作为索引使用；
+     *          - 对于 \ 方向，每条对角线经过的格子的横纵坐标之差相同，分别是-3，-2，-1，0，1，2，3 ∴ 可将 i-j 加上偏移量
+     *            n-1 作为索引使用。
      *
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
@@ -135,24 +142,24 @@ public class L51_NQueens {
         if (n == 0) return res;
 
         col = new boolean[n];           // col[i] 表示第 i 列是否已有皇后
-        dia1 = new boolean[2 * n - 1];  // dia1[i] 表示第 i 根 / 对角线上是否已有皇后
-        dia2 = new boolean[2 * n - 1];  // dia2[i] 表示第 i 根 \ 对角线上是否已有皇后
+        dia1 = new boolean[2 * n - 1];  // dia1[i] 表示第 i 条 / 对角线上是否已有皇后
+        dia2 = new boolean[2 * n - 1];  // dia2[i] 表示第 i 条 \ 对角线上是否已有皇后
 
         putQueen(n, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void putQueen(int n, int r, List<Integer> pos, List<List<String>> res) {  // 尝试在第 r 行中放置皇后，pos 记录放置的位置
-        if (r == n) {                                                // （pos[r]=k 表示第 r 行的皇后放在了第 k 列上）
-            res.add(generateSolution(pos));  // r == n 说明 0 ~ n-1 行都成功放置了皇后，即找到了一个有效解
+    private static void putQueen(int n, int r, List<Integer> pos, List<List<String>> res) {
+        if (r == n) {
+            res.add(generateSolution(pos));
             return;
         }
-        for (int c = 0; c < n; c++) {                                // 遍历该行中的每一列
+        for (int c = 0; c < n; c++) {
             if (!col[c] && !dia1[r + c] && !dia2[r - c + n - 1]) {   // 若3个方向上都没有皇后则可以放置
-                pos.add(c);                                          // 将列索引放到 pos[r] 上以表示皇后位置为 [r,c]
+                pos.add(c);
                 col[c] = dia1[r + c] = dia2[r - c + n - 1] = true;
                 putQueen(n, r + 1, pos, res);
-                col[c] = dia1[r + c] = dia2[r - c + n - 1] = false;  // 返回上一层递归之前要恢复原状态
+                col[c] = dia1[r + c] = dia2[r - c + n - 1] = false;  // 返回上一层递归之前先恢复原状态
                 pos.remove(pos.size() - 1);
             }
         }
