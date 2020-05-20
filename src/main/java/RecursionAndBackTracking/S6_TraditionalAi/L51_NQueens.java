@@ -54,50 +54,49 @@ public class L51_NQueens {
     }
 
     private static void putQueen0(int r, int n, List<Integer> pos, List<List<String>> res) {
-        if (r == n) {        // 若每行都放置了皇后（找到解）
+        if (r == n) {                         // 已经超过了最后一行（说明找到了解）（若某行无法放置皇后则会提前返回 ∴ 不会走到这里）
             res.add(generateSolution(pos));
             return;
         }
-
-        for (int c = 0; c < n; c++) {    // 遍历该行的每个格子，尝试放置皇后
+        for (int c = 0; c < n; c++) {         // 遍历该行的每个格子，尝试放置皇后
             if (!attackable[r][c]) {
                 pos.add(c);                   // 先记录放置皇后的纵坐标（横坐标就是 c 在 pos 中的索引 ∴ 不用记录）
-                Boolean[][] oldStates = markAttackable(r, c, n);   // 在放置皇后之后，更新 boolean[][]，将该皇后的各个方向上格子标记为 attackable
+                Boolean[][] tmp = markAttackable(r, c, n);  // 在 boolean[][] 上标记该皇后的攻击范围，并将原状态记录在 tmp 中
                 putQueen0(r + 1, n, pos, res);
-                unmarkAttackable(r, c, n, oldStates);  // 返回上层递归之前要 undo 上面对 boolean[][] 的更新，恢复原来的状态
+                restoreAttackable(r, c, n, tmp);  // 返回上层递归之前从 tmp 中恢复原来的状态
                 pos.remove(pos.size() - 1);
             }
         }
     }
 
     private static Boolean[][] markAttackable(int r, int c, int n) {
-        Boolean[][] oldStates = new Boolean[n][n];
+        Boolean[][] tmp = new Boolean[n][n];  // 注意这里要用包装类
 
-        for (int nr = r + 1; nr < n; nr++) {          // 遍历 initR 之后的所有行
-            oldStates[nr][c] = attackable[nr][c];
-            attackable[nr][c] = true;       // 标记竖直方向上的格子
+        for (int nr = r + 1; nr < n; nr++) {  // 遍历 (r,n) 行
             int delta = nr - r;
+            tmp[nr][c] = attackable[nr][c];   // 在标记之前先保存原来该坐标的状态
+            attackable[nr][c] = true;
 
             if (c - delta >= 0) {
-                oldStates[nr][c - delta] = attackable[nr][c - delta];
-                attackable[nr][c - delta] = true;  // 标记左下对角线方向上的格子
+                tmp[nr][c - delta] = attackable[nr][c - delta];
+                attackable[nr][c - delta] = true;   // 标记 / 对角线上的格子
             }
             if (c + delta < n) {
-                oldStates[nr][c + delta] = attackable[nr][c + delta];
-                attackable[nr][c + delta] = true;  // 标记右下对角线方向上的格子
+                tmp[nr][c + delta] = attackable[nr][c + delta];
+                attackable[nr][c + delta] = true;   // 标记 \ 对角线上的格子
             }
         }
-        return oldStates;
+        return tmp;
     }
 
-    private static void unmarkAttackable(int r, int c, int n, Boolean[][] oldStates) {
-        for (int nr = r + 1; nr < n; nr++) {  // nr means next row
+    private static void restoreAttackable(int r, int c, int n, Boolean[][] tmp) {
+        for (int nr = r + 1; nr < n; nr++) {
             int delta = nr - r;
-            attackable[nr][c] = oldStates[nr][c];
+            attackable[nr][c] = tmp[nr][c];
             if (c - delta >= 0)
-                attackable[nr][c - delta] = oldStates[nr][c - delta];
+                attackable[nr][c - delta] = tmp[nr][c - delta];
             if (c + delta < n)
-                attackable[nr][c + delta] = oldStates[nr][c + delta];
+                attackable[nr][c + delta] = tmp[nr][c + delta];
         }
     }
 
