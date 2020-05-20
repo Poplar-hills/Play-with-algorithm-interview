@@ -127,22 +127,21 @@ public class L51_NQueens {
      *
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
-    private static List<List<String>> res;
     private static boolean[] col, dia1, dia2;
 
     public static List<List<String>> solveNQueens2(int n) {
-        res = new ArrayList<>();
+        List<List<String>> res = new ArrayList<>();
         if (n == 0) return res;
 
         col = new boolean[n];           // col[i] 表示第 i 列是否已有皇后
         dia1 = new boolean[2 * n - 1];  // dia1[i] 表示第 i 根 / 对角线上是否已有皇后
         dia2 = new boolean[2 * n - 1];  // dia2[i] 表示第 i 根 \ 对角线上是否已有皇后
 
-        putQueen(n, 0, new ArrayList<>());
+        putQueen(n, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void putQueen(int n, int r, List<Integer> pos) {  // 尝试在第 r 行中放置皇后，pos 记录放置的位置
+    private static void putQueen(int n, int r, List<Integer> pos, List<List<String>> res) {  // 尝试在第 r 行中放置皇后，pos 记录放置的位置
         if (r == n) {                                                // （pos[r]=k 表示第 r 行的皇后放在了第 k 列上）
             res.add(generateSolution(pos));  // r == n 说明 0 ~ n-1 行都成功放置了皇后，即找到了一个有效解
             return;
@@ -151,7 +150,7 @@ public class L51_NQueens {
             if (!col[c] && !dia1[r + c] && !dia2[r - c + n - 1]) {   // 若3个方向上都没有皇后则可以放置
                 pos.add(c);                                          // 将列索引放到 pos[r] 上以表示皇后位置为 [r,c]
                 col[c] = dia1[r + c] = dia2[r - c + n - 1] = true;
-                putQueen(n, r + 1, pos);
+                putQueen(n, r + 1, pos, res);
                 col[c] = dia1[r + c] = dia2[r - c + n - 1] = false;  // 返回上一层递归之前要恢复原状态
                 pos.remove(pos.size() - 1);
             }
