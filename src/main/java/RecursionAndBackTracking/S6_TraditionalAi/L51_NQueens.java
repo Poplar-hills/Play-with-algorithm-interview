@@ -40,9 +40,11 @@ public class L51_NQueens {
      *   方向中是否还有其他皇后存在。
      *
      * - 实现：该解法中采用 boolean[][] attackable 来标记哪些格子处在已放置皇后的攻击范围内。每当放置一个皇后之后，都更新
-     *   attackable，将其可攻击到的格子标记为 true。而每当要返回上层递归时，先将 attackable 的状态恢复
+     *   attackable，将其可攻击到的格子标记为 true。而每当要返回上层递归时，先要将 attackable 的状态恢复原状，但注意这里在
+     *   恢复时不能直接将格子标记为 false（∵ 该格子可能在置为 true 之前就是已经是 true 了）∴ 要使用 tmp 变量保存原来的状态。
+     *
+     * - 时间复杂度 O(n^n)；空间复杂度 O(n^2)。
      * */
-
     private static boolean[][] attackable;
 
     public static List<List<String>> solveNQueens(int n) {
