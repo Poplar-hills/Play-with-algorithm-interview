@@ -42,14 +42,18 @@ public class L51_NQueens {
      * - 实现：该解法中采用 boolean[][] attackable 来标记哪些格子处在已放置皇后的攻击范围内。每当放置一个皇后之后，都更新
      *   attackable，将其可攻击到的格子标记为 true。而每当要返回上层递归时，先将 attackable 的状态恢复
      * */
-    public static List<List<String>> solveNQueens0(int n) {
+
+    private static boolean[][] attackable;
+
+    public static List<List<String>> solveNQueens(int n) {
         List<List<String>> res = new ArrayList<>();
         if (n <= 0) return res;
-        putQueen0(0, n, new boolean[n][n], new ArrayList<>(), res);
+        attackable = new boolean[n][n];
+        putQueen0(0, n, new ArrayList<>(), res);
         return res;
     }
 
-    private static void putQueen0(int r, int n, boolean[][] attackable, List<Integer> pos, List<List<String>> res) {
+    private static void putQueen0(int r, int n, List<Integer> pos, List<List<String>> res) {
         if (r == n) {        // 若每行都放置了皇后（找到解）
             res.add(generateSolution(pos));
             return;
@@ -58,15 +62,15 @@ public class L51_NQueens {
         for (int c = 0; c < n; c++) {    // 遍历该行的每个格子，尝试放置皇后
             if (!attackable[r][c]) {
                 pos.add(c);                   // 先记录放置皇后的纵坐标（横坐标就是 c 在 pos 中的索引 ∴ 不用记录）
-                Boolean[][] oldStates = markAttackable(r, c, n, attackable);   // 在放置皇后之后，更新 boolean[][]，将该皇后的各个方向上格子标记为 attackable
-                putQueen0(r + 1, n, attackable, pos, res);
-                unmarkAttackable(r, c, n, attackable, oldStates);  // 返回上层递归之前要 undo 上面对 boolean[][] 的更新，恢复原来的状态
+                Boolean[][] oldStates = markAttackable(r, c, n);   // 在放置皇后之后，更新 boolean[][]，将该皇后的各个方向上格子标记为 attackable
+                putQueen0(r + 1, n, pos, res);
+                unmarkAttackable(r, c, n, oldStates);  // 返回上层递归之前要 undo 上面对 boolean[][] 的更新，恢复原来的状态
                 pos.remove(pos.size() - 1);
             }
         }
     }
 
-    private static Boolean[][] markAttackable(int r, int c, int n, boolean[][] attackable) {
+    private static Boolean[][] markAttackable(int r, int c, int n) {
         Boolean[][] oldStates = new Boolean[n][n];
 
         for (int nr = r + 1; nr < n; nr++) {          // 遍历 initR 之后的所有行
@@ -86,7 +90,7 @@ public class L51_NQueens {
         return oldStates;
     }
 
-    private static void unmarkAttackable(int r, int c, int n, boolean[][] attackable, Boolean[][] oldStates) {
+    private static void unmarkAttackable(int r, int c, int n, Boolean[][] oldStates) {
         for (int nr = r + 1; nr < n; nr++) {  // nr means next row
             int delta = nr - r;
             attackable[nr][c] = oldStates[nr][c];
@@ -126,7 +130,7 @@ public class L51_NQueens {
     private static List<List<String>> res;
     private static boolean[] col, dia1, dia2;
 
-    public static List<List<String>> solveNQueens(int n) {
+    public static List<List<String>> solveNQueens2(int n) {
         res = new ArrayList<>();
         if (n == 0) return res;
 
@@ -155,7 +159,7 @@ public class L51_NQueens {
     }
 
     public static void main(String[] args) {
-        log(solveNQueens0(4));
+        log(solveNQueens(4));
         /*
          * expects [   // 在4×4的棋牌上，4皇后问题有2个解
          *   [". Q . .",
@@ -170,7 +174,7 @@ public class L51_NQueens {
          * ]
          * */
 
-        log(solveNQueens0(5));
+        log(solveNQueens(5));
         /*
          * expects [   // 在5×5的棋牌上，5皇后问题有10个解
          *   ["Q....", "..Q..", "....Q", ".Q...", "...Q."],
