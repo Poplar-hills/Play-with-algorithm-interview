@@ -22,30 +22,95 @@ import java.util.List;
 
 public class L51_NQueens {
     /*
-     * 解法1：Recursion + Backtracking
-     * - 思路：以4皇后为例，在4*4的棋盘上放置4个皇后，其中的隐含线索是每行都要放一个皇后（若某行没有皇后，则说明一定有一行里会
-     *   同时出现2个皇后，从而违背了题意）。若每行都要放一个皇后，那么我们只需对每行进行遍历，逐一来看每个格子是否能放皇后即可。
-     *   例如第一行中在 [0,0] 处放皇后，那么第二行中，[1,0]、[1,1] 都不能放，而 [1,2] 处可以放，那么第三行中就哪都不能放了，
-     *   ∴ 返回第二行，将皇后放在 [1,3] 处，此时第三行可以放在 [2,1] 处，而此时第四行哪里都不能放 ∴ 返回第三行，而第三行没有
-     *   其他能放的地方 ∴ 再返回第二行，而第二行已经到头 ∴ 返回第一行，再从 [0,1] 处开始尝试……
-     *            ["Q...",     ["Q...",
-     *             "..Q.",      "...Q",
-     *             ""    ]      ".Q..",
-     *                          ""    ]
-     *   可见，每次操作都是在某一行中尝试放置皇后，若不能放则返回上一行，重新放置上一行中的皇后然后继续尝试，直到四行中都找到了
-     *   能放皇后的位置时就找到了一个解。可见这是一个回溯搜索的过程（也就是 DFS 过程）。该过程若用树形结构来描述：
-     *                        4 Queens
-     *                    /     /   \     \
-     *         row 1:    0     1     2     3
-     *                  / \    |     |    / \
-     *         row 2:  2   3   3     0   0   1
-     *                     |   |     |   |
-     *         row 3:      2   0     3   2
-     *                         |     |
-     *         row 4:          2     1
+     * 解法1：Backtracking (Recursion, DFS)
+     * - 思路：以4皇后为例，在4*4的棋盘上放置4个皇后，即每行都要放一个皇后才行。而皇后在一行中放置的位置会影响后面所有行中皇后
+     *   放置的位置 ∴ 程序的主题逻辑应该是：
+     *     1. 对一行中的格子进行遍历，尝试放置皇后；
+     *     2. 当遍历到可以放皇后的格子时，暂停当前行的遍历，转到下一行进行遍历，并根据上面皇后的位置来判断每个格子是否能放置皇后；
+     *     3. 若所有行都放置了皇后（找到解）或某一行中所有格子都无法放置皇后（无解），此时返回上一行，继续之前暂停的遍历，对下一
+     *        个格尝试放置皇后；
+     *   例如第一行中在 [0,0] 处放皇后，那么第二行中 [1,0]、[1,1] 都不能放，而 [1,2] 处可以放，但这样的话第三行的所有格子就
+     *   都不能放了 ∴ 返回第二行，继续之前暂停的遍历，将皇后放在 [1,3] 处，此时第三行可以放在 [2,1] 处，但此时第四行的所有格子
+     *   都不能放了 ∴ 返回第三行，而第三行没有其他能放的位置 ∴ 再返回第二行，而第二行已经到头 ∴ 返回第一行，再从 [0,1] 处开始尝试……
+     *       Q . . .        Q . . .        Q . . .        . Q . .
+     *       × × Q .   ->   × × . Q   ->   × × . Q   ->   × × × .
+     *       × × × ×        × . × ×        × Q × ×        . × . ×
+     *       × . × ×        × × . ×        × × × ×        . × . .
+     *   可见总体思路就是回溯搜索，剩下要解决的问题是如何剪枝，即如何判断一个格子是否可以放置皇后，即一个格子的水平、竖直、对角4个
+     *   方向中是否还有其他皇后存在。
      *
-     *   至此总体思路已经形成，剩下要解决的问题是如何能快速对树进行剪枝，即判断出一个格子是否可以放置皇后，即在一个格子的横、竖、斜
-     *   四个方向上判断是否还有其他皇后存在：
+     * - 实现：该解法中采用 boolean[][] attackable 来标记哪些格子处在已放置皇后的攻击范围内。每当放置一个皇后之后，都更新
+     *   attackable，将其可攻击到的格子标记为 true。而每当要返回上层递归时，先将 attackable 的状态恢复
+     * */
+    public static List<List<String>> solveNQueens0(int n) {
+        List<List<String>> res = new ArrayList<>();
+        if (n <= 0) return res;
+        putQueen0(0, n, new boolean[n][n], new ArrayList<>(), res);
+        return res;
+    }
+
+    private static void putQueen0(int r, int n, boolean[][] attackable, List<Integer> pos, List<List<String>> res) {
+        if (r == n) {        // 若每行都放置了皇后（找到解）
+            res.add(generateSolution(pos));
+            return;
+        }
+
+        for (int c = 0; c < n; c++) {    // 遍历该行的每个格子，尝试放置皇后
+            if (!attackable[r][c]) {
+                pos.add(c);                   // 先记录放置皇后的纵坐标（横坐标就是 c 在 pos 中的索引 ∴ 不用记录）
+                Boolean[][] oldStates = markAttackable(r, c, n, attackable);   // 在放置皇后之后，更新 boolean[][]，将该皇后的各个方向上格子标记为 attackable
+                putQueen0(r + 1, n, attackable, pos, res);
+                unmarkAttackable(r, c, n, attackable, oldStates);  // 返回上层递归之前要 undo 上面对 boolean[][] 的更新，恢复原来的状态
+                pos.remove(pos.size() - 1);
+            }
+        }
+    }
+
+    private static Boolean[][] markAttackable(int r, int c, int n, boolean[][] attackable) {
+        Boolean[][] oldStates = new Boolean[n][n];
+
+        for (int nr = r + 1; nr < n; nr++) {          // 遍历 initR 之后的所有行
+            oldStates[nr][c] = attackable[nr][c];
+            attackable[nr][c] = true;       // 标记竖直方向上的格子
+            int delta = nr - r;
+
+            if (c - delta >= 0) {
+                oldStates[nr][c - delta] = attackable[nr][c - delta];
+                attackable[nr][c - delta] = true;  // 标记左下对角线方向上的格子
+            }
+            if (c + delta < n) {
+                oldStates[nr][c + delta] = attackable[nr][c + delta];
+                attackable[nr][c + delta] = true;  // 标记右下对角线方向上的格子
+            }
+        }
+        return oldStates;
+    }
+
+    private static void unmarkAttackable(int r, int c, int n, boolean[][] attackable, Boolean[][] oldStates) {
+        for (int nr = r + 1; nr < n; nr++) {  // nr means next row
+            int delta = nr - r;
+            attackable[nr][c] = oldStates[nr][c];
+            if (c - delta >= 0)
+                attackable[nr][c - delta] = oldStates[nr][c - delta];
+            if (c + delta < n)
+                attackable[nr][c + delta] = oldStates[nr][c + delta];
+        }
+    }
+
+    private static List<String> generateSolution(List<Integer> pos) {  // 将 pos 转为真正的解
+        List<String> solution = new ArrayList<>();
+        for (int p : pos) {
+            char[] row = new char[pos.size()];  // Java 中用相同字符生成字符串的方式
+            Arrays.fill(row, '.');
+            row[p] = 'Q';                       // 用 'Q' 标记皇后的位置
+            solution.add(new String(row));
+        }
+        return solution;
+    }
+
+    /*
+     * 解法1：Backtracking
+     * - 思路：
      *     - 横：∵ 每行只会放一个皇后，放置之后就进入下一行 ∴ 无需额外逻辑进行判断；
      *     - 竖：可使用一个 n 位数组 col[i] 来记录第 i 列是否已有皇后；
      *     - 斜：若也想用数组 dia1[i]、dia2[i] 来分别记录两个对角方向上第 i 条对角线上是否有皇后，则需知道：
@@ -73,35 +138,24 @@ public class L51_NQueens {
         return res;
     }
 
-    private static void putQueen(int n, int i, List<Integer> pos) {  // 尝试在第 i 行中放置皇后，pos 记录放置的位置
-        if (i == n) {                                                // （pos[i]=k 表示第 i 行的皇后放在了第 k 列上）
-            res.add(generateSolution(pos));  // i == n 说明 0 ~ n-1 行都成功放置了皇后，即找到了一个有效解
+    private static void putQueen(int n, int r, List<Integer> pos) {  // 尝试在第 r 行中放置皇后，pos 记录放置的位置
+        if (r == n) {                                                // （pos[r]=k 表示第 r 行的皇后放在了第 k 列上）
+            res.add(generateSolution(pos));  // r == n 说明 0 ~ n-1 行都成功放置了皇后，即找到了一个有效解
             return;
         }
-        for (int j = 0; j < n; j++) {                                // 遍历该行中的每一列
-            if (!col[j] && !dia1[i + j] && !dia2[i - j + n - 1]) {   // 若3个方向上都没有皇后则可以放置
-                pos.add(j);                                          // 将列索引放到 pos[i] 上以表示皇后位置为 [i,j]
-                col[j] = dia1[i + j] = dia2[i - j + n - 1] = true;
-                putQueen(n, i + 1, pos);
-                col[j] = dia1[i + j] = dia2[i - j + n - 1] = false;  // 返回上一层递归之前要恢复原状态
+        for (int c = 0; c < n; c++) {                                // 遍历该行中的每一列
+            if (!col[c] && !dia1[r + c] && !dia2[r - c + n - 1]) {   // 若3个方向上都没有皇后则可以放置
+                pos.add(c);                                          // 将列索引放到 pos[r] 上以表示皇后位置为 [r,c]
+                col[c] = dia1[r + c] = dia2[r - c + n - 1] = true;
+                putQueen(n, r + 1, pos);
+                col[c] = dia1[r + c] = dia2[r - c + n - 1] = false;  // 返回上一层递归之前要恢复原状态
                 pos.remove(pos.size() - 1);
             }
         }
     }
 
-    private static List<String> generateSolution(List<Integer> pos) {  // 将 pos 转为真正的解
-        List<String> solution = new ArrayList<>();
-        for (int p : pos) {
-            char[] row = new char[pos.size()];  // Java 中用相同字符生成字符串的方式
-            Arrays.fill(row, '.');
-            row[p] = 'Q';                       // 用 'Q' 标记皇后的位置
-            solution.add(new String(row));
-        }
-        return solution;
-    }
-
     public static void main(String[] args) {
-        log(solveNQueens(4));
+        log(solveNQueens0(4));
         /*
          * expects [   // 在4×4的棋牌上，4皇后问题有2个解
          *   [". Q . .",
@@ -116,7 +170,7 @@ public class L51_NQueens {
          * ]
          * */
 
-        log(solveNQueens(5));
+        log(solveNQueens0(5));
         /*
          * expects [   // 在5×5的棋牌上，5皇后问题有10个解
          *   ["Q....", "..Q..", "....Q", ".Q...", "...Q."],
