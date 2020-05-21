@@ -46,10 +46,10 @@ public class L37_SudokuSolver {
         return true;  // 当 board 上不再有 '.' 时说明找到了解
     }
 
-    private static boolean isValid(char[][] board, int i, int j, char c) {
-        int blkRow = i / 3 * 3, blkCol = j / 3 * 3;  // i/3 ∈ [0,1,2]；i/3*3 ∈ [0,3,6] 即每个 block 的起始列
-        for (int n = 0; n < 9; n++)                  // 检查 [i,j] 所在的行、列、block
-            if (board[i][n] == c || board[n][j] == c || board[blkRow + n / 3][blkCol + n % 3] == c)
+    private static boolean isValid(char[][] board, int r, int c, char n) {
+        int blkRow = r / 3 * 3, blkCol = c / 3 * 3;  // i/3 ∈ [0,1,2]；i/3*3 ∈ [0,3,6] 即每个 block 的起始列
+        for (int i = 0; i < 9; i++)                  // 检查 [i,j] 所在的行、列、block
+            if (board[r][i] == n || board[i][c] == n || board[blkRow + i / 3][blkCol + i % 3] == n)
                 return false;
         return true;
     }
