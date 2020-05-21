@@ -19,7 +19,12 @@ import java.util.Set;
 public class L37_SudokuSolver {
     /*
      * 解法1：Backtracking + Brute Force
-     * - 思路：Very straight-forward solution.
+     * - 思路：Very straight-forward solution：
+     *     1. 扫描 board，找到第一个是'.'的格子；
+     *     2. 尝试用1-9去填充该格子（遍历检查要填充的数字是否在该 row、col、block 中存在）；
+     *     3. 填充后进入下层递归，回到步骤1 —— 再从头扫描 board，找到下一个是'.'的格子进行填充；
+     *     4. 若一个格子无法填充1-9中的任何数字，则说明之前的填充方式无解，于是回到上层更换数字再继续尝试；
+     *     5. 当整个 board 遍历完毕之后（说明不再有是'.'的格子，即找到解），则返回 true。
      * - 时间复杂度 O(9^n)，其中 n 为 board 填充前空格的个数：n 个空格需要填充，每个格都要尝试9个数字 ∴ 是 O(9^n)；
      * - 空间复杂度 O(9*9)。
      * */
@@ -47,8 +52,8 @@ public class L37_SudokuSolver {
     }
 
     private static boolean isValid(char[][] board, int r, int c, char n) {
-        int blkRow = r / 3 * 3, blkCol = c / 3 * 3;  // i/3 ∈ [0,1,2]；i/3*3 ∈ [0,3,6] 即每个 block 的起始列
-        for (int i = 0; i < 9; i++)                  // 检查 [i,j] 所在的行、列、block
+        int blkRow = r / 3 * 3, blkCol = c / 3 * 3;    // i/3 ∈ [0,1,2]；i/3*3 ∈ [0,3,6] 即每个 block 的起始列
+        for (int i = 0; i < 9; i++)                    // 检查 [r,c] 所在的行、列、block
             if (board[r][i] == n || board[i][c] == n || board[blkRow + i / 3][blkCol + i % 3] == n)
                 return false;
         return true;
@@ -126,7 +131,7 @@ public class L37_SudokuSolver {
             {'.', '.', '.',   '4', '1', '9',   '.', '.', '5'},
             {'.', '.', '.',   '.', '8', '.',   '.', '7', '9'}
         };
-        solveSudoku0(board);
+        solveSudoku(board);
         log(board);
         /*
          * expects {
