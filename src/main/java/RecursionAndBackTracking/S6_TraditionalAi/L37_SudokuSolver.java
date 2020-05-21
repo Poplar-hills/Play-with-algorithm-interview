@@ -2,6 +2,9 @@ package RecursionAndBackTracking.S6_TraditionalAi;
 
 import static Utils.Helpers.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /*
  * Sudoku Solver
  *
@@ -15,7 +18,7 @@ import static Utils.Helpers.*;
 
 public class L37_SudokuSolver {
     /*
-     * 解法1：Recursion + Backtracking
+     * 解法1：Backtracking + Brute Force
      * - 思路：Very straight-forward solution.
      * - 时间复杂度 O(9^n)，其中 n 为 board 填充前空格的个数：n 个空格需要填充，每个格都要尝试9个数字 ∴ 是 O(9^n)；
      * - 空间复杂度 O(9*9)。
@@ -26,21 +29,21 @@ public class L37_SudokuSolver {
     }
 
     private static boolean solve(char[][] board) {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                if (board[i][j] == '.') {
-                    for (char c = '1'; c <= '9'; c++) {  // 对 board 上的每个空格尝试用 '1'~'9' 填充
-                        if (isValid(board, i, j, c)) {   // 前提是 [i,j] 所在的行、列、3*3 block 中 n 还未被使用过
-                            board[i][j] = c;
+        for (int r = 0; r < board.length; r++) {
+            for (int c = 0; c < board[0].length; c++) {
+                if (board[r][c] == '.') {
+                    for (char n = '1'; n <= '9'; n++) {  // 对 board 上的每个空格尝试用 '1'~'9' 填充
+                        if (isValid(board, r, c, n)) {   // 前提是 [r,c] 所在的行、列、3*3 block 中 n 还未被使用过
+                            board[r][c] = n;
                             if (solve(board)) return true;
-                            board[i][j] = '.';
+                            board[r][c] = '.';
                         }
                     }
-                    return false;
+                    return false;  // 若1-9都不能放，说明当前的落子无解，需返回上一层，继续尝试。
                 }
             }
         }
-        return true;
+        return true;  // 当 board 上不再有 '.' 时说明找到了解
     }
 
     private static boolean isValid(char[][] board, int i, int j, char c) {
@@ -123,7 +126,7 @@ public class L37_SudokuSolver {
             {'.', '.', '.',   '4', '1', '9',   '.', '.', '5'},
             {'.', '.', '.',   '.', '8', '.',   '.', '7', '9'}
         };
-        solveSudoku2(board);
+        solveSudoku0(board);
         log(board);
         /*
          * expects {

@@ -26,33 +26,22 @@ public class L52_NQueensII {
         return count;
     }
 
-    private static void putQueue(int n, int i) {
-        if (i == n) {
+    private static void putQueue(int n, int r) {
+        if (r == n) {
             count++;
             return;
         }
         for (int j = 0; j < n; j++) {
-            if (!col[j] && !dia1[i + j] && !dia2[i - j + n - 1]) {
-                col[j] = dia1[i + j] = dia2[i - j + n - 1] = true;
-                putQueue(n, i + 1);
-                col[j] = dia1[i + j] = dia2[i - j + n - 1] = false;
+            if (!col[j] && !dia1[r + j] && !dia2[r - j + n - 1]) {
+                col[j] = dia1[r + j] = dia2[r - j + n - 1] = true;
+                putQueue(n, r + 1);
+                col[j] = dia1[r + j] = dia2[r - j + n - 1] = false;
             }
         }
     }
 
     public static void main(String[] args) {
-        log(totalNQueens(4));
-        /*
-         * expects 2.
-         *   [".Q..",  // 解1
-         *    "...Q"
-         *    "Q..."
-         *    "..Q."],
-         *
-         *   ["..Q.",  // 解2
-         *    "Q..."
-         *    "...Q"
-         *    ".Q.."]
-         * */
+        log(totalNQueens(4));  // expects 2.
+        log(totalNQueens(5));  // expects 10.
     }
 }
