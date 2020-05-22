@@ -11,7 +11,7 @@ import static Utils.Helpers.*;
 public class L52_NQueensII {
     /*
      * 解法1：Recursion + Backtracking
-     * - 思路：与 L51_NQueens 解法1相同，只是在找到具体解时计数即可，无需记录皇后的具体放置位置。
+     * - 思路：与 L51_NQueens 解法2一致，只是在找到解时计数即可，无需记录皇后的位置。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
     private static int count = 0;
@@ -31,11 +31,11 @@ public class L52_NQueensII {
             count++;
             return;
         }
-        for (int j = 0; j < n; j++) {
-            if (!col[j] && !dia1[r + j] && !dia2[r - j + n - 1]) {
-                col[j] = dia1[r + j] = dia2[r - j + n - 1] = true;
+        for (int c = 0; c < n; c++) {
+            if (!col[c] && !dia1[r + c] && !dia2[r - c + n - 1]) {
+                col[c] = dia1[r + c] = dia2[r - c + n - 1] = true;
                 putQueue(n, r + 1);
-                col[j] = dia1[r + j] = dia2[r - j + n - 1] = false;
+                col[c] = dia1[r + c] = dia2[r - c + n - 1] = false;
             }
         }
     }
