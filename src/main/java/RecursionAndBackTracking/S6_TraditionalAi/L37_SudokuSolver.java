@@ -2,9 +2,6 @@ package RecursionAndBackTracking.S6_TraditionalAi;
 
 import static Utils.Helpers.*;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /*
  * Sudoku Solver
  *
@@ -63,8 +60,8 @@ public class L37_SudokuSolver {
      * 解法2：Backtracking (解法1的时间优化版)
      * - 思路：与解法1一致。
      * - 实现：借鉴 L51_NQueens 解法1中的3个 boolean[]，对解法1中的 isValid 方法进行优化，以空间换时间的方式用 O(1) 的
-     *   复杂度完成检查。但不同于 L51，该问题中需要对每行、每列、每个 block 都维护单独的 boolean[] 以保证他们各自中没有重复
-     *   的数字 ∴ 需要创建3个 9*9 的二维数组：
+     *   复杂度完成检查。但不同于 L51，该问题中需要对每行、每列、每个 block 都维护单独的 boolean[] 以检查是否有重复数字出现
+     *   （相当于为每行、每列、每个 block 都创建了一个 Set）∴ 需要创建3个 9*9 的二维数组：
      *     1. row[r][n] 表示第 r 行中是否已有数字 n，其中 r ∈ [0,8], n ∈ [1,9]；
      *     2. col[c][n] 表示第 c 列中是否已有数字 n，其中 c ∈ [0,8], n ∈ [1,9]；
      *     3. block[b][n] 表示第 b 个 block 中是否已有数字 n，其中 b ∈ [0,8], n ∈ [1,9]。
