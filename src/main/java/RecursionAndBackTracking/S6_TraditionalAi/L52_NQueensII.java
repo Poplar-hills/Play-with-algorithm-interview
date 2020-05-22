@@ -19,9 +19,9 @@ public class L52_NQueensII {
 
     public static int totalNQueens(int n) {
         if (n == 0) return 0;
-        col = new boolean[n];
-        dia1 = new boolean[2 * n - 1];
-        dia2 = new boolean[2 * n - 1];
+        col = new boolean[n];           // col[i] 表示第 i 列是否已有皇后
+        dia1 = new boolean[2 * n - 1];  // dia1[i] 表示第 i 条 / 对角线上是否已有皇后
+        dia2 = new boolean[2 * n - 1];  // dia2[i] 表示第 i 条 \ 对角线上是否已有皇后
         putQueue(n, 0);
         return count;
     }
