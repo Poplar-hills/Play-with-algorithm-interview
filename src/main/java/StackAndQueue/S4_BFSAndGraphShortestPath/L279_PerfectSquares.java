@@ -19,17 +19,16 @@ public class L279_PerfectSquares {
      * - 思路："正整数 n 最少能用几个完全平方数组成"，这个问题可以转化为"正整数 n 最少减去几个完全平方数后等于0"。若把 n、0
      *   看成图上的两个顶点，把"减去一个完全平方数"看做两点间的一条边，则该问题可转化为"求顶点 n 到 0 之间的最短路径"，即将原
      *   问题转化为了一个在有向无权图上寻找 n → 0 间最短路径的问题。例如：
-     *                                     0 ← 1 ← 2               0 ← 1 ← ← ← 2
-     *          0 ← 1 ← 2                  ↑   ↑   ↑               ↑   ↑     ↗ ↑
-     *          ↑       ↑                  ↑   5   ↑               ↑   5 ← 6   ↑
-     *          4 → → → 3                  ↑   ↓   ↑               ↑   ↓       ↑
-     *                                     + ← 4 → 3               + ← 4 → → → 3
-     *        n=4 时最短路径为1           n=5 时最短路径为2           n=6 时最短路径为3
-     *
-     * - 💎 实现：
+     *          ⓪ ← ⓵ ← ②              ⓪ ← ① ← ②              ⓪ ← ① ← ← ← ②
+     *          ↑         ↑              ↑    ↑    ↑              ↑    ↑     ↗  ↑
+     *          ⓸  →  →  ⓷              ↑   ⑤    ↑              ↑    ⑤ ← ⑥   ↑
+     *         n=4 时最短路径为1           ↑    ↓    ↑              ↑    ↓        ↑
+     *                                   +  ← ④ → ③              + ← ④ → → → ③
+     *                                 n=5 时最短路径为2            n=6 时最短路径为3
+     * - 💎 要点：
      *   1. 求无权图中两点的最短路径可使用 BFS（若是带权图的最短路径问题则可使用 Dijkstra）；
-     *   2. ∵ 在无权图上进行 BFS 时，第一次访问某个顶点时的路径一定是从起点到该顶点的最短路径 ∴ 无需重复顶点 ∴ 使用 visited
-     *      数组对访问路径进行剪枝（Pruning）（例如：👆n=6 例子中，6→5→1→0 访问顶点1之后就无需再走 6→2→1→0 了）。
+     *   2. 无权图上进行的 BFS 时，第一次访问某个顶点时的路径一定是从起点到该顶点的最短路径（当然可能存在多个最短路径，
+     *      如 👆 n=6 的例子中 6 → 5 → 1 → 0 和 6 → 2 → 1 → 0 都是最短路径）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int numSquares(int n) {
@@ -47,7 +46,7 @@ public class L279_PerfectSquares {
 
             for (int i = 1; i * i <= curr; i++) {  // 当前顶点值 - 每一个完全平方数 = 每一个相邻顶点
                 int next = curr - i * i;
-                if (next == 0) return step + 1;    // BFS 中第一条到达终点的路径就是最短路径（之一）
+                if (next == 0) return step + 1;    // BFS 中第一条到达终点的路径就是最短路径
                 if (!visited[next]) {
                     q.offer(new Pair<>(next, step + 1));
                     visited[next] = true;
@@ -81,7 +80,7 @@ public class L279_PerfectSquares {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int numSquares2(int n) {
-        int[] steps = new int[n + 1];         // 保存每个顶点到达0的最少步数（∵ 顶点取值范围是 [0,n] ∴ 要开 n+1 的空间）
+        int[] steps = new int[n + 1];  // steps[i] 保存顶点 i 到达0的最少步数（∵ 顶点取值范围是 [0,n] ∴ 要开 n+1 的空间）
         Arrays.fill(steps, -1);
         return helper2(n, steps);
     }
@@ -101,18 +100,26 @@ public class L279_PerfectSquares {
      * 解法3：DP
      * - 思路：与解法2一样都是基于已解决的子问题去解决高层次的问题。状态转移方程都是：f(i) = min(f(i - p) + 1)，
      *   其中 p 为 <= i 的完全平方数。
-     * - 实现：采用 DP 从下往上 f(0) → f(1) → ... 递归出 f(n) 的解。
+     * - 实现：采用 DP 从下往上 f(0) → f(1) → ... 递归出 f(n) 的解，例如 n=6 时：
+     *         +---------------------+
+     *         |           ⑥        ③     - dp[6] = min(dp[5]+1, dp[2]+1); dp[3] = dp[2]+1
+     *         |        1↗   4↖   1↗
+     *         |      ⑤        ②          - dp[5] = min(dp[4]+1, dp[1]+1); dp[2] = dp[1]+1
+     *          ↘  1↗   4↖   1↗
+     *           ④        ①               - dp[1] = dp[0]+1; dp[4] = min(dp[0]+1, dp[3]+1)
+     *             4↖   1↗
+     *                ⓪                    - dp[0] = 0
      * - 💎 DP vs. Memoization：DP 是 bottom-up 的，从子问题开始求解，而解法2的 DFS + Memorization 是 top-down，
      *   即先从高层次问题入手，递归到最基本问题后再开始往上逐层解决（, SEE: https://zhuanlan.zhihu.com/p/68059061）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int numSquares3(int n) {
         int[] dp = new int[n + 1];
-        Arrays.fill(dp, Integer.MAX_VALUE);  // ∵ 求最小值 ∴ 初值为正无穷
+        Arrays.fill(dp, Integer.MAX_VALUE);   // ∵ 求最小值 ∴ 初值为正无穷
         dp[0] = 0;
 
-        for (int i = 1; i <= n; i++)         // 从 1→n 逐个计算到达0的最少步数，从下往上层层递推出原问题 f(n) 的解
-            for (int j = 1; j * j <= i; j++)
+        for (int i = 1; i <= n; i++)          // 从 1→n 逐个计算到达0的最少步数，从下往上层层递推出原问题 f(n) 的解
+            for (int j = 1; j * j <= i; j++)  // 对于每个 i 找到不大于它的完全平方数 p（即 j*j）
                 dp[i] = Math.min(dp[i], dp[i - j * j] + 1);
 
         return dp[n];

@@ -9,13 +9,16 @@ import static Utils.Helpers.timeIt;
 /*
  * Fibonacci Number
  *
- * - 通过求第 n 个 Fibonacci 数。
+ * - The Fibonacci numbers, commonly denoted F(n) form a sequence, called the Fibonacci sequence, such that
+ *   each number is the sum of the two preceding ones, starting from 0 and 1. That is,
+ *       F(0) = 0,  F(1) = 1,  F(N) = F(N - 1) + F(N - 2), for N > 1.
+ *   Given N, calculate F(N).
  *
  * - DP 定义：Dynamic programming is a method for solving a complex problem by breaking it down into simpler
  *   subproblems, solving each of those subproblems just once, and storing their solutions – ideally, in an
  *   memory-based data structure.
  *
- * ️➡️ 看完本题后再看 L279_PerfectSquares、L64_MinimumPathSum，它们都采用了2种 DP 解法，是非常好的例子。
+ * ️- 看完本题后再看 L279_PerfectSquares、L64_MinimumPathSum，它们都采用了2种 DP 解法，是非常好的例子。
  * */
 
 public class L509_FibonacciNumber {
