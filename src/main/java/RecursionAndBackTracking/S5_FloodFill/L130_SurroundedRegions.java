@@ -17,11 +17,11 @@ import java.util.Queue;
 public class L130_SurroundedRegions {
     /*
      * 解法1：Inside-out Flood Fill (DFS, Recursion)
-     * - 思路：首先一眼可知该题属于连通性问题，而连通性问题可用 Flood Fill 或 Union Find 求解。只是不同于 L200_NumberOfIslands，
+     * - 思路：首先一眼可知该题属于连通性问题，可用 Flood Fill 或 Union Find 求解。只是不同于 L200_NumberOfIslands，
      *   该题中对有效 region 的定义是四周都是 'X' 的 'O'，而与边界相邻的 'O' 则是无效的 region。
-     *   -> 如此一来，程序的主体仍然可以是 Flood Fill，只需要在遍历 'O' 的邻居时加入对边界的判断 —— 若该 'O' 与边界相邻则
-     *      整个 region 无效，只有当 Flood Fill 在没有碰到边界的情况下正常结束时才算找到了有效的 region，进而再将其中的所有
-     *      'O' 都 flip 成 'X'。
+     *   -> 如此一来，程序的主体仍然可以是 Flood Fill，只需要在遍历 'O' 的邻居时加入对边界的判断 —— 若该 'O' 与边界相邻，
+     *      则整个 region 无效，只有当 Flood Fill 在没有碰到边界的情况下正常结束时才算找到了有效的 region，进而再将其中的
+     *      所有 'O' 都 flip 成 'X'。
      *      -> ∵ 要先遍历整个 region 后才能知道是否有效 ∴ 需要一个列表来暂存当前 region 中所有坐标，若遍历之后 region
      *         有效则 flip 其中的所有坐标，否则直接丢弃即可。
      *

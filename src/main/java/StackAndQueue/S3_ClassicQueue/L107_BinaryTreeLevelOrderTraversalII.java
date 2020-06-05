@@ -1,8 +1,6 @@
 package StackAndQueue.S3_ClassicQueue;
 
 import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import static Utils.Helpers.*;
 
