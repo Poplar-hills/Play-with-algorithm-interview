@@ -5,25 +5,25 @@ import java.util.*;
 import static Utils.Helpers.log;
 
 /*
-* Climbing Stairs
-*
-* - You are climbing a stair case. It takes n steps to reach to the top. Each time you can either climb 1 or 2
-*   steps. In how many distinct ways can you climb to the top? Note: n > 0.
-* */
+ * Climbing Stairs
+ *
+ * - You are climbing a stair case. It takes n steps to reach to the top. Each time you can either climb 1 or 2
+ *   steps. In how many distinct ways can you climb to the top? Note: n > 0.
+ * */
 
 public class L70_ClimbingStairs {
     /*
-    * 解法1：找规律 -> Fibonacci
-    * - 思路：该问题非常类似 L279_PerfectSquares，同样可图论建模：从顶点0开始，两顶点值之间相差不超过2，求有几条到达顶点 n 的路径：
-    *            1 ----> 3 ----> 5 ...
-    *          ↗   ↘   ↗   ↘   ↗
-    *        0 ----> 2 ----> 4 ...
-    *   ∵ n > 0，可知：当 n=1 时有1条路径；n=2 时有2条路径；n=3 时有3条路径；n=4 时有5条路径... 当有n级台阶时的路径数：
-    *   f(n) = f(n-1) + f(n-2)。该规律对应从第2项开始的 Fibonacci 数列 1, 2, 3, 5, 8...（完整的 Fibonacci 数列是
-    *   1, 1, 2, 3, 5, 8...）。至此此该题目转化为求第 n 个 Fibonacci 数。
-    * - 实现：采用 DP（即 L509 中的解法3；类似 L91 中的解法2）。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法1：找规律 -> Fibonacci
+     * - 思路：该问题非常类似 L279_PerfectSquares，同样可图论建模：从顶点0开始，两顶点值之间相差不超过2，求有几条到达顶点 n 的路径：
+     *            1 ----> 3 ----> 5 ...
+     *          ↗   ↘   ↗   ↘   ↗
+     *        0 ----> 2 ----> 4 ...
+     *   ∵ n > 0，可知：当 n=1 时有1条路径；n=2 时有2条路径；n=3 时有3条路径；n=4 时有5条路径... 当有n级台阶时的路径数：
+     *   f(n) = f(n-1) + f(n-2)。该规律对应从第2项开始的 Fibonacci 数列 1, 2, 3, 5, 8...（完整的 Fibonacci 数列是
+     *   1, 1, 2, 3, 5, 8...）。至此此该题目转化为求第 n 个 Fibonacci 数。
+     * - 实现：采用 DP（即 L509 中的解法3；类似 L91 中的解法2）。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static int climbStairs1(int n) {
         int[] cache = new int[n + 1];   // 或者使用 map 也可以
         cache[0] = cache[1] = 1;        // 题中说了 n > 0，但仍要给 cache[0] 赋值用以生成 Fibonacci 数列
@@ -75,11 +75,11 @@ public class L70_ClimbingStairs {
     }
 
     /*
-    * 解法3：解法2的优化版，即 Recursion + Memoization（类似 L91 的解法1）
-    * - 思路：解法2的通用性较强，但创建 graph 的过程会增加时间复杂度，因此这里采用解法2的"实现"描述中的第2种思路：到需要的时候再
-    *   计算顶点的所有相邻顶点。
-    * - 时间复杂度 O(n)，空间复杂度 O(n)。
-    * */
+     * 解法3：解法2的优化版，即 Recursion + Memoization（类似 L91 的解法1）
+     * - 思路：解法2的通用性较强，但创建 graph 的过程会增加时间复杂度，因此这里采用解法2的"实现"描述中的第2种思路：到需要的时候再
+     *   计算顶点的所有相邻顶点。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
     public static int climbStairs3(int n) {
         if (n <= 0) return 0;
         int[] cache = new int[n];
