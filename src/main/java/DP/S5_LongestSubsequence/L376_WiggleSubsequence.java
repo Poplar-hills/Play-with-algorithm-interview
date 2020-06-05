@@ -5,18 +5,18 @@ import static Utils.Helpers.*;
 import java.util.Arrays;
 
 /*
-* Wiggle Subsequence
-*
-* - 若一个序列中相邻数字是升序、降序轮流交替的，则该序列是一个 wiggle subsequence。例如：
-*   ✅ [1, 7, 4, 9]  ❎ [1, 5, 4, 3]  ❎ [1, 7, 4, 4]
-*   给定一个数组，求其中是 wiggle subsequence 的最长子序列的长度。
-* - Follow up: Can you do it in O(n) time?
-*
-* - 分析：仍然是2种思路：
-*   a). DFS 递归：同 L300_LongestIncreasingSubsequence 的初步分析；
-*   b). DP 递推：f(i) 的值取决于 f(i-1) 的值 ∴ 存在最优子结构，可以进行递推（即 DP）。但与 L300 不同，该问题有两个维度需要进
-*       行动态规划 —— 处于峰/谷两种状态下进行动态规划。
-* */
+ * Wiggle Subsequence
+ *
+ * - 若一个序列中相邻数字是升序、降序轮流交替的，则该序列是一个 wiggle subsequence。例如：
+ *   ✅ [1, 7, 4, 9]  ❎ [1, 5, 4, 3]  ❎ [1, 7, 4, 4]
+ *   给定一个数组，求其中是 wiggle subsequence 的最长子序列的长度。
+ * - Follow up: Can you do it in O(n) time?
+ *
+ * - 分析：仍然是2种思路：
+ *   a). DFS 递归：同 L300_LongestIncreasingSubsequence 的初步分析；
+ *   b). DP 递推：f(i) 的值取决于 f(i-1) 的值 ∴ 存在最优子结构，可以进行递推（即 DP）。但与 L300 不同，该问题有两个维度需要进
+ *       行动态规划 —— 处于峰/谷两种状态下进行动态规划。
+ * */
 
 public class L376_WiggleSubsequence {
     /*

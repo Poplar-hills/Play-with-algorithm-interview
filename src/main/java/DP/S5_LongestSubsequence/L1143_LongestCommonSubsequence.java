@@ -5,12 +5,12 @@ import static Utils.Helpers.*;
 import java.util.Arrays;
 
 /*
-* Longest Common Subsequence (LCS, 最长公共子序列)
-*
-* - Given two strings s1 and s2, return the length of their longest common subsequence.
-*
-* - LCS 的应用非常广泛，最经典的就是文本处理，除此之外还用于基因工程中两段基因的相似性判断，LCS 越长则说明两段基因越相似。
-* */
+ * Longest Common Subsequence (LCS, 最长公共子序列)
+ *
+ * - Given two strings s1 and s2, return the length of their longest common subsequence.
+ *
+ * - LCS 的应用非常广泛，最经典的就是文本处理，除此之外还用于基因工程中两段基因的相似性判断，LCS 越长则说明两段基因越相似。
+ * */
 
 public class L1143_LongestCommonSubsequence {
     /*
@@ -112,11 +112,11 @@ public class L1143_LongestCommonSubsequence {
     }
 
     /*
-    * 解法4：DP + 滚动数组（解法2的空间优化版）
-    * - 思路：类似 _ZeroOneKnapsack 解法3的思路 —— ∵ 解法2中的每个 f(i, j) 都是由 f(i+1, j+1)、f(i, j+1)、f(i+1, j)
-    *   递推出来的，即上一行的值是基于下一行中的值计算出来的 ∴ dp 数组只需两行，在从下到上逐行计算时，交替使用这两行即可。
-    * - 时间复杂度 O(l1*l2)，空间复杂度 O(l2)。
-    * */
+     * 解法4：DP + 滚动数组（解法2的空间优化版）
+     * - 思路：类似 _ZeroOneKnapsack 解法3的思路 —— ∵ 解法2中的每个 f(i, j) 都是由 f(i+1, j+1)、f(i, j+1)、f(i+1, j)
+     *   递推出来的，即上一行的值是基于下一行中的值计算出来的 ∴ dp 数组只需两行，在从下到上逐行计算时，交替使用这两行即可。
+     * - 时间复杂度 O(l1*l2)，空间复杂度 O(l2)。
+     * */
     public static int longestCommonSubsequence4(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
 
@@ -133,9 +133,9 @@ public class L1143_LongestCommonSubsequence {
     }
 
     /*
-    * 解法5：DP + 滚动数组（另一种写法，不如解法3好理解，但是速度最快）
-    * - 时间复杂度 O(l1*l2)，空间复杂度 O(l2)。
-    * */
+     * 解法5：DP + 滚动数组（另一种写法，不如解法3好理解，但是速度最快）
+     * - 时间复杂度 O(l1*l2)，空间复杂度 O(l2)。
+     * */
     public static int longestCommonSubsequence5(String s1, String s2) {
         if (s1 == null || s2 == null) return 0;
 

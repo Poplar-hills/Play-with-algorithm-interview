@@ -6,24 +6,24 @@ import java.util.Arrays;
 import java.util.TreeMap;
 
 /*
-* Assign Cookies
-*
-* - 给小朋友分饼干，每个小朋友最多分到一块。每个小朋友想要的饼干大小用“贪心指数” g(i) 表示，每块饼干的大小用 s(i) 表示。
-*   若小朋友 i 分到了饼干 j，且 s(j) >= g(i) 则小朋友会很高兴。给定数组 s 和 g，问如何分饼干能让最多的小朋友高兴。
-*
-* - 贪心算法的题一般比较简单，因为代码会比较短。但难点在于判断一个问题是否可以使用贪心算法。
-*
-* - Follow Up:
-*   What if each child can get more than 1 cookies?
-*   If each child can get more than one cookie, this is only helpful for cases where some cookies are left
-*   over prior to the assignment. For example:
-*      G = {10, 15}
-*      S = {2, 3, 6, 7, 8, 10}
-*   If you assume that only 1 cookie can be assigned to each child, then only one child can be satisfied
-*   (this is, 10) and there will be 5 cookies left over. If each child can get more than one cookie, then
-*   you would keep a running sum of S[i...j] until S[j] is greater than G[k]. In this example, you will
-*   assign 10 = 2 + 3 + 6 and 15 = 7 + 8.
-* */
+ * Assign Cookies
+ *
+ * - 给小朋友分饼干，每个小朋友最多分到一块。每个小朋友想要的饼干大小用“贪心指数” g(i) 表示，每块饼干的大小用 s(i) 表示。
+ *   若小朋友 i 分到了饼干 j，且 s(j) >= g(i) 则小朋友会很高兴。给定数组 s 和 g，问如何分饼干能让最多的小朋友高兴。
+ *
+ * - 贪心算法的题一般比较简单，因为代码会比较短。但难点在于判断一个问题是否可以使用贪心算法。
+ *
+ * - Follow Up:
+ *   What if each child can get more than 1 cookies?
+ *   If each child can get more than one cookie, this is only helpful for cases where some cookies are left
+ *   over prior to the assignment. For example:
+ *      G = {10, 15}
+ *      S = {2, 3, 6, 7, 8, 10}
+ *   If you assume that only 1 cookie can be assigned to each child, then only one child can be satisfied
+ *   (this is, 10) and there will be 5 cookies left over. If each child can get more than one cookie, then
+ *   you would keep a running sum of S[i...j] until S[j] is greater than G[k]. In this example, you will
+ *   assign 10 = 2 + 3 + 6 and 15 = 7 + 8.
+ * */
 
 public class L455_AssignCookies {
     /*

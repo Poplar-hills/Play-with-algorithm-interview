@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /*
-* Ones and Zeroes
-*
-* - 给定一个字符串数组 strs，其中每个字符串都是由0、1组成的。问 m 个0和 n 个1最多能组成 strs 中的多少个字符串？
-* - Note: each 0 and 1 can be used at most once.
-* */
+ * Ones and Zeroes
+ *
+ * - 给定一个字符串数组 strs，其中每个字符串都是由0、1组成的。问 m 个0和 n 个1最多能组成 strs 中的多少个字符串？
+ * - Note: each 0 and 1 can be used at most once.
+ * */
 
 public class L474_OnesAndZeroes {
     /*

@@ -5,16 +5,16 @@ import static Utils.Helpers.*;
 import java.util.Arrays;
 
 /*
-* Coin Change
-*
-* - You are given coins of different denominations and a total amount of money amount. Write a function to
-*   compute the fewest number of coins that you need to make up that amount. Return -1 if that amount of money
-*   cannot be made up by any combination of the coins. Note you have an infinite number of each kind of coin.
-*
-* - 初步分析：该题跟完全背包问题类似，但区别在于：
-*   1. 求最少所需硬币个数，而非最大价值；
-*   2. 选取的各硬币面额之和要刚好等于要求的额度，不能多不能少。
-* */
+ * Coin Change
+ *
+ * - You are given coins of different denominations and a total amount of money amount. Write a function to
+ *   compute the fewest number of coins that you need to make up that amount. Return -1 if that amount of money
+ *   cannot be made up by any combination of the coins. Note you have an infinite number of each kind of coin.
+ *
+ * - 初步分析：该题跟完全背包问题类似，但区别在于：
+ *   1. 求最少所需硬币个数，而非最大价值；
+ *   2. 选取的各硬币面额之和要刚好等于要求的额度，不能多不能少。
+ * */
 
 public class L322_CoinChange {
     /*

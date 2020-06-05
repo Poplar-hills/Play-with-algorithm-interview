@@ -5,17 +5,17 @@ import static Utils.Helpers.*;
 import java.util.Arrays;
 
 /*
-* Partition Equal Subset Sum
-*
-* - Given a non-empty array containing only positive integers, find if the array can be partitioned into two
-*   subsets such that the sum of elements in both subsets is equal.
-*
-* - 分析：该题本质上是个0/1背包问题，稍转化一下即可看出本质 —— 要求将 n 个数字分成和相等的两部分，那么这两部分各自的和就一定都
-*   是 sum/2 ∴ 该题可以转化为“从 n 个物品中选出刚好能填满 sum/2 容量的物品”。由此可：
-*   1. 定义子问题：f(i, s) 表示“前 i 个整数的组合是否能填满 s”；
-*   2. 状态转移方程：f(i, s) = f(i-1, s) || f(i-1, s-nums[i])。
-*      解释：(前 i-1 个整数刚好填满 s) || (前 i-1 个整数刚好填满 s-v[i]，再加上整数 i 的值刚好填满 s)。
-* */
+ * Partition Equal Subset Sum
+ *
+ * - Given a non-empty array containing only positive integers, find if the array can be partitioned into two
+ *   subsets such that the sum of elements in both subsets is equal.
+ *
+ * - 分析：该题本质上是个0/1背包问题，稍转化一下即可看出本质 —— 要求将 n 个数字分成和相等的两部分，那么这两部分各自的和就一定都
+ *   是 sum/2 ∴ 该题可以转化为“从 n 个物品中选出刚好能填满 sum/2 容量的物品”。由此可：
+ *   1. 定义子问题：f(i, s) 表示“前 i 个整数的组合是否能填满 s”；
+ *   2. 状态转移方程：f(i, s) = f(i-1, s) || f(i-1, s-nums[i])。
+ *      解释：(前 i-1 个整数刚好填满 s) || (前 i-1 个整数刚好填满 s-v[i]，再加上整数 i 的值刚好填满 s)。
+ * */
 
 public class L416_PartitionEqualSubsetSum {
     /*

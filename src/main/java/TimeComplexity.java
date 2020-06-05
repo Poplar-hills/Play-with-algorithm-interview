@@ -2,39 +2,39 @@
 import static Utils.Helpers.*;
 
 /*
-* 时间复杂度：
-*
-* - 基础
-*   - O (big 0): In academia, it describes an upper bound on the time.
-*   - Ω (big omega): In academia, it describes an lower bound on the time.
-*   - In industry (and therefore in interviews), people seem to have merged Ω and O together.
-*
-* - 均摊时间/均摊复杂度（Amortized Time/Complexity）
-*   - For dynamically resizing array like ArrayList, X insertions take 0(2X) time. The amortized time for
-*     each insertion is 0(1).
-*
-* - Recursive Runtimes
-*                            f(4)
-*                     /               \
-*                  f(3)               f(3)
-*                /      \            /     \
-*             f(2)     f(2)       f(2)     f(2)
-*            /   \    /    \     /   \     /   \
-*          f(1) f(1) f(1) f(1) f(1) f(1) f(1) f(1)
-*
-*   Q: How many calls are in this tree?（该问题实际上是在问，深度为 n 的二叉树有几个节点？）
-*   A: There will be 2^0 + 2^1 + 2^2 + 2^3 ... + 2^n = 2^(n+1) - 1 nodes, namely 2^(n+1) - 1 calls, and O(2^n) runtime.
-*   - 二叉递归计算每往下递归一层就会多出一倍的计算量，所以时间复杂度是 O(2^n)；而二叉递归查找只会经过树高度个节点，因此是 O(logn)。
-*   - 二叉递归计算的空间复杂度是 O(n)  ∵ 虽然有 O(2^n) 个节点，但只有 O(n) 个节点会同时存在。
-*
-* - 建立数据规模概念：
-*   - O(n^2) 的算法大约可以在1s内处理 10^4 级别的数据；
-*   - O(nlogn) 的算法大约可以在1s内处理 10^7 级别的数据；
-*   - O(n) 的算法大约可以在1s内处理 10^8 级别的数据；
-*   - O(logn) 的算法能处理的数据级别更大更大；
-*   这个规模并不准确，因为忽略了系数的影响，只作为粗略参考。
-*
-* */
+ * 时间复杂度：
+ *
+ * - 基础
+ *   - O (big 0): In academia, it describes an upper bound on the time.
+ *   - Ω (big omega): In academia, it describes an lower bound on the time.
+ *   - In industry (and therefore in interviews), people seem to have merged Ω and O together.
+ *
+ * - 均摊时间/均摊复杂度（Amortized Time/Complexity）
+ *   - For dynamically resizing array like ArrayList, X insertions take 0(2X) time. The amortized time for
+ *     each insertion is 0(1).
+ *
+ * - Recursive Runtimes
+ *                            f(4)
+ *                     /               \
+ *                  f(3)               f(3)
+ *                /      \            /     \
+ *             f(2)     f(2)       f(2)     f(2)
+ *            /   \    /    \     /   \     /   \
+ *          f(1) f(1) f(1) f(1) f(1) f(1) f(1) f(1)
+ *
+ *   Q: How many calls are in this tree?（该问题实际上是在问，深度为 n 的二叉树有几个节点？）
+ *   A: There will be 2^0 + 2^1 + 2^2 + 2^3 ... + 2^n = 2^(n+1) - 1 nodes, namely 2^(n+1) - 1 calls, and O(2^n) runtime.
+ *   - 二叉递归计算每往下递归一层就会多出一倍的计算量，所以时间复杂度是 O(2^n)；而二叉递归查找只会经过树高度个节点，因此是 O(logn)。
+ *   - 二叉递归计算的空间复杂度是 O(n)  ∵ 虽然有 O(2^n) 个节点，但只有 O(n) 个节点会同时存在。
+ *
+ * - 建立数据规模概念：
+ *   - O(n^2) 的算法大约可以在1s内处理 10^4 级别的数据；
+ *   - O(nlogn) 的算法大约可以在1s内处理 10^7 级别的数据；
+ *   - O(n) 的算法大约可以在1s内处理 10^8 级别的数据；
+ *   - O(logn) 的算法能处理的数据级别更大更大；
+ *   这个规模并不准确，因为忽略了系数的影响，只作为粗略参考。
+ *
+ * */
 
 public class TimeComplexity {
     // O(1)
@@ -106,7 +106,7 @@ public class TimeComplexity {
     /* 内层遍历元素个数递减：
      * - 数遍历次数：第一次 0~n（n 个元素），第二次 1~n（n-1 个元素），第三次 2~n（n-2 个元素）…… 直到最后一次 n~n（1个元素）
      *   等差数列求和公式后为 n(n+1)/2，因此复杂度仍是 O(n^2)。
-     */
+     * */
     public void printUnorderedPairs(int[] array) {
         for (int i = 0; i < array.length; i++)
             for (int j = i + 1; j < array.length; j++)
@@ -114,22 +114,22 @@ public class TimeComplexity {
     }
 
     /*
-    * Question: Suppose we had an algorithm that took in an array of strings, sorted each string, and then sorted
-    *           the full array. What would the runtime be?
-    * Solution: 1. Let m be the length of the longest string and n be the length of the array.
-    *           2. Sorting each string is O(mlogm), do this for n strings, so that's O(n * mlogm).
-    *           3. When sorting the n strings, first we need to compare them. Each string comparison takes O(m) time.
-    *              Sorting the array requires O(nlogn) comparisons, therefore this will take O(m * nlogn) time.
-    *           4. Adding up these parts, you get O(n * mlogm + m * nlogn) = O(n * m * (logm + logn).
-    * This is it. There is no way to reduce it further.
-    * */
+     * Question: Suppose we had an algorithm that took in an array of strings, sorted each string, and then sorted
+     *           the full array. What would the runtime be?
+     * Solution: 1. Let m be the length of the longest string and n be the length of the array.
+     *           2. Sorting each string is O(mlogm), do this for n strings, so that's O(n * mlogm).
+     *           3. When sorting the n strings, first we need to compare them. Each string comparison takes O(m) time.
+     *              Sorting the array requires O(nlogn) comparisons, therefore this will take O(m * nlogn) time.
+     *           4. Adding up these parts, you get O(n * mlogm + m * nlogn) = O(n * m * (logm + logn).
+     * This is it. There is no way to reduce it further.
+     * */
 
     /*
-    * Sum of the values of all the nodes in a balanced binary search tree
-    * 两种思路：
-    * 1. 因为会遍历所有节点，因此是 O(n)；
-    * 2. 因为二叉树节点个数 n = 2^depth，因此要遍历每个节点就需 O(2^depth) = O(2^(logn)) = O(n)。
-    * */
+     * Sum of the values of all the nodes in a balanced binary search tree
+     * 两种思路：
+     * 1. 因为会遍历所有节点，因此是 O(n)；
+     * 2. 因为二叉树节点个数 n = 2^depth，因此要遍历每个节点就需 O(2^depth) = O(2^(logn)) = O(n)。
+     * */
     public int sum(TreeNode node) {
         if (node == null)
             return 0;
@@ -137,8 +137,8 @@ public class TimeComplexity {
     }
 
     /*
-    * 求 n 的阶乘（n factorial）：因为只有一条分支（不像上面二叉树那样有两个分支），因此是线性的，复杂度为 O(n)
-    * */
+     * 求 n 的阶乘（n factorial）：因为只有一条分支（不像上面二叉树那样有两个分支），因此是线性的，复杂度为 O(n)
+     * */
     public int factorial(int n) {
         if (n < 0) return -1;
         else if (n == 0) return 1;
@@ -146,29 +146,29 @@ public class TimeComplexity {
     }
 
     /*
-    * Computes the Nth Fibonacci number.
-    * 对比上面的求阶乘的代码，相同点是递归深度都是输入参数 n，不同点是这段里面有2个分支，因此是 O(2^n)，这是个非常高的复杂度。
-    * */
+     * Computes the Nth Fibonacci number.
+     * 对比上面的求阶乘的代码，相同点是递归深度都是输入参数 n，不同点是这段里面有2个分支，因此是 O(2^n)，这是个非常高的复杂度。
+     * */
     public int fib(int n) {
         if (n < 2) return n;
         return fib(n - 1) + fib(n - 2);
     }
 
     /*
-    * Prints all Fibonacci numbers from O to n.
-    * 易错点：很容易想成 fib 是 O(2^n)，打印 n 个，因此是 O(n2^n)。错误之处在于 i 是从 0~n 变化的。实际上的运行次数：
-    * 2^0 + 2^1 + 2^2 ... 2^n，等比数列求和得 2^(n+1)-1，因此复杂度还是 O(2^n)。
-    * */
+     * Prints all Fibonacci numbers from O to n.
+     * 易错点：很容易想成 fib 是 O(2^n)，打印 n 个，因此是 O(n2^n)。错误之处在于 i 是从 0~n 变化的。实际上的运行次数：
+     * 2^0 + 2^1 + 2^2 ... 2^n，等比数列求和得 2^(n+1)-1，因此复杂度还是 O(2^n)。
+     * */
     public void allFib(int n) {
         for (int i = 0; i < n; i++)
             System.out.println(i + " : "+ fib(i));  // fib 方法同上
     }
 
     /*
-    * Prints all Fibonacci numbers from O to n using cache (or called memory search).
-    * 在使用缓存之后，每次计算 fib(i) 时，fib(i-1) 和 fib(i-2) 都已经存在于缓存之中了，因此每次 fib(i) 的计算复杂度为 O(1)，
-    * 从而总体复杂度为 O(n)。换一种方式理解：每个数字都只计算一次，因此总共计算 n 次，即 O(n)。
-    * */
+     * Prints all Fibonacci numbers from O to n using cache (or called memory search).
+     * 在使用缓存之后，每次计算 fib(i) 时，fib(i-1) 和 fib(i-2) 都已经存在于缓存之中了，因此每次 fib(i) 的计算复杂度为 O(1)，
+     * 从而总体复杂度为 O(n)。换一种方式理解：每个数字都只计算一次，因此总共计算 n 次，即 O(n)。
+     * */
     public void allFibUsingCache(int n) {
         int[] memo = new int[n + 1];  // 范围是 [0, n]，因此开辟 n+1 的空间（或使用 HashMap 也可）
         for (int i = 0; i < n; i++)
@@ -183,9 +183,9 @@ public class TimeComplexity {
     }
 
     /*
-    * Prints the powers of 2 from 1 through n. For example, if n = 4, it would print 1, 2, 4.
-    * 因为每次递归都除以2，递归深度为 logn，因此时间复杂度为 O(logn)。
-    * */
+     * Prints the powers of 2 from 1 through n. For example, if n = 4, it would print 1, 2, 4.
+     * 因为每次递归都除以2，递归深度为 logn，因此时间复杂度为 O(logn)。
+     * */
     public int powers0f2(int n) {
         if (n < 1) return 0;
         if (n == 1) {

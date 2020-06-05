@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /*
-* Isomorphic Strings
-*
-* - 判断两个字符串是否同构（isomorphic），即是否可以通过替换 s 中的字符来得到 t。
-* */
+ * Isomorphic Strings
+ *
+ * - 判断两个字符串是否同构（isomorphic），即是否可以通过替换 s 中的字符来得到 t。
+ * */
 
 public class L205_IsomorphicStrings {
     /*

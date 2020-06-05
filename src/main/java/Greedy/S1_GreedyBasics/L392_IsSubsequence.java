@@ -9,18 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 /*
-* Is Subsequence
-*
-* - Given a string s and a string t, check if s is subsequence of t.
-*
-* - Assumptions:
-*   1. There is only lower case English letters in both s and t.
-*   2. t is potentially a very long (length ~= 500,000) string, and s is a short string (<=100).
-*
-* - Follow up:
-*   If there are lots of incoming S, say S1, S2, ... , Sk where k >= 1B, and you want to check one by one to
-*   see if T has its subsequence. In this scenario, how would you change your code?
-* */
+ * Is Subsequence
+ *
+ * - Given a string s and a string t, check if s is subsequence of t.
+ *
+ * - Assumptions:
+ *   1. There is only lower case English letters in both s and t.
+ *   2. t is potentially a very long (length ~= 500,000) string, and s is a short string (<=100).
+ *
+ * - Follow up:
+ *   If there are lots of incoming S, say S1, S2, ... , Sk where k >= 1B, and you want to check one by one to
+ *   see if T has its subsequence. In this scenario, how would you change your code?
+ * */
 
 public class L392_IsSubsequence {
     /*

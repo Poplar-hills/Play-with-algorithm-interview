@@ -5,24 +5,24 @@ import static Utils.Helpers.log;
 import java.util.Arrays;
 
 /*
-* Non-overlapping Intervals
-*
-* - Given a collection of intervals, find the minimum number of intervals you need to remove to make the rest
-*   of the intervals non-overlapping.
-* - Note: [1,2] and [2,3] don't overlap each other.
-*
-* - 初步分析：这也是一个组合问题，那么暴力解法就是遍历出所有区间的组合，然后从中过滤出没有重叠的区间的组合，并选出区间个数最多的
-*   组合。∵ 每个区间都有用/不用2种选择 ∴ 遍历所有区间的组合是 O(2^n)；检查每个区间组合是否有重叠是 O(n) ∴ 整体是 O((2^n)*n)。
-*
-* - 👉 其他有 DP 和 Greedy 两种解法的题目: L376_WiggleSubsequence, L392_IsSubsequence。
-*
-* - 💎 DP vs. Greedy：
-*   - 可以用贪心算法的问题一定满足“贪心选择性”，即在求解一个最优化问题时，若采用贪心的方式选择了一个元素后，不会影响之后子问题的求解。
-*   - 该性质不易正向证明，但易举例证伪，只要举出一个反例即可说明不能采用贪心。SEE: _ZeroOneKnapsack、L474_OnesAndZeroes、
-*     L279_PerfectSquares。
-*   - 通常贪心只解决某个复杂问题中的一步，而非只是用贪心就能完全解决问题（类似排序）。例如 Play-with-algorithms 中的最短路径
-*     和最小生成树两章就都用到了贪心的思路，但又不光是贪心。另外 LeetCode 上 Greedy 标签下的问题通常也是这样。
-* */
+ * Non-overlapping Intervals
+ *
+ * - Given a collection of intervals, find the minimum number of intervals you need to remove to make the rest
+ *   of the intervals non-overlapping.
+ * - Note: [1,2] and [2,3] don't overlap each other.
+ *
+ * - 初步分析：这也是一个组合问题，那么暴力解法就是遍历出所有区间的组合，然后从中过滤出没有重叠的区间的组合，并选出区间个数最多的
+ *   组合。∵ 每个区间都有用/不用2种选择 ∴ 遍历所有区间的组合是 O(2^n)；检查每个区间组合是否有重叠是 O(n) ∴ 整体是 O((2^n)*n)。
+ *
+ * - 👉 其他有 DP 和 Greedy 两种解法的题目: L376_WiggleSubsequence, L392_IsSubsequence。
+ *
+ * - 💎 DP vs. Greedy：
+ *   - 可以用贪心算法的问题一定满足“贪心选择性”，即在求解一个最优化问题时，若采用贪心的方式选择了一个元素后，不会影响之后子问题的求解。
+ *   - 该性质不易正向证明，但易举例证伪，只要举出一个反例即可说明不能采用贪心。SEE: _ZeroOneKnapsack、L474_OnesAndZeroes、
+ *     L279_PerfectSquares。
+ *   - 通常贪心只解决某个复杂问题中的一步，而非只是用贪心就能完全解决问题（类似排序）。例如 Play-with-algorithms 中的最短路径
+ *     和最小生成树两章就都用到了贪心的思路，但又不光是贪心。另外 LeetCode 上 Greedy 标签下的问题通常也是这样。
+ * */
 
 public class L435_NonOverlappingIntervals {
     /*

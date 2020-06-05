@@ -7,10 +7,10 @@ import java.util.Map;
 import static Utils.Helpers.*;
 
 /*
-* Target Sum
-*
-* - 给定一个非负整数序列，在这些数字前面加上 + 或 - 号，求一共有多少种方式使其计算结果为给定的整数 S。
-* */
+ * Target Sum
+ *
+ * - 给定一个非负整数序列，在这些数字前面加上 + 或 - 号，求一共有多少种方式使其计算结果为给定的整数 S。
+ * */
 
 public class L494_TargetSum {
     /*
