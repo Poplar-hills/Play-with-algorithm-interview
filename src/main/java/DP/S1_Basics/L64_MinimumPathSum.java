@@ -222,22 +222,22 @@ public class L64_MinimumPathSum {
 
     public static void main(String[] args) {
         log(minPathSum4(new int[][]{
-            new int[]{1, 3, 1},
-            new int[]{1, 5, 1},
-            new int[]{4, 2, 1}
+            {1, 3, 1},
+            {1, 5, 1},
+            {4, 2, 1}
         }));  // expects 7. (1->3->1->1->1)
 
         log(minPathSum4(new int[][]{
-            new int[]{1, 3, 4},
-            new int[]{1, 2, 1},
+            {1, 3, 4},
+            {1, 2, 1},
         }));  // expects 5. (1->1->2->1)
 
         log(minPathSum4(new int[][]{
-            new int[]{1, 2, 3}
+            {1, 2, 3}
         }));  // expects 6.
 
         log(minPathSum4(new int[][]{
-            new int[]{0}
+            {0}
         }));  // expects 0.
     }
 }
