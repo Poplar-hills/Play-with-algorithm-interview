@@ -66,7 +66,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-     * TODO: 解法1：Dijkstra
+     * // TODO: 解法1：Dijkstra
      * - 思路：带权图的最短路径可使用 Dijkstra 算法，可先解决 https://leetcode.com/problems/network-delay-time/，再解决本问题
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
@@ -123,27 +123,28 @@ public class L64_MinimumPathSum {
         for (int[] row : cache)
             Arrays.fill(row, Integer.MAX_VALUE);
 
-        return helper(grid, 0, 0, cache);
+        return minPathSumFrom2(grid, 0, 0, cache);
     }
 
-    private static int helper(int[][] grid, int i, int j, int[][] cache) {
-        int m = grid.length;
-        int n = grid[0].length;
-        int sum = grid[i][j];
+    private static int minPathSumFrom2(int[][] grid, int r, int c, int[][] cache) {
+        int w = grid.length;
+        int l = grid[0].length;
+        int sum = grid[r][c];
 
-        if (i == m - 1 && j == n - 1)
+        if (r == w - 1 && c == l - 1)
             return sum;
 
-        if (cache[i][j] != Integer.MAX_VALUE)
-            return cache[i][j];
+        if (cache[r][c] != Integer.MAX_VALUE)
+            return cache[r][c];
 
-        if (i == m - 1)
-            return cache[i][j] = sum + helper(grid, i, j + 1, cache);
-        if (j == n - 1)
-            return cache[i][j] = sum + helper(grid, i + 1, j, cache);
+        if (r == w - 1)
+            return cache[r][c] = sum + minPathSumFrom2(grid, r, c + 1, cache);
+        if (c == l - 1)
+            return cache[r][c] = sum + minPathSumFrom2(grid, r + 1, c, cache);
 
-        cache[i][j] = sum + Math.min(helper(grid, i + 1, j, cache), helper(grid, i, j + 1, cache));
-        return cache[i][j];
+        return cache[r][c] = sum + Math.min(
+            minPathSumFrom2(grid, r + 1, c, cache),
+            minPathSumFrom2(grid, r, c + 1, cache));
     }
 
     /*
@@ -233,22 +234,22 @@ public class L64_MinimumPathSum {
     }
 
     public static void main(String[] args) {
-        log(minPathSum(new int[][]{
+        log(minPathSum2(new int[][]{
             {1, 3, 1},
             {1, 5, 1},
             {4, 2, 1}
         }));  // expects 7. (1->3->1->1->1)
 
-        log(minPathSum(new int[][]{
+        log(minPathSum2(new int[][]{
             {1, 3, 4},
             {1, 2, 1},
         }));  // expects 5. (1->1->2->1)
 
-        log(minPathSum(new int[][]{
+        log(minPathSum2(new int[][]{
             {1, 2, 3}
         }));  // expects 6.
 
-        log(minPathSum(new int[][]{
+        log(minPathSum2(new int[][]{
             {0}
         }));  // expects 0.
     }
