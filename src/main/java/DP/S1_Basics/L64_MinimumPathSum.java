@@ -21,7 +21,7 @@ import java.util.Queue;
 
 public class L64_MinimumPathSum {
     /*
-     * 超时解：Brute force BFS
+     * 超时解：BFS
      * - 思路：与 L120_Triangle 解法2完全一致，采用 BFS 遍历每一条路径，同时计算最小的节点值之和。
      *        1 → 3 → 1
      *        ↓   ↓   ↓
@@ -112,7 +112,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-     * 解法2：Recursion + Memoization（DFS with cache）
+     * 解法2：DFS + Memoization（Recursion with cache）
      * - 思路：在超时解2的基础上加入 Memoization 进行优化。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
@@ -183,55 +183,66 @@ public class L64_MinimumPathSum {
 
     /*
      * 解法4：In-place DP
-     * - 思路：与解法3不同点：1. 不建立 dp 数组，就地修改；2. 遍历方向从左上到右下 f(i, j) = min(f(i-1, j), f(i, j-1))。
-     * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
+     * - 思路：与解法3一致。
+     * - 实现：
+     *     1. 不另外建立 dp 数组，而是就地修改 grid 数组；
+     *     2. 遍历方向为从左上到右下，不断对 grid 进行填充/更新：f(r,c) = min(f(r-1, c), f(r, c-1))。
+     *
+     *          1  3  1         1 → 4 → 5         1 → 4 → 5         1 → 4 → 5
+     *          1  5  1   -->              -->    ↓   ↓   ↓   -->   ↓   ↓   ↓
+     *          4  2  1                           2 → 7 → 6         2 → 7 → 6
+     *                                                              ↓   ↓   ↓
+     *                                                              6 → 8 → 7
+     * - 时间复杂度 O(l*w)，空间复杂度 O(1)。
      * */
     public static int minPathSum4(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
-        int m = grid.length;
-        int n = grid[0].length;
+        int w = grid.length;
+        int l = grid[0].length;
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == 0 && j == 0) continue;
-                if (i == 0)
-                    grid[0][j] += grid[0][j - 1];
-                else if (j == 0)
-                    grid[i][0] += grid[i - 1][j];
+        for (int r = 0; r < w; r++) {
+            for (int c = 0; c < l; c++) {
+                if (r == 0 && c == 0) continue;
+                if (r == 0)
+                    grid[0][c] += grid[0][c - 1];
+                else if (c == 0)
+                    grid[r][0] += grid[r - 1][c];
                 else
-                    grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
+                    grid[r][c] += Math.min(grid[r - 1][c], grid[r][c - 1]);
             }
         }
 
-        return grid[m - 1][n - 1];
+        return grid[w - 1][l - 1];
     }
 
     /*
-     * 解法5：In-place DP
-     * - 思路：∵ 第一行和第一列是特殊情况，不需要比较，只有一种选择 ∴ 先手动解决它们之后再处理其他位置上的情况：
-     *       1 → 3 → 1             1 → 4 → 5             1 → 4 → 5              1 → 4 → 5
-     *       ↓   ↓   ↓   Add up    ↓   ↓   ↓   Add up    ↓   ↓   ↓    Handle    ↓   ↓   ↓
-     *       1 → 5 → 1  -------->  1 → 5 → 1  -------->  2 → 5 → 1  --------->  2 → 7 → 6
-     *       ↓   ↓   ↓   1st row   ↓   ↓   ↓   1st col   ↓   ↓   ↓   the rest   ↓   ↓   ↓
-     *       4 → 2 → 1             4 → 2 → 1             6 → 2 → 1              6 → 8 → 7
-     * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
+     * 解法5：In-place DP（解法4的另一种写法）
+     * - 思路：与解法4一致。
+     * - 实现：观察解法4可知 ∵ 第一行和第一列是特殊情况，不需要比较，只有一种选择 ∴ 可以先手动处理这些特殊情况，然后再处理其他
+     *   位置上的一般情况：
+     *       1   3   1             1 → 4 → 5             1 → 4 → 5              1 → 4 → 5
+     *                   Add up                Add up    ↓            Handle    ↓   ↓   ↓
+     *       1   5   1  -------->  1   5   1  -------->  2   5   1  --------->  2 → 7 → 6
+     *                   1st row               1st col   ↓           the rest   ↓   ↓   ↓
+     *       4   2   1             4   2   1             6   2   1              6 → 8 → 7
+     * - 时间复杂度 O(l*w)，空间复杂度 O(1)。
      * */
     public static int minPathSum5(int[][] grid) {
-        int m = grid.length;
-        int n = grid[0].length;
+        int w = grid.length;
+        int l = grid[0].length;
 
-        for (int i = 1; i < m; i++)  // Add up 1st row
-            grid[i][0] += grid[i - 1][0];
+        for (int r = 1; r < w; r++)  // Add up 1st row
+            grid[r][0] += grid[r - 1][0];
 
-        for (int j = 1; j < n; j++)  // Add up 1st column
-            grid[0][j] += grid[0][j - 1];
+        for (int c = 1; c < l; c++)  // Add up 1st column
+            grid[0][c] += grid[0][c - 1];
 
-        for (int i = 1; i < m; i++)  // Handle the rest
-            for (int j = 1; j < n; j++)
-                grid[i][j] += Math.min(grid[i - 1][j], grid[i][j - 1]);
+        for (int r = 1; r < w; r++)  // Handle the rest
+            for (int c = 1; c < l; c++)
+                grid[r][c] += Math.min(grid[r - 1][c], grid[r][c - 1]);
 
-        return grid[m - 1][n - 1];
+        return grid[w - 1][l - 1];
     }
 
     public static void main(String[] args) {
