@@ -87,7 +87,7 @@ public class L64_MinimumPathSum {
      *   其中：
      *     - ∵ f(2,0)、f(0,2) 是边缘节点，只有一个方向可以走 ∴ f(2,0) = f(2,1); f(0,2) = f(1,2)；
      *     - f(1,0)、f(0,1) 都可以走到 f(1,1) ∴ 出现了重复计算。
-     * - 时间复杂度 O(2^(m*n))，空间复杂度 O(m*n)。
+     * - 时间复杂度 O(2^(l*w))，空间复杂度 O(l*w)。
      * */
     public static int minPathSum0(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -114,7 +114,7 @@ public class L64_MinimumPathSum {
     /*
      * 解法2：Recursion + Memoization（DFS with cache）
      * - 思路：在超时解2的基础上加入 Memoization 进行优化。
-     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     public static int minPathSum2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -155,7 +155,7 @@ public class L64_MinimumPathSum {
      *   再递推出 f(w-2,l-2)…… 如此往复直到递推出 f(0,0) 为止。
      * - 优化：该解法还可以再进行空间优化 —— ∵ 每一行的计算都只依赖于当前行右侧和下一行中的值 ∴ 可以采用类似 _ZeroOneKnapsack
      *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
-     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     public static int minPathSum3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -167,10 +167,10 @@ public class L64_MinimumPathSum {
         for (int[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
 
-        dp[w - 1][l - 1] = grid[w - 1][l - 1];  // 由 f(w-1,l-1) 开始往左上角递推
+        dp[w - 1][l - 1] = grid[w - 1][l - 1];  // 设置初值
 
         for (int r = w - 1; r >= 0; r--) {
-            for (int c = l - 1; c >= 0; c--) {
+            for (int c = l - 1; c >= 0; c--) {  // 由 [w-1,l-1] 开始往左、往上进行递推
                 if (r != w - 1)
                     dp[r][c] = Math.min(dp[r][c], grid[r][c] + dp[r + 1][c]);
                 if (c != l - 1)
