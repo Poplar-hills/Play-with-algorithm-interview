@@ -32,37 +32,37 @@ public class L64_MinimumPathSum {
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)，其中 n 为节点个数。
      * */
     static class Path {
-        final int row, col, sum;
+        final int r, c, sum;
         public Path(int row, int col, int sum) {
-            this.row = row;
-            this.col = col;
+            this.r = row;
+            this.c = col;
             this.sum = sum;
         }
     }
 
     public static int minPathSum(int[][] grid) {
-        int res = Integer.MAX_VALUE;
-        int m = grid.length, n = grid[0].length;
+        int minSum = Integer.MAX_VALUE;
+        int w = grid.length, l = grid[0].length;
 
         Queue<Path> q = new LinkedList<>();
         q.offer(new Path(0, 0, grid[0][0]));
 
         while (!q.isEmpty()) {
             Path path = q.poll();
-            int row = path.row, col = path.col, sum = path.sum;
+            int r = path.r, c = path.c, sum = path.sum;
 
-            if (row == m - 1 && col == n - 1) {  // 若已抵达右下角
-                res = Math.min(res, sum);        // 求最小的节点值之和
+            if (r == w - 1 && c == l - 1) {      // 若已抵达右下角
+                minSum = Math.min(minSum, sum);  // 求最小的节点值之和
                 continue;
             }
 
-            if (col < n - 1)       // 若还没到最右一列，则入队右侧节点
-                q.offer(new Path(row, col + 1, sum + grid[row][col + 1]));
-            if (row < m - 1)       // 若还没到最后一行，则入队下方节点
-                q.offer(new Path(row + 1, col, sum + grid[row + 1][col]));
+            if (c < l - 1)       // 若还没到最右一列，则入队右侧节点
+                q.offer(new Path(r, c + 1, sum + grid[r][c + 1]));
+            if (r < w - 1)       // 若还没到最后一行，则入队下方节点
+                q.offer(new Path(r + 1, c, sum + grid[r + 1][c]));
         }
 
-        return res;
+        return minSum;
     }
 
     /*
@@ -221,22 +221,22 @@ public class L64_MinimumPathSum {
     }
 
     public static void main(String[] args) {
-        log(minPathSum4(new int[][]{
+        log(minPathSum(new int[][]{
             {1, 3, 1},
             {1, 5, 1},
             {4, 2, 1}
         }));  // expects 7. (1->3->1->1->1)
 
-        log(minPathSum4(new int[][]{
+        log(minPathSum(new int[][]{
             {1, 3, 4},
             {1, 2, 1},
         }));  // expects 5. (1->1->2->1)
 
-        log(minPathSum4(new int[][]{
+        log(minPathSum(new int[][]{
             {1, 2, 3}
         }));  // expects 6.
 
-        log(minPathSum4(new int[][]{
+        log(minPathSum(new int[][]{
             {0}
         }));  // expects 0.
     }
