@@ -232,13 +232,13 @@ public class L64_MinimumPathSum {
         int w = grid.length;
         int l = grid[0].length;
 
-        for (int r = 1; r < w; r++)  // Add up 1st row
+        for (int r = 1; r < w; r++)        // Add up 1st row
             grid[r][0] += grid[r - 1][0];
 
-        for (int c = 1; c < l; c++)  // Add up 1st column
+        for (int c = 1; c < l; c++)        // Add up 1st column
             grid[0][c] += grid[0][c - 1];
 
-        for (int r = 1; r < w; r++)  // Handle the rest
+        for (int r = 1; r < w; r++)        // Handle the rest
             for (int c = 1; c < l; c++)
                 grid[r][c] += Math.min(grid[r - 1][c], grid[r][c - 1]);
 
