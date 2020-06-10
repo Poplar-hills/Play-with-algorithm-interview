@@ -76,9 +76,9 @@ public class L64_MinimumPathSum {
 
     /*
      * 超时解2：DFS
-     * - 思路：从左上到右下递归地计算每个节点到达右下角的 minimum path sum。若用 f(r,c) 表示从节点 [r,c] 到达右下角的
-     *   minimum path sum，则有递推表达式 f(r,c) = min(f(r+1,c) + f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)。
-     *
+     * - 思路：从左上到右下递归地计算每个节点到达右下角的 minimum path sum，因此有：
+     *   - 子问题定义：f(r,c) 表示从节点 [r,c] 到达右下角的 minimum path sum。
+     *   - 递推表达式：f(r,c) = min(f(r+1,c) + f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)。
      *       1 ← 3 ← 1
      *       ↑   ↑   ↑   - f(0,0) = min(f(1,0), f(0,1))
      *       1 ← 5 ← 1            = min(min(f(2,0), f(1,1)), min(f(0,2), f(1,1)))
@@ -149,9 +149,10 @@ public class L64_MinimumPathSum {
 
     /*
      * 解法3：DP
-     * - 思路：
-     *   - 子问题定义：f(i, j) 表示“从左上角到位置 (i,j) 的所有路径上最小的节点值之和”；
-     *   - 状态转移方程：f(i, j) = min(f(i+1, j), f(i, j+1))。
+     * - 思路：在超时解2中，f(r,c) 表示从节点 [r,c] 到达右下角的 minimum path sum，每个节点的解 f(r,c) 是建立在其下游两个
+     *   节点的解 f(r+1,c)、f(r,c+1) 之上的 ∴ 可以根据递推表达式 f(r,c) = min(f(r+1,c) + f(r,c+1)) 来设计递归程序 ——
+     *   这是自上而下的思路。而 DP 的思路与此是一致的，只是自下而上进行递推，即由 f(w-1,l-1) 递推出 f(w-2,l-1)、f(w-1,l-2)，
+     *   再递推出 f(w-2,l-2)…… 如此往复直到递推出 f(0,0) 为止。
      * - 优化：该解法还可以再进行空间优化 —— ∵ 每一行的计算都只依赖于当前行右侧和下一行中的值 ∴ 可以采用类似 _ZeroOneKnapsack
      *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
@@ -159,21 +160,21 @@ public class L64_MinimumPathSum {
     public static int minPathSum3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
-        int m = grid.length;
-        int n = grid[0].length;
+        int w = grid.length;
+        int l = grid[0].length;
 
-        int[][] dp = new int[m][n];
+        int[][] dp = new int[w][l];
         for (int[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
 
-        dp[m - 1][n - 1] = grid[m - 1][n - 1];
+        dp[w - 1][l - 1] = grid[w - 1][l - 1];  // 由 f(w-1,l-1) 开始往左上角递推
 
-        for (int i = m - 1; i >= 0; i--) {
-            for (int j = n - 1; j >= 0; j--) {
-                if (i != m - 1)
-                    dp[i][j] = Math.min(dp[i][j], grid[i][j] + dp[i + 1][j]);
-                if (j != n - 1)
-                    dp[i][j] = Math.min(dp[i][j], grid[i][j] + dp[i][j + 1]);
+        for (int r = w - 1; r >= 0; r--) {
+            for (int c = l - 1; c >= 0; c--) {
+                if (r != w - 1)
+                    dp[r][c] = Math.min(dp[r][c], grid[r][c] + dp[r + 1][c]);
+                if (c != l - 1)
+                    dp[r][c] = Math.min(dp[r][c], grid[r][c] + dp[r][c + 1]);
             }
         }
 
