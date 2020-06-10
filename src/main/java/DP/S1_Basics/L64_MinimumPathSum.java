@@ -76,27 +76,39 @@ public class L64_MinimumPathSum {
 
     /*
      * 超时解2：DFS
-     * - 思路：从左上到右下递归地为每个节点计算从左上角到该节点的 minimum path sum。
+     * - 思路：从左上到右下递归地计算每个节点到达右下角的 minimum path sum。若用 f(r,c) 表示从节点 [r,c] 到达右下角的
+     *   minimum path sum，则有递推表达式 f(r,c) = min(f(r+1,c) + f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)。
+     *
+     *       1 ← 3 ← 1
+     *       ↑   ↑   ↑   - f(0,0) = min(f(1,0), f(0,1))
+     *       1 ← 5 ← 1            = min(min(f(2,0), f(1,1)), min(f(0,2), f(1,1)))
+     *       ↑   ↑   ↑            = ...
+     *       4 ← 2 ← 1
+     *   其中：
+     *     - ∵ f(2,0)、f(0,2) 是边缘节点，只有一个方向可以走 ∴ f(2,0) = f(2,1); f(0,2) = f(1,2)；
+     *     - f(1,0)、f(0,1) 都可以走到 f(1,1) ∴ 出现了重复计算。
      * - 时间复杂度 O(2^(m*n))，空间复杂度 O(m*n)。
      * */
     public static int minPathSum0(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
-        return helper(grid, 0, 0);
+        return minPathSumFrom(grid, 0, 0);
     }
 
-    private static int helper(int[][] grid, int i, int j) {
-        int m = grid.length;
-        int n = grid[0].length;
-        int sum = grid[i][j];
+    private static int minPathSumFrom(int[][] grid, int r, int c) {
+        int w = grid.length;
+        int l = grid[0].length;
+        int sum = grid[r][c];
 
-        if (i == m - 1 && j == n - 1)
+        if (r == w - 1 && c == l - 1)
             return sum;
-        if (i == m - 1)
-            return sum + helper(grid, i, j + 1);
-        if (j == n - 1)
-            return sum + helper(grid, i + 1, j);
+        if (r == w - 1)
+            return sum + minPathSumFrom(grid, r, c + 1);
+        if (c == l - 1)
+            return sum + minPathSumFrom(grid, r + 1, c);
 
-        return sum + Math.min(helper(grid, i + 1, j), helper(grid, i, j + 1));
+        return sum + Math.min(
+            minPathSumFrom(grid, r + 1, c),
+            minPathSumFrom(grid, r, c + 1));
     }
 
     /*
