@@ -7,11 +7,72 @@ import static Utils.Helpers.log;
 /*
  * Climbing Stairs
  *
- * - You are climbing a stair case. It takes n steps to reach to the top. Each time you can either climb 1 or 2
- *   steps. In how many distinct ways can you climb to the top? Note: n > 0.
+ * - You are climbing a stair case. It takes n steps to reach to the top. Each time you can either climb
+ *   1 or 2 steps. In how many distinct ways can you climb to the top? Note: n > 0.
  * */
 
 public class L70_ClimbingStairs {
+    /*
+     * 超时解1：BFS
+     * - 思路：该题是个图搜索问题 ∴ 可采用最简单的 BFS 搜索求解。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
+     * */
+    public static int climbStairs0(int n) {
+        int numOfPath = 0;
+        if (n <= 0) return numOfPath;
+
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(0);
+
+        while (!q.isEmpty()) {
+            int step = q.poll();
+
+            if (step == n) {
+                numOfPath++;
+                continue;
+            }
+
+            if (step + 1 <= n) q.offer(step + 1);
+            if (step + 2 <= n) q.offer(step + 2);
+        }
+
+        return numOfPath;
+    }
+
+    /*
+     * 超时解2：BFS + 记录所有路径
+     * - 思路：另一种方式是用 BFS 找出图上从 0 → n 之间的所有路径，再取其个数（SEE: Play-with-algorithms/Graph/Path 中的
+     *   allPaths 方法）。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)（解释 SEE: L120 超时解1）。
+     * */
+    public static int climbStairs00(int n) {
+        List<List<Integer>> paths = new ArrayList<>();
+        Queue<List<Integer>> q = new LinkedList<>();  // q 存储所有从起点出发的路径，每个分支都会形成一条新路径
+
+        List<Integer> initialPath = new ArrayList<>();
+        initialPath.add(0);
+        q.offer(initialPath);
+
+        while (!q.isEmpty()) {
+            List<Integer> path = q.poll();             // 每次拿出一条路径
+            int lastStep = path.get(path.size() - 1);  // 获取路径中的最后一个顶点
+
+            if (lastStep == n) {  // 若该顶点就是 n 则说明该是一条有效路径，放入 paths 中
+                paths.add(path);
+                continue;
+            }
+
+            for (int i = 1; i <= 2 && lastStep + i <= n; i++) {  // 获取所有相邻顶点
+                int nextStep = lastStep + i;
+                List<Integer> newPath = new ArrayList<>(path);  // 复制该路径并添加节点，形成一条新路径，并放入 q 中
+                newPath.add(nextStep);
+                q.offer(newPath);
+            }
+        }
+
+        return paths.size();
+    }
+
     /*
      * 解法1：找规律 -> Fibonacci
      * - 思路：该问题非常类似 L279_PerfectSquares，同样可图论建模：从顶点0开始，两顶点值之间相差不超过2，求有几条到达顶点 n 的路径：
@@ -98,41 +159,9 @@ public class L70_ClimbingStairs {
         return cache[i] = pathNum;
     }
 
-    /*
-     * 超时解：BFS 全搜索（虽然超时，但是结果正确）
-     * - 思路：先用 BFS 找出图上从 0 到 n 之间的所有路径，再取个数。解释 SEE: Play-with-algorithms/Graph/Path 中的 allPaths 方法。
-     * - 时间复杂度 O(2^n)，空间复杂度 O(n)（解释 SEE: L120 超时解1）
-     * */
-    public static int climbStairs4(int n) {
-        List<List<Integer>> res = new ArrayList<>();
-        Queue<List<Integer>> q = new LinkedList<>();  // 队列存储所有从 source 出发的路径，每个分支都是一条新路径
-
-        List<Integer> initialPath = new ArrayList<>();
-        initialPath.add(0);
-        q.offer(initialPath);
-
-        while (!q.isEmpty()) {
-            List<Integer> path = q.poll();               // 每次拿出一条路径
-            int lastVertex = path.get(path.size() - 1);  // 获取路径中的最后一个顶点
-            if (lastVertex == n) {  // 若该顶点就是 targetStep 顶点则说明该是一条有效路径，放入 res 中；而那些走不到
-                res.add(path);      // targetStep 上的路径（比如成环的路径）会被丢弃（poll 出来后不会再 offer 进去）
-                continue;
-            }
-            for (int i = 1; i <= 2 && lastVertex + i <= n; i++) {  // 获取所有相邻顶点
-                int adj = lastVertex + i;
-                if (path.contains(adj)) continue;               // 若顶点已存在于该路径中，则说明已经访问过，不再继续（否则会成环）
-                List<Integer> newPath = new ArrayList<>(path);  // 复制该路径并 add 这个 adj 顶点，形成一条新路径，放入 q 中
-                newPath.add(adj);
-                q.offer(newPath);
-            }
-        }
-
-        return res.size();
-    }
-
     public static void main(String[] args) {
-        log(climbStairs2(2));  // expects 2 (1+1, 2 in one go)
-        log(climbStairs2(3));  // expects 3 (1+1, 1+2, 2+1)
-        log(climbStairs2(5));  // expects 8
+        log(climbStairs00(2));  // expects 2 (1+1, 2 in one go)
+        log(climbStairs00(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs00(5));  // expects 8
     }
 }
