@@ -74,7 +74,42 @@ public class L70_ClimbingStairs {
     }
 
     /*
-     * 解法1：找规律 -> Fibonacci
+     * 超时解3：DFS
+     * - 思路：若使用 DFS 求解，那么就需要思考前后子问题之间的递推关系，即 f(i) 与 f(i+1) 之间如何进行递推。对于 n=5 来说：
+     *            1   →   3   →   5
+     *          ↗   ↘   ↗   ↘   ↗
+     *        0   →   2   →   4
+     *   其中 f(4)=1, f(3)=2, f(2)=3 ∴ 有 f(2) = f(3) + f(4)，且该递推关系也适用于其他情况 ∴ 找到递推表达式：
+     *   f(i) = f(i + 1) + f(i + 2)，其中 i ∈ [0,n-2] ∴ 可按该递推表达式设计递归程序。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
+     * */
+    public static int climbStairs000(int n) {
+        if (n <= 0) return 0;
+        return helper000(0, n);
+    }
+
+    private static int helper000(int i, int n) {
+        if (i == n) return 1;
+        int numOfPath = helper000(i + 1, n);
+        if (i + 2 <= n) numOfPath += helper000(i + 2, n);
+        return numOfPath;
+    }
+
+    /*
+     * 超时解4：DFS（超时解3的简化版）
+     * - 思路：与超时解3一致。
+     * - 实现：去掉超时解3中的 i，直接让 n 逼近 0。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
+     * */
+    public static int climbStairs0000(int n) {
+        if (n == 0) return 1;    // 这里与其他解的表现略微不同，n=0 时会返回1，但 ∵ 题中规定 n>0 ∴ 没关系
+        int numOfPath = climbStairs0000(n - 1);
+        if (n - 2 >= 0) numOfPath += climbStairs0000(n - 2);
+        return numOfPath;
+    }
+
+    /*
+     * 解法1：DFS -> Fibonacci
      * - 思路：该问题非常类似 L279_PerfectSquares，同样可图论建模：从顶点0开始，两顶点值之间相差不超过2，求有几条到达顶点 n 的路径：
      *            1 ----> 3 ----> 5 ...
      *          ↗   ↘   ↗   ↘   ↗
@@ -91,28 +126,6 @@ public class L70_ClimbingStairs {
         for (int i = 2; i <= n; i++)    // 解决最基本问题 f(0), f(1) 后再递推出 f(n)
             cache[i] = cache[i - 1] + cache[i - 2];
         return cache[n];
-    }
-
-    /*
-     * 超时解3：DFS
-     * - 思路：若使用 DFS 求解，那么就需要思考前后子问题之间的递推关系，即 f(i) 与 f(i+1) 之间如何进行递推。对于 n=5 来说：
-     *            1   →   3   →   5
-     *          ↗   ↘   ↗   ↘   ↗
-     *        0   →   2   →   4
-     *   其中 f(4)=1, f(3)=2, f(2)=3 ∴ 有 f(2) = f(3) + f(4)，且该递推关系也适用于其他情况 ∴ 找到递推表达式：
-     *   f(i) = f(i + 1) + f(i + 2)，其中 i ∈ [0,n-2] ∴ 可按该递推表达式设计递归程序。
-     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
-     * */
-    public static int climbStairs000(int n) {
-        if (n <= 0) return 0;
-        return helper2(0, n);
-    }
-
-    private static int helper2(int i, int n) {
-        if (i == n) return 1;
-        int numOfPath = helper2(i + 1, n);
-        if (i + 2 <= n) numOfPath += helper2(i + 2, n);
-        return numOfPath;
     }
 
     /*
@@ -179,8 +192,8 @@ public class L70_ClimbingStairs {
     }
 
     public static void main(String[] args) {
-        log(climbStairs2(2));  // expects 2 (1+1, 2 in one go)
-        log(climbStairs2(3));  // expects 3 (1+1, 1+2, 2+1)
-        log(climbStairs2(5));  // expects 8
+        log(climbStairs0000(2));  // expects 2 (1+1, 2 in one go)
+        log(climbStairs0000(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs0000(5));  // expects 8
     }
 }
