@@ -94,12 +94,31 @@ public class L70_ClimbingStairs {
     }
 
     /*
+     * 超时解3：DFS
+     * - 思路：若使用 DFS 求解，那么就需要思考前后子问题之间的递推关系，即 f(i) 与 f(i+1) 之间如何进行递推。对于 n=5 来说：
+     *            1   →   3   →   5
+     *          ↗   ↘   ↗   ↘   ↗
+     *        0   →   2   →   4
+     *   其中 f(4)=1, f(3)=2, f(2)=3 ∴ 有 f(2) = f(3) + f(4)，且该递推关系也适用于其他情况 ∴ 找到递推表达式：
+     *   f(i) = f(i + 1) + f(i + 2)，其中 i ∈ [0,n-2] ∴ 可按该递推表达式设计递归程序。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
+     * */
+    public static int climbStairs000(int n) {
+        if (n <= 0) return 0;
+        return helper2(0, n);
+    }
+
+    private static int helper2(int i, int n) {
+        if (i == n) return 1;
+        int numOfPath = helper2(i + 1, n);
+        if (i + 2 <= n) numOfPath += helper2(i + 2, n);
+        return numOfPath;
+    }
+
+    /*
      * 解法2：DFS
-     * - 思路：解法1中对该题使用图论建模后，题目就转化成了：求图上两点之间的路径条数，若采用正统一些的解法就是 BFS 或 DFS。本解法
-     *   采用 DFS，即任一顶点到终点的路径数 = sum(其所有下游相邻顶点到终点的路径条数)，比如上图中，2->5的路径数 = 3->5的路径数
-     *   + 4->5的路径数。
+     * - 思路：
      * - 实现：
-     *   - 按该思路使用递归求解非常自然；
      *   - 不管是 BFS 或 DFS，过执行程中都需要能找到任一顶点的所有相邻顶点，大体有2种方式：
      *     1. 提前创建好 graph（本解法采用这种方式）；
      *     2. 需要的时候再计算。
@@ -160,8 +179,8 @@ public class L70_ClimbingStairs {
     }
 
     public static void main(String[] args) {
-        log(climbStairs00(2));  // expects 2 (1+1, 2 in one go)
-        log(climbStairs00(3));  // expects 3 (1+1, 1+2, 2+1)
-        log(climbStairs00(5));  // expects 8
+        log(climbStairs2(2));  // expects 2 (1+1, 2 in one go)
+        log(climbStairs2(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs2(5));  // expects 8
     }
 }
