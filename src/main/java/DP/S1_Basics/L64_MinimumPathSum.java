@@ -76,17 +76,18 @@ public class L64_MinimumPathSum {
 
     /*
      * 超时解2：DFS
-     * - 思路：从左上到右下递归地计算每个节点到达右下角的 minimum path sum，因此有：
-     *   - 子问题定义：f(r,c) 表示从节点 [r,c] 到达右下角的 minimum path sum。
-     *   - 递推表达式：f(r,c) = min(f(r+1,c) + f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)。
+     * - 思路：从左上到右下递归地计算每个节点到达右下角的 min path sum：
+     *   - 子问题定义：f(r,c) 表示从节点 [r,c] 到达右下角的 min path sum。
+     *   - 递推表达式：f(r,c) = min(f(r+1,c), f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)。
      *       1 ← 3 ← 1
      *       ↑   ↑   ↑   - f(0,0) = min(f(1,0), f(0,1))
      *       1 ← 5 ← 1            = min(min(f(2,0), f(1,1)), min(f(0,2), f(1,1)))
      *       ↑   ↑   ↑            = ...
      *       4 ← 2 ← 1
      *   其中：
-     *     - ∵ f(2,0)、f(0,2) 是边缘节点，只有一个方向可以走 ∴ f(2,0) = f(2,1); f(0,2) = f(1,2)；
-     *     - f(1,0)、f(0,1) 都可以走到 f(1,1) ∴ 出现了重复计算。
+     *     - ∵ f(2,2) 是右下角终点，再没有路可走 ∴ f(2,2) = 1；
+     *     - ∵ 类似 f(2,0)、f(0,2) 的边缘节点只有一个方向可以走 ∴ f(2,0) = f(2,1); f(0,2) = f(1,2)；
+     *     - f(1,0)、f(0,1) 都可以走到 f(1,1) ∴ 出现了重叠子问题，本解法中并未进行优化。
      * - 时间复杂度 O(2^(l*w))，空间复杂度 O(l*w)。
      * */
     public static int minPathSum0(int[][] grid) {
@@ -113,13 +114,13 @@ public class L64_MinimumPathSum {
 
     /*
      * 解法2：DFS + Memoization（Recursion with cache）
-     * - 思路：在超时解2的基础上加入 Memoization 进行优化。
+     * - 思路：在超时解2的基础上加入 Memoization 进行优化，以避免重复计算重叠子问题。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
     public static int minPathSum2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
-        int[][] cache = new int[grid.length][grid[0].length];
+        int[][] cache = new int[grid.length][grid[0].length];  // cache[r][c] 记录节点 [r,c] 到达右下角的 min path sum
         for (int[] row : cache)
             Arrays.fill(row, Integer.MAX_VALUE);
 
@@ -149,10 +150,10 @@ public class L64_MinimumPathSum {
 
     /*
      * 解法3：DP
-     * - 思路：在超时解2中，f(r,c) 表示从节点 [r,c] 到达右下角的 minimum path sum，每个节点的解 f(r,c) 是建立在其下游两个
-     *   节点的解 f(r+1,c)、f(r,c+1) 之上的 ∴ 可以根据递推表达式 f(r,c) = min(f(r+1,c) + f(r,c+1)) 来设计递归程序 ——
-     *   这是自上而下的思路。而 DP 的思路与此是一致的，只是自下而上进行递推，即由 f(w-1,l-1) 递推出 f(w-2,l-1)、f(w-1,l-2)，
-     *   再递推出 f(w-2,l-2)…… 如此往复直到递推出 f(0,0) 为止。
+     * - 思路：超时解2中的递推表达式是 f(r,c) = min(f(r+1,c), f(r,c+1))，即每个节点的解 f(r,c) 是建立在其下游的两个节点
+     *   的解 f(r+1,c)、f(r,c+1) 之上的 ∴ 可以很自然的使用递归求解 —— 这是自上而下的递推过程。而 DP 的思路与此是一致的，
+     *   使用的递推表达式也一样，只是递推过程是自下而上，即从终点 f(w-1,l-1) 开始，递推出 f(w-2,l-1)、f(w-1,l-2)，再递推出
+     *   f(w-2,l-2)…… 如此往复直到递推出 f(0,0) 为止。
      * - 优化：该解法还可以再进行空间优化 —— ∵ 每一行的计算都只依赖于当前行右侧和下一行中的值 ∴ 可以采用类似 _ZeroOneKnapsack
      *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
@@ -167,10 +168,10 @@ public class L64_MinimumPathSum {
         for (int[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
 
-        dp[w - 1][l - 1] = grid[w - 1][l - 1];  // 设置初值
+        dp[w - 1][l - 1] = grid[w - 1][l - 1];  // 设置递推的起始值
 
         for (int r = w - 1; r >= 0; r--) {
-            for (int c = l - 1; c >= 0; c--) {  // 由 [w-1,l-1] 开始往左、往上进行递推
+            for (int c = l - 1; c >= 0; c--) {  // 从终点 [w-1,l-1] 开始遍历，往左、往上进行递推
                 if (r != w - 1)
                     dp[r][c] = Math.min(dp[r][c], grid[r][c] + dp[r + 1][c]);
                 if (c != l - 1)
@@ -185,8 +186,8 @@ public class L64_MinimumPathSum {
      * 解法4：In-place DP
      * - 思路：与解法3一致。
      * - 实现：
-     *     1. 不另外建立 dp 数组，而是就地修改 grid 数组；
-     *     2. 遍历方向为从左上到右下，不断对 grid 进行填充/更新：f(r,c) = min(f(r-1, c), f(r, c-1))。
+     *   1. 不另外建立 dp 数组，而是就地修改 grid 数组；
+     *   2. 遍历方向为从左上到右下，不断对 grid 进行填充/更新：f(r,c) = min(f(r-1, c), f(r, c-1))。
      *
      *          1  3  1         1 → 4 → 5         1 → 4 → 5         1 → 4 → 5
      *          1  5  1   -->              -->    ↓   ↓   ↓   -->   ↓   ↓   ↓
@@ -221,11 +222,11 @@ public class L64_MinimumPathSum {
      * - 思路：与解法4一致。
      * - 实现：观察解法4可知 ∵ 第一行和第一列是特殊情况，不需要比较，只有一种选择 ∴ 可以先手动处理这些特殊情况，然后再处理其他
      *   位置上的一般情况：
-     *       1   3   1             1 → 4 → 5             1 → 4 → 5              1 → 4 → 5
-     *                   Add up                Add up    ↓            Handle    ↓   ↓   ↓
-     *       1   5   1  -------->  1   5   1  -------->  2   5   1  --------->  2 → 7 → 6
-     *                   1st row               1st col   ↓           the rest   ↓   ↓   ↓
-     *       4   2   1             4   2   1             6   2   1              6 → 8 → 7
+     *       1   3   1               1 → 4 → 5               1 → 4 → 5                1 → 4 → 5
+     *                    Add up                  Add up     ↓             Handle     ↓   ↓   ↓
+     *       1   5   1   -------->   1   5   1   -------->   2   5   1   --------->   2 → 7 → 6
+     *                    1st row                 1st col    ↓            the rest    ↓   ↓   ↓
+     *       4   2   1               4   2   1               6   2   1                6 → 8 → 7
      * - 时间复杂度 O(l*w)，空间复杂度 O(1)。
      * */
     public static int minPathSum5(int[][] grid) {
