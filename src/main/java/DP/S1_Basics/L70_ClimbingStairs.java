@@ -15,6 +15,7 @@ public class L70_ClimbingStairs {
     /*
      * 超时解1：BFS
      * - 思路：该题是个图搜索问题 ∴ 可采用最简单的 BFS 搜索求解。
+     * - 实现：若用 Stack 代替 Queue，则是 DFS。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int climbStairs0(int n) {
@@ -74,8 +75,8 @@ public class L70_ClimbingStairs {
     }
 
     /*
-     * 超时解3：DFS
-     * - 思路：若使用 DFS 求解，那么就需要思考前后子问题之间的递推关系，即 f(i) 与 f(i+1) 之间如何进行递推。对于 n=5 来说：
+     * 超时解3：DFS + Recursion
+     * - 思路：若使用递归求解，那么就需要思考前后子问题之间的递推关系，即 f(i) 与 f(i+1) 之间如何进行递推。对于 n=5 来说：
      *            1   →   3   →   5
      *          ↗   ↘   ↗   ↘   ↗
      *        0   →   2   →   4
@@ -98,46 +99,57 @@ public class L70_ClimbingStairs {
     /*
      * 超时解4：DFS（超时解3的简化版）
      * - 思路：与超时解3一致。
-     * - 实现：去掉超时解3中的 i，直接让 n 逼近 0。
+     * - 实现：1. 去掉超时解3中的 i，直接让 n 逼近 0，即递推表达式可以改写为 f(n) = f(n-1) + f(n-2)。
+     *        2. 当 n < 0 时返回0（对应到超时解3中就是当 i > n 时返回0，这样就无需 if (i+2 <= n) 的判断了，代码更简洁）。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int climbStairs0000(int n) {
         if (n == 0) return 1;    // 这里与其他解的表现略微不同，n=0 时会返回1，但 ∵ 题中规定 n>0 ∴ 没关系
-        int numOfPath = climbStairs0000(n - 1);
-        if (n - 2 >= 0) numOfPath += climbStairs0000(n - 2);
-        return numOfPath;
+        if (n < 0) return 0;
+        return climbStairs0000(n - 1) + climbStairs0000(n - 2);
     }
 
     /*
-     * 解法1：DFS -> Fibonacci
-     * - 思路：该问题非常类似 L279_PerfectSquares，同样可图论建模：从顶点0开始，两顶点值之间相差不超过2，求有几条到达顶点 n 的路径：
-     *            1 ----> 3 ----> 5 ...
-     *          ↗   ↘   ↗   ↘   ↗
-     *        0 ----> 2 ----> 4 ...
-     *   ∵ n > 0，可知：当 n=1 时有1条路径；n=2 时有2条路径；n=3 时有3条路径；n=4 时有5条路径... 当有n级台阶时的路径数：
-     *   f(n) = f(n-1) + f(n-2)。该规律对应从第2项开始的 Fibonacci 数列 1, 2, 3, 5, 8...（完整的 Fibonacci 数列是
-     *   1, 1, 2, 3, 5, 8...）。至此此该题目转化为求第 n 个 Fibonacci 数。
-     * - 实现：采用 DP（即 L509 中的解法3；类似 L91 中的解法2）。
+     * 解法1：DP
+     * - 思路：其实超时解4中的递推表达式就是 L509_FibonacciNumber 中的递推表达式，相当于该题就是在求第 n 个 Fibonacci 数。
+     * - 实现：在超时解4的基础上加入 L509 解法1的 Memoization 进行优化。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs1(int n) {
-        int[] cache = new int[n + 1];   // 或者使用 map 也可以
-        cache[0] = cache[1] = 1;        // 题中说了 n > 0，但仍要给 cache[0] 赋值用以生成 Fibonacci 数列
-        for (int i = 2; i <= n; i++)    // 解决最基本问题 f(0), f(1) 后再递推出 f(n)
-            cache[i] = cache[i - 1] + cache[i - 2];
-        return cache[n];
+        int[] cache = new int[n + 1];
+        return helper1(n, cache);
+    }
+
+    private static int helper1(int n, int[] cache) {
+        if (n == 0) return 1;
+        if (n < 0) return 0;
+        if (cache[n] != 0) return cache[n];
+        return cache[n] = helper1(n - 1, cache) + helper1(n - 2, cache);
     }
 
     /*
-     * 解法2：DFS
-     * - 思路：
-     * - 实现：
-     *   - 不管是 BFS 或 DFS，过执行程中都需要能找到任一顶点的所有相邻顶点，大体有2种方式：
-     *     1. 提前创建好 graph（本解法采用这种方式）；
-     *     2. 需要的时候再计算。
+     * 解法2：DP
+     * - 思路：采用 L509 解法3的 DP 思路（类似 L91_DecodeWays 解法2）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs2(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = dp[1] = 1;
+
+        for (int i = 2; i <= n; i++)
+            dp[i] = dp[i - 1] + dp[i - 2];
+
+        return dp[n];
+    }
+
+    /*
+     * 解法3：DFS
+     * - 思路：
+     * - 实现：不管是 BFS 或 DFS，过执行程中都需要能找到任一顶点的所有相邻顶点，大体有2种方式：
+     *   1. 提前创建好 graph（本解法采用这种方式）；
+     *   2. 需要的时候再计算。 - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int climbStairs3(int n) {
         if (n <= 0) return 0;
 
         // 提前创建好 graph（邻接表，如解法1思路中的图）
@@ -168,12 +180,12 @@ public class L70_ClimbingStairs {
     }
 
     /*
-     * 解法3：解法2的优化版，即 Recursion + Memoization（类似 L91 的解法1）
+     * 解法4：解法2的优化版，即 Recursion + Memoization（类似 L91 的解法1）
      * - 思路：解法2的通用性较强，但创建 graph 的过程会增加时间复杂度，因此这里采用解法2的"实现"描述中的第2种思路：到需要的时候再
      *   计算顶点的所有相邻顶点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int climbStairs3(int n) {
+    public static int climbStairs4(int n) {
         if (n <= 0) return 0;
         int[] cache = new int[n];
         Arrays.fill(cache, -1);
@@ -192,8 +204,8 @@ public class L70_ClimbingStairs {
     }
 
     public static void main(String[] args) {
-        log(climbStairs0000(2));  // expects 2 (1+1, 2 in one go)
-        log(climbStairs0000(3));  // expects 3 (1+1, 1+2, 2+1)
-        log(climbStairs0000(5));  // expects 8
+        log(climbStairs2(2));  // expects 2 (1+1, 2 in one go)
+        log(climbStairs2(3));  // expects 3 (1+1, 1+2, 2+1)
+        log(climbStairs2(5));  // expects 8
     }
 }
