@@ -143,11 +143,13 @@ public class L70_ClimbingStairs {
     }
 
     /*
-     * 解法3：DFS
-     * - 思路：
-     * - 实现：不管是 BFS 或 DFS，过执行程中都需要能找到任一顶点的所有相邻顶点，大体有2种方式：
+     * 解法3：DFS + Recursion + Adjacent list
+     * - 思路：与超时解3一致，都是基于 f(顶点) = f(相邻顶点1) + f(相邻顶点2) + ... 只是超时解3中将该表达式化简为
+     *   f(i) = f(i+1) + f(i+2) 了，而该解法中使用的是更一般的表达式。
+     * - 实现：若用更一般形式的 DFS 来实现，则需在过执行程中到任一顶点的所有相邻顶点，大体有2种方式：
      *   1. 提前创建好 graph（本解法采用这种方式）；
-     *   2. 需要的时候再计算。 - 时间复杂度 O(n)，空间复杂度 O(n)。
+     *   2. 需要的时候再计算。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs3(int n) {
         if (n <= 0) return 0;
@@ -169,14 +171,14 @@ public class L70_ClimbingStairs {
     }
 
     private static int dfs(List<List<Integer>> graph, int i, int n, int[] cache) {
-        if (i == n) return 1;  // 终点前的顶点需要1步到达终点
+        if (i == n) return 1;
         if (cache[i] != -1) return cache[i];
 
-        int pathNum = 0;
-        for (int adj : graph.get(i))    // 获取所有相邻顶点
-            pathNum += dfs(graph, adj, n, cache);
+        int numOfPath = 0;
+        for (int adj : graph.get(i))
+            numOfPath += dfs(graph, adj, n, cache);
 
-        return cache[i] = pathNum;
+        return cache[i] = numOfPath;
     }
 
     /*
