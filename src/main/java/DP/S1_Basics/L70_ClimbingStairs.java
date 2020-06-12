@@ -182,9 +182,8 @@ public class L70_ClimbingStairs {
     }
 
     /*
-     * 解法4：解法2的优化版，即 Recursion + Memoization（类似 L91 的解法1）
-     * - 思路：解法2的通用性较强，但创建 graph 的过程会增加时间复杂度，因此这里采用解法2的"实现"描述中的第2种思路：到需要的时候再
-     *   计算顶点的所有相邻顶点。
+     * 解法4：Recursion + Memoization（解法3的简化版）
+     * - 思路：解法3的通用性较强，但创建 graph 的过程会增加时间复杂度 ∴ 这里采用“到需要的时候再计算顶点的所有相邻顶点”的方式。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs4(int n) {
@@ -198,11 +197,11 @@ public class L70_ClimbingStairs {
         if (i == n) return 1;
         if (cache[i] != -1) return cache[i];
 
-        int pathNum = 0;
-        for (int j = 1; j <= 2 && i + j <= n; j++)  // 相邻的两个顶点的值不能相差超过2，且顶点值不能超过 n
-            pathNum += dfs(i + j, n, cache);
+        int numOfPath = 0;
+        for (int step = 1; step <= 2 && i + step <= n; step++)  // 相邻的两个顶点的值不能相差超过2，且顶点值不能超过 n
+            numOfPath += dfs(i + step, n, cache);
 
-        return cache[i] = pathNum;
+        return cache[i] = numOfPath;
     }
 
     public static void main(String[] args) {
