@@ -42,8 +42,7 @@ public class L70_ClimbingStairs {
 
     /*
      * 超时解2：BFS + 记录所有路径
-     * - 思路：另一种方式是用 BFS 找出图上从 0 → n 之间的所有路径，再取其个数（SEE: Play-with-algorithms/Graph/Path 中的
-     *   allPaths 方法）。
+     * - 思路：用 BFS 找出图上从 0 → n 之间的所有路径，再取其个数（SEE: Play-with-algorithms/Graph/Path 中的 allPaths 方法）。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)（解释 SEE: L120 超时解1）。
      * */
     public static int climbStairs00(int n) {
@@ -76,7 +75,8 @@ public class L70_ClimbingStairs {
 
     /*
      * 超时解3：DFS + Recursion
-     * - 思路：若使用递归求解，那么就需要思考前后子问题之间的递推关系，即 f(i) 与 f(i+1) 之间如何进行递推。对于 n=5 来说：
+     * - 思路：若使用 DFS + 递归求解，那就需要思考前后子问题之间的递推关系，即 f(i) 与 f(i+1) 之间如何进行递推。其中子问题
+     *   f(i) 的定义是“从 i 到 n 的路径个数”，那么对于 n=5 来说：
      *            1   →   3   →   5
      *          ↗   ↘   ↗   ↘   ↗
      *        0   →   2   →   4
@@ -97,7 +97,7 @@ public class L70_ClimbingStairs {
     }
 
     /*
-     * 超时解4：DFS（超时解3的简化版）
+     * 超时解4：DFS + Recursion（超时解3的简化版）
      * - 思路：与超时解3一致。
      * - 实现：1. 去掉超时解3中的 i，直接让 n 逼近 0，即递推表达式可以改写为 f(n) = f(n-1) + f(n-2)。
      *        2. 当 n < 0 时返回0（对应到超时解3中就是当 i > n 时返回0，这样就无需 if (i+2 <= n) 的判断了，代码更简洁）。
@@ -110,7 +110,7 @@ public class L70_ClimbingStairs {
     }
 
     /*
-     * 解法1：DP
+     * 解法1：DFS + Recursion + Memoization
      * - 思路：其实超时解4中的递推表达式就是 L509_FibonacciNumber 中的递推表达式，相当于该题就是在求第 n 个 Fibonacci 数。
      * - 实现：在超时解4的基础上加入 L509 解法1的 Memoization 进行优化。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -129,7 +129,10 @@ public class L70_ClimbingStairs {
 
     /*
      * 解法2：DP
-     * - 思路：采用 L509 解法3的 DP 思路（类似 L91_DecodeWays 解法2）。
+     * - 思路：采用 L509 解法3的 DP 思路（类似 L91_DecodeWays 解法2）
+     * - 💎 总结：∵ DP 是自下而上的 ∴ 其子问题的定义与自上而下的递归思路（超时解3）不太一样：
+     *   - 自上而下分解问题时，子问题 f(i) 表示“从 i 到 n 的路径个数”；
+     *   - 自下而上递推问题时，子问题 f(i) 表示“从 0 到 i 的路径条数”。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs2(int n) {
