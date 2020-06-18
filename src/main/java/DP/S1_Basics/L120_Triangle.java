@@ -93,7 +93,7 @@ public class L120_Triangle {
     /*
      * 超时解3：DFS + Recursion
      * - 思路：若用 DFS + 递归求解，那就需要思考前后子问题之间的递推关系，即 f(l,i) 与 f(l+1,i), f(l+1,i+1) 的是如何递推的：
-     *   - 定义子问题：f(l,i) 表示"从节点 (l,i) 开始到三角形最底层的 minimum path sum"；
+     *   - 定义子问题：f(l,i) 表示"从节点 [l,i] 开始到三角形最底层的 minimum path sum"；
      *   - 状态转移方程：f(l,i) = min(f(l+1,i), f(l+1,i+1)) + nodeVal[l,i]。
      * - 时间复杂度 O(2^n)，空间复杂度 O(h)。
      * */
@@ -151,25 +151,27 @@ public class L120_Triangle {
 
 	/*
      * 解法3：In-place DP
-     * - 思路：状态转移方程仍然是 f(i, j) = min(f(i+1, j), f(i+1, j+1))。
-     * - 实现：从下到上逐层遍历，同一层内两个子节点先进行比较，选出较小的与父节点相加：
-     *            -1
-     *           /  \               -1
-     *          2    3     --->    /  \    --->    -1
-     *        /  \  /  \          1    0
-     *       1    -1   -3
-     *   在第三层中从1、-1中选出-1加到第二层的2上；从-1、-3中选出-3加到第二层的3上。在第二层中从1、0中选出0加到第一层的-1上，
-     *   得到最终结果-1。
-     * - 时间复杂度 O(h^2)，空间复杂度 O(1)，其中 h 为三角形高度。之所以为 O(h^2) 是因为代码中的双重循环范围都可以近似为 0~h。
+     * - 思路：既然可以用 DFS + Recursion 求解，那很可能也能用 DP 求解 —— 自下而上递推出每个节点上的解。其中子问题定义和
+     *   递推表达式不变）：
+     *   - 子问题定义：f(l,i) 表示"从节点 [l,i] 开始到三角形最底层的 minimum path sum"；
+     *   - 递推表达式：f(l,i) = min(f(l+1,i), f(l+1,i+1)) + nodeVal[l,i]。
+     * - 实现：从下到上逐层遍历，同一层内两两节点先进行比较，选出较小的与父节点相加：
+     *            -1         |                                                        -1
+     *           /  \        |                                                       ↗  ↖
+     *          2    3       |                               1    0                 1    0
+     *        /  \  /  \     |                     -->     ↗  ↖  ↗  ↖     -->     ↗  ↖  ↗  ↖
+     *       1    -1   -3    |    1     -1    -3         1     -1    -3         1     -1    -3
+     * - 时间复杂度 O(h^2)，其中 h 为三角形高度。之所以为 O(h^2) 是因为代码中的双重循环范围都可以近似为 0~h。
+     * - 空间复杂度 O(1)。
      * */
     public static int minimumTotal3(List<List<Integer>> triangle) {
-        for (int i = triangle.size() - 2; i >= 0; i--) {  // 从倒数第2层开始往上遍历
-            List<Integer> currLevel = triangle.get(i);
-            List<Integer> lowerLevel = triangle.get(i + 1);
+        for (int l = triangle.size() - 2; l >= 0; l--) {  // 从倒数第2层开始往上遍历
+            List<Integer> currLevel = triangle.get(l);
+            List<Integer> lowerLevel = triangle.get(l + 1);
 
-            for (int j = 0; j <= i; j++) {  // 遍历一层中的每个节点（全等三角形每层的节点个数等于层高 ∴ 第 i 层共有 i 个节点）
-                int min = Math.min(lowerLevel.get(j), lowerLevel.get(j + 1));
-                currLevel.set(j, currLevel.get(j) + min);
+            for (int i = 0; i <= l; i++) {  // 遍历一层中的节点（全等三角形每层的节点个数等于层高 ∴ 第 l 层共有 l 个节点）
+                int minVal = Math.min(lowerLevel.get(i), lowerLevel.get(i + 1));
+                currLevel.set(i, currLevel.get(i) + minVal);
             }
         }
         return triangle.get(0).get(0);
