@@ -179,19 +179,22 @@ public class L120_Triangle {
 
     /*
      * 解法4：DP
-     * - 思路：与解法3一样，只是写法不同，另外操作数组比操作 List 更快，因此该解法统计性能更优。
-     * - 时间复杂度 O(h^2)，空间复杂度 O(n)，其中 h 为三角形高度。
+     * - 思路：与解法3一致。
+     * - 实现：不改变 triangle 中的值，而是开辟额外的 dp 数组记录每个子问题的解。注意，dp 数组的大小不用是解法2中的 cache
+     *   那么大，只需开辟三角形最底层节点数大小，之后每层都在上面进行覆盖即可（即滚动数组）。
+     * - 时间复杂度 O(h^2)，其中 h 为三角形高度（操作数组比操作 List 更快，∴ 该解法统计性能更优）。
+     * - 空间复杂度 O(n)。
      * */
     public static int minimumTotal4(List<List<Integer>> triangle) {
         int h = triangle.size();
 
-        int[] dp = new int[h];                   // 开辟大小为 h 的额外空间，不改变 triangle 中的值
+        int[] dp = new int[h];                   // 开辟三角形底层节点数大小的数组（全等三角形高度 = 底层节点数）
         for (int i = 0; i < h; i++)
-            dp[i] = triangle.get(h - 1).get(i);  // 将 dp 初始化为三角形最底层（底层有 h 个节点）
+            dp[i] = triangle.get(h - 1).get(i);  // 初始化为三角形最底层的节点值
 
-        for (int i = h - 2; i >= 0; i--)         // 从倒数第2层开始往上遍历
-            for (int j = 0; j <= i; j++)         // 遍历每一层中的每个节点（第 i 层共有 i 个节点）
-                dp[j] = triangle.get(i).get(j) + Math.min(dp[j], dp[j + 1]);  // 覆盖
+        for (int l = h - 2; l >= 0; l--)         // 从倒数第2层开始往上遍历
+            for (int i = 0; i <= l; i++)         // 遍历每一层中的每个节点（第 i 层共有 i 个节点）
+                dp[i] = Math.min(dp[i], dp[i + 1]) + triangle.get(l).get(i);  // 覆盖
 
         return dp[0];
     }
