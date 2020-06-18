@@ -163,7 +163,7 @@ public class L70_ClimbingStairs {
             graph.add(new ArrayList<>());
 
         for (int i = 0; i < n; i++) {
-            if (i + 1 <= n) graph.get(i).add(i + 1);
+            graph.get(i).add(i + 1);
             if (i + 2 <= n) graph.get(i).add(i + 2);
         }
 
