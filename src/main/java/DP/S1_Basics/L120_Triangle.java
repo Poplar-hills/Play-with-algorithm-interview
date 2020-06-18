@@ -112,37 +112,41 @@ public class L120_Triangle {
 	}
 
     /*
-     * // TODO: 解法1：Dijkstra
-     * - 思路：同 L64_MinimumPathSum 解法1，可将该问题建模成带权图，而带权图的最短路径可使用 Dijkstra 算法。
-     * */
-    public static int minimumTotal1(List<List<Integer>> triangle) {
-        return 0;
-    }
-
-    /*
-     * 解法2：Recursion + Memoization (DFS with cache)
-     * - 思路：在超时解3的基础上加入 Memoization 优化。
+     * 解法1：DFS + Recursion + Memoization
+     * - 思路：超时解1-3之所以超时，是因为对其中的重叠子问题进行了重复计算：
+     *              2
+     *            3   4
+     *          6   5   7
+     *        4   1   8   3
+     *   在计算 f(3)、f(4) 的时候 f(5) 就被重复计算了两次 ∴ 只要在超时解3的基础上加入 Memoization 就可以解决问题。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * - 注：∵ 开辟的 cache 是以三角最后一行为宽度 ∴ 会浪费一半的空间。改进方式是采用类似 _ZeroOneKnapsack 中解法3的滚动数组方案。
      * */
-    public static int minimumTotal2(List<List<Integer>> triangle) {
+    public static int minimumTotal1(List<List<Integer>> triangle) {
         int h = triangle.size();
         int[][] cache = new int[h][triangle.get(h - 1).size()];
         for (int[] row : cache)
             Arrays.fill(row, -1);
-        return helper(triangle, 0, 0, cache);
+        return helper1(triangle, 0, 0, cache);
     }
 
-    private static int helper(List<List<Integer>> triangle, int i, int j, int[][] cache) {
-        if (i == triangle.size() - 1)
-            return triangle.get(i).get(j);
+    private static int helper1(List<List<Integer>> triangle, int level, int index, int[][] cache) {
+        if (level == triangle.size() - 1)
+            return triangle.get(level).get(index);
 
-        if (cache[i][j] != -1) return cache[i][j];
+        if (cache[level][index] != -1) return cache[level][index];
 
-        int minSum = triangle.get(i).get(j);
-        minSum += Math.min(helper(triangle, i + 1, j, cache), helper(triangle, i + 1, j + 1, cache));
+        return cache[level][index] = Math.min(
+            helper1(triangle, level + 1, index, cache),
+            helper1(triangle, level + 1, index + 1, cache)) + triangle.get(level).get(index);
+    }
 
-        return cache[i][j] = minSum;
+    /*
+     * // TODO: 解法2：Dijkstra
+     * - 思路：同 L64_MinimumPathSum 解法1，可将该问题建模成带权图，而带权图的最短路径可使用 Dijkstra 算法。
+     * */
+    public static int minimumTotal2(List<List<Integer>> triangle) {
+        return 0;
     }
 
 	/*
@@ -190,44 +194,21 @@ public class L120_Triangle {
         return dp[0];
     }
 
-
-
-
-
-
-
-    public static int minimumTotalxxx(List<List<Integer>> triangle) {
-        if (triangle == null || triangle.isEmpty()) return 0;
-        return helperxxx(triangle, 0, 0);
-    }
-
-    private static int helperxxx(List<List<Integer>> triangle, int level, int index) {
-        if (index == triangle.get(level).size())
-            return Integer.MIN_VALUE;
-
-        if (level == triangle.size() - 1)
-            return triangle.get(level).get(index);
-
-        return Math.min(
-            helperxxx(triangle, level + 1, index),
-            helperxxx(triangle, level + 1, index + 1)) + triangle.get(level).get(index);
-    }
-
     public static void main(String[] args) {
-        log(minimumTotal_3(List.of(
+        log(minimumTotal1(List.of(
                Arrays.asList(2),
               Arrays.asList(3, 4),
              Arrays.asList(6, 5, 7),
             Arrays.asList(4, 1, 8, 3)
         )));  // expects 11 (2 + 3 + 5 + 1)
 
-        log(minimumTotal_3(List.of(
+        log(minimumTotal1(List.of(
                Arrays.asList(-1),
               Arrays.asList(2, 3),
             Arrays.asList(1, -1, -3)
         )));  // expects -1 (-1 + 3 + -3) 注意不是从每行中找到最小值就行
 
-        log(minimumTotal_3(List.of(
+        log(minimumTotal1(List.of(
             Arrays.asList(-10)
         )));  // expects -10
     }
