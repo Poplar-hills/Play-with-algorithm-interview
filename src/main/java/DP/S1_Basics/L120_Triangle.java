@@ -17,18 +17,12 @@ import static Utils.Helpers.log;
 
 public class L120_Triangle {
     /*
-     * 超时解1：Brute force BFS
-     * - 思路：与 L70_ClimbingStairs 中的超时解一致，用图论建模：
-     *            -1
-     *           ↙  ↘
-     *          2    3
-     *        ↙  ↘  ↙  ↘
-     *       1    -1   -3
-     *   建模后该题转化为求从顶层到底层顶点的路径中最小的顶点值之和，因此可以用 BFS 找到每一条路径，同时求其中最小的顶点值之和。
+     * 超时解1：BFS + 记录所有路径
+     * - 思路：与 L70_ClimbingStairs 超时解2一致，用 BFS 找到所有路径，求其中最小的路径和。
      * - 时间复杂度 O(2^n)：∵ 每个顶点都会产生2个分支 ∴ 复杂度与 Fibonacci.java 的解法1一致。
      * - 空间复杂度 O(nlogn)：queue 中同一时间最多存储 n/2 条路径（完美二叉树最底层节点个数为 n/2），而每条路径中有 logn（树高）个顶点。
      * */
-    public static int minimumTotal(List<List<Integer>> triangle) {
+    public static int minimumTotal_1(List<List<Integer>> triangle) {
         int res = Integer.MAX_VALUE;
         Queue<List<Integer>> q = new LinkedList<>();  // 队列中存放 path，每条 path 中存放每个顶点在其 level 上的 index
         List<Integer> initialPath = new ArrayList<>();
@@ -58,7 +52,7 @@ public class L120_Triangle {
     }
 
     /*
-     * 超时解2：Brute force BFS
+     * 超时解2：BFS
      * - 思路：和超时解1一样，都采用 BFS 遍历每一条路径。区别在于封装了 Path 对象，由 level, index, sum 三者确定的一条路径，
      *   level, index 记录路径上的最新顶点，sum 记录路径当前的节点值之和。
      * - 时间复杂度 O(2^n)：解释同超时解1。
@@ -73,16 +67,14 @@ public class L120_Triangle {
         }
     }
 
-    public static int minimumTotal0(List<List<Integer>> triangle) {
+    public static int minimumTotal_2(List<List<Integer>> triangle) {
         int res = Integer.MAX_VALUE;
         Queue<Path> q = new LinkedList<>();
-        q.offer(new Path(0, 0, triangle.get(0).get(0)));  // 队列中保存 <level, index, sum> 信息，sum 初始化为根顶点值
+        q.offer(new Path(0, 0, triangle.get(0).get(0)));  // 队列中记录 <level, index, sum>（也可以用 Queue<int[]>）
 
         while (!q.isEmpty()) {
             Path path = q.poll();
-            int level = path.level;
-            int index = path.index;
-            int sum = path.sum;
+            int level = path.level, index = path.index, sum = path.sum;
 
             if (level == triangle.size() - 1) {  // 若已抵达 bottom level 则不再入队，只比较 sum
                 res = Math.min(res, sum);
@@ -99,33 +91,33 @@ public class L120_Triangle {
     }
 
     /*
-     * TODO: 解法1：Dijkstra
-     * - 思路：同 L64_MinimumPathSum 解法1，可将该问题建模成带权图，而带权图的最短路径可使用 Dijkstra 算法。
-     * */
-    public static int minimumTotal1(List<List<Integer>> triangle) {
-        return 0;
-    }
-
-    /*
      * 超时解3：DFS
      * - 思路：
      *   - 定义子问题：f(i, j) 表示"从节点 (i, j) 开始到三角形底层的之间的 minimum path sum"；
      *   - 状态转移方程：f(i, j) = min(f(i+1, j), f(i+1, j+1))。
      * - 时间复杂度 O(2^n)，空间复杂度 O(h)。
      * */
-    public static int minimumTotal00(List<List<Integer>> triangle) {
-        return helper(triangle, 0, 0);
+    public static int minimumTotal_3(List<List<Integer>> triangle) {
+        if (triangle == null || triangle.isEmpty()) return 0;
+        return helper_3(triangle, 0, 0);
     }
 
-    private static int helper(List<List<Integer>> triangle, int i, int j) {
-        if (i == triangle.size() - 1)
-            return triangle.get(i).get(j);
+    private static int helper_3(List<List<Integer>> triangle, int level, int index) {
+        if (level == triangle.size() - 1)
+            return triangle.get(level).get(index);
 
-        int minSum = triangle.get(i).get(j);
-        minSum += Math.min(helper(triangle, i + 1, j), helper(triangle, i + 1, j + 1));
-
-        return minSum;
+        return Math.min(
+            helper_3(triangle, level + 1, index),
+            helper_3(triangle, level + 1, index + 1)) + triangle.get(level).get(index);
 	}
+
+    /*
+     * // TODO: 解法1：Dijkstra
+     * - 思路：同 L64_MinimumPathSum 解法1，可将该问题建模成带权图，而带权图的最短路径可使用 Dijkstra 算法。
+     * */
+    public static int minimumTotal1(List<List<Integer>> triangle) {
+        return 0;
+    }
 
     /*
      * 解法2：Recursion + Memoization (DFS with cache)
@@ -197,21 +189,22 @@ public class L120_Triangle {
 
         return dp[0];
     }
+
     public static void main(String[] args) {
-        log(minimumTotal3(List.of(
+        log(minimumTotal_3(List.of(
                Arrays.asList(2),
               Arrays.asList(3, 4),
              Arrays.asList(6, 5, 7),
             Arrays.asList(4, 1, 8, 3)
         )));  // expects 11 (2 + 3 + 5 + 1)
 
-        log(minimumTotal3(List.of(
+        log(minimumTotal_3(List.of(
                Arrays.asList(-1),
               Arrays.asList(2, 3),
             Arrays.asList(1, -1, -3)
         )));  // expects -1 (-1 + 3 + -3) 注意不是从每行中找到最小值就行
 
-        log(minimumTotal3(List.of(
+        log(minimumTotal_3(List.of(
             Arrays.asList(-10)
         )));  // expects -10
     }
