@@ -158,7 +158,7 @@ public class L92_ReverseLinkedListII {
      * - 问题：大体思路对，但是因为单向链表没有从后一个节点指向前一个节点的指针，所以该解法最终不成立。
      * - 虽然错误，但有助于理解解法1。
      * */
-    public ListNode reverseBetween0(ListNode head, int m, int n) {
+    public ListNode reverseBetween_1(ListNode head, int m, int n) {
         ListNode left = head, right = head;
 
         for (int i = 1; i < n; i++) {

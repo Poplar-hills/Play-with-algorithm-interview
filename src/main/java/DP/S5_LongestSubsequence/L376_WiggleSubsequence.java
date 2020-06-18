@@ -37,18 +37,18 @@ public class L376_WiggleSubsequence {
      *   - ∴ 用递归实现时可以从最后一个元素开始，向前递归 —— f(n) -> f(n-1) -> ... -> f(0)。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
-    public static int wiggleMaxLength(int[] nums) {
+    public static int wiggleMaxLength_1(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        return Math.max(helper(nums, nums.length - 1, true),  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
-                        helper(nums, nums.length - 1, false));
+        return Math.max(helper_1(nums, nums.length - 1, true),  // ∵ 最开始可以为升序也可以为降序 ∴ 取两者中最大的
+                        helper_1(nums, nums.length - 1, false));
     }
 
-    private static int helper(int[] nums, int i, boolean isPeak) {
+    private static int helper_1(int[] nums, int i, boolean isPeak) {
         if (i == 0) return 1;  // 递归到底时返回1
         int maxLen = 1;
         for (int j = 0; j < i; j++)                                               // 在 [0,i) 范围内搜索
             if ((isPeak && nums[j] < nums[i]) || (!isPeak && nums[j] > nums[i]))  // 能与 nums[i] 连成 wiggle sequence
-                maxLen = Math.max(maxLen, 1 + helper(nums, j, !isPeak));          // 且 sequence 长度最大
+                maxLen = Math.max(maxLen, 1 + helper_1(nums, j, !isPeak));        // 且 sequence 长度最大
         return maxLen;
     }
 
@@ -59,17 +59,17 @@ public class L376_WiggleSubsequence {
      *   nums[i] 连成 wiggle sequence 且长度最大的元素。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
-    public static int wiggleMaxLength0(int[] nums) {
+    public static int wiggleMaxLength_2(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
-        return Math.max(helper0(nums, 0, true), helper0(nums, 0, false));
+        return Math.max(helper_2(nums, 0, true), helper_2(nums, 0, false));
     }
 
-    private static int helper0(int[] nums, int i, boolean isPeak) {
+    private static int helper_2(int[] nums, int i, boolean isPeak) {
         if (i == nums.length) return 0;            // 递归到底时返回0
         int maxLen = 1;
         for (int j = i + 1; j < nums.length; j++)  // 在 [i+1,..] 范围内搜索
             if ((isPeak && nums[j] < nums[i]) || (!isPeak && nums[j] > nums[i]))
-                maxLen = Math.max(maxLen, 1 + helper0(nums, j, !isPeak));
+                maxLen = Math.max(maxLen, 1 + helper_2(nums, j, !isPeak));
         return maxLen;
     }
 

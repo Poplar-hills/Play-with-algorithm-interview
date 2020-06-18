@@ -40,7 +40,7 @@ public class L64_MinimumPathSum {
         }
     }
 
-    public static int minPathSum(int[][] grid) {
+    public static int minPathSum_1(int[][] grid) {
         int minSum = Integer.MAX_VALUE;
         int w = grid.length, l = grid[0].length;
 
@@ -90,7 +90,7 @@ public class L64_MinimumPathSum {
      *     - f(1,0)、f(0,1) 都可以走到 f(1,1) ∴ 出现了重叠子问题，本解法中并未进行优化。
      * - 时间复杂度 O(2^(l*w))，空间复杂度 O(l*w)。
      * */
-    public static int minPathSum0(int[][] grid) {
+    public static int minPathSum_2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
         return minPathSumFrom(grid, 0, 0);
     }

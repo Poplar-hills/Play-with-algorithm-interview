@@ -53,11 +53,11 @@ public class L51_NQueens {
         List<List<String>> res = new ArrayList<>();
         if (n <= 0) return res;
         attackable = new boolean[n][n];
-        putQueen0(0, n, new ArrayList<>(), res);  // 从第0行开始尝试放置皇后，并将放置的纵坐标记录在 pos 中
+        putQueen(0, n, new ArrayList<>(), res);  // 从第0行开始尝试放置皇后，并将放置的纵坐标记录在 pos 中
         return res;
     }
 
-    private static void putQueen0(int r, int n, List<Integer> pos, List<List<String>> res) {
+    private static void putQueen(int r, int n, List<Integer> pos, List<List<String>> res) {
         if (r == n) {                         // 已经超过了最后一行（说明找到了解）（若某行无法放置皇后则会提前返回 ∴ 不会走到这里）
             res.add(generateSolution(pos));
             return;
@@ -66,7 +66,7 @@ public class L51_NQueens {
             if (!attackable[r][c]) {
                 pos.add(c);                   // 先记录放置皇后的纵坐标（横坐标就是 c 在 pos 中的索引 ∴ 不用记录）
                 Boolean[][] tmp = markAttackable(r, c, n);  // 在 boolean[][] 上标记该皇后的攻击范围，并将原状态记录在 tmp 中
-                putQueen0(r + 1, n, pos, res);
+                putQueen(r + 1, n, pos, res);
                 restoreAttackable(r, c, n, tmp);  // 返回上层递归之前从 tmp 中恢复原来的状态
                 pos.remove(pos.size() - 1);
             }
@@ -145,11 +145,11 @@ public class L51_NQueens {
         dia1 = new boolean[2 * n - 1];  // dia1[i] 表示第 i 条 / 对角线上是否已有皇后
         dia2 = new boolean[2 * n - 1];  // dia2[i] 表示第 i 条 \ 对角线上是否已有皇后
 
-        putQueen(n, 0, new ArrayList<>(), res);
+        putQueen2(n, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void putQueen(int n, int r, List<Integer> pos, List<List<String>> res) {
+    private static void putQueen2(int n, int r, List<Integer> pos, List<List<String>> res) {
         if (r == n) {
             res.add(generateSolution(pos));
             return;
@@ -158,7 +158,7 @@ public class L51_NQueens {
             if (!col[c] && !dia1[r + c] && !dia2[r - c + n - 1]) {   // 若3个方向上都没有皇后则可以放置
                 pos.add(c);
                 col[c] = dia1[r + c] = dia2[r - c + n - 1] = true;
-                putQueen(n, r + 1, pos, res);
+                putQueen2(n, r + 1, pos, res);
                 col[c] = dia1[r + c] = dia2[r - c + n - 1] = false;  // 返回上一层递归之前先恢复原状态
                 pos.remove(pos.size() - 1);
             }

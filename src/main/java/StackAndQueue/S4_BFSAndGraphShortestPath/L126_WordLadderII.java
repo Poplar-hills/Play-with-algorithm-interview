@@ -19,7 +19,7 @@ public class L126_WordLadderII {
      * - 实现：BFS 过程中，第一次找到的路径一定是最短路径。根据这一规律，可以停止对超过最短路径长度的其他路径的遍历。
      * - 时间复杂度 O(n^n)：虽然有进行优化，但复杂度量级没变 —— 每找到一个相邻顶点都可能多出 n 种可能 ∴ 是 O(n^n)。
      * */
-    public static List<List<String>> findLadders0(String beginWord, String endWord, List<String> wordList) {
+    public static List<List<String>> findLadders_1(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
         if (!wordList.contains(endWord)) return res;
 
@@ -70,7 +70,7 @@ public class L126_WordLadderII {
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * - 👉注意：一般来说 DFS、BFS 的时间复杂度都是 O(V+E)，但具体要看数据结构，对于邻接矩阵是 O(V^2)，对于邻接表是 O(V+E)。
      * */
-    public static List<List<String>> findLadders00(String beginWord, String endWord, List<String> wordList) {
+    public static List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
         if (!wordList.contains(endWord)) return res;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);

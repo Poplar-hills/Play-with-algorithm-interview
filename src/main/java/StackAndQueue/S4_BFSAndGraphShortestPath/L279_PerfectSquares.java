@@ -64,7 +64,7 @@ public class L279_PerfectSquares {
      *   顶点值与前一顶点值之间差一个完全平方数 ∴ 有 f(i) = min(f(i - p) + 1)，其中 p 为 <= i 的完全平方数。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
-    public static int numSquares0(int n) {
+    public static int numSquares_1(int n) {
         if (n == 0) return 0;             // 顶点0到达自己的步数为0
 
         int minStep = Integer.MAX_VALUE;  // 用于记录当前顶点到0的最小步数

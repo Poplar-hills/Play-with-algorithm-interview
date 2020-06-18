@@ -18,7 +18,7 @@ public class L70_ClimbingStairs {
      * - 实现：若用 Stack 代替 Queue，则是 DFS。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
-    public static int climbStairs0(int n) {
+    public static int climbStairs_1(int n) {
         int numOfPath = 0;
         if (n <= 0) return numOfPath;
 
@@ -45,7 +45,7 @@ public class L70_ClimbingStairs {
      * - 思路：用 BFS 找出图上从 0 → n 之间的所有路径，再取其个数（SEE: Play-with-algorithms/Graph/Path 中的 allPaths 方法）。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)（解释 SEE: L120 超时解1）。
      * */
-    public static int climbStairs00(int n) {
+    public static int climbStairs_2(int n) {
         List<List<Integer>> paths = new ArrayList<>();
         Queue<List<Integer>> q = new LinkedList<>();  // q 存储所有从起点出发的路径，每个分支都会形成一条新路径
 
@@ -84,15 +84,15 @@ public class L70_ClimbingStairs {
      *   f(i) = f(i + 1) + f(i + 2)，其中 i ∈ [0,n-2] ∴ 可按该递推表达式设计递归程序。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
-    public static int climbStairs000(int n) {
+    public static int climbStairs_3(int n) {
         if (n <= 0) return 0;
-        return helper000(0, n);
+        return helper_3(0, n);
     }
 
-    private static int helper000(int i, int n) {
+    private static int helper_3(int i, int n) {
         if (i == n) return 1;
-        int numOfPath = helper000(i + 1, n);
-        if (i + 2 <= n) numOfPath += helper000(i + 2, n);
+        int numOfPath = helper_3(i + 1, n);
+        if (i + 2 <= n) numOfPath += helper_3(i + 2, n);
         return numOfPath;
     }
 
@@ -103,10 +103,10 @@ public class L70_ClimbingStairs {
      *        2. 当 n < 0 时返回0（对应到超时解3中就是当 i > n 时返回0，这样就无需 if (i+2 <= n) 的判断了，代码更简洁）。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
-    public static int climbStairs0000(int n) {
+    public static int climbStairs_4(int n) {
         if (n == 0) return 1;    // 这里与其他解的表现略微不同，n=0 时会返回1，但 ∵ 题中规定 n>0 ∴ 没关系
         if (n < 0) return 0;
-        return climbStairs0000(n - 1) + climbStairs0000(n - 2);
+        return climbStairs_4(n - 1) + climbStairs_4(n - 2);
     }
 
     /*
