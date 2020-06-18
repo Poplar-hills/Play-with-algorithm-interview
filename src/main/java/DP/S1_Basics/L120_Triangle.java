@@ -17,12 +17,51 @@ import static Utils.Helpers.log;
 
 public class L120_Triangle {
     /*
-     * 超时解1：BFS + 记录所有路径
-     * - 思路：与 L70_ClimbingStairs 超时解2一致，用 BFS 找到所有路径，求其中最小的路径和。
+     * 超时解1：BFS
+     * - 思路：采用 BFS，在 Queue 中存储由 level, index, sum 组成的 Path 对象，level + index 确定该路径上的最新顶点的
+     *   位置，sum 记录路径当前的节点值之和。
      * - 时间复杂度 O(2^n)：∵ 每个顶点都会产生2个分支 ∴ 复杂度与 Fibonacci.java 的解法1一致。
-     * - 空间复杂度 O(nlogn)：queue 中同一时间最多存储 n/2 条路径（完美二叉树最底层节点个数为 n/2），而每条路径中有 logn（树高）个顶点。
+     * - 空间复杂度 O(n)。
      * */
+    static class Path {
+        final int level, index, sum;  // immutable memebers
+        public Path(int level, int index, int sum) {
+            this.level = level;
+            this.index = index;
+            this.sum = sum;
+        }
+    }
+
     public static int minimumTotal_1(List<List<Integer>> triangle) {
+        int res = Integer.MAX_VALUE;
+        Queue<Path> q = new LinkedList<>();
+        q.offer(new Path(0, 0, triangle.get(0).get(0)));  // 队列中记录 <level, index, sum>（也可以用 Queue<int[]>）
+
+        while (!q.isEmpty()) {
+            Path path = q.poll();
+            int level = path.level, index = path.index, sum = path.sum;
+
+            if (level == triangle.size() - 1) {  // 若已抵达 bottom level 则不再入队，只比较 sum
+                res = Math.min(res, sum);
+                continue;
+            }
+
+            for (int i = 0; i < 2; i++) {
+                int adj = triangle.get(level + 1).get(index + i);    // 到下一层中取相邻顶点
+                q.offer(new Path(level + 1, index + i, sum + adj));  // 每个相邻顶点都是一个分支，即产生一条新的路径
+            }
+        }
+
+        return res;
+    }
+
+    /*
+     * 超时解2：BFS + 记录所有路径
+     * - 思路：与 L70_ClimbingStairs 超时解2一致，用 BFS 找到所有路径，求其中最小的路径和。
+     * - 时间复杂度 O(2^n)：解释同超时解1。
+     * - 空间复杂度 O(nlogn)：Queue 中同一时间最多存储 n/2 条路径（完美二叉树最底层节点个数为 n/2），而每条路径中有 logn（树高）个顶点。
+     * */
+    public static int minimumTotal_2(List<List<Integer>> triangle) {
         int res = Integer.MAX_VALUE;
         Queue<List<Integer>> q = new LinkedList<>();  // 队列中存放 path，每条 path 中存放每个顶点在其 level 上的 index
         List<Integer> initialPath = new ArrayList<>();
@@ -52,46 +91,7 @@ public class L120_Triangle {
     }
 
     /*
-     * 超时解2：BFS
-     * - 思路：和超时解1一样，都采用 BFS 遍历每一条路径。区别在于封装了 Path 对象，由 level, index, sum 三者确定的一条路径，
-     *   level, index 记录路径上的最新顶点，sum 记录路径当前的节点值之和。
-     * - 时间复杂度 O(2^n)：解释同超时解1。
-     * - 空间复杂度 O(n)：queue 中每个元素只是 Path 对象，而非如超时解1中的整个顶点列表，因此不需要乘以 logn。
-     * */
-    static class Path {
-        final int level, index, sum;  // immutable memebers
-        public Path(int level, int index, int sum) {
-            this.level = level;
-            this.index = index;
-            this.sum = sum;
-        }
-    }
-
-    public static int minimumTotal_2(List<List<Integer>> triangle) {
-        int res = Integer.MAX_VALUE;
-        Queue<Path> q = new LinkedList<>();
-        q.offer(new Path(0, 0, triangle.get(0).get(0)));  // 队列中记录 <level, index, sum>（也可以用 Queue<int[]>）
-
-        while (!q.isEmpty()) {
-            Path path = q.poll();
-            int level = path.level, index = path.index, sum = path.sum;
-
-            if (level == triangle.size() - 1) {  // 若已抵达 bottom level 则不再入队，只比较 sum
-                res = Math.min(res, sum);
-                continue;
-            }
-
-            for (int i = 0; i < 2; i++) {
-                int adj = triangle.get(level + 1).get(index + i);    // 到下一层中取相邻顶点
-                q.offer(new Path(level + 1, index + i, sum + adj));  // 每个相邻顶点都是一个分支，即产生一条新的路径
-            }
-        }
-
-        return res;
-    }
-
-    /*
-     * 超时解3：DFS
+     * 超时解3：DFS + Recursion
      * - 思路：
      *   - 定义子问题：f(i, j) 表示"从节点 (i, j) 开始到三角形底层的之间的 minimum path sum"；
      *   - 状态转移方程：f(i, j) = min(f(i+1, j), f(i+1, j+1))。
@@ -188,6 +188,29 @@ public class L120_Triangle {
                 dp[j] = triangle.get(i).get(j) + Math.min(dp[j], dp[j + 1]);  // 覆盖
 
         return dp[0];
+    }
+
+
+
+
+
+
+
+    public static int minimumTotalxxx(List<List<Integer>> triangle) {
+        if (triangle == null || triangle.isEmpty()) return 0;
+        return helperxxx(triangle, 0, 0);
+    }
+
+    private static int helperxxx(List<List<Integer>> triangle, int level, int index) {
+        if (index == triangle.get(level).size())
+            return Integer.MIN_VALUE;
+
+        if (level == triangle.size() - 1)
+            return triangle.get(level).get(index);
+
+        return Math.min(
+            helperxxx(triangle, level + 1, index),
+            helperxxx(triangle, level + 1, index + 1)) + triangle.get(level).get(index);
     }
 
     public static void main(String[] args) {
