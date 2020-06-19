@@ -50,6 +50,22 @@ public class L62_UniquePaths {
     }
 
     /*
+     * 超时解2：DFS + Recursion
+     * - 思路：
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)，n 为节点个数。
+     * */
+    public static int uniquePaths_2(int m, int n) {
+        if (m == 0 || n == 0) return 0;
+        return helper_2(m, n, 0, 0);
+    }
+
+    private static int helper_2(int m, int n, int r, int c) {
+        if (r == m || c == n) return 0;
+        if (r == m - 1 && c == n - 1) return 1;
+        return helper_2(m, n, r + 1, c) + helper_2(m, n, r, c + 1);
+    }
+
+    /*
      * 解法1：Recursion + Memoization (DFS with cache)
      * - 思路：类似 L64 解法2。该题具有明显的重叠子问题特征 —— 前一个问题的解是基于后两个问题的解。
      *        ■ → ■ → ■         3 ← 2 ← 1
@@ -176,9 +192,17 @@ public class L62_UniquePaths {
         return dp[n - 1];
     }
 
+
+
+
+
+    public static int uniquePathsxxx(int m, int n) {
+        return 0;
+    }
+
     public static void main(String[] args) {
-        log(uniquePaths_1(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
-        log(uniquePaths_1(3, 3));  // expects 6.
-        log(uniquePaths_1(7, 3));  // expects 28.
+        log(uniquePathsxxx(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
+        log(uniquePathsxxx(3, 3));  // expects 6.
+        log(uniquePathsxxx(7, 3));  // expects 28.
     }
 }
