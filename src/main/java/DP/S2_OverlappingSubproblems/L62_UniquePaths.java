@@ -49,7 +49,7 @@ public class L62_UniquePaths {
     /*
      * 超时解2：DFS + Recursion
      * - 思路：若用 DFS + 递归求解，则需思考前后子问题之间的递推关系，即 f(r, c) 与 f(r+1, c)、f(r, c+1) 之间的递推关系：
-     *   - 定义子问题：f(r, c) 表示“从格子 [r,c] 到右下角格子之间的不同路径个数”；
+     *   - 定义子问题：f(r, c) 表示“从格子 [r,c] 到右下角格子之间的不同路径数”；
      *   - 递推表达式：f(r, c) = f(r+1, c) + f(r, c+1)。
      *        ■ → ■ → ■
      *        ↓   ↓   ↓
@@ -97,10 +97,10 @@ public class L62_UniquePaths {
 
     /*
      * 解法2：DP
-     * - 思路：既然可以用 DFS + Recursion 求解，那很可能也能用 DP 求解 —— 自下而上递推出每个格子上的解。
-     *        ■ ← ■ ← ■          3 ← 2 ← 1
-     *        ↑   ↑   ↑    -->   ↑   ↑   ↑
-     *        ■ ← ■ ← ■          1 ← 1 ← 1
+     * - 思路：既然可以用 DFS + Recursion 求解，那很可能也能用 DP 求解 —— 从右下往左上逐步递推出每个格子上的解。
+     *        ■ ← ■ ← ■           3 ← 2 ← 1
+     *        ↑   ↑   ↑    -->    ↑   ↑   ↑
+     *        ■ ← ■ ← ■           1 ← 1 ← 1
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePaths2(int m, int n) {
@@ -121,41 +121,48 @@ public class L62_UniquePaths {
     }
 
     /*
-     * 解法3：DP（解法2的反向遍历版）
+     * 解法3：DP（解法2的另一种实现）
      * - 思路：与解法2一致。
-     * - 实现：不同于解法2，本解法是是从左上遍历到右下 ∴ 状态转移方程变成了 f(r, c) = f(r-1, c) + f(r, c-1)。
-     *        ■ → ■ → ■
-     *        ↓   ↓   ↓
-     *        ■ → ■ → ■
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePaths3(int m, int n) {
+        if (m == 0 || n == 0) return 0;
+        int[][] dp = new int[m][n];
+
+        for (int r = m - 1; r >= 0; r--) {
+            for (int c = n - 1; c >= 0; c--) {
+                if (r == m - 1 || c == n - 1) dp[r][c] = 1;
+                else dp[r][c] = dp[r + 1][c] + dp[r][c + 1];
+            }
+        }
+
+        return dp[0][0];
+    }
+
+    /*
+     * 解法4：DP（解法2的从前到后版）
+     * - 思路：解法2、3中的 DP 是从 DFS + Recursion 演化过来的 ∴ 递推的方向是从右下到左上。但若是从一开始就直接用 DP 求解，
+     *   那最常见的思考方式是从前到后 ∴ 子问题的定义与递推表达式都与解法2、3不同：
+     *   - 定义子问题：f(r, c) 表示“从格子 [0,0] 到格子 [r,c] 之间的不同路径数”；
+     *   - 递推表达式：f(r, c) = f(r-1, c) + f(r, c-1)。
+     *        ■ → ■ → ■           1 → 1 → 1
+     *        ↓   ↓   ↓    -->    ↓   ↓   ↓
+     *        ■ → ■ → ■           1 → 2 → 3
+     * - 💎 总结：这种方式其实更能体现出 DP 的本质 —— 自底向上，先解决基本问题，再递推出高层次问题的解；而不是像 DFS + Recursion
+     *   思路中那样自顶向下，对问题进行逐层分解（这里多体会一下）。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+     * */
+    public static int uniquePaths4(int m, int n) {
         if (m == 0 || n == 0) return 0;
         int[][] dp = new int[m][n];
         dp[0][0] = 1;
 
         for (int r = 0; r < m; r++) {
             for (int c = 0; c < n; c++) {
-                if (r != 0) dp[r][c] += dp[r - 1][c];
-                if (c != 0) dp[r][c] += dp[r][c - 1];
-            }
-        }
-
-        return dp[m - 1][n - 1];
-    }
-
-    /*
-     * 解法4：DP（解法3的另一种实现）
-     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
-     * */
-    public static int uniquePaths4(int m, int n) {
-        if (m == 0 || n == 0) return 0;
-        int[][] dp = new int[m][n];
-
-        for (int r = 0; r < m; r++) {
-            for (int c = 0; c < n; c++) {
-                if (r == 0 || c == 0) dp[r][c] = 1;
-                else dp[r][c] = dp[r - 1][c] + dp[r][c - 1];
+                if (r != 0)
+                    dp[r][c] += dp[r - 1][c];
+                if (c != 0)
+                    dp[r][c] += dp[r][c - 1];
             }
         }
 
@@ -164,10 +171,12 @@ public class L62_UniquePaths {
 
     /*
      * 解法5：DP + 滚动数组（Rolling array）
-     * - 思路：在解法3、4中 ∵ 每个坐标的计算结果都只取决于该坐标左侧及上方的结果（状态转移方程也说明的了这一点）∴ 在计算 f(i, j)
-     *   时只需要第 i 行和第 i-1 行的计算结果即可，而不再需要维护整个二维表 ∴ 可在解法3或4的基础上使用类似 _ZeroOneKnapsack
-     *   解法3中的滚动数组进行优化：当 i 为偶数时，读写 dp[0]；当 i 为奇数时，读写 dp[1]。
-     * - 注意：若使用滚动数组，最好像从左上向右下遍历（如解法3、4），若从右下向左上遍历（如解法2）会有问题。
+     * - 思路：与解法4一致。
+     * - 实现：从解法4中可见，每个格子的解都只取决于其左、上方的解，即在求解 f(r, c) 时，只需知道第 r 行和第 r-1 行里的解即可，
+     *   而不需要用 m*n 大小数组维护所有行的解 ∴ 在解法4的基础上使用滚动数组进行优化：
+     *     1. dp 数组只开辟两行；
+     *     2. 在遍历 grid 时，若 r 为偶数，则读写 dp[0]；若 r 为奇数，则读写 dp[1]。
+     * - 注意：若使用滚动数组，最好像从左上向右下遍历（如解法4），若从右下向左上遍历（如解法2、3）会很不方便。
      * - 时间复杂度 O(m*n)，空间复杂度 O(2n)。
      * */
     public static int uniquePaths5(int m, int n) {
@@ -205,8 +214,8 @@ public class L62_UniquePaths {
     }
 
     public static void main(String[] args) {
-        log(uniquePaths2(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
-        log(uniquePaths2(3, 3));  // expects 6.
-        log(uniquePaths2(7, 3));  // expects 28.
+        log(uniquePaths3(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths3(3, 3));  // expects 6.
+        log(uniquePaths3(7, 3));  // expects 28.
     }
 }
