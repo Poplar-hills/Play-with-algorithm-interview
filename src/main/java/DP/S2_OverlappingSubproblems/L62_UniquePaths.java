@@ -121,28 +121,9 @@ public class L62_UniquePaths {
     }
 
     /*
-     * 解法3：DP（解法2的另一种实现）
-     * - 思路：与解法2一致。
-     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
-     * */
-    public static int uniquePaths3(int m, int n) {
-        if (m == 0 || n == 0) return 0;
-        int[][] dp = new int[m][n];
-
-        for (int r = m - 1; r >= 0; r--) {
-            for (int c = n - 1; c >= 0; c--) {
-                if (r == m - 1 || c == n - 1) dp[r][c] = 1;
-                else dp[r][c] = dp[r + 1][c] + dp[r][c + 1];
-            }
-        }
-
-        return dp[0][0];
-    }
-
-    /*
-     * 解法4：DP（解法2的从前到后版）
-     * - 思路：解法2、3中的 DP 是从 DFS + Recursion 演化过来的 ∴ 递推的方向是从右下到左上。但若是从一开始就直接用 DP 求解，
-     *   那最常见的思考方式是从前到后 ∴ 子问题的定义与递推表达式都与解法2、3不同：
+     * 解法3：DP（解法2的从前到后版）
+     * - 思路：解法2中的 DP 是从 DFS + Recursion 演化过来的 ∴ 递推的方向是从右下到左上。但若是从一开始就直接用 DP 求解，
+     *   那最常见的思考方式是从前到后 ∴ 子问题的定义与递推表达式都与解法2不同：
      *   - 定义子问题：f(r, c) 表示“从格子 [0,0] 到格子 [r,c] 之间的不同路径数”；
      *   - 递推表达式：f(r, c) = f(r-1, c) + f(r, c-1)。
      *        ■ → ■ → ■           1 → 1 → 1
@@ -152,7 +133,7 @@ public class L62_UniquePaths {
      *   思路中那样自顶向下，对问题进行逐层分解（这里多体会一下）。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
-    public static int uniquePaths4(int m, int n) {
+    public static int uniquePaths3(int m, int n) {
         if (m == 0 || n == 0) return 0;
         int[][] dp = new int[m][n];
         dp[0][0] = 1;
@@ -163,6 +144,25 @@ public class L62_UniquePaths {
                     dp[r][c] += dp[r - 1][c];
                 if (c != 0)
                     dp[r][c] += dp[r][c - 1];
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+
+    /*
+     * 解法4：DP（解法2的另一种实现）
+     * - 思路：与解法2一致。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+     * */
+    public static int uniquePaths4(int m, int n) {
+        if (m == 0 || n == 0) return 0;
+        int[][] dp = new int[m][n];
+
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (r == 0 || c == 0) dp[r][c] = 1;
+                else dp[r][c] = dp[r - 1][c] + dp[r][c - 1];
             }
         }
 
@@ -214,8 +214,8 @@ public class L62_UniquePaths {
     }
 
     public static void main(String[] args) {
-        log(uniquePaths3(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
-        log(uniquePaths3(3, 3));  // expects 6.
-        log(uniquePaths3(7, 3));  // expects 28.
+        log(uniquePaths4(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths4(3, 3));  // expects 6.
+        log(uniquePaths4(7, 3));  // expects 28.
     }
 }
