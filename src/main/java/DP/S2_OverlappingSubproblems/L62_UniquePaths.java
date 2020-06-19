@@ -20,10 +20,7 @@ import java.util.Queue;
 public class L62_UniquePaths {
     /*
      * 超时解1：BFS
-     * - 思路：类似 L64 解法1，图论建模：
-     *        ■ → ■ → ■
-     *        ↓   ↓   ↓
-     *        ■ → ■ → ■
+     * - 思路：类似 L64 解法1，直接用 BFS 搜索能到达右下角的路径。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)，n 为节点个数。
      * */
     public static int uniquePaths_1(int m, int n) {
@@ -54,9 +51,9 @@ public class L62_UniquePaths {
      * - 思路：若用 DFS + 递归求解，则需思考前后子问题之间的递推关系，即 f(r, c) 与 f(r+1, c)、f(r, c+1) 之间的递推关系：
      *   - 定义子问题：f(r, c) 表示“从格子 [r,c] 到右下角格子之间的不同路径个数”；
      *   - 递推表达式：f(r, c) = f(r+1, c) + f(r, c+1)。
-     *        ■ → ■ → ■         3 → 2 → 1
-     *        ↓   ↓   ↓   -->   ↓   ↓   ↓
-     *        ■ → ■ → ■         1 → 1 → 0
+     *        ■ → ■ → ■
+     *        ↓   ↓   ↓
+     *        ■ → ■ → ■
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)，n 为节点个数。
      * */
     public static int uniquePaths_2(int m, int n) {
@@ -73,11 +70,11 @@ public class L62_UniquePaths {
     /*
      * 解法1：Recursion + Memoization (DFS with cache)
      * - 思路：类似 L64_MinimumPathSum 解法2。该题具有明显的重叠子问题特征，比如在 3×3 的 gird 上：
-     *            ■ → ■ → ■
-     *            ↓   ↓   ↓
-     *            ■ → ■ → ■
-     *            ↓   ↓   ↓
-     *            ■ → ■ → ■
+     *        ■ → ■ → ■
+     *        ↓   ↓   ↓
+     *        ■ → ■ → ■
+     *        ↓   ↓   ↓
+     *        ■ → ■ → ■
      *   所有有两个箭头指向的格子，如 f(1,1)、f(1,2)、f(2,1)、f(2,2) 会被重复计算2次 ∴ 可以使用 Memoization 进行优化。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
@@ -101,6 +98,9 @@ public class L62_UniquePaths {
     /*
      * 解法2：DP
      * - 思路：既然可以用 DFS + Recursion 求解，那很可能也能用 DP 求解 —— 自下而上递推出每个格子上的解。
+     *        ■ ← ■ ← ■          3 ← 2 ← 1
+     *        ↑   ↑   ↑    -->   ↑   ↑   ↑
+     *        ■ ← ■ ← ■          1 ← 1 ← 1
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePaths2(int m, int n) {
@@ -122,7 +122,11 @@ public class L62_UniquePaths {
 
     /*
      * 解法3：DP（解法2的反向遍历版）
-     * - 思路：不同于解法2，本解法是是从左上遍历到右下 ∴ 状态转移方程变成了 f(i, j) = f(i-1, j) + f(i, j-1)。
+     * - 思路：与解法2一致。
+     * - 实现：不同于解法2，本解法是是从左上遍历到右下 ∴ 状态转移方程变成了 f(r, c) = f(r-1, c) + f(r, c-1)。
+     *        ■ → ■ → ■
+     *        ↓   ↓   ↓
+     *        ■ → ■ → ■
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePaths3(int m, int n) {
@@ -130,10 +134,10 @@ public class L62_UniquePaths {
         int[][] dp = new int[m][n];
         dp[0][0] = 1;
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i != 0) dp[i][j] += dp[i - 1][j];
-                if (j != 0) dp[i][j] += dp[i][j - 1];
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (r != 0) dp[r][c] += dp[r - 1][c];
+                if (c != 0) dp[r][c] += dp[r][c - 1];
             }
         }
 
@@ -148,10 +152,10 @@ public class L62_UniquePaths {
         if (m == 0 || n == 0) return 0;
         int[][] dp = new int[m][n];
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == 0 || j == 0) dp[i][j] = 1;
-                else dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (r == 0 || c == 0) dp[r][c] = 1;
+                else dp[r][c] = dp[r - 1][c] + dp[r][c - 1];
             }
         }
 
@@ -170,10 +174,10 @@ public class L62_UniquePaths {
         if (m == 0 || n == 0) return 0;
         int[][] dp = new int[2][n];
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == 0 || j == 0) dp[i % 2][j] = 1;
-                else dp[i % 2][j] = dp[(i - 1) % 2][j] + dp[i % 2][j - 1];
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (r == 0 || c == 0) dp[r % 2][c] = 1;
+                else dp[r % 2][c] = dp[(r - 1) % 2][c] + dp[r % 2][c - 1];
             }
         }
 
@@ -190,22 +194,14 @@ public class L62_UniquePaths {
         if (m == 0 || n == 0) return 0;
         int[] dp = new int[n];
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == 0 || j == 0) dp[j] = 1;
-                else dp[j] += dp[j - 1];
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (r == 0 || c == 0) dp[c] = 1;
+                else dp[c] += dp[c - 1];
             }
         }
 
         return dp[n - 1];
-    }
-
-
-
-
-
-    public static int uniquePathsxxx(int m, int n) {
-        return 0;
     }
 
     public static void main(String[] args) {
