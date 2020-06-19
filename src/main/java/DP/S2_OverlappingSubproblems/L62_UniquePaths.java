@@ -100,7 +100,7 @@ public class L62_UniquePaths {
 
     /*
      * 解法2：DP
-     * - 思路：类似 L64 解法3，从后往前求解。
+     * - 思路：既然可以用 DFS + Recursion 求解，那很可能也能用 DP 求解 —— 自下而上递推出每个格子上的解。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePaths2(int m, int n) {
@@ -108,10 +108,12 @@ public class L62_UniquePaths {
         int[][] dp = new int[m][n];
         dp[m - 1][n - 1] = 1;
 
-        for (int i = m - 1; i >= 0; i--) {
-            for (int j = n - 1; j >= 0; j--) {
-                if (i != m - 1) dp[i][j] += dp[i + 1][j];
-                if (j != n - 1) dp[i][j] += dp[i][j + 1];
+        for (int r = m - 1; r >= 0; r--) {
+            for (int c = n - 1; c >= 0; c--) {
+                if (r != m - 1)
+                    dp[r][c] += dp[r+1][c];
+                if (c != n - 1)
+                    dp[r][c] += dp[r][c+1];
             }
         }
 
@@ -207,8 +209,8 @@ public class L62_UniquePaths {
     }
 
     public static void main(String[] args) {
-        log(uniquePathsxxx(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
-        log(uniquePathsxxx(3, 3));  // expects 6.
-        log(uniquePathsxxx(7, 3));  // expects 28.
+        log(uniquePaths2(2, 3));  // expects 3. (R->R->D, R->D->R, D->R->R)
+        log(uniquePaths2(3, 3));  // expects 6.
+        log(uniquePaths2(7, 3));  // expects 28.
     }
 }

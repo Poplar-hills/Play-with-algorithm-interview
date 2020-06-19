@@ -75,7 +75,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-     * 超时解2：DFS
+     * 超时解2：DFS + Recursion
      * - 思路：从左上到右下递归地计算每个节点到达右下角的 min path sum：
      *   - 子问题定义：f(r,c) 表示从节点 [r,c] 到达右下角的 min path sum。
      *   - 递推表达式：f(r,c) = min(f(r+1,c), f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)。
@@ -113,7 +113,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-     * 解法2：DFS + Memoization（Recursion with cache）
+     * 解法2：DFS + Recursion + Memoization
      * - 思路：在超时解2的基础上加入 Memoization 进行优化，以避免重复计算重叠子问题。
      * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
      * */
