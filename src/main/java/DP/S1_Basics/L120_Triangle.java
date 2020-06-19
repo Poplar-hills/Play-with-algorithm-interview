@@ -193,27 +193,27 @@ public class L120_Triangle {
             dp[i] = triangle.get(h - 1).get(i);  // 初始化为三角形最底层的节点值
 
         for (int l = h - 2; l >= 0; l--)         // 从倒数第2层开始往上遍历
-            for (int i = 0; i <= l; i++)         // 遍历每一层中的每个节点（第 i 层共有 i 个节点）
+            for (int i = 0; i <= l; i++)         // 遍历每一层中的每个节点（∵ 每层的节点数 = 当前层的高度 ∴ i ∈ [0,l]）
                 dp[i] = Math.min(dp[i], dp[i + 1]) + triangle.get(l).get(i);  // 覆盖
 
         return dp[0];
     }
 
     public static void main(String[] args) {
-        log(minimumTotal1(List.of(
+        log(minimumTotal4(List.of(
                Arrays.asList(2),
               Arrays.asList(3, 4),
              Arrays.asList(6, 5, 7),
             Arrays.asList(4, 1, 8, 3)
         )));  // expects 11 (2 + 3 + 5 + 1)
 
-        log(minimumTotal1(List.of(
+        log(minimumTotal4(List.of(
                Arrays.asList(-1),
               Arrays.asList(2, 3),
             Arrays.asList(1, -1, -3)
         )));  // expects -1 (-1 + 3 + -3) 注意不是从每行中找到最小值就行
 
-        log(minimumTotal1(List.of(
+        log(minimumTotal4(List.of(
             Arrays.asList(-10)
         )));  // expects -10
     }
