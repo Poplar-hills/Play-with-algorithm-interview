@@ -51,7 +51,12 @@ public class L62_UniquePaths {
 
     /*
      * 超时解2：DFS + Recursion
-     * - 思路：
+     * - 思路：若用 DFS + 递归求解，则需思考前后子问题之间的递推关系，即 f(r, c) 与 f(r+1, c)、f(r, c+1) 之间的递推关系：
+     *   - 定义子问题：f(r, c) 表示“从格子 [r,c] 到右下角格子之间的不同路径个数”；
+     *   - 递推表达式：f(r, c) = f(r+1, c) + f(r, c+1)。
+     *        ■ → ■ → ■         3 → 2 → 1
+     *        ↓   ↓   ↓   -->   ↓   ↓   ↓
+     *        ■ → ■ → ■         1 → 1 → 0
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)，n 为节点个数。
      * */
     public static int uniquePaths_2(int m, int n) {
@@ -67,29 +72,30 @@ public class L62_UniquePaths {
 
     /*
      * 解法1：Recursion + Memoization (DFS with cache)
-     * - 思路：类似 L64 解法2。该题具有明显的重叠子问题特征 —— 前一个问题的解是基于后两个问题的解。
-     *        ■ → ■ → ■         3 ← 2 ← 1
-     *        ↓   ↓   ↓   -->   ↑   ↑   ↑
-     *        ■ → ■ → ■         1 ← 1 ← 0
-     *   - 定义子问题：f(i, j) 表示"从坐标 (i,j) 到达右下角的 unique paths 个数"；
-     *   - 状态转移方程：f(i, j) = f(i+1, j) + f(i, j+1)。
+     * - 思路：类似 L64_MinimumPathSum 解法2。该题具有明显的重叠子问题特征，比如在 3×3 的 gird 上：
+     *            ■ → ■ → ■
+     *            ↓   ↓   ↓
+     *            ■ → ■ → ■
+     *            ↓   ↓   ↓
+     *            ■ → ■ → ■
+     *   所有有两个箭头指向的格子，如 f(1,1)、f(1,2)、f(2,1)、f(2,2) 会被重复计算2次 ∴ 可以使用 Memoization 进行优化。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePaths1(int m, int n) {
         if (m == 0 || n == 0) return 0;
         int[][] cache = new int[m][n];
-        return uniquePaths2(m, n, 0, 0, cache);
+        return helper1(m, n, 0, 0, cache);
     }
 
-    private static int uniquePaths2(int m, int n, int i, int j, int[][] cache) {
-        if (i == m - 1 && j == n - 1) return 1;  // 注意递归到底时（即 cache[m-1][n-1]）要返回1
-        if (cache[i][j] != 0) return cache[i][j];
+    private static int helper1(int m, int n, int r, int c, int[][] cache) {
+        if (r == m - 1 && c == n - 1) return 1;
+        if (cache[r][c] != 0) return cache[r][c];
 
         int res = 0;
-        if (i != m - 1) res += uniquePaths2(m, n, i + 1, j, cache);
-        if (j != n - 1) res += uniquePaths2(m, n, i, j + 1, cache);
+        if (r != m - 1) res += helper1(m, n, r + 1, c, cache);
+        if (c != n - 1) res += helper1(m, n, r, c + 1, cache);
 
-        return cache[i][j] = res;
+        return cache[r][c] = res;
     }
 
     /*

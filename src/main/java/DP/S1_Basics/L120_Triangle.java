@@ -93,8 +93,8 @@ public class L120_Triangle {
     /*
      * 超时解3：DFS + Recursion
      * - 思路：若用 DFS + 递归求解，那就需要思考前后子问题之间的递推关系，即 f(l,i) 与 f(l+1,i), f(l+1,i+1) 的是如何递推的：
-     *   - 定义子问题：f(l,i) 表示"从节点 [l,i] 开始到三角形最底层的 minimum path sum"；
-     *   - 状态转移方程：f(l,i) = min(f(l+1,i), f(l+1,i+1)) + nodeVal[l,i]。
+     *   - 定义子问题：f(l, i) 表示"从节点 [l,i] 开始到三角形最底层的 minimum path sum"；
+     *   - 递推表达式：f(l, i) = min(f(l+1, i), f(l+1, i+1)) + nodeVal[l,i]。
      * - 时间复杂度 O(2^n)，空间复杂度 O(h)。
      * */
     public static int minimumTotal_3(List<List<Integer>> triangle) {
