@@ -25,21 +25,21 @@ public class L63_UniquePathsII {
         return helper(grid, 0, 0, cache);
     }
 
-    private static int helper(int[][] grid, int i, int j, int[][] cache) {
+    private static int helper(int[][] grid, int r, int c, int[][] cache) {
         int m = grid.length;
         int n = grid[0].length;
 
-        if (grid[i][j] == 1) return 0;             // 若是障碍物节点则直接返回0
-        if (i == m - 1 && j == n - 1) return 1;    // 递归到底
-        if (cache[i][j] != 0) return cache[i][j];
+        if (grid[r][c] == 1) return 0;             // 若是障碍物节点则直接返回0
+        if (r == m - 1 && c == n - 1) return 1;    // 递归到底
+        if (cache[r][c] != 0) return cache[r][c];
 
         int res = 0;
-        if (i != m - 1 && grid[i + 1][j] != 1)     // 若下方是障碍物，则不计算
-            res += helper(grid, i + 1, j, cache);
-        if (j != n - 1 && grid[i][j + 1] != 1)     // 若右侧是障碍物，则不计算
-            res += helper(grid, i, j + 1, cache);
+        if (r != m - 1)     // 若下方是障碍物，则不计算
+            res += helper(grid, r + 1, c, cache);
+        if (c != n - 1)     // 若右侧是障碍物，则不计算
+            res += helper(grid, r, c + 1, cache);
 
-        return cache[i][j] = res;
+        return cache[r][c] = res;
     }
 
     /*
@@ -98,20 +98,20 @@ public class L63_UniquePathsII {
     }
 
     public static void main(String[] args) {
-        log(uniquePathsWithObstacles2(new int[][]{
+        log(uniquePathsWithObstacles(new int[][]{
             {0, 0, 0},
             {0, 1, 0},
             {0, 0, 0},
         }));  // expects 2. (R->R->D->D, D->D->R->R)
 
-        log(uniquePathsWithObstacles2(new int[][]{
+        log(uniquePathsWithObstacles(new int[][]{
             {0, 0, 1, 0},
             {0, 0, 0, 0},
             {1, 1, 1, 0},
             {0, 0, 0, 0},
         }));  // expects 2.
 
-        log(uniquePathsWithObstacles2(new int[][]{
+        log(uniquePathsWithObstacles(new int[][]{
             {1},
         }));  // expects 0.
     }
