@@ -99,20 +99,20 @@ public class L63_UniquePathsII {
 
     public static void main(String[] args) {
         log(uniquePathsWithObstacles2(new int[][]{
-            new int[]{0, 0, 0},
-            new int[]{0, 1, 0},
-            new int[]{0, 0, 0},
+            {0, 0, 0},
+            {0, 1, 0},
+            {0, 0, 0},
         }));  // expects 2. (R->R->D->D, D->D->R->R)
 
         log(uniquePathsWithObstacles2(new int[][]{
-            new int[]{0, 0, 1, 0},
-            new int[]{0, 0, 0, 0},
-            new int[]{1, 1, 1, 0},
-            new int[]{0, 0, 0, 0},
+            {0, 0, 1, 0},
+            {0, 0, 0, 0},
+            {1, 1, 1, 0},
+            {0, 0, 0, 0},
         }));  // expects 2.
 
         log(uniquePathsWithObstacles2(new int[][]{
-            new int[]{1},
+            {1},
         }));  // expects 0.
     }
 }
