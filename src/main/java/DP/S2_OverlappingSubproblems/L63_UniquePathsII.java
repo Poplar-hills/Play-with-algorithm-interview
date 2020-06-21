@@ -34,10 +34,8 @@ public class L63_UniquePathsII {
         if (cache[r][c] != 0) return cache[r][c];
 
         int res = 0;
-        if (r != m - 1)     // 若下方是障碍物，则不计算
-            res += helper(grid, r + 1, c, cache);
-        if (c != n - 1)     // 若右侧是障碍物，则不计算
-            res += helper(grid, r, c + 1, cache);
+        if (r != m - 1) res += helper(grid, r + 1, c, cache);
+        if (c != n - 1) res += helper(grid, r, c + 1, cache);
 
         return cache[r][c] = res;
     }
@@ -55,14 +53,14 @@ public class L63_UniquePathsII {
         int[][] dp = new int[m][n];
         dp[m - 1][n - 1] = 1;
 
-        for (int i = m - 1; i >= 0; i--) {
-            for (int j = n - 1; j >= 0; j--) {
-                if (grid[i][j] == 1) {  // 若遇到障碍则直接将障碍点的结果记为0
-                    dp[i][j] = 0;
+        for (int r = m - 1; r >= 0; r--) {
+            for (int c = n - 1; c >= 0; c--) {
+                if (grid[r][c] == 1) {  // 若遇到障碍则直接将障碍点的结果记为0
+                    dp[r][c] = 0;
                     continue;
                 }
-                if (i != m - 1) dp[i][j] += dp[i + 1][j];
-                if (j != n - 1) dp[i][j] += dp[i][j + 1];
+                if (r != m - 1) dp[r][c] += dp[r + 1][c];
+                if (c != n - 1) dp[r][c] += dp[r][c + 1];
             }
         }
 
@@ -71,9 +69,8 @@ public class L63_UniquePathsII {
 
     /*
      * 解法2：DP + 一维数组
-     * - 思路：类似 L62 解法6的思路，但不同点在于：
-     *   1. ∵ grid 中有障碍物 ∴ L62 解法4、5、6里的`if (i == 0 || j == 0) dp[j] = 1;`不再成立，只能用 L62 解法3的实现方式；
-     *   2. ∵ 采用了一维 dp 数组 ∴ 当 i != 0 时，dp[j] 保持不变即可，不用再加任何数值。
+     * - 思路：类似 L62 解法6的思路，但不同点在于 ∵ grid 中有障碍物 ∴ L62 解法4、5、6里的 "if (r==0 || c==0) dp[c] = 1;"
+     *   不再成立（∵ dp[障碍物] = 0）∴ 只能用 L62 解法3的方式实现。
      * - 时间复杂度 O(m*n)，空间复杂度 O(n)。
      * */
     public static int uniquePathsWithObstacles2(int[][] grid) {
@@ -84,13 +81,13 @@ public class L63_UniquePathsII {
         int[] dp = new int[n];
         dp[0] = 1;
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 1) {
-                    dp[j] = 0;
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                if (grid[r][c] == 1) {
+                    dp[c] = 0;
                     continue;
                 }
-                if (j != 0) dp[j] += dp[j - 1];  // 只考虑 j != 0 的情况就行；i != 0 的情况 dp[j] 保持不变即可
+                if (c != 0) dp[c] += dp[c - 1];
             }
         }
 
