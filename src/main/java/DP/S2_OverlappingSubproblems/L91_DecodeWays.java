@@ -108,11 +108,36 @@ public class L91_DecodeWays {
         return dp[0];
     }
 
+    /*
+     * 解法3：DP
+     * - 思路：
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int numDecodings3(String s) {
+        if (s == null || s.length() == 0) return 0;
+        int n = s.length();
+
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = s.charAt(0) == '0' ? 0 : 1;
+
+        for (int i = 2; i <= n; i++) {
+            if (s.charAt(i - 1) != '0')
+                dp[i] = dp[i - 1];
+
+            int num = Integer.parseInt(s.substring(i - 2, i));
+            if (num >= 10 && num <= 26)
+                dp[i] += dp[i - 2];
+        }
+
+        return dp[n];
+    }
+
     public static void main(String[] args) {
-        log(numDecodings2("27"));     // expects 1. 2,7  -> "BG"
-        log(numDecodings2("12"));     // expects 2. 1,2  -> "AB" or 12 -> "L"
-        log(numDecodings2("227"));    // expects 2. 22,7 -> "VG" or 2,2,7 -> "BBG"
-        log(numDecodings2("226"));    // expects 3. 2,26 -> "BZ" or 22,6 -> "VF" or 2,2,6 -> "BBF"
-        log(numDecodings2("102213")); // expects 5. ...
+        log(numDecodings3("27"));     // expects 1. 2,7  -> "BG"
+        log(numDecodings3("12"));     // expects 2. 1,2  -> "AB" or 12 -> "L"
+        log(numDecodings3("227"));    // expects 2. 22,7 -> "VG" or 2,2,7 -> "BBG"
+        log(numDecodings3("226"));    // expects 3. 2,26 -> "BZ" or 22,6 -> "VF" or 2,2,6 -> "BBF"
+        log(numDecodings3("102213")); // expects 5. ...
     }
 }
