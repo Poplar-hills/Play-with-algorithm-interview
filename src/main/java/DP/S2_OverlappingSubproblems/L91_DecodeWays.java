@@ -7,9 +7,12 @@ import java.util.Arrays;
 /*
  * Decode Ways
  *
- * - A message containing letters from A-Z is being encoded to numbers using the following mapping: 'A' -> 1,
- *   'B' -> 2, ..., 'Z' -> 26. Given a non-empty string containing only digits, determine the total number
- *   of ways to decode it.
+ * - A message containing letters from A-Z is being encoded to numbers using the following mapping:
+ *      'A' -> 1
+ *      'B' -> 2
+ *         ...
+ *      'Z' -> 26
+ *   Given a non-empty string containing only digits, determine the total number of ways to decode it.
  * */
 
 public class L91_DecodeWays {
@@ -53,14 +56,14 @@ public class L91_DecodeWays {
     }
 
     /*
-     * 解法1：Recursion + Memoization (DFS with cache)
+     * 解法1：DFS + Recursion + Memoization
      * - 思路：在超时解的基础上加入 Memoization 优化。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int numDecodings1(String s) {
         if (s == null || s.length() == 0) return 0;
         int[] cache = new int[s.length()];
-        Arrays.fill(cache, -1);  // ∵ 计算结果可能为0，所以要初始化为-1
+        Arrays.fill(cache, -1);             // ∵ 计算结果可能为0，所以要初始化为-1
         return dfs(s, 0, cache);
     }
 
@@ -78,7 +81,7 @@ public class L91_DecodeWays {
 
     /*
      * 解法2：DP
-     * - 思路：定义子问题和状态转移方程不变：
+     * - 思路：将解法1直接转换为 DP 的写法（其实本质思路与解法1是一样的 —— 都是自上而下分解任务），子问题定义和递推表达式不变：
      *   - f(i) 表示“从索引 i 开始的字符串的解码方式个数”；
      *   - f(i) = f(i + 1) + f(i + 2)，其中 i ∈ [0, len-3]，且：
      *     1. 递推的起始条件：f("") = 1；
@@ -89,7 +92,7 @@ public class L91_DecodeWays {
         if (s == null || s.length() == 0) return 0;
 
         int n = s.length();
-        int[] dp = new int [n + 1];
+        int[] dp = new int[n + 1];     // 多开辟一位存放 f("") 的解
         dp[n] = 1;                     // f("") = 1
 
         for (int i = n - 1; i >= 0; i--) {
@@ -98,7 +101,7 @@ public class L91_DecodeWays {
                 continue;
             }
             dp[i] = dp[i + 1];
-            if (i + 1 < n && Integer.parseInt(s.substring(i, i + 2)) < 27)
+            if (i + 2 <= n && Integer.parseInt(s.substring(i, i + 2)) <= 26)
                 dp[i] += dp[i + 2];
         }
 
@@ -106,10 +109,10 @@ public class L91_DecodeWays {
     }
 
     public static void main(String[] args) {
-        log(numDecodings("27"));     // expects 1. 2,7  -> "BG"
-        log(numDecodings("12"));     // expects 2. 1,2  -> "AB" or 12 -> "L"
-        log(numDecodings("227"));    // expects 2. 22,7 -> "VG" or 2,2,7 -> "BBG"
-        log(numDecodings("226"));    // expects 3. 2,26 -> "BZ" or 22,6 -> "VF" or 2,2,6 -> "BBF"
-        log(numDecodings("102213")); // expects 5. ...
+        log(numDecodings2("27"));     // expects 1. 2,7  -> "BG"
+        log(numDecodings2("12"));     // expects 2. 1,2  -> "AB" or 12 -> "L"
+        log(numDecodings2("227"));    // expects 2. 22,7 -> "VG" or 2,2,7 -> "BBG"
+        log(numDecodings2("226"));    // expects 3. 2,26 -> "BZ" or 22,6 -> "VF" or 2,2,6 -> "BBF"
+        log(numDecodings2("102213")); // expects 5. ...
     }
 }
