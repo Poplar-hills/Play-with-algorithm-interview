@@ -19,31 +19,27 @@ import java.util.Set;
 
 public class L139_WordBreak {
     /*
-     * 超时解：DFS（没有 cache 的 DFS 就是 Brute force，同时也是 Back-tracking)
-     * - 思路：类似 L343_IntegerBreak，将字符串递归地截成两段，直到有解或到底：
-     *   - 定义子问题：f(i) 表示“从索引 i 开始的字符串 s[i..len) 是否能由 wordDict 中的单词拼接而成”；
-     *   - 状态转移方程：f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
-     *   例如对 s="sunisfo", wordDict=["sun","is","fo"] 来说：
-     *      f("sunisfo")
-     *        - "s" && f("unisfo")
-     *        - "su" && f("nisfo")
-     *        - "sun" && f("isfo")                  → "sun" 在 wordDict 中，继续递归分解后半段
-     *                   - "i" && f("sfo")
-     *                   - "is" && f("fo")          → "is" 在 wordDict 中，继续递归分解后半段
-     *                             - "f" && f("o")
-     *                             - "fo" && f("")  → 此时返回 true 到上层，上层也返回 true...直到原问题返回 true
-     * - 实现：根据上面推导可知需要双重循环：一重用于在 s 上移动 i，另一重用于在 s[i+1..len] 上滑动 j，将字符串 s[i..len) 截
-     *   成两段 s[i..j) 和 s[j..len]，前半段可直接在 wordDict 中验证是否存在，后半段可继续递归分解。
+     * 超时解：DFS + Recursion
+     * - 思路：总体思路是对 s 进行不同长度的截取，检查截取出来的部分是否存在于 wordDict 中，若存在则继续对剩余的部分进行截取。
+     *   例如对于 s="cars", wordDict=["ca","car","ars","s"] 来说：
+     *                    "cars"
+     *       c/       ca/     car\     cars\      - 以不同的长度进行截取，若截出来的部分不存在于 wordDict 中，则终止
+     *       ×        "rs"       "s"        ×     - ca、car 存在于 wordDict 中 ∴ 继续递归截取
+     *              r/  rs\      s|               - r、rs 都不存在于 wordDict 中 ∴ 终止
+     *              ×     ×       ""              - 当剩余部分为""时，说明找到解了，返回 true
+     *   ∴ 可知：
+     *     - 子问题定义：f(i) 表示“从索引 i 开始的字符串 s[i..) 能否由 wordDict 中的单词拼接而成”；
+     *     - 递推表达式：f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
    public static boolean wordBreak(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
-        return helper(s, 0, new HashSet<>(wordDict));  // 为了高效查询 wordDict 是否包含某个字符串，将 wordDict 转为 set
+        return helper(s, 0, new HashSet<>(wordDict));    // 将 wordDict 转为 Set
     }
 
     private static boolean helper(String s, int i, Set<String> set) {
-        if (i == s.length()) return true;              // f("") 的情况要返回 true
-        for (int j = i + 1; j <= s.length(); j++)      // 注意 j 可以等于 s.length() ∵ 下面 substring 时 j 是不包含的
+        if (i == s.length()) return true;           // f("") 的情况返回 true
+        for (int j = i + 1; j <= s.length(); j++)   // 注意 j 可以等于 s.length() ∵ 下面 substring 时 j 是不包含的
             if (set.contains(s.substring(i, j)) && helper(s, j, set))  // 若前后两段都在 set 中，说明该问题有解
                 return true;
         return false;
@@ -144,9 +140,9 @@ public class L139_WordBreak {
     }
 
     public static void main(String[] args) {
-        log(wordBreak2("leetcode", List.of("leet", "code")));       // expects true
-        log(wordBreak2("applepenapple", List.of("apple", "pen")));  // expects true
-        log(wordBreak2("cars", List.of("car", "ca", "rs")));        // expects true
-        log(wordBreak2("catsandog", List.of("cats", "dog", "sand", "and", "cat")));  // expects false
+        log(wordBreak("leetcode", List.of("leet", "code")));       // expects true
+        log(wordBreak("cars", List.of("ca", "car", "ars", "s")));  // expects true
+        log(wordBreak("applepenapple", List.of("apple", "pen")));  // expects true
+        log(wordBreak("catsandog", List.of("cats", "dog", "sand", "and", "cat")));  // expects false
     }
 }
