@@ -28,8 +28,8 @@ public class L139_WordBreak {
      *              r/  rs\      s|               - r、rs 都不存在于 wordDict 中 ∴ 终止
      *              ×     ×       ""              - 当剩余部分为""时，说明找到解了，返回 true
      *   ∴ 可知：
-     *     - 子问题定义：f(i) 表示“从索引 i 开始的字符串 s[i..) 能否由 wordDict 中的单词拼接而成”；
-     *     - 递推表达式：f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
+     *     - 子问题定义：f(i) 表示“从索引 i 开始到末尾的字符串 s[i..n) 能否由 wordDict 中的单词拼接而成”；
+     *     - 递推表达式：f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
    public static boolean wordBreak_1(String s, List<String> wordDict) {
@@ -75,9 +75,9 @@ public class L139_WordBreak {
 
     /*
      * 解法2：DP
-     * - 思路：子问题定义和状态转移方程不变：
-     *   - f(i) 表示“从索引 i 开始的字符串 s[i..len) 是否能由 wordDict 中的单词拼接而成”；
-     *   - f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
+     * - 思路：将解法1直接转换为 DP 的写法（其实本质思路与解法1是一样的 —— 都是自上而下分解任务），子问题定义和递推表达式不变：
+     *   - f(i) 表示“从索引 i 开始到末尾的字符串 s[i..n) 是否能由 wordDict 中的单词拼接而成”；
+     *   - f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static boolean wordBreak2(String s, List<String> wordDict) {
@@ -85,15 +85,17 @@ public class L139_WordBreak {
 
         Set<String> set = new HashSet<>(wordDict);
         int n = s.length();
-        boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[i..len) 是否能由 set 中的单词组成。最后多开辟1的空间是为了容纳 f("") 的情况
-        dp[n] = true;                       // f("") 的情况
+        boolean[] dp = new boolean[n + 1];
+        dp[n] = true;                           // dp[n] 存储 f("") 的解
 
-        for (int i = n - 1; i >= 0; i--)
-            for (int j = n; j >= i + 1; j--)
-                if (set.contains(s.substring(i, j)) && dp[j]) {  // 若 s[i..j)、s[j..len) 两段字符串都在 set 中
+        for (int i = n - 1; i >= 0; i--) {      // 从后往前递推
+            for (int j = i + 1; j <= n; j++) {  // 在 s[i..n) 中尝试不同的截取方式
+                if (set.contains(s.substring(i, j)) && dp[j]) {  // 若 s[i..j)、s[j..n) 都在 set 中则说明 f(i) 有解
                     dp[i] = true;
-                    break;
+                    break;                      // 若 f(i) 已经有解，则无需再尝试其他截取方式
                 }
+            }
+        }
 
         return dp[0];
     }
@@ -113,12 +115,14 @@ public class L139_WordBreak {
         boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成
         dp[0] = true;                       // f("") 的情况
 
-        for (int i = 1; i <= n; i++)
-            for (int j = 0; j < i; j++)
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
                 if (dp[j] && set.contains(s.substring(j, i))) {  // 若 s[0..j)、s[j..len) 两段字符串都在 set 中
                     dp[i] = true;
                     break;
                 }
+            }
+        }
 
         return dp[n];
     }
@@ -147,33 +151,11 @@ public class L139_WordBreak {
         return cache[i] = false;
     }
 
-
-
-
-    /*
-     * */
-    public static boolean wordBreakxx(String s, List<String> wordDict) {
-        Set<String> wordSet = new HashSet<>(wordDict);
-        return helperxx(s, 0, wordSet);
-    }
-
-    private static boolean helperxx(String s, int i, Set<String> wordSet) {
-        if (i == s.length()) return true;
-
-        for (int j = i + 1; j <= s.length(); j++) {
-            String str = s.substring(i, j);
-            if (wordSet.contains(str))
-                if (helperxx(s, j, wordSet))
-                    return true;
-        }
-
-        return false;
-    }
-
     public static void main(String[] args) {
-        log(wordBreakxx("leetcode", List.of("leet", "code")));       // expects true
-        log(wordBreakxx("cars", List.of("ca", "car", "ars", "s")));  // expects true
-        log(wordBreakxx("applepenapple", List.of("apple", "pen")));  // expects true
-        log(wordBreakxx("catsandog", List.of("cats", "dog", "sand", "and", "cat")));  // expects false
+        log(wordBreak2("leetcode", List.of("leet", "code")));              // expects true
+        log(wordBreak2("applepenapple", List.of("apple", "pen")));         // expects true
+        log(wordBreak2("cars", List.of("ca", "car", "ars", "s")));         // expects true
+        log(wordBreak2("carsys", List.of("ca", "car", "r", "sy", "ys")));  // expects false
+        log(wordBreak2("catsandog", List.of("cats", "dog", "sand", "and", "cat")));  // expects false
     }
 }
