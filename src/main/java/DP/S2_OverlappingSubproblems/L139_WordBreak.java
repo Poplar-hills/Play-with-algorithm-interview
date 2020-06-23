@@ -102,9 +102,9 @@ public class L139_WordBreak {
 
     /*
      * 解法3：DP
-     * - 思路：与解法2的逻辑一样，但是采用正向遍历：
-     *   - 定义子问题：f(i) 表示“字符串 s[0..i) 是否能由 wordDict 中的单词拼接而成”；
-     *   - 状态转移方程：f(i) = any(f(j) && s[j..i])。
+     * - 思路：不同于解法2，该解法采用自下而上的 DP 思路，先解决基本问题，再递推出高层次问题的解：
+     *   - 子问题定义：f(i) 表示“字符串 s[0..i) 是否能由 wordDict 中的单词拼接而成”；
+     *   - 递推表达式：f(i) = any(f(j) && s[j..i])。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static boolean wordBreak3(String s, List<String> wordDict) {
@@ -115,11 +115,11 @@ public class L139_WordBreak {
         boolean[] dp = new boolean[n + 1];  // dp[i] 表示子串 s[0..i) 是否能由 set 中的单词组成
         dp[0] = true;                       // f("") 的情况
 
-        for (int i = 1; i <= n; i++) {
-            for (int j = 0; j < i; j++) {
-                if (dp[j] && set.contains(s.substring(j, i))) {  // 若 s[0..j)、s[j..len) 两段字符串都在 set 中
+        for (int i = 1; i <= n; i++) {      // 从前往后遍历
+            for (int j = 0; j < i; j++) {   // 在 s[0..i) 中尝试不同的截取方式
+                if (dp[j] && set.contains(s.substring(j, i))) {  // 若 s[0..j)、s[j..n) 都在 set 中则说明 f(i) 有解
                     dp[i] = true;
-                    break;
+                    break;                  // 若 f(i) 已经有解，则无需再尝试其他截取方式
                 }
             }
         }
@@ -130,8 +130,8 @@ public class L139_WordBreak {
     /*
      * 解法4：DFS
      * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段检测，而是采用头部单词匹配。理由是，若 s 能由 wordDict 中的
-     *   词组成，则一定是由其中某一个词开头的（反之，若 s 不是由 wordDict 中的词开头的，则可直接返回 false），找到这个词之后再
-     *   对其后半段继续这样的匹配检测，从而形成递归结构。
+     *   词组成，则一定是由其中某一个词开头的（反之若 s 不是由 wordDict 中的词开头的，则可直接返回 false），找到这个词之后再对
+     *   其后半段继续这样的匹配检测，从而形成递归结构。
      * - 注意：startWith() 方法的第二个参数指定匹配的起始索引，好用。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)，统计性能是几种解法中最快的。
      * */
