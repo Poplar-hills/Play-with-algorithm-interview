@@ -2,7 +2,6 @@ package DP.S2_OverlappingSubproblems;
 
 import static Utils.Helpers.*;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,8 +9,12 @@ import java.util.Set;
 /*
  * Word Break
  *
- * - 给定一个字符串 s 和一个字符串数组 wordDict，问能否能使用 wordDict 中的字符串拼接成 s。
- * - 注：1. wordDict 中的元素可以重复使用；2. wordDict 中不存在重复元素。
+ * - Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine
+ *   if s can be segmented into a space-separated sequence of one or more dictionary words.
+ *
+ * - Note:
+ *   - The same word in the dictionary may be reused multiple times in the segmentation.
+ *   - You may assume the dictionary does not contain duplicate words.
  * */
 
 public class L139_WordBreak {
@@ -141,9 +144,9 @@ public class L139_WordBreak {
     }
 
     public static void main(String[] args) {
-        log(wordBreak2("leetcode", Arrays.asList("leet", "code")));       // expects true
-        log(wordBreak2("applepenapple", Arrays.asList("apple", "pen")));  // expects true
-        log(wordBreak2("cars", Arrays.asList("car", "ca", "rs")));        // expects true
-        log(wordBreak2("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));  // expects false
+        log(wordBreak2("leetcode", List.of("leet", "code")));       // expects true
+        log(wordBreak2("applepenapple", List.of("apple", "pen")));  // expects true
+        log(wordBreak2("cars", List.of("car", "ca", "rs")));        // expects true
+        log(wordBreak2("catsandog", List.of("cats", "dog", "sand", "and", "cat")));  // expects false
     }
 }
