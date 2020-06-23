@@ -32,35 +32,43 @@ public class L139_WordBreak {
      *     - 递推表达式：f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,len)，j ∈ [i+1,len]。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
-   public static boolean wordBreak(String s, List<String> wordDict) {
+   public static boolean wordBreak_1(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
-        return helper(s, 0, new HashSet<>(wordDict));    // 将 wordDict 转为 Set
+        return helper_1(s, 0, new HashSet<>(wordDict));    // 将 wordDict 转为 Set
     }
 
-    private static boolean helper(String s, int i, Set<String> set) {
+    private static boolean helper_1(String s, int i, Set<String> set) {
         if (i == s.length()) return true;           // f("") 的情况返回 true
         for (int j = i + 1; j <= s.length(); j++)   // 注意 j 可以等于 s.length() ∵ 下面 substring 时 j 是不包含的
-            if (set.contains(s.substring(i, j)) && helper(s, j, set))  // 若前后两段都在 set 中，说明该问题有解
+            if (set.contains(s.substring(i, j)) && helper_1(s, j, set))  // 若前后两段都在 set 中，说明该问题有解
                 return true;
         return false;
     }
 
     /*
-     * 解法1：Recursion + Memoization (DFS with cache)
-     * - 思路：用缓存记录重叠子问题的计算结果。
+     * 解法1：DFS + Recursion + Memoization
+     * - 思路：对于 s="carsys", wordDict=["ca","car","r","sy","ys"] 来说：
+     *                    "carsys"
+     *       c/       ca/         car\     cars\
+     *       ×       "rsys"         "sys"        ×
+     *              r/   rs\        / | \
+     *            "sys"     ×        ...
+     *            / | \
+     *             ...
+     *   在自上而下的分解过程中的不同分支上出现了重叠子问题 f("sys") ∴ 可在超时解的基础上加入 Memoization 优化。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static boolean wordBreak1(String s, List<String> wordDict) {
+    public static boolean wordBreak(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
-        Boolean[] cache = new Boolean[s.length()];  // 此处使用 Boolean 而非 boolean，从而未计算状态可以设为 null
-        return helper1(s, 0, new HashSet<>(wordDict), cache);
+        Boolean[] cache = new Boolean[s.length()];   // 此处使用 Boolean 而非 boolean，未计算的位置上初值为 null
+        return helper(s, 0, new HashSet<>(wordDict), cache);
     }
 
-    private static boolean helper1(String s, int i, HashSet<String> set, Boolean[] cache) {
+    private static boolean helper(String s, int i, HashSet<String> set, Boolean[] cache) {
         if (i == s.length()) return true;
         if (cache[i] != null) return cache[i];
         for (int j = i + 1; j <= s.length(); j++)
-            if (set.contains(s.substring(i, j)) && helper1(s, j, set, cache))
+            if (set.contains(s.substring(i, j)) && helper(s, j, set, cache))
                 return cache[i] = true;
         return cache[i] = false;
     }
@@ -139,10 +147,33 @@ public class L139_WordBreak {
         return cache[i] = false;
     }
 
+
+
+
+    /*
+     * */
+    public static boolean wordBreakxx(String s, List<String> wordDict) {
+        Set<String> wordSet = new HashSet<>(wordDict);
+        return helperxx(s, 0, wordSet);
+    }
+
+    private static boolean helperxx(String s, int i, Set<String> wordSet) {
+        if (i == s.length()) return true;
+
+        for (int j = i + 1; j <= s.length(); j++) {
+            String str = s.substring(i, j);
+            if (wordSet.contains(str))
+                if (helperxx(s, j, wordSet))
+                    return true;
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) {
-        log(wordBreak("leetcode", List.of("leet", "code")));       // expects true
-        log(wordBreak("cars", List.of("ca", "car", "ars", "s")));  // expects true
-        log(wordBreak("applepenapple", List.of("apple", "pen")));  // expects true
-        log(wordBreak("catsandog", List.of("cats", "dog", "sand", "and", "cat")));  // expects false
+        log(wordBreakxx("leetcode", List.of("leet", "code")));       // expects true
+        log(wordBreakxx("cars", List.of("ca", "car", "ars", "s")));  // expects true
+        log(wordBreakxx("applepenapple", List.of("apple", "pen")));  // expects true
+        log(wordBreakxx("catsandog", List.of("cats", "dog", "sand", "and", "cat")));  // expects false
     }
 }
