@@ -30,6 +30,7 @@ public class L139_WordBreak {
      *   ∴ 可知：
      *     - 子问题定义：f(i) 表示“从索引 i 开始到末尾的字符串 s[i..n) 能否由 wordDict 中的单词拼接而成”；
      *     - 递推表达式：f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
+     * - 说明：该解法其实就是回溯搜索。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
    public static boolean wordBreak_1(String s, List<String> wordDict) {
@@ -128,7 +129,7 @@ public class L139_WordBreak {
     }
 
     /*
-     * 解法4：DFS
+     * 解法4：DFS + Recursion + 前缀匹配
      * - 实现：不同于解法1，本解法对 s 的分段方式不再是逐个字符分段检测，而是采用头部单词匹配。理由是，若 s 能由 wordDict 中的
      *   词组成，则一定是由其中某一个词开头的（反之若 s 不是由 wordDict 中的词开头的，则可直接返回 false），找到这个词之后再对
      *   其后半段继续这样的匹配检测，从而形成递归结构。
