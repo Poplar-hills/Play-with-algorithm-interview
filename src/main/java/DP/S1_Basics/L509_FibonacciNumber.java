@@ -91,17 +91,39 @@ public class L509_FibonacciNumber {
         return cache.get(n);
     }
 
+    /*
+     * 解法5：DP（解法3的空间优化版）
+     * - 思路：与解法3一致。
+     * - 实现：从递推表达式和代码都可以看出，f(n) 的解只取决于 f(n-1)、f(n-2) 的解，即当前状态只和之前的两个状态有关 ∴ 并不
+     *   需要维护解法3中的整个 dp 数组，而是只需记录之前的两个状态即可。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static int fib5(int n) {
+        if (n <= 1) return n;
+        int prev = 0, curr = 1;  // prev、curr 分别初始化为 f(0)、f(1) 的解
+
+        for (int i = 2; i <= n; i++) {
+            int sum = curr + prev;
+            prev = curr;
+            curr = sum;
+        }
+
+        return curr;
+    }
+
     public static void main(String[] args) {
         log(fib(40));
         log(fib1(40));
         log(fib2(40));
         log(fib3(40));
         log(fib4(40));
+        log(fib5(40));
 
         timeIt(40, L509_FibonacciNumber::fib);
         timeIt(40, L509_FibonacciNumber::fib1);
         timeIt(40, L509_FibonacciNumber::fib2);
-        timeIt(40, L509_FibonacciNumber::fib3);  // 可见使用数组的 DP 解法最快
+        timeIt(40, L509_FibonacciNumber::fib3);  // 第二快
         timeIt(40, L509_FibonacciNumber::fib4);
+        timeIt(40, L509_FibonacciNumber::fib5);  // 最快
     }
 }
