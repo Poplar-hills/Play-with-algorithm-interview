@@ -27,7 +27,7 @@ import java.util.Arrays;
 
 public class L343_IntegerBreak {
     /*
-     * 超时解：DFS
+     * 超时解：DFS + Recursion
      * - 思路：与 L279_PerfectSquares 解法2极其类似，这里进行更具体的分析：
      *   1. ∵ 需要将 n 分割成几份是未知的 ∴ 很难使用循环解决（不知道需要几重循环），需要使用递归解决（只要设置好终止条件，
      *      其余的就交给递归即可）。
@@ -64,7 +64,7 @@ public class L343_IntegerBreak {
     }
 
     /*
-     * 解法1：Recursion + Memoization (DFS with cache)
+     * 解法1：DFS + Recursion + Memoization
      * - 思路：在超时解的基础上加入 Memoization 优化。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
@@ -89,7 +89,9 @@ public class L343_IntegerBreak {
     }
 
     /*
-     * 解法2：DP - 思路：与 L279_PerfectSquares 解法3类似。 - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * 解法2：DP
+     * - 思路：与 L279_PerfectSquares 解法3类似。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int integerBreak2(int n) {
         assert n >= 2;
