@@ -149,6 +149,7 @@ public class L139_WordBreak {
         for (String word : wordDict)
             if (s.startsWith(word, i) && dfs(s, i + word.length(), wordDict, cache))  // 若前、后两段都存在于 wordDict 中
                 return cache[i] = true;
+                
         return cache[i] = false;
     }
 

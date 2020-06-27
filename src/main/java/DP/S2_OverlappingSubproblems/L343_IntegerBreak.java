@@ -28,22 +28,27 @@ import java.util.Arrays;
 public class L343_IntegerBreak {
     /*
      * 超时解：DFS + Recursion
-     * - 思路：与 L279_PerfectSquares 解法2极其类似，这里进行更具体的分析：
-     *   1. ∵ 需要将 n 分割成几份是未知的 ∴ 很难使用循环解决（不知道需要几重循环），需要使用递归解决（只要设置好终止条件，
-     *      其余的就交给递归即可）。
-     *   2. ∴ 可以对 n 进行递归分割（动画讲解 SEE: https://coding.imooc.com/lesson/82.html#mid=2953，2'38''）：
-     *                            分割4
-     *                    1+?/    2+?|    3+?\
-     *                  分割3      分割2      分割1
-     *              1+?/  2+?\   1+?|
-     *             分割2    分割1   分割1
-     *            1+?|
-     *             分割1
-     *      要分割4有三种方案：1+?、2+?、3+?（其中?代表分割出来的一个或多个整数），最后只需从其中选出各整数乘积最大的即可；而对于
-     *      方案 1+? 来说，?中的整数之和为3，而3又有两种分割方案：1+?、2+?；这样下去直到每部分都分割成最小整数1时递归结束。
-     *   3. 基于以上推断，可知：
+     * - 思路：与 L279_PerfectSquares 解法2极其类似，具体分析如下：
+     *     1. 要使用 DFS + 递归求解就意味着子问题定义要与原问题一致：f(i) 表示“由正整数 i 分割得到的多个正整数的最大乘积”；
+     *     2. DFS + 递归的关键在于找到前后子问题之间的关系，从而写出递推表达式。
+     *   ∵ 需要将 n 分割成几份是未知的 ∴ 很难使用循环解决（不知道需要几重循环），需要使用递归解决（只要设置好终止条件，其余的就
+     *   交给递归即可）∴ 要对 n 进行递归分割（动画讲解 SEE: https://coding.imooc.com/lesson/82.html#mid=2953，2'38''）：
+     *                    f(4)
+     *             1/      2|      3\       - 4有3种分割方式
+     *           f(3)     f(2)     f(1)     - 1不能再分割，即分割到 f(1) 时就分割到底了
+     *          1/  2\     1|
+     *        f(2)  f(1)  f(1)
+     *         1|
+     *        f(1)
+     *   根据上图可知：
+     *     1. 前后子问题之间的关系：f(4) = max(1*f(3), 2*f(2), 3*f(1))；
+     *     2. 其中 ∵ f(1) 不能再分割 ∴ 可作为递归退出条件，让 f(1)=1；
+     *     3. 在分割时有个陷阱：当用2分割 f(4) 时，除了 2*f(2) 这个解之外，还要考虑 2*2 这个解，即 f(4) 的完整表达式应该是：
+     *        f(4) = max(1*f(3), 1*3, 2*f(2), 2*2, 3*f(1), 3*1)；
+     *     4. 可见该树中存在重叠子问题 ∴ 可以使用 memoization 或 dp 的方式进行优化。
+     *   总结一下：
      *      - 定义子问题：f(i) 表示“由正整数 i 分割得到的多个正整数的最大乘积”；
-     *      - 状态转移方程：f(i) = max(j*(i-j), j*f(i-j))，其中 j ∈ [1, i)。
+     *      - 状态转移方程：f(i) = max(j*f(i-j), j*(i-j))，其中 j ∈ [1, i)。
      *
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
@@ -60,7 +65,7 @@ public class L343_IntegerBreak {
     private static int maxOfN(int ...nums) {
         return Arrays.stream(nums)
             .reduce(Math::max)
-            .getAsInt();  // 若 reduce 有初值参数则返回 int 类型；若没有则返回 OptionalInt 类型，因此需要解包
+            .getAsInt();  // reduce() 若有初值参数则返回 int 类型；若没有则返回 OptionalInt 类型，因此需要解包
     }
 
     /*
@@ -105,9 +110,19 @@ public class L343_IntegerBreak {
         return cache[n];                 // 最后返回最大问题的解
     }
 
+
+
+
+
+
+
+    public static int integerBreakxx(int n) {
+
+    }
+
     public static void main(String[] args) {
-        log(integerBreak(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
-        log(integerBreak(2));   // expects 1.  (2 = 1 + 1, 1 × 1 = 1)
-        log(integerBreak(10));  // expects 36. (10 = 3 + 3 + 4, 3 × 3 × 4 = 36)
+        log(integerBreakxx(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
+        log(integerBreakxx(2));   // expects 1.  (2 = 1 + 1, 1 × 1 = 1)
+        log(integerBreakxx(10));  // expects 36. (10 = 3 + 3 + 4, 3 × 3 × 4 = 36)
     }
 }
