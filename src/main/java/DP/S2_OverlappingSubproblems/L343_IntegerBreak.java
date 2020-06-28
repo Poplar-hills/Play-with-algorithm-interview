@@ -28,7 +28,7 @@ import java.util.Arrays;
 public class L343_IntegerBreak {
     /*
      * 超时解：DFS + Recursion
-     * - 思路：与 L279_PerfectSquares 解法2极其类似，具体分析如下：
+     * - 💎思路：与 L279_PerfectSquares 解法2极其类似，具体分析如下：
      *     1. 要使用 DFS + 递归求解就意味着子问题定义要与原问题一致：f(i) 表示“由正整数 i 分割得到的多个正整数的最大乘积”；
      *     2. DFS + 递归的关键在于找到前后子问题之间的关系，从而写出递推表达式。
      *   ∵ 需要将 n 分割成几份是未知的 ∴ 很难使用循环解决（不知道需要几重循环），需要使用递归解决（只要设置好终止条件，其余的就
@@ -48,7 +48,7 @@ public class L343_IntegerBreak {
      *     4. 可见该树中存在重叠子问题 f(2) ∴ 可以使用 memoization 或 dp 的方式进行优化。
      *   总结一下：
      *     - 定义子问题：f(n) 表示“由正整数 n 分割得到的多个正整数的最大乘积”；
-     *     - 状态转移方程：f(n) = max(i*f(n-i), i*(n-i))，其中 i ∈ [1,n)。
+     *     - 递推表达式：f(n) = max(i*f(n-i), i*(n-i))，其中 i ∈ [1,n)。
      *
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
@@ -56,18 +56,34 @@ public class L343_IntegerBreak {
         if (n == 1) return 1;
 
         int maxProduct = 0;
-        for (int i = 1; i < n; i++) {    // 遍历所有分割方案
-            maxProduct = maxOf(maxProduct, i * integerBreak(n-i), i * (n-i));  // 求所有方案中的最大乘积
-        }
+        for (int i = 1; i < n; i++)    // 遍历所有分割方案
+            maxProduct = maxOfN(maxProduct, i * integerBreak(n-i), i * (n-i));  // 求所有方案中的最大乘积
 
         return maxProduct;
     }
 
-    private static int maxOf(int ...nums) {
+    private static int maxOfN(int ...nums) {
         return Arrays.stream(nums)
             .reduce(Math::max)
             .getAsInt();  // reduce() 若有初值参数则返回 int 类型；若没有则返回 OptionalInt 类型，因此需要解包
     }
+
+
+
+
+    public static int integerBreakx(int n) {
+        assert n > 1;
+        int[] dp = new int[n + 1];
+        dp[1] = 1;
+
+        for (int m = 2; m <= n; m++) {
+            for (int i = 1; i < m; i++)
+                dp[m] = Math.max(i*dp[m - i], i*(m-i));
+        }
+
+        return dp[n];
+    }
+
 
     /*
      * 解法1：DFS + Recursion + Memoization
@@ -75,7 +91,7 @@ public class L343_IntegerBreak {
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int integerBreak1(int n) {
-        assert n >= 2;                      // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >= 2
+        assert n > 1;                       // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >1
         return helper1(n, new int[n + 1]);  // ∵ 正整数分解不会出现0 ∴ 最大乘积一定大于0 ∴ cache 初值为0即可
     }
 
@@ -83,11 +99,11 @@ public class L343_IntegerBreak {
         if (n == 1) return 1;
         if (cache[n] != 0) return cache[n];
 
-        int res = 0;
-        for (int j = 1; j < n; j++)
-            res = maxOf3(res, j*(n-j), j*helper1(n-j, cache));
+        int maxProduct = 0;
+        for (int i = 1; i < n; i++)
+            maxProduct = maxOf3(maxProduct, i*helper1(n-i, cache), i*(n-i));
 
-        return cache[n] = res;
+        return cache[n] = maxProduct;
     }
 
     private static int maxOf3(int a, int b, int c) {
@@ -101,15 +117,15 @@ public class L343_IntegerBreak {
      * */
     public static int integerBreak2(int n) {
         assert n >= 2;
-        int[] cache = new int[n + 1];    // cache[0] 空着不用
-        cache[1] = 1;                    // 最基本问题
+        int[] dp = new int[n + 1];       // cache[0] 空着不用
+        dp[1] = 1;                       // 最基本问题
 
-        for (int i = 2; i <= n; i++)
-            for (int j = 1; j < i; j++)  // 将 i 分割成 j 和 i-j
-                cache[i] = maxOf3(cache[i], j*(i-j), j*cache[i-j]);  // 此时 cache[i-j] 已经被计算过了
+        for (int m = 2; m <= n; m++)
+            for (int i = 1; i < m; i++)  // 用不同的 i 去分割 m
+                dp[m] = maxOf3(dp[m], i*dp[m-i], i*(m-i));
 
-        return cache[n];                 // 最后返回最大问题的解
-    }
+        return dp[n];                    // 最后返回最大问题的解
+     }
 
     public static void main(String[] args) {
         log(integerBreak(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
