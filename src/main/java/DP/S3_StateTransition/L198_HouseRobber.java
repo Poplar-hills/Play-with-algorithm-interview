@@ -10,8 +10,9 @@ import java.util.Arrays;
  * - You are a professional robber planning to rob houses along a street where each house has a certain amount
  *   of money stashed. However if two adjacent houses were broken into on the same night, the security system
  *   will go off and the police will be alerted.
- * - Given a list of non-negative integers representing the amount of money of each house, determine the maximum
- *   amount of money you can rob tonight without alerting the police.
+ *
+ * - Given a list of non-negative integers representing the amount of money of each house, determine the
+ *   maximum amount of money you can rob tonight without alerting the police.
  *
  * - ⭐ 总结：函数定义、状态、状态转移：
  *   1. 解法1采用了递归，其 tryToRob 方法用于“计算从某个范围内的房子中能偷得的最大收获”，这就是递归中的“函数定义”。明确合理的函数
@@ -34,15 +35,22 @@ public class L198_HouseRobber {
 
     /*
      * 解法1：Recursion + Memoization (DFS with cache)
-     * - 思路：类似 L343_IntegerBreak 解法1那样对问题进行分解：设 max[0..n) 表示“从第 0~n-1 所房子中所能得到的最大收获”，则：
-     *                                     max[0..n)
-     *                       偷0号/         偷1号|     ...    偷n-1号\
-     *                  max[2..n)          max[3..n)             max[]
-     *             偷2号/   偷3号|    \    偷3号/    \
-     *           max[4..n)    ...   ...  max[5..n)  ...
+     * - 思路：类似 L343_IntegerBreak 解法1的思路，对问题进行分解：f(i) 表示“从 [i,n) 区间内的房子中所能得到的最大收获”，
+     *   则对于 nums=[3, 4, 1, 2] 来说：
+     *                                            f(0)
+     *                       抢[0]/       抢[1]/     抢[2]\      抢[3]\
+     *                        f(2)          f(3)       nums[2]    nums[3]
+     *                  抢[2]/   \抢[3]   抢[3]|
+     *                 nums[2]  nums[3]    nums[3]
      *
-     *   这样的分解的含义：max[0..n) = max((nums[0] + max[2..n)), (nums[1] + max[3..n)), ..., max[n-1])
-     *   这样的分解可以很自然的使用递归实现，而又因为分解过程中存在重叠子问题，可以使用 memoization 进行优化。
+     *   公式表达：f(0) = max(nums[0]+f(2), nums[1]+f(3), nums[2], nums[3])
+     *                = max(nums[0]+nums[2], nums[1]+nums[3]), nums[2], nums[3])
+     *                = max(3+2, 4+2, 2, 2)
+     *                = 6
+     *   总结一下：
+     *     - 子问题定义：f(i) 表示“从 [i,n) 区间内的房子中所能得到的最大收获”；
+     *     - 递推表达式：f(i) = max(num[j] + f(j + 2))，其中 i ∈ [0,n)，j ∈ [i,n-2)。
+     *   这样的分解可以很自然的使用递归实现，又 ∵ 分解过程中存在重叠子问题 ∴ 可使用 memoization 进行优化。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int rob1(int[] nums) {
@@ -52,14 +60,14 @@ public class L198_HouseRobber {
         return tryToRob(nums, 0, cache);
     }
 
-    private static int tryToRob(int[] nums, int i, int[] cache) {     // 计算 [start..n) 内的最大收获
+    private static int tryToRob(int[] nums, int i, int[] cache) {  // 计算 [i..n) 内的最大收获
         if (i >= nums.length) return 0;
         if (cache[i] != -1) return cache[i];
 
         int res = 0;
-        for (int j = i; j < nums.length; j++)
-            res = Math.max(res, nums[j] + tryToRob(nums, j + 2, cache));  // 例：res = nums[1] + [2..n)内的最大收获
-                                                                          // 这里不用管 i+2 越界问题 ∵ 上面 start >= nums.length 已经覆盖过了
+        for (int j = i; j < nums.length; j++)  // 范围固定的情况下，看哪种方案收获最大，例：在 [2..5] 内，是抢 2+4 收获大，还是 3+5 大，还是 2+5 大
+            res = Math.max(res, nums[j] + tryToRob(nums, j + 2, cache));  // 这里不用管 j+2 越界问题 ∵ 上面 i >= nums.length 已经处理了
+
         return cache[i] = res;
     }
 
@@ -72,8 +80,7 @@ public class L198_HouseRobber {
         if (nums == null || nums.length == 0) return 0;
 
         int n = nums.length;
-        int[] dp = new int[n];
-        Arrays.fill(dp, -1);
+        int[] dp = new int[n + 1];
         dp[n - 1] = nums[n - 1];  // 先解答最后一个问题，即偷 n-1 号的收获
 
         for (int i = n - 2; i >= 0; i--)  // 计算 [i..n) 内的最大收获
@@ -131,10 +138,42 @@ public class L198_HouseRobber {
         return Math.max(prevNo, prevYes);
     }
 
+
+
+
+
+
+    /*
+     *
+     *      [3,4,1,2]
+     *        f(0)      f(i) 表示“抢劫从 [i,n) 区间内的房子的最大收益”
+     *     3/     4\
+     *   f(2)     f(3)
+     *   1/         2\
+     *  0             0
+     *
+     *   f(i) = max(f(i+2) + nums[i], f(i+1))
+     * */
+
+    public static int robx(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int n = nums.length;
+        int[] dp = new int[n + 1];
+        dp[n] = 0;
+        dp[n - 1] = nums[n - 1];
+
+        for (int i = n - 2; i >= 0; i--) {
+            dp[i] = Math.max(dp[i + 2] + nums[i], dp[i + 1]);
+        }
+
+        return dp[0];
+    }
+
     public static void main(String[] args) {
-        log(rob4(new int[]{3, 4, 1, 2}));     // expects 6.  [3, (4), 1, (2)]
-        log(rob4(new int[]{4, 3, 1, 2}));     // expects 6.  [(4), 3, 1, (2)]
-        log(rob4(new int[]{1, 2, 3, 1}));     // expects 4.  [(1), 2, (3), 1].
-        log(rob4(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
+        log(rob_1(new int[]{3, 4, 1, 2}));     // expects 6.  [3, (4), 1, (2)]
+        log(rob_1(new int[]{4, 3, 1, 2}));     // expects 6.  [(4), 3, 1, (2)]
+        log(rob_1(new int[]{1, 2, 3, 1}));     // expects 4.  [(1), 2, (3), 1].
+        log(rob_1(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
     }
 }
