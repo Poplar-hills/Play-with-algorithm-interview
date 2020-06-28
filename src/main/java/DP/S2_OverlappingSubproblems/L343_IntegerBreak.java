@@ -68,23 +68,6 @@ public class L343_IntegerBreak {
             .getAsInt();  // reduce() 若有初值参数则返回 int 类型；若没有则返回 OptionalInt 类型，因此需要解包
     }
 
-
-
-
-    public static int integerBreakx(int n) {
-        assert n > 1;
-        int[] dp = new int[n + 1];
-        dp[1] = 1;
-
-        for (int m = 2; m <= n; m++) {
-            for (int i = 1; i < m; i++)
-                dp[m] = Math.max(i*dp[m - i], i*(m-i));
-        }
-
-        return dp[n];
-    }
-
-
     /*
      * 解法1：DFS + Recursion + Memoization
      * - 思路：在超时解的基础上加入 Memoization 优化。
