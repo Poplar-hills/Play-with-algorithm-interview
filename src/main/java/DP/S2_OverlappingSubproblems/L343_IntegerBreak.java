@@ -34,21 +34,21 @@ public class L343_IntegerBreak {
      *   ∵ 需要将 n 分割成几份是未知的 ∴ 很难使用循环解决（不知道需要几重循环），需要使用递归解决（只要设置好终止条件，其余的就
      *   交给递归即可）∴ 要对 n 进行递归分割（动画讲解 SEE: https://coding.imooc.com/lesson/82.html#mid=2953，2'38''）：
      *                    f(4)
-     *             1/      2|      3\       - 4有3种分割方式
+     *             1/      2|      3\       - 4有三种分割方式
      *           f(3)     f(2)     f(1)     - 1不能再分割，即分割到 f(1) 时就分割到底了
-     *          1/  2\     1|
+     *          1/  2\     1|               - 3有两种分割方式；2只有一种
      *        f(2)  f(1)  f(1)
      *         1|
      *        f(1)
      *   根据上图可知：
      *     1. 前后子问题之间的关系：f(4) = max(1*f(3), 2*f(2), 3*f(1))；
-     *     2. 其中 ∵ f(1) 不能再分割 ∴ 可作为递归退出条件，让 f(1)=1；
+     *     2. 其中 ∵ f(1) 不能再分割 ∴ 作为递归退出条件，让 f(1)=1；
      *     3. 在分割时有个陷阱：当用2分割 f(4) 时，除了 2*f(2) 这个解之外，还要考虑 2*2 这个解，即 f(4) 的完整表达式应该是：
      *        f(4) = max(1*f(3), 1*3, 2*f(2), 2*2, 3*f(1), 3*1)；
-     *     4. 可见该树中存在重叠子问题 ∴ 可以使用 memoization 或 dp 的方式进行优化。
+     *     4. 可见该树中存在重叠子问题 f(2) ∴ 可以使用 memoization 或 dp 的方式进行优化。
      *   总结一下：
-     *      - 定义子问题：f(i) 表示“由正整数 i 分割得到的多个正整数的最大乘积”；
-     *      - 状态转移方程：f(i) = max(j*f(i-j), j*(i-j))，其中 j ∈ [1, i)。
+     *     - 定义子问题：f(n) 表示“由正整数 n 分割得到的多个正整数的最大乘积”；
+     *     - 状态转移方程：f(n) = max(i*f(n-i), i*(n-i))，其中 i ∈ [1,n)。
      *
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
@@ -56,13 +56,14 @@ public class L343_IntegerBreak {
         if (n == 1) return 1;
 
         int maxProduct = 0;
-        for (int j = 1; j < n; j++)  // 遍历所有分割方案：1*(n-1), 2*(n-2), ..., (n-1)*1
-            maxProduct = maxOfN(maxProduct, j*(n-j), j*integerBreak(n-j));  // 求所有方案中的最大乘积
+        for (int i = 1; i < n; i++) {    // 遍历所有分割方案
+            maxProduct = maxOf(maxProduct, i * integerBreak(n-i), i * (n-i));  // 求所有方案中的最大乘积
+        }
 
         return maxProduct;
     }
 
-    private static int maxOfN(int ...nums) {
+    private static int maxOf(int ...nums) {
         return Arrays.stream(nums)
             .reduce(Math::max)
             .getAsInt();  // reduce() 若有初值参数则返回 int 类型；若没有则返回 OptionalInt 类型，因此需要解包
@@ -110,19 +111,9 @@ public class L343_IntegerBreak {
         return cache[n];                 // 最后返回最大问题的解
     }
 
-
-
-
-
-
-
-    public static int integerBreakxx(int n) {
-
-    }
-
     public static void main(String[] args) {
-        log(integerBreakxx(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
-        log(integerBreakxx(2));   // expects 1.  (2 = 1 + 1, 1 × 1 = 1)
-        log(integerBreakxx(10));  // expects 36. (10 = 3 + 3 + 4, 3 × 3 × 4 = 36)
+        log(integerBreak(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
+        log(integerBreak(2));   // expects 1.  (2 = 1 + 1, 1 × 1 = 1)
+        log(integerBreak(10));  // expects 36. (10 = 3 + 3 + 4, 3 × 3 × 4 = 36)
     }
 }
