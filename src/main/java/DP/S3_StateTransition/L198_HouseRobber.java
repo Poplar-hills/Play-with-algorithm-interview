@@ -179,7 +179,7 @@ public class L198_HouseRobber {
     }
 
     /*
-     * 解法7：DP（多状态递推思路）
+     * 解法7：DP（多状态递推）
      * - 思路：解法3的思路是将 f(i) 定义为“从前 i 所房子中所能得到的最大收获” —— 这里同时包含了抢以及不抢 i 这2种情况。
      *   另一种思路是通过梳理不同行为对状态的影响写出不同状态的递推表达式（将抢/不抢这2种行为对应的状态分开进行递推）：
      *   - y(i) 表示“若抢第 i 所房子，则从前 i 所房子中能获得的最大收获”：y(i) = nums[i] + n(i-1)；
@@ -188,17 +188,17 @@ public class L198_HouseRobber {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int rob7(int[] nums) {
-        int prevNo = 0;                    // 抢前一间的最大收获
-        int prevYes = 0;                   // 不抢前一间的最大收获
+        int skipPrev = 0;                    // 抢前一间的最大收获
+        int robPrev = 0;                     // 不抢前一间的最大收获
 
-        for (int n : nums) {               // 从第一间房子开始对计算每间房子在抢/不抢时的最大收获
-            int currYes = n + prevNo;                // y(i) = nums[i] + n(i-1)
-            int currNo = Math.max(prevYes, prevNo);  // n(i) = max(y(i-1), n(i-1))
-            prevNo = currNo;               // 前阵变后阵
-            prevYes = currYes;
+        for (int n : nums) {                 // 从第一间房子开始对计算每间房子在抢/不抢时的最大收获
+            int robCurr = n + skipPrev;                  // y(i) = nums[i] + n(i-1)
+            int skipCurr = Math.max(robPrev, skipPrev);  // n(i) = max(y(i-1), n(i-1))
+            skipPrev = skipCurr;             // 前阵变后阵
+            robPrev = robCurr;
         }
 
-        return Math.max(prevNo, prevYes);  // f(i) = max(y(i), n(i))
+        return Math.max(skipPrev, robPrev);  // f(i) = max(y(i), n(i))
     }
 
     public static void main(String[] args) {
