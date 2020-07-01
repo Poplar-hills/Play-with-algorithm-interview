@@ -28,15 +28,15 @@ public class L337_HouseRobberIII {
      * */
 
     /*
-     * 解法1：
-     * - 思路：该问题在二叉树上同样具有最优子结构性质 ∴ 可以以 bottom-up 的方式分析：先思考一个节点，对于每一个节点都可以偷或
-     *   不偷，因此有2种收获。而对其父节点来说：1.若偷父节点，则不能偷子节点；2.若不偷父节点，则最大收获为2个子节点各自的最大收获
-     *   之和。以这样的方式一直推导到根节点记得到最终解。
-     *           1                             12/15
-     *          / \    推导每个节点的2种收获      /    \      取根节点的最大收获
-     *         1   5    ---------------->    1/10   5/1    -------------->   15
-     *        / \   \                       /   \     \
-     *       5   5   1                    5/0   5/0   1/0
+     * 解法1：DFS + Recursion
+     * - 思路：该问题在二叉树上同样具有最优子结构性质 ∴ 可以用 bottom-up 的方式分析：先考虑叶子节点 —— 根据抢或不抢有2种收益。
+     *   再考虑其父节点 —— 若抢父节点，则不能抢子节点；若不抢父节点，则父节点上的最大收益为2个子树各自的最大收获之和。以这样的
+     *   方式一直推导到根节点就得到了最终解：
+     *           1                              12/15
+     *          / \    推导每个节点的2种收益       ↗    ↖      取根节点的最大收获
+     *         1   5    ---------------->    1/10    5/1    -------------->   15
+     *        / \   \                       ↗   ↖       ↖
+     *       5   5   1                    5/0   5/0     1/0
      *   对左下角的5来说：若偷则收获为5，否则为0；对其父节点1来说：若偷则最大收获 0+0+1=1，否则为 5+5=10；对根节点1来说：若偷则
      *   最大收获为 1+10+1=12，若不偷则最大收获为 max(1,10) + max(5,1) = 15，因此最终解为15。由此可见：
      *     f(i) = max(y(i), n(i))，其中：
@@ -87,24 +87,27 @@ public class L337_HouseRobberIII {
     }
 
 	/*
-     * 解法3：DP
+     * 解法3：双路 DFS + Recursion
      * - 思路：与解法2一致，但更精巧。
+     *  f(i) = max(y(i), n(i))
+     *    - y(i) = i.val + n(i.left) + n(i.right)
+     *    - n(i) = max(f(i.left), f(i.right))
      * - 实现：根据解法2中的 boolean 参数值将 helper2 方法分成了两个方法 robInclude 和 robExclude。
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
      * */
     public static int rob3(TreeNode root) {
         if (root == null) return 0;
-        return Math.max(robInclude(root), robExclude(root));
+        return Math.max(robHouse(root), skipHouse(root));
     }
 
-    public static int robInclude(TreeNode node) {
+    public static int robHouse(TreeNode node) {
         if (node == null) return 0;
-        return node.val + robExclude(node.left) + robExclude(node.right);
+        return node.val + skipHouse(node.left) + skipHouse(node.right);
     }
 
-    public static int robExclude(TreeNode node) {
+    public static int skipHouse(TreeNode node) {
         if (node == null) return 0;
-        return rob2(node.left) + rob2(node.right);
+        return rob3(node.left) + rob3(node.right);
     }
 
     /*
@@ -139,7 +142,7 @@ public class L337_HouseRobberIII {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 2, 2, null, 3, null, 1});
-        log(rob4(t1));
+        log(rob3(t1));
         /*
          *      3
          *     / \
@@ -151,7 +154,7 @@ public class L337_HouseRobberIII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 5, 5, 1, 1, null, 1});
-        log(rob4(t2));
+        log(rob3(t2));
         /*
          *        1
          *       / \
@@ -163,7 +166,7 @@ public class L337_HouseRobberIII {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, null, 1, null, 5});
-        log(rob4(t4));
+        log(rob3(t4));
         /*
          *          5
          *         /
@@ -173,11 +176,11 @@ public class L337_HouseRobberIII {
          *     /
          *    5
          *
-         *   expects 10. (5 + 5)
+         *  expects 10. (5 + 5)
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
-        log(rob4(t3));
+        log(rob3(t3));
         /*
          *        1
          *       / \
@@ -185,7 +188,19 @@ public class L337_HouseRobberIII {
          *     / \   \
          *    5   5   1
          *
-         *   expects 15. (5 + 5 + 5)
+         *  expects 15. (5 + 5 + 5)
          * */
+    }
+
+
+
+    /*
+     *  f(i) = max(y(i), n(i))
+     *    - y(i) = i.val + n(i.left) + n(i.right)
+     *    - n(i) = max(f(i.left), f(i.right))
+     *           = max(y(i.left, n(i.left)), n(i.right, n(i.right)))
+     * */
+    public static int robx(TreeNode root) {
+        return 0;
     }
 }

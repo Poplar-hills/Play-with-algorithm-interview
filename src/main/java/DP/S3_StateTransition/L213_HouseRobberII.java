@@ -44,8 +44,8 @@ public class L213_HouseRobberII {
     }
 
     /*
-     * 解法2：DP（多状态递推）
-     * - 思路：与 L198_HouseRobber 解法7一致，状态转移方程：
+     * 解法2：DP（双路递推）
+     * - 思路：与 L198_HouseRobber 解法7一致，递推表达式为：
      *   - y(i) = nums[i] + n(i - 1)；
      *   - n(i) = max(y(i - 1), n(i - 1))。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
