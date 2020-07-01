@@ -37,11 +37,8 @@ public class L337_HouseRobberIII {
      *         1   5    ---------------->    1/10    5/1    -------------->   15
      *        / \   \                       ↗   ↖       ↖
      *       5   5   1                    5/0   5/0     1/0
-     *   对左下角的5来说：若偷则收获为5，否则为0；对其父节点1来说：若偷则最大收获 0+0+1=1，否则为 5+5=10；对根节点1来说：若偷则
-     *   最大收获为 1+10+1=12，若不偷则最大收获为 max(1,10) + max(5,1) = 15，因此最终解为15。由此可见：
-     *     f(i) = max(y(i), n(i))，其中：
-     *       - y(i) = i.val + n(i.l) + n(i.r)；
-     *       - n(i) = max(y(i.l), n(i.l)) + max(y(i.r), n(i.r))。
+     *   对左下角的5来说：收益为5或0；对其父节点1来说：若抢则最大收益为 0+0+1=1，否则为 5+5=10；对根节点1来说：若抢则最大
+     *   收益为 1+10+1=12，若不抢则最大收益为 max(1,10) + max(5,1) = 15。
      * - 时间复杂度 O(n)，空间复杂度 O(logn)，n 为节点个数。
      * */
     public static int rob(TreeNode root) {
@@ -68,9 +65,13 @@ public class L337_HouseRobberIII {
      *   - 定义子问题：f(i) 表示“以节点 i 为根的二叉树上能抢到的最大收益”；
      *   - 递推表达式：f(i) = max(y(i), n(i))，其中：
      *     - y(i) = i.val + n(i.left) + n(i.right)
-     *     - n(i) = max(f(i.left), f(i.right))
+     *     - n(i) = max(y(i.l), n(i.l)) + max(y(i.r), n(i.r))
+     *            = f(i.left) + f(i.right)
      * - 实现：通过给 f 添加 boolean 参数的方式来实现递推表达式中 y、n 两个函数。
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
+     * - 👉注意：该解法虽然简洁，但是时间复杂度比解法1高很多（虽然都是 O(n)）：
+     *   - 解法1是自下而上，递推每个节点上的最大收益 ∴ 没有重复计算的节点；
+     *   - 该解法则是自上而下使用不同方案尝试去抢整棵树，每种方案都会对整个树或部分子树进行遍历 ∴ 存在重复计算的节点。
      * */
     public static int rob2(TreeNode root) {
         return Math.max(helper2(root, true), helper2(root, false));
@@ -86,8 +87,8 @@ public class L337_HouseRobberIII {
 	/*
      * 解法3：双路 DFS + Recursion
      * - 思路：与解法2一致。
-     * - 实现：根据解法2中的 boolean 参数的值将 helper2 方法分成了两个方法 robHouse 和 skipHouse
-     * - 时间复杂度 O(n)，空间复杂度 O(logn)。
+     * - 实现：根据解法2中的 boolean 参数的值将 helper2 方法分成了两个方法 robHouse 和 skipHouse。
+     * - 时间复杂度 O(n)，空间复杂度 O(logn)。与解法2一致，都比解法1慢很多。
      * */
     public static int rob3(TreeNode root) {
         if (root == null) return 0;
@@ -105,38 +106,43 @@ public class L337_HouseRobberIII {
     }
 
     /*
-     * 解法4：DP + Memoization
-     * - 思路：不同于解法2，本解法更 straight-forward，但也更冗长。加入的 Memoization 是以 TreeNode 为 key，因此需要在
-     *   TreeNode 类上 @override hashCode 和 equals 方法。
+     * 解法4：DFS + Recursion + Memoization
+     * - 思路：与解法2、3一致。
+     * - 💎实现：我们希望在解法2的基础上加入 Memoization，但要注意 ∵ 要 cache 的内容是 f(i) 的解，而解法2的 hepler2 方法
+     *   会根据 shouldRob 参数返回 y(i) 或 n(i) 的解，而非 f(i) ∴ 不能直接在解法2上加入 cache，而需要先将 helper 方法
+     *   改造为返回 f(i) 的解：
+     *     f(i) = max(
+     *         i.val + f(i.left.left) + f(i.left.right) + f(i.right.left) + f(i.right.left),  // 抢 i 节点的最大收益
+     *         f(i.left) + f(i.right))                                                        // 不抢 i 节点的最大收益
+     * - 👉经验：∵ 二叉树节点个数未知 ∴ 使用 Map 实现 memoization。
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
      * */
     public static int rob4(TreeNode root) {
         if (root == null) return 0;
-        return helper4(root, new HashMap<>());  // ∵ 二叉树节点个数未知 ∴ 使用 map 实现 memoization
+        return helper4(root, new HashMap<>());
     }
 
-    private static int helper4(TreeNode node, Map<TreeNode, Integer> memo) {
+    private static int helper4(TreeNode node, Map<TreeNode, Integer> cache) {
         if (node == null) return 0;
-        if (node.left == null && node.right == null) return node.val;
-        if (memo.containsKey(node)) return memo.get(node);
+        if (cache.containsKey(node)) return cache.get(node);
 
-        int sum1 = node.val;    // 偷该节点时的最大收获
+        int robMoney = node.val;    // 抢该节点时的最大收益
         if (node.left != null)
-            sum1 += helper4(node.left.left, memo) + helper4(node.left.right, memo);
+            robMoney += helper4(node.left.left, cache) + helper4(node.left.right, cache);  // ∵ 跳过子节点，计算孙子节点上的最大收益
         if (node.right != null)
-            sum1 += helper4(node.right.left, memo) + helper4(node.right.right, memo);
+            robMoney += helper4(node.right.left, cache) + helper4(node.right.right, cache);
 
-        int sum2 = helper4(node.left, memo) + helper4(node.right, memo);  // 不偷该节点时的最大收获
+        int skipMoney = helper4(node.left, cache) + helper4(node.right, cache);  // 不偷该节点时的最大收益
 
-        int sum = Math.max(sum1, sum2);  // 得到子问题解
-        memo.put(node, sum);
+        int sum = Math.max(robMoney, skipMoney);  // 得到子问题解
+        cache.put(node, sum);
 
         return sum;
-	}
+    }
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 2, 2, null, 3, null, 1});
-        log(rob2(t1));
+        log(rob4(t1));
         /*
          *      3
          *     / \
@@ -148,7 +154,7 @@ public class L337_HouseRobberIII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 5, 5, 1, 1, null, 1});
-        log(rob2(t2));
+        log(rob4(t2));
         /*
          *        1
          *       / \
@@ -160,7 +166,7 @@ public class L337_HouseRobberIII {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, null, 1, null, 5});
-        log(rob2(t4));
+        log(rob4(t4));
         /*
          *          5
          *         /
@@ -174,7 +180,7 @@ public class L337_HouseRobberIII {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
-        log(rob2(t3));
+        log(rob4(t3));
         /*
          *        1
          *       / \
