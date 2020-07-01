@@ -10,7 +10,7 @@ import Utils.Helpers.TreeNode;
 /*
  * House Robber III
  *
- * - 基本与 L198_HouseRobber 中的条件一样，只是本题中的街道为一棵二叉树，问在该街道中，在不触发警报的情况下，最多能盗取多少财产。
+ * - 与 L198_HouseRobber 中的条件一样，只是街道为一棵二叉树，问在该街道中，在不触发警报的情况下，最多能盗取多少财产。
  * - 本质：如何在二叉树上选择不相邻的节点，使节点值之和最大。
  * */
 
@@ -138,46 +138,54 @@ public class L337_HouseRobberIII {
 	}
 
     public static void main(String[] args) {
-        /*
-        *      3
-        *     / \
-        *    2   2
-        *     \   \
-        *      3   1
-        * */
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 2, 2, null, 3, null, 1});
-        log(rob4(t1));  // expects 7. (3 + 3 + 1)
-
+        log(rob4(t1));
         /*
-        *        1
-        *       / \
-        *      5   5
-        *     / \   \
-        *    1   1   1
-        * */
+         *      3
+         *     / \
+         *    2   2
+         *     \   \
+         *      3   1
+         *
+         *  expects 7. (3 + 3 + 1)
+         * */
+
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 5, 5, 1, 1, null, 1});
-        log(rob4(t2));  // expects 10. (5 + 5)
-
+        log(rob4(t2));
         /*
-        *          5
-        *         /
-        *        1
-        *       /
-        *      1
-        *     /
-        *    5
-        * */
+         *        1
+         *       / \
+         *      5   5
+         *     / \   \
+         *    1   1   1
+         *
+         *  expects 10. (5 + 5)
+         * */
+
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, null, 1, null, 5});
-        log(rob4(t4));  // expects 10. (5 + 5)
-
+        log(rob4(t4));
         /*
-        *        1
-        *       / \
-        *      1   5
-        *     / \   \
-        *    5   5   1
-        * */
+         *          5
+         *         /
+         *        1
+         *       /
+         *      1
+         *     /
+         *    5
+         *
+         *   expects 10. (5 + 5)
+         * */
+
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
-        log(rob4(t3));  // expects 15. (5 + 5 + 5)
+        log(rob4(t3));
+        /*
+         *        1
+         *       / \
+         *      1   5
+         *     / \   \
+         *    5   5   1
+         *
+         *   expects 15. (5 + 5 + 5)
+         * */
     }
 }
