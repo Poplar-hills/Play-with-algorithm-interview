@@ -65,34 +65,28 @@ public class L337_HouseRobberIII {
     /*
      * 解法2：DP
      * - 思路：∵ 每个节点都有偷/不偷2种选择 ∴ 有：
-     *   - 定义子问题：f(i) 表示“以节点 i 为根的二叉树上能获得的最大收获”；
-     *   - 状态转移方程：f(i) = max(nums[i] + f(!i.l) + f(!i.r), f(i.l) + f(i.r))，其中 ! 表示不偷某个节点上的房子；
-     *     解释：nums[i] + f(!i.l) + f(!i.r) 是偷节点 i 时的最大收获；f(i.l) + f(i.r) 是不偷节点 i 时的最大收获；
-     * - 实现：要实现状态转移方程中的“!”，可以通过给给 f 添加 boolean 参数实现。
+     *   - 定义子问题：f(i) 表示“以节点 i 为根的二叉树上能抢到的最大收益”；
+     *   - 递推表达式：f(i) = max(y(i), n(i))，其中：
+     *     - y(i) = i.val + n(i.left) + n(i.right)
+     *     - n(i) = max(f(i.left), f(i.right))
+     * - 实现：通过给 f 添加 boolean 参数的方式来实现递推表达式中 y、n 两个函数。
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
      * */
     public static int rob2(TreeNode root) {
-        if (root == null) return 0;
-        return helper2(root, true);  // 相当于 Math.max(helper2(root, true), helper2(root, false));
+        return Math.max(helper2(root, true), helper2(root, false));
     }
 
-    private static int helper2(TreeNode node, boolean included) {  // 求以节点 node 为根的二叉树上能获得的最大收获
-        if (node == null) return 0;
-        int res = helper2(node.left, true) + helper2(node.right, true);  // 不偷该节点时的最大收获
-        if (included) {                                                  // 考虑该节点并不意味着一定要偷该节点
-            int steal = node.val + helper2(node.left, false) + helper2(node.right, false);  // 偷该节点时的最大收获
-            res = Math.max(res, steal);  // 最大收获 = max(偷该节点时的最大收获, 不偷该节点时的最大收获)
-        }
-        return res;
+    private static int helper2(TreeNode root, boolean shouldRob) {
+        if (root == null) return 0;
+        return shouldRob
+            ? root.val + helper2(root.left, false) + helper2(root.right, false)
+            : rob2(root.left) + rob2(root.right);
     }
 
 	/*
      * 解法3：双路 DFS + Recursion
-     * - 思路：与解法2一致，但更精巧。
-     *  f(i) = max(y(i), n(i))
-     *    - y(i) = i.val + n(i.left) + n(i.right)
-     *    - n(i) = max(f(i.left), f(i.right))
-     * - 实现：根据解法2中的 boolean 参数值将 helper2 方法分成了两个方法 robInclude 和 robExclude。
+     * - 思路：与解法2一致。
+     * - 实现：根据解法2中的 boolean 参数的值将 helper2 方法分成了两个方法 robHouse 和 skipHouse
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
      * */
     public static int rob3(TreeNode root) {
@@ -142,7 +136,7 @@ public class L337_HouseRobberIII {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 2, 2, null, 3, null, 1});
-        log(rob3(t1));
+        log(rob2(t1));
         /*
          *      3
          *     / \
@@ -154,7 +148,7 @@ public class L337_HouseRobberIII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 5, 5, 1, 1, null, 1});
-        log(rob3(t2));
+        log(rob2(t2));
         /*
          *        1
          *       / \
@@ -166,7 +160,7 @@ public class L337_HouseRobberIII {
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{5, 1, null, 1, null, 5});
-        log(rob3(t4));
+        log(rob2(t4));
         /*
          *          5
          *         /
@@ -180,7 +174,7 @@ public class L337_HouseRobberIII {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 5, 5, 5, null, 1});
-        log(rob3(t3));
+        log(rob2(t3));
         /*
          *        1
          *       / \
@@ -190,17 +184,5 @@ public class L337_HouseRobberIII {
          *
          *  expects 15. (5 + 5 + 5)
          * */
-    }
-
-
-
-    /*
-     *  f(i) = max(y(i), n(i))
-     *    - y(i) = i.val + n(i.left) + n(i.right)
-     *    - n(i) = max(f(i.left), f(i.right))
-     *           = max(y(i.left, n(i.left)), n(i.right, n(i.right)))
-     * */
-    public static int robx(TreeNode root) {
-        return 0;
     }
 }
