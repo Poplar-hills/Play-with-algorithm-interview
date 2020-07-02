@@ -16,24 +16,57 @@ import static Utils.Helpers.*;
 public class L121_BestTimeToBuyAndSellStock {
     /*
      * 解法1：
-     * - 思路：
+     * - 思路：遍历比较。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static int maxProfit(int[] prices) {
         if (prices == null || prices.length < 2) return 0;
-
         int maxProfit = 0;
 
-        for (int b = 0; b < prices.length; b++)
-            for (int s = b + 1; s < prices.length; s++)
+        for (int b = 0; b < prices.length; b++)          // 固定 buy 的时机
+            for (int s = b + 1; s < prices.length; s++)  // 尝试不同的 sell 时机
                 if (prices[s] > prices[b])
                     maxProfit = Math.max(maxProfit, prices[s] - prices[b]);
 
         return maxProfit;
     }
 
+    /*
+     * 解法2：DP
+     * - 思路：首先定义好子问题：f(i) 表示“在 [i,n) 范围内交易所能得到的最大利润”。之后从最基本问题（最后一个问题）开始，
+     *   思考如何能从后一个子问题的解递推出前一个子问题的解。例如对 [7,1,5,3,6,4] 来说：
+     *     - f(5) = 0；
+     *     - f(4) = 0；
+     *     - f(3) = max(6-3, 4-3) = 3；
+     *   此时思考如何从 f(3) 递推出 f(2)，即如何通过 [3..n) 内的最大利润得到 [2..n) 内的最大利润 —— 这两个子问题的区别就是
+     *   是否考虑 prices[2] ∴ 这是个典型的“选/不选”问题：
+     *     - 若在 prices[2] 时买入，则最大利润就是 [3..n) 中的最大值 - prices[2]；
+     *     - 若不在 prices[2] 时买入，则最大利润就相当于 [3..n) 内的最大利润，即 f(3) 的解。
+     *   ∴ 可得：f(2) = max(maxPrice[3..) - prices[2], f(3))。
+     *   ∴ 递推表达式：f(i) = max(maxPrice[i..) - prices[i], f(i+1))。
+     * - 实现：∵ 递推表达式中要求任意 [i..) 内的最大值 ∴ 同样可以通过递推求得 —— 从最后往前依次递推出 [i..) 内的最大值。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static int maxProfit2(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
+        int n = prices.length;
+
+        int[] maxPrices = new int[n];      // maxPrices[i] 表示 prices[i..) 内的最大值
+        maxPrices[n - 1] = prices[n - 1];  // 最基本问题
+
+        for (int i = n - 2; i >= 0; i--)   // 从后往前递推
+            maxPrices[i] = prices[i] > maxPrices[i + 1] ? prices[i] : maxPrices[i + 1];
+
+        int[] dp = new int[n + 1];         // dp[i] 表示在 [i..) 范围内交易所能得到的最大利润
+        dp[n] = 0;
+        for (int i = n - 1; i >= 0; i--)
+            dp[i] = Math.max(maxPrices[i] - prices[i], dp[i + 1]);
+
+        return dp[0];
+    }
+
     public static void main(String[] args) {
-        log(maxProfit(new int[]{7, 1, 5, 3, 6, 4}));  // expects 5. [-, buy, -, -, sell, -]
-        log(maxProfit(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
+        log(maxProfit2(new int[]{7, 1, 5, 3, 6, 4}));  // expects 5. [-, buy, -, -, sell, -]
+        log(maxProfit2(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
     }
 }
