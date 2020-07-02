@@ -27,11 +27,10 @@ public class L213_HouseRobberII {
         return Math.max(rob(nums, 0, n - 2), rob(nums, 1, n - 1));
     }
 
-    private static int rob(int[] nums, int l, int r) {
+    private static int rob(int[] nums, int l, int r) {  // 从 [l,r] 范围内的房子里能抢到的最大收益
         int n = r - l + 1;
         if (n == 0) return 0;
         if (n == 1) return nums[l];
-        if (n == 2) return Math.max(nums[l], nums[l + 1]);
 
         int[] dp = new int[n];
         dp[0] = nums[l];

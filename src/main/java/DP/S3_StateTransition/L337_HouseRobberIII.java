@@ -24,7 +24,7 @@ public class L337_HouseRobberIII {
      *        2   2    ------------->  [3, 4, 4]  （从而将问题转化为了类似 L198 的一维数组问题）
      *         \   \
      *          3   1
-     *   然而这种方式对于 test case 3 来说不成立，某行中的节点并非要么全偷要么全不偷，而是可能偷左不偷右，或者相反亦可。
+     *   然而这种方式对于 test case 3 来说不成立，某行中的节点并非要么全抢要么全不抢，而是可能抢左不抢右，或者相反亦可。
      * */
 
     /*
@@ -46,23 +46,23 @@ public class L337_HouseRobberIII {
         return Math.max(res[0], res[1]);
     }
 
-    private static int[] tryToRob(TreeNode node) {
+    private static int[] tryToRob(TreeNode node) {  // 返回在以 node 为根的树上，当抢/不抢根节点时所能得到的最大收益
         int[] res = new int[2];
         if (node == null) return res;
 
         int[] left = tryToRob(node.left);
         int[] right = tryToRob(node.right);
 
-        res[0] = node.val + left[1] + right[1];  // res[0] 记录若偷该节点时的最大收获
-        res[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);  // res[1] 记录若不偷该节点时的最大收获
+        res[0] = node.val + left[1] + right[1];  // res[0] 记录若抢该节点时的最大收获
+        res[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);  // res[1] 记录若不抢该节点时的最大收获
 
         return res;
     }
 
     /*
      * 解法2：DP
-     * - 思路：∵ 每个节点都有偷/不偷2种选择 ∴ 有：
-     *   - 定义子问题：f(i) 表示“以节点 i 为根的二叉树上能抢到的最大收益”；
+     * - 思路：∵ 每个节点都有抢/不抢2种选择 ∴ 有：
+     *   - 定义子问题：f(i) 表示“从以节点 i 为根的二叉树上能抢到的最大收益”；
      *   - 递推表达式：f(i) = max(y(i), n(i))，其中：
      *     - y(i) = i.val + n(i.left) + n(i.right)
      *     - n(i) = max(y(i.l), n(i.l)) + max(y(i.r), n(i.r))
@@ -122,7 +122,7 @@ public class L337_HouseRobberIII {
         return helper4(root, new HashMap<>());
     }
 
-    private static int helper4(TreeNode node, Map<TreeNode, Integer> cache) {
+    private static int helper4(TreeNode node, Map<TreeNode, Integer> cache) {  // 返回从以 node 为根的树上所能抢到的最大收益
         if (node == null) return 0;
         if (cache.containsKey(node)) return cache.get(node);
 
@@ -132,7 +132,7 @@ public class L337_HouseRobberIII {
         if (node.right != null)
             robMoney += helper4(node.right.left, cache) + helper4(node.right.right, cache);
 
-        int skipMoney = helper4(node.left, cache) + helper4(node.right, cache);  // 不偷该节点时的最大收益
+        int skipMoney = helper4(node.left, cache) + helper4(node.right, cache);  // 不抢该节点时的最大收益
 
         int sum = Math.max(robMoney, skipMoney);  // 得到子问题解
         cache.put(node, sum);
