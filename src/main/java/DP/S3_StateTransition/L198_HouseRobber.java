@@ -13,15 +13,6 @@ import java.util.Arrays;
  *
  * - Given a list of non-negative integers representing the amount of money of each house, determine the
  *   maximum amount of money you can rob tonight without alerting the police.
- *
- * - ⭐ 总结：函数定义、状态、状态转移：
- *   1. 解法1采用了递归，其 tryToRob 方法用于“计算从某个范围内的房子中能抢得的最大收获”，这就是递归中的“函数定义”。明确合理的函数
- *      定义对于写出正确的递归逻辑至关重要。
- *   2. 解法2、3采用了 DP，而“函数定义”在 DP 中的对应概念是“状态”，例如“[0..n)内的最大收获”就是该问题的顶层状态，由于在该状态
- *      下采取了不同的行动（抢0号、抢1号……），该问题的状态发生了转移，产生了其他3个可能的状态。而描述清楚这些状态之间的转移方式（即
- *      明确的“状态转移方程”）对于写出正确的 DP 逻辑至关重要。例如，该问题的状态转移方程：
- *      f(0..n-1) = max(v(0)+f(1..n-1), v(1)+f(3..n-1), v(3)+f(5..n-1), ..., v(n-1))，其中 f 为“某区间内的最大收获”，
- *      v 为某房子的收获。
  * */
 
 public class L198_HouseRobber {
@@ -35,13 +26,13 @@ public class L198_HouseRobber {
 
     /*
      * 解法1：Recursion + Memoization (DFS with cache)
-     * - 思路：类似 L343_IntegerBreak 解法1的思路，对问题进行分解：f(i) 表示“从 [i,n) 区间内的房子中所能得到的最大收获”，
-     *   则对于 nums=[3, 4, 1, 2] 来说：
-     *                                            f(0)
-     *                       抢[0]/       抢[1]/     抢[2]\      抢[3]\
-     *                        f(2)          f(3)       nums[2]    nums[3]
-     *                  抢[2]/   \抢[3]   抢[3]|
-     *                 nums[2]  nums[3]    nums[3]
+     * - 思路：类似 L343_IntegerBreak 解法1的思路，对问题进行自顶向下的分解：f(0) 表示“从 [0,n) 区间内的房子中所能抢到的
+     *   最大收益”。对于 nums=[3, 4, 1, 2] 来说：
+     *                                        f(0)
+     *                          抢3/     抢4/     抢1\     抢2\
+     *                        3+f(2)    4+f(3)      1        2
+     *                     抢1/   \抢2   抢2|
+     *                       1     2       2
      *
      *   公式表达：f(0) = max(nums[0]+f(2), nums[1]+f(3), nums[2], nums[3])
      *                = max(nums[0]+nums[2], nums[1]+nums[3]), nums[2], nums[3])
