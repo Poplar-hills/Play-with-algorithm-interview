@@ -15,7 +15,7 @@ import static Utils.Helpers.*;
 
 public class L121_BestTimeToBuyAndSellStock {
     /*
-     * 解法1：
+     * 解法1：Brute Force
      * - 思路：遍历比较。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
@@ -65,8 +65,28 @@ public class L121_BestTimeToBuyAndSellStock {
         return dp[0];
     }
 
+    /*
+     * 解法3：滑动指针 + 寻找极值
+     * - 思路：∵ 只做一次交易 ∴ 该问题其实就是在整个区间内寻找极值之差，且极小值在前，极大值在后 ∴ 思路是在让指针 i 在数组上
+     *   滑动的过程中先寻找 [0,i] 内的 minPrice，若 price[i] > 之前的 minPrice，则计算其 profit = price[i] - minPrice，
+     *   并与之前的 maxProfit 比较。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static int maxProfit3(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
+        int minPrice = prices[0];
+        int maxProfit = 0;
+
+        for (int price : prices) {
+            minPrice = Math.min(minPrice, price);
+            maxProfit = Math.max(maxProfit, price - minPrice);
+        }
+
+        return maxProfit;
+    }
+
     public static void main(String[] args) {
-        log(maxProfit2(new int[]{7, 1, 5, 3, 6, 4}));  // expects 5. [-, buy, -, -, sell, -]
-        log(maxProfit2(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
+        log(maxProfit3(new int[]{7, 1, 5, 3, 6, 4}));  // expects 5. [-, buy, -, -, sell, -]
+        log(maxProfit3(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
     }
 }
