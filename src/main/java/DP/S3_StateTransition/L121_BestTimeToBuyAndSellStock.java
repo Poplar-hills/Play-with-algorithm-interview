@@ -34,10 +34,11 @@ public class L121_BestTimeToBuyAndSellStock {
     /*
      * 解法2：DP
      * - 思路：首先定义好子问题：f(i) 表示“在 [i,n) 范围内交易所能得到的最大利润”。之后从最基本问题（最后一个问题）开始，
-     *   思考如何能从后一个子问题的解递推出前一个子问题的解。例如对 [7,1,5,3,6,4] 来说：
-     *     - f(5) = 0；
-     *     - f(4) = 0；
-     *     - f(3) = max(6-3, 4-3) = 3；
+     *   思考如何能从后一个子问题的解递推出前一个子问题的解。例如：
+     *        [7,  1,  5,  3,  6,  4]
+     *                           f(5) = 0；
+     *                        f(4) = 0；
+     *                    f(3) = max(6-3, 4-3) = 3；
      *   此时思考如何从 f(3) 递推出 f(2)，即如何通过 [3..n) 内的最大利润得到 [2..n) 内的最大利润 —— 这两个子问题的区别就是
      *   是否考虑 prices[2] ∴ 这是个典型的“选/不选”问题：
      *     - 若在 prices[2] 时买入，则最大利润就是 [3..n) 中的最大值 - prices[2]；
@@ -58,18 +59,20 @@ public class L121_BestTimeToBuyAndSellStock {
             maxPrices[i] = prices[i] > maxPrices[i + 1] ? prices[i] : maxPrices[i + 1];
 
         int[] dp = new int[n + 1];         // dp[i] 表示在 [i..) 范围内交易所能得到的最大利润
-        dp[n] = 0;
-        for (int i = n - 1; i >= 0; i--)
+        dp[n] = 0;                         // ∵ 要计算 f(n-1) 需要先知道 f(n) ∴ 设其为0
+
+        for (int i = n - 1; i >= 0; i--)   // 从后往前递推
             dp[i] = Math.max(maxPrices[i] - prices[i], dp[i + 1]);
 
         return dp[0];
     }
 
     /*
-     * 解法3：滑动指针 + 寻找极值
-     * - 思路：∵ 只做一次交易 ∴ 该问题其实就是在整个区间内寻找极值之差，且极小值在前，极大值在后 ∴ 思路是在让指针 i 在数组上
-     *   滑动的过程中先寻找 [0,i] 内的 minPrice，若 price[i] > 之前的 minPrice，则计算其 profit = price[i] - minPrice，
-     *   并与之前的 maxProfit 比较。
+     * 解法3：Peak Valley
+     * - 思路：∵ 只做一次交易 ∴ 该问题可以转换为在整个区间内寻找极值之差，且极小值在前，极大值在后 ∴ 思路是在让指针 i 在数组上
+     *   滑动的过程中：
+     *   1. 不断寻找 [0,i] 内的 minPrice；
+     *   2. 借助当前的 minPrice 计算 [0,i] 内的 maxProfit。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit3(int[] prices) {
