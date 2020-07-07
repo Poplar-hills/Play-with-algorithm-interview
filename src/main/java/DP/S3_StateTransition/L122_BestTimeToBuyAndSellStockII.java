@@ -17,11 +17,31 @@ import static Utils.Helpers.*;
 public class L122_BestTimeToBuyAndSellStockII {
     /*
      * 解法1：Peak Valley
-     * - 思路：
-     * - 时间复杂度 O(n^n)，空间复杂度 O(1)。
+     * - 思路：将数据可视化出来，例如 prices=[7,1,5,3,6,4]：
+     *      |
+     *    7 | *                      p(j)
+     *    6 |  ·         p(i)         *
+     *    5 |   ·         *         ·    ·
+     *    4 |    ·      ·    ·    ·         *
+     *    3 |     ·    ·        * v(j)
+     *    2 |      ·  ·
+     *    1 |       * v(i)
+     *    0 + - - - - - - - - - - - - - - - - -
+     *        0     1     2     3     4     5
+     *   ∵ 可以交易任意多次 ∴ 最大利润 = ∑(每次上涨的 peak - 涨之前的 valley)，即 maxProfit = sum(peak(i) - valley(i))。
+     *   ∴ 思路就是找出 prices 中所有相邻且处于上涨的元素之差，差值之和即是解。这里的关键是“前后相邻” —— ∵ 可以交易任意多次
+     *   ∴ sum(peak(i) - valley(i)) 一定 > peak(j) - valley(i)。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit(int[] prices) {
-		return 0;
+        if (prices == null || prices.length == 0) return 0;
+        int maxProfit = 0;
+
+        for (int i = 1; i < prices.length; i++)
+            if (prices[i] > prices[i - 1])
+                maxProfit += prices[i] - prices[i - 1];
+
+        return maxProfit;
 	}
 
     /*
