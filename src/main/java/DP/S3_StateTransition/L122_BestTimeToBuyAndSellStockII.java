@@ -79,14 +79,14 @@ public class L122_BestTimeToBuyAndSellStockII {
      *   例如：prices = [ 7,  1,  5,  3,  6,  4]
      *           buy = [-7, -1, -1,  1,  1,  3]
      *        profit = [ 0,  0,  4,  4,  7,  7]
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxProfit3(int[] prices) {
         int n = prices.length;
         int[] buy = new int[n];
         int[] sell = new int[n];
 
-        buy[0] = -prices[0]; 
+        buy[0] = -prices[0];
         sell[0] = 0;
 
         for (int i = 1; i < n; i++) {
@@ -98,20 +98,19 @@ public class L122_BestTimeToBuyAndSellStockII {
     }
 
     /*
-     * 解法4：DP
-     * - 思路：The action we can do on ith day is either buy (if last action is sell), or sell (if last action
-     *   is buy), or do nothing.
-     *   - buy(i) = max(sell(i) - pri, buy(i-1))；
-     *   - sell(i) = max()
+     * 解法4：DP（解法3的简化版）
+     * - 思路：与解法3一致。
+     * - 实现：∵ 解法3中，buy[i] 只与 buy[i-1]、sell[i-1] 相关（sell[i] 同理）∴ 可以只维护两个状态变量即可，无需维护整个
+     *   buy、sell 数组，从而降低空间复杂度。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit4(int[] prices) {
         if (prices.length == 0) return 0;
-        int lastBuy = -prices[0];
-        int lastSell = 0;
+        int lastBuy = -prices[0];  // 上次尝试买入得到的最大利润
+        int lastSell = 0;          // 上次尝试卖出得到的最大利润
 
         for (int price : prices) {
-            int currBuy = Math.max(lastBuy, lastSell - price);
+            int currBuy = Math.max(lastBuy, lastSell - price);  // 递推表达式不变
             int currSold = Math.max(lastSell, lastBuy + price);
             lastBuy = currBuy;
             lastSell = currSold;
