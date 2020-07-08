@@ -32,11 +32,11 @@ public class L122_BestTimeToBuyAndSellStockII {
      *        0     1     2     3     4     5
      *   ∵ 可以交易任意多次 ∴ 最大利润 = 所有单调上涨的幅度之和，即 maxProfit = sum(peak(i) - valley(i))。
      *   这里的关键是“前后相邻” —— ∵ 可以交易任意多次 ∴ sum(peak(i) - valley(i)) 一定 > peak(j) - valley(i)。
-     * - 实现：借助 Kadane's Algorithm（即最大子序列问题）—— 先求出所有前后两元素的差值，再过滤掉其中的负差值，剩下的
-     *   正差值之和即是原问题的解。
+     * - 实现：借助 Kadane's Algorithm（即最大子序列之和算法）—— 先求出所有前后两元素的差值，再过滤掉其中的负差值，
+     *   剩下的正差值之和即是原问题的解。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
-    public static int maxProfit(int[] prices) {
+    public static int maxsell(int[] prices) {
         if (prices == null || prices.length == 0) return 0;
         int[] diffs = new int[prices.length];
 
@@ -68,28 +68,33 @@ public class L122_BestTimeToBuyAndSellStockII {
 	/*
      * 解法3：DP
      * - 思路：The action we can do on ith day is either buy (if last action is sell), or sell (if last action
-     *   is buy), or do nothing.
-     *   - buy(i) = max(sell(i) - pri, buy(i-1))；
-     *   - sell(i) = max()
+     *   is buy), or do nothing ∴ 第i天上不同的 action 会得到不同的最大利润：
+     *     - 第i天尝试买入的最大利润 = max(第i天不买入的最大利润, 第i天买入的最大利润)；
+     *     - 第i天尝试卖出的最大利润 = max(第i天不卖出的最大利润, 第i天卖出的最大利润)；
+     *   ∵ 若要在第i天买入，则需之前先卖出过 ∴ 第i天买入的最大利润 = 第i-1天卖出的最大利润 - 第i天的股价；
+     *   同样，若要在第i天卖出，则需之前先买入过 ∴ 第i天卖出的最大利润 = 第i-1天买入的最大利润 + 第i天的股价；
+     *     - buy(i) = max(buy(i-1), sell[i-1] - prices[i])
+     *     - sell(i) = max(sell(i-1), buy[i-1] + prices[i])
+     *   ∵ 要得到最大利润，则最后一天一定是卖出才行 ∴ sell[n-1] 即是原问题的解。
+     *   例如：prices = [ 7,  1,  5,  3,  6,  4]
+     *           buy = [-7, -1, -1,  1,  1,  3]
+     *        profit = [ 0,  0,  4,  4,  7,  7]
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit3(int[] prices) {
         int n = prices.length;
-        int[][] dp = new int[2][n];
-        dp[0][0] = 0 - prices[0];  // cost of buying stock
-        dp[0][1] = 0;              // 0 profit as cant sell stock
+        int[] buy = new int[n];
+        int[] sell = new int[n];
+
+        buy[0] = -prices[0]; 
+        sell[0] = 0;
 
         for (int i = 1; i < n; i++) {
-            // most profitable buy is max of cost of buying yesterdays stock, and profit from selling stock
-            // yesterday - buying today
-            dp[0][i] = Math.max(dp[0][i-1], dp[1][i-1] - prices[i]);
-
-            // max of selling (which is essentially tracking our profit) is max profit we had yesterday and
-            // max of having stock yesteday and selling today
-            dp[1][i] = Math.max(dp[1][i-1], dp[0][i-1] + prices[i]);
+            buy[i] = Math.max(buy[i - 1], sell[i - 1] - prices[i]);
+            sell[i] = Math.max(sell[i - 1], buy[i - 1] + prices[i]);
         }
 
-        return dp[1][n - 1];
+        return sell[n - 1];
     }
 
     /*
@@ -116,8 +121,8 @@ public class L122_BestTimeToBuyAndSellStockII {
     }
 
     public static void main(String[] args) {
-        log(maxProfit(new int[]{7, 1, 5, 3, 6, 4}));  // expects 7. [-, buy, sell, buy, sell, -]
-        log(maxProfit(new int[]{1, 2, 3, 4, 5}));     // expects 4. [buy, -, -, -, sell]
-        log(maxProfit(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
+        log(maxProfit3(new int[]{7, 1, 5, 3, 6, 4}));  // expects 7. [-, buy, sell, buy, sell, -]
+        log(maxProfit3(new int[]{1, 2, 3, 4, 5}));     // expects 4. [buy, -, -, -, sell]
+        log(maxProfit3(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
     }
 }
