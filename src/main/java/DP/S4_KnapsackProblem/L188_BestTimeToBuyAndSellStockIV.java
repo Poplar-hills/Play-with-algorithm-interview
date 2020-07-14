@@ -1,4 +1,4 @@
-package DP.S3_StateTransition;
+package DP.S4_KnapsackProblem;
 
 import static Utils.Helpers.*;
 

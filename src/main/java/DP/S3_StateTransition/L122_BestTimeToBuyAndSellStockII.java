@@ -30,8 +30,9 @@ public class L122_BestTimeToBuyAndSellStockII {
      *    1 |       * valley(i)
      *    0 + - - - - - - - - - - - - - - - - -
      *        0     1     2     3     4     5
-     *   ∵ 可以交易任意多次 ∴ 最大利润 = 所有单调上涨的幅度之和，即 maxProfit = sum(peak(i) - valley(i))。
-     *   这里的关键是“前后相邻” —— ∵ 可以交易任意多次 ∴ sum(peak(i) - valley(i)) 一定 > peak(j) - valley(i)。
+     *   ∵ 可以交易任意多次 ∴ 最大利润 = 所有上升区间的幅度之和，即 maxProfit = sum(peak(i) - valley(i))。注意这里的
+     *   关键点在于，每个“上升区间”必须是前后相邻的两个价位之间的，而不能是中间隔着一个 valley —— ∵ 可以交易任意多次
+     *   ∴ sum(peak(i) - valley(i)) 一定 > peak(j) - valley(i)。
      * - 实现：借助 Kadane's Algorithm（即最大子序列之和算法）—— 先求出所有前后两元素的差值，再过滤掉其中的负差值，
      *   剩下的正差值之和即是原问题的解。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
@@ -75,10 +76,11 @@ public class L122_BestTimeToBuyAndSellStockII {
      *   同样，若要在第i天卖出，则需之前先买入过 ∴ 第i天卖出的最大利润 = 第i-1天尝试买入的最大利润 + 第i天的股价；
      *     - buy(i) = max(buy(i-1), sell[i-1] - prices[i])
      *     - sell(i) = max(sell(i-1), buy[i-1] + prices[i])
-     *   ∵ 要得到最大利润，则最后一天一定是卖出才行 ∴ sell[n-1] 即是原问题的解。
+     *     - 注意：buy(i)、sell(i) 的定义是在第 i 天“尝试”买入/卖出的最大利润 —— 并不一定真在第 i 天买/卖。
+     *   ∵ 要得到最大利润，则最后一定要卖出（不能持有股票）才行 ∴ sell[n-1] 即是原问题的解。
      *   例如：prices = [ 7,  1,  5,  3,  6,  4]
      *           buy = [-7, -1, -1,  1,  1,  3]
-     *        profit = [ 0,  0,  4,  4,  7,  7]
+     *          sell = [ 0,  0,  4,  4,  7,  7]
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxProfit3(int[] prices) {
