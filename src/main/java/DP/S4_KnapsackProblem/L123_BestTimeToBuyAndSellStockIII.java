@@ -53,7 +53,7 @@ public class L123_BestTimeToBuyAndSellStockIII {
         if (prices == null || prices.length == 0) return 0;
 
         int n = prices.length;
-        int[][] dp = new int[3][n];
+        int[][] dp = new int[3][n];  // dp[t][d] 表示“在第 d 天，最多交易 t 次时所能获得的最大的利润”
 
         for (int t = 1; t < dp.length; t++) {           // 固定交易次数（t=0 时最大利润都是0 ∴ 可跳过）
             int maxProfitAfterBuy = Integer.MIN_VALUE;  // 在前 d-1 天内买入且之前最多交易 t-1 次所能获得的最大利润
