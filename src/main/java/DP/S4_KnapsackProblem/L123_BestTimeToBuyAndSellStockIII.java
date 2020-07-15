@@ -50,7 +50,7 @@ public class L123_BestTimeToBuyAndSellStockIII {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxProfit(int[] prices) {
-        if (prices == null || prices.length == 0) return 0;
+        if (prices == null || prices.length < 2) return 0;
 
         int n = prices.length;
         int[][] dp = new int[3][n];  // dp[t][d] 表示“在第 d 天，最多交易 t 次时所能获得的最大的收益”

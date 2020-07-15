@@ -24,7 +24,7 @@ public class L188_BestTimeToBuyAndSellStockIV {
      * - 时间复杂度 O(kn)，空间复杂度 O(kn)。
      * */
     public static int maxProfit_1(int k, int[] prices) {
-        if (prices == null || prices.length == 0) return 0;
+        if (k == 0 || prices == null || prices.length < 2) return 0;
 
         int n = prices.length;
         int[][] dp = new int[k + 1][n];  // ∵ 最多交易 k 次 ∴ dp 数组的范围应为 [0,k]
@@ -48,7 +48,7 @@ public class L188_BestTimeToBuyAndSellStockIV {
      * - 时间复杂度 O(kn)，空间复杂度 O(n)。
      * */
     public static int maxProfit_2(int k, int[] prices) {
-        if (prices == null || prices.length == 0) return 0;
+        if (k == 0 || prices == null || prices.length < 2) return 0;
 
         int n = prices.length;
         int[][] dp = new int[2][n];
@@ -72,7 +72,7 @@ public class L188_BestTimeToBuyAndSellStockIV {
      * - 时间复杂度 O(n or kn)，空间复杂度 O(1 or n)。
      * */
     public static int maxProfit(int k, int[] prices) {
-        if (prices == null || prices.length == 0) return 0;
+        if (k == 0 || prices == null || prices.length < 2) return 0;
         int n = prices.length;
 
         if (k >= n / 2) {               // 可以交易2次以上的情况

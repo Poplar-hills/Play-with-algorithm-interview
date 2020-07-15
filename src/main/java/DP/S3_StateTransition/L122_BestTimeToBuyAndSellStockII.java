@@ -38,7 +38,7 @@ public class L122_BestTimeToBuyAndSellStockII {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxsell(int[] prices) {
-        if (prices == null || prices.length == 0) return 0;
+        if (prices == null || prices.length < 2) return 0;
         int[] diffs = new int[prices.length];
 
         for (int i = 1; i < prices.length; i++)
@@ -56,7 +56,7 @@ public class L122_BestTimeToBuyAndSellStockII {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit2(int[] prices) {
-        if (prices == null || prices.length == 0) return 0;
+        if (prices == null || prices.length < 2) return 0;
         int maxProfit = 0;
 
         for (int i = 1; i < prices.length; i++)
@@ -107,7 +107,7 @@ public class L122_BestTimeToBuyAndSellStockII {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit4(int[] prices) {
-        if (prices.length == 0) return 0;
+        if (prices.length < 2) return 0;
         int lastBuy = -prices[0];  // 上次尝试买入得到的最大收益
         int lastSell = 0;          // 上次尝试卖出得到的最大收益
 
