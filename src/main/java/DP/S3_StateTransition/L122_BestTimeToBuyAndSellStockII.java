@@ -69,7 +69,7 @@ public class L122_BestTimeToBuyAndSellStockII {
 	/*
      * 解法3：DP
      * - 思路：The action we can do on ith day is either buy (if last action is sell), or sell (if last action
-     *   is buy), or do nothing ∴ 第i天上不同的 action 会得到不同的最大收益：
+     *   is buy), or do nothing ∴ 第i天上不同的 action 会获得不同的最大收益：
      *     - 第i天尝试买入的最大收益 = max(第i天不买入的最大收益, 第i天买入的最大收益)；
      *     - 第i天尝试卖出的最大收益 = max(第i天不卖出的最大收益, 第i天卖出的最大收益)；
      *   其中，若要在第i天买入，则需之前先卖出过 ∴ 第i天买入的最大收益 = 第i-1天尝试卖出的最大收益 - 第i天的股价；
@@ -77,7 +77,7 @@ public class L122_BestTimeToBuyAndSellStockII {
      *     - buy(i) = max(buy(i-1), sell[i-1] - prices[i])
      *     - sell(i) = max(sell(i-1), buy[i-1] + prices[i])
      *     - 注意：buy(i)、sell(i) 的定义是在第 i 天“尝试”买入/卖出的最大收益 —— 并不一定真在第 i 天买/卖。
-     *   ∵ 要得到最大收益，则最后一定要卖出（不能持有股票）才行 ∴ sell[n-1] 即是原问题的解。
+     *   ∵ 要获得最大收益，则最后一定要卖出（不能持有股票）才行 ∴ sell[n-1] 即是原问题的解。
      *   例如：prices = [ 7,  1,  5,  3,  6,  4]
      *           buy = [-7, -1, -1,  1,  1,  3]
      *          sell = [ 0,  0,  4,  4,  7,  7]
@@ -102,20 +102,21 @@ public class L122_BestTimeToBuyAndSellStockII {
     /*
      * 解法4：DP（解法3的简化版）
      * - 思路：与解法3一致。
-     * - 实现：∵ 解法3中，buy[i] 只与 buy[i-1]、sell[i-1] 相关（sell[i] 同理）∴ 可以只维护两个状态变量即可，无需维护整个
-     *   buy、sell 数组，从而降低空间复杂度。
+     * - 实现：∵ 解法3中，sell[i]、buy[i] 只与 buy[i-1]、sell[i-1] 相关 ∴ 可以用 lastBuy、lastSell 两个状态代替
+     *   buy[i-1]、sell[i-1]，不再维护整个 buy、sell 数组。通过 lastBuy、lastSell 即可递推出在当前股价下买入或卖出所能
+     *   获得的最大收益 currBuy、currSell。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit4(int[] prices) {
         if (prices.length < 2) return 0;
-        int lastBuy = -prices[0];  // 上次尝试买入得到的最大收益
-        int lastSell = 0;          // 上次尝试卖出得到的最大收益
+        int lastBuy = -prices[0];  // 上次尝试买入获得的最大收益
+        int lastSell = 0;          // 上次尝试卖出获得的最大收益
 
         for (int price : prices) {
-            int currBuy = Math.max(lastBuy, lastSell - price);  // 递推表达式不变
-            int currSold = Math.max(lastSell, lastBuy + price);
+            int currBuy = Math.max(lastBuy, lastSell - price);   // 在当前股价下买入所能获得的最大收益
+            int currSell = Math.max(lastSell, lastBuy + price);  // 在当前股价下卖出所能获得的最大收益
             lastBuy = currBuy;
-            lastSell = currSold;
+            lastSell = currSell;
         }
 
         return lastSell;
