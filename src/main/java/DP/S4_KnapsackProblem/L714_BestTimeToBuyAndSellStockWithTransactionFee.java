@@ -19,7 +19,7 @@ import static Utils.Helpers.*;
 public class L714_BestTimeToBuyAndSellStockWithTransactionFee {
     /*
      * 超时且超空间解（Memory & Time Limit Exceeded）：DP
-     * - 思路：与 L123_BestTimeToBuyAndSellStockIII 解法1一致。
+     * - 思路：与 L123_BestTimeToBuyAndSellStockIII 解法1一致（SEE：其中解释）。
      * - 时间复杂度 O(kn)，空间复杂度 O(kn)。
      * */
     public static int maxProfit_1(int[] prices, int fee) {
@@ -96,9 +96,7 @@ public class L714_BestTimeToBuyAndSellStockWithTransactionFee {
 
     /*
      * 解法2：DP
-     * - 思路：与解法1、L122_BestTimeToBuyAndSellStockII 解法4一致。
-     * - 实现：∵ 解法1中，buy[i] 只与 buy[i-1]、sell[i-1] 相关（sell[i] 同理）∴ 只维护两个状态变量即可，无需维护整个
-     *   buy、sell 数组，从而降低空间复杂度。
+     * - 思路：与解法1、L122_BestTimeToBuyAndSellStockII 解法4一致（SEE：其中解释）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit2(int[] prices, int fee) {
