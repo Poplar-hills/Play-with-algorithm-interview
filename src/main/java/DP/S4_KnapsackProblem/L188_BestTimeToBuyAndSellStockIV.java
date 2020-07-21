@@ -24,7 +24,7 @@ public class L188_BestTimeToBuyAndSellStockIV {
      * - 时间复杂度 O(kn)，空间复杂度 O(kn)。
      * */
     public static int maxProfit_1(int k, int[] prices) {
-        if (k == 0 || prices == null || prices.length < 2) return 0;
+        if (k < 1 || prices == null || prices.length < 2) return 0;
 
         int n = prices.length;
         int[][] dp = new int[k + 1][n];  // ∵ 最多交易 k 次 ∴ dp 数组的范围应为 [0,k]
@@ -48,7 +48,7 @@ public class L188_BestTimeToBuyAndSellStockIV {
      * - 时间复杂度 O(kn)，空间复杂度 O(n)。
      * */
     public static int maxProfit_2(int k, int[] prices) {
-        if (k == 0 || prices == null || prices.length < 2) return 0;
+        if (k < 1 || prices == null || prices.length < 2) return 0;
 
         int n = prices.length;
         int[][] dp = new int[2][n];
@@ -66,24 +66,26 @@ public class L188_BestTimeToBuyAndSellStockIV {
 
     /*
      * 解法1：DP（解法1、2的时间优化版）
-     * - 思路：根据 prices 的元素个数 n 是否够交易 >=2 次来分情况讨论：
-     *   1. 当 k < n/2 时，最多只能交易1次 ∴ 可采用时间复杂度为 O(n) 的 L122_BestTimeToBuyAndSellStockII 解法2；
-     *   2. 当 k >= n/2 时，最多能交易的次数 >=2 ∴ 需要采用 DP 的方式进行选择 ∴ 采用👆的超时解；
+     * - 思路：对于 prices 数组来说，最多能交易的次数为元素个数的一半，即 n/2（例：4天的股价最多能交易2次）∴ 可据此分别讨论：
+     *   1. 当 k >= n/2 时，可以交易的次数 >= 最多能交易的次数，此时可以用最大频率来交易，让最大收益 = 所有上升区间的幅度之和，
+     *      ∴ 原问题转化为 L122_BestTimeToBuyAndSellStockII，此时采用 L122 解法1求解；
+     *   2. 当 k < n/2 时，可以交易的次数 < 最多能交易的次数，此时无法再使用最大频率来交易，需要更有策略的择时进行交易 ∴ 采用
+     *      👆的超时解中的 DP 方式求解。
      * - 时间复杂度 O(n or kn)，空间复杂度 O(1 or n)。
      * */
     public static int maxProfit(int k, int[] prices) {
-        if (k == 0 || prices == null || prices.length < 2) return 0;
+        if (k < 1 || prices == null || prices.length < 2) return 0;
         int n = prices.length;
 
-        if (k >= n / 2) {               // 可以交易2次以上的情况
+        if (k >= n / 2) {               // 可以交易的次数 >= 最多能交易的次数时，最大收益 = 所有上升区间的幅度之和
             int maxProfit = 0;
 
             for (int d = 1; d < n; d++)
                 if (prices[d] > prices[d - 1])
                     maxProfit += prices[d] - prices[d - 1];
 
-                    return maxProfit;
-        } else {                        // 只够交易1次的情况
+            return maxProfit;
+        } else {                        // 可以交易的次数 < 最多能交易的次数时，使用 DP 求解
             int[][] dp = new int[2][n];
 
             for (int t = 1; t < k + 1; t++) {
@@ -98,9 +100,44 @@ public class L188_BestTimeToBuyAndSellStockIV {
         }
     }
 
+    /*
+     * 解法2：DP
+     * - 思路：与解法1一致。
+     * - 实现：使用 DP 求解时采用 L123_BestTimeToBuyAndSellStockIII 解法2的方式。
+     * - 时间复杂度 O(n or kn)，空间复杂度 O(1 or kn)。
+     * */
+    public static int maxProfit2(int k, int[] prices) {
+        if (k == 0 || prices == null || prices.length < 2) return 0;
+        int n = prices.length;
+
+        if (k >= n / 2) {
+            int maxProfit = 0;
+
+            for (int d = 1; d < n; d++)
+                if (prices[d] > prices[d - 1])
+                    maxProfit += prices[d] - prices[d - 1];
+
+            return maxProfit;
+        } else {
+            int[][][] dp = new int[n][k+1][2];
+
+            for (int t = 0; t < k; t++)
+                dp[0][t][1] = -prices[0];
+
+            for (int t = 1; t < k + 1; t++) {
+                for (int d = 1; d < n; d++) {
+                    dp[d][t][0] = Math.max(dp[d-1][t][0], dp[d-1][t][1] + prices[d]);
+                    dp[d][t][1] = Math.max(dp[d-1][t][1], dp[d-1][t-1][0] - prices[d]);
+                }
+            }
+
+            return dp[n-1][k][0];
+        }
+    }
+
     public static void main(String[] args) {
-        log(maxProfit(2, new int[]{5, 9, 2, 7, 8, 7, 1, 7}));  // expects 12. [-, -, buy, -, sell, -, buy, sell]
-        log(maxProfit(2, new int[]{3, 2, 6, 5, 0, 3}));        // expects 7. [-, buy, sell, -, buy, sell]
-        log(maxProfit(2, new int[]{2, 4, 1}));                 // expects 2. [buy, sell, -]
+        log(maxProfit2(2, new int[]{5, 9, 2, 7, 8, 7, 1, 7}));  // expects 12. [-, -, buy, -, sell, -, buy, sell]
+        log(maxProfit2(2, new int[]{3, 2, 6, 5, 0, 3}));        // expects 7. [-, buy, sell, -, buy, sell]
+        log(maxProfit2(2, new int[]{2, 4, 1}));                 // expects 2. [buy, sell, -]
     }
 }
