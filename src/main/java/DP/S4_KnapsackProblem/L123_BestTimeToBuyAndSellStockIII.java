@@ -2,8 +2,10 @@ package DP.S4_KnapsackProblem;
 
 import static Utils.Helpers.*;
 
+import java.util.Arrays;
+
 /*
- * Best Time to Buy and Sell Stock II
+ * Best Time to Buy and Sell Stock III
  *
  * - Say you have an array for which the ith element is the price of a given stock on day i. Design an
  *   algorithm to find the maximum profit.
@@ -47,15 +49,16 @@ public class L123_BestTimeToBuyAndSellStockIII {
      *           = 第 d 天的股价 + 比较并选出 [0,d-1] 区间内每天买入且之前最多交易 t-1 次所获最大收益中的最大的那个
      *           = prices[d] + for d in [0,d-1]，findMax(-prices[d] + maxProfit[t-1][d-1])
      *
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(kn)，空间复杂度 O(kn)。
      * */
     public static int maxProfit(int[] prices) {
         if (prices == null || prices.length < 2) return 0;
 
+        int k = 2;
         int n = prices.length;
-        int[][] dp = new int[3][n];  // dp[t][d] 表示“在第 d 天，最多交易 t 次时所能获得的最大的收益”
+        int[][] dp = new int[k+1][n];  // dp[t][d] 表示“在第 d 天，最多交易 t 次时所能获得的最大的收益”
 
-        for (int t = 1; t < 3; t++) {           // 固定交易次数（t=0 时最大收益都是0 ∴ 可跳过）
+        for (int t = 1; t <= k; t++) {                  // 固定交易次数（t=0 时最大收益都是0 ∴ 可跳过）
             int maxProfitAfterBuy = Integer.MIN_VALUE;  // 在前 d-1 天内买入且之前最多交易 t-1 次所能获得的最大收益
             for (int d = 1; d < n; d++) {
                 maxProfitAfterBuy = Math.max(maxProfitAfterBuy, -prices[d-1] + dp[t-1][d-1]);  // 注意是 -prices[d-1]
@@ -63,12 +66,53 @@ public class L123_BestTimeToBuyAndSellStockIII {
             }
         }
 
-        return dp[2][n - 1];
+        return dp[k][n - 1];
+    }
+
+    /*
+     * 解法2：DP
+     * - 💎思路：若确定使用 DP 来解一道题，则：
+     *   1. 根据原问题确定子问题的定义 —— 原问题是“最后一天的最大收益” ∴ 子问题应该是“第 d 天的最大收益”；
+     *   2. 找到递推表达式（状态转移方程）—— 这就需要从题中识别出所有会对子问题产生影响的变量 —— 第 d 天的最大收益取决于：
+     *        a. 第 d-1 天的最大收益；
+     *        b. 第 d 天的操作（buy/sell/hold）；
+     *        - 由此可列出递推表达式：maxProfit[d] = maxProfit[d-1] + prices[d]。
+     *      然而该表达式并不完善 ∵ 第 d 天能做的操作（即👆表达式中是否能 + prices[d]）取决于“当前是否持有股票”这一变量 ——
+     *      只有没有股票才能买入、有股票才能卖出 ∴ 要给表达式加一维将该变量考虑进来 —— 0表示没有股票，1表示持有股票：
+     *        - maxProfit[d][0] = max(maxProfit[d-1][0], maxProfit[d-1][1] + prices[d])
+     *        - maxProfit[d][1] = max(maxProfit[d-1][1], maxProfit[d-1][0] - prices[d])
+     *      然而该表达式仍然不完善 ∵ 在买入时（即👆表达式中是否能 - prices[d]）没有考虑“当前交易次数是否 < k 次”的限制
+     *      ∴ 要给表达式再加一维将该变量考虑进来：
+     *        - maxProfit[d][t][0] = max(maxProfit[d-1][t][0], maxProfit[d-1][t][1] + prices[d])
+     *        - maxProfit[d][t][1] = max(maxProfit[d-1][t][1], maxProfit[d-1][t-1][0] - prices[d])
+     *      注意：交易次数+1发生在买入时，即买入时已经在进行一次交易了 ∴ 卖出时的股价上表达式中在 + prices[d] 时
+     *
+     * - 👉总结：面试中的 DP 题目最难也就是3维的了。
+     * - 时间复杂度 O(kn)，空间复杂度 O(kn)。
+     * */
+    public static int maxProfit2(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
+
+        int k = 2;
+        int n = prices.length;
+        int[][][] dp = new int[n][k+1][2];  // dp[d][t][h] 表示“在第 d 天，是/否持有股票，最多交易 t 次时所能获得的最大的收益”
+
+        for (int t = 0; t < k; t++)  // 注意处理 base cases：第0天、持有股票、最多交替 t 次时的最大收益都是负的第0天的股价
+            dp[0][t][1] = -prices[0];
+
+        for (int d = 1; d < n; d++) {
+            for (int t = 1; t <= k; t++) {
+                dp[d][t][0] = Math.max(dp[d-1][t][0], dp[d-1][t][1] + prices[d]);
+                dp[d][t][1] = Math.max(dp[d-1][t][1], dp[d-1][t-1][0] - prices[d]);
+            }
+        }
+
+        return dp[n-1][k][0];
     }
 
     public static void main(String[] args) {
-        log(maxProfit(new int[]{3, 5, 0, 3, 2, 5, 2, 5}));  // expects 8. [-, -, buy, -, -, sell, buy, sell]
-        log(maxProfit(new int[]{0, 1, 2, 3, 4, 4, 3, 2}));  // expects 4. [buy, -, -, -, sell, -, -, -]
-        log(maxProfit(new int[]{7, 6, 4, 3, 1}));           // expects 0. no transaction.
+        log(maxProfit2(new int[]{3, 5, 0, 3, 2, 5, 2, 5}));  // expects 8. [-, -, buy, -, -, sell, buy, sell]
+        log(maxProfit2(new int[]{0, 1, 2, 3, 4, 4, 3, 2}));  // expects 4. [buy, -, -, -, sell, -, -, -]
+        log(maxProfit2(new int[]{7, 6, 4, 3, 1}));           // expects 0. no transaction.
     }
 }
