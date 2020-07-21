@@ -85,9 +85,9 @@ public class L123_BestTimeToBuyAndSellStockIII {
      *      ∴ 要给表达式再加一维将该变量考虑进来：
      *        - maxProfit[d][t][0] = max(maxProfit[d-1][t][0], maxProfit[d-1][t][1] + prices[d])
      *        - maxProfit[d][t][1] = max(maxProfit[d-1][t][1], maxProfit[d-1][t-1][0] - prices[d])
-     *      注意：交易次数+1发生在买入时，即买入时已经在进行一次交易了 ∴ 卖出时的股价上表达式中在 + prices[d] 时
-     *
-     * - 👉总结：面试中的 DP 题目最难也就是3维的了。
+     *      注意：在买入时交易就已经发生了 ∴ 卖出时的交易次数应该是已经+1过的 ∴ 👆表达式中在 + prices[d]（卖出）时，前面的
+     *      maxProfit[d-1][t][1] 中应该是 t 而非 t-1；而在 - prices[d]（买入）时，前面应该是 t-1 而非 t。
+     * - 👉总结：面试中的 DP 题目最难也就是这样的3维 DP 了。
      * - 时间复杂度 O(kn)，空间复杂度 O(kn)。
      * */
     public static int maxProfit2(int[] prices) {
