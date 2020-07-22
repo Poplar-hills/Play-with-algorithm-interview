@@ -46,7 +46,7 @@ public class L714_BestTimeToBuyAndSellStockWithTransactionFee {
 
     /*
      * 超时解：DP
-     * - 思路：与👆解法、L122_BestTimeToBuyAndSellStockIII 解法2一致。
+     * - 思路：与👆解法一致。
      * - 实现：加入滚动数组优化空间复杂度。
      * - 时间复杂度 O(kn)，空间复杂度 O(n)。
      * */
@@ -69,6 +69,31 @@ public class L714_BestTimeToBuyAndSellStockWithTransactionFee {
         }
 
         return maxProfit;
+    }
+
+    /*
+     * 超时且超空间解：DP
+     * - 思路：与 L122_BestTimeToBuyAndSellStockIII 解法2一致（SEE：其中解释）。
+     * - 时间复杂度 O(kn)，空间复杂度 O(kn)。
+     * */
+    public static int maxProfit_3(int[] prices, int fee) {
+        if (prices == null || prices.length < 2) return 0;
+
+        int n = prices.length;
+        int k = n / 2;                   // n 天最多交易 n/2 次
+        int[][][] dp = new int[n][k+1][2];
+
+        for (int t = 1; t <= k; t++)
+            dp[0][t][1] = -prices[0];
+
+        for (int d = 1; d < n; d++) {
+            for (int t = 1; t <= k; t++) {
+                dp[d][t][0] = Math.max(dp[d-1][t][0], dp[d-1][t][1] + prices[d] - fee);
+                dp[d][t][1] = Math.max(dp[d-1][t][1], dp[d-1][t-1][0] - prices[d]);
+            }
+        }
+
+        return dp[n-1][k][0];
     }
 
     /*
@@ -116,7 +141,7 @@ public class L714_BestTimeToBuyAndSellStockWithTransactionFee {
     }
 
     public static void main(String[] args) {
-        log(maxProfit2(new int[]{1, 3, 2, 8, 4, 9}, 2));
+        log(maxProfit_3(new int[]{1, 3, 2, 8, 4, 9}, 2));
         // expects 8. [buy, -, -, sell, buy, sell]. Max profit = ((8-1)-2) + ((9-4)-2) = 8.
     }
 }
