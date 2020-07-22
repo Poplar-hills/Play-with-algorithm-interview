@@ -1,4 +1,4 @@
-package DP.S4_KnapsackProblem;
+package DP.S3_StateTransition;
 
 import static Utils.Helpers.*;
 
@@ -95,7 +95,7 @@ public class L123_BestTimeToBuyAndSellStockIII {
         int n = prices.length;
         int[][][] dp = new int[n][k+1][2];  // dp[d][t][h] 表示“在第 d 天，是/否持有股票，最多交易 t 次时所能获得的最大的收益”
 
-        for (int t = 0; t < k; t++)  // 注意处理 base cases：第0天、持有股票、最多交替 t 次时的最大收益都是负的第0天的股价
+        for (int t = 1; t <= k; t++)  // 注意处理 base cases：第0天、持有股票、最多交替 t 次时的最大收益都是负的第0天的股价
             dp[0][t][1] = -prices[0];
 
         for (int d = 1; d < n; d++) {
@@ -111,6 +111,7 @@ public class L123_BestTimeToBuyAndSellStockIII {
     public static void main(String[] args) {
         log(maxProfit2(new int[]{3, 5, 0, 3, 2, 5, 2, 5}));  // expects 8. [-, -, buy, -, -, sell, buy, sell]
         log(maxProfit2(new int[]{0, 1, 2, 3, 4, 4, 3, 2}));  // expects 4. [buy, -, -, -, sell, -, -, -]
+        log(maxProfit2(new int[]{1, 2, 3, 4, 5}));           // expects 4. [buy, -, -, -, sell]
         log(maxProfit2(new int[]{7, 6, 4, 3, 1}));           // expects 0. no transaction.
     }
 }

@@ -1,4 +1,4 @@
-package DP.S4_KnapsackProblem;
+package DP.S3_StateTransition;
 
 import static Utils.Helpers.*;
 
@@ -121,7 +121,7 @@ public class L188_BestTimeToBuyAndSellStockIV {
         } else {
             int[][][] dp = new int[n][k+1][2];
 
-            for (int t = 0; t < k; t++)
+            for (int t = 1; t <= k; t++)
                 dp[0][t][1] = -prices[0];
 
             for (int t = 1; t < k + 1; t++) {
