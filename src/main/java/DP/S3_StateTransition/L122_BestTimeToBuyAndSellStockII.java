@@ -108,7 +108,7 @@ public class L122_BestTimeToBuyAndSellStockII {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit4(int[] prices) {
-        if (prices.length < 2) return 0;
+        if (prices == null || prices.length < 2) return 0;
         int lastBuy = -prices[0];  // 上次尝试买入获得的最大收益
         int lastSell = 0;          // 上次尝试卖出获得的最大收益
 
@@ -122,9 +122,31 @@ public class L122_BestTimeToBuyAndSellStockII {
         return lastSell;
     }
 
+    /*
+     * 解法5：DP
+     * - 思路：在 L123_BestTimeToBuyAndSellStockIII 解法2基础上去掉交易次数的维度：
+     *   maxProfit[d][0] = max(maxProfit[d-1][0], maxProfit[d-1][1] + prices[d]);
+     *   maxProfit[d][1] = max(maxProfit[d-1][1], maxProfit[d-1][0] - prices[d]);
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static int maxProfit5(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
+
+        int n = prices.length;
+        int[][] dp = new int[n][2];
+        dp[0][1] = -prices[0];
+
+        for (int d = 1; d < n; d++) {
+            dp[d][0] = Math.max(dp[d-1][0], dp[d-1][1] + prices[d]);
+            dp[d][1] = Math.max(dp[d-1][1], dp[d-1][0] - prices[d]);
+        }
+
+        return dp[n-1][0];
+    }
+
     public static void main(String[] args) {
-        log(maxProfit3(new int[]{7, 1, 5, 3, 6, 4}));  // expects 7. [-, buy, sell, buy, sell, -]
-        log(maxProfit3(new int[]{1, 2, 3, 4, 5}));     // expects 4. [buy, -, -, -, sell]
-        log(maxProfit3(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
+        log(maxProfit5(new int[]{7, 1, 5, 3, 6, 4}));  // expects 7. [-, buy, sell, buy, sell, -]
+        log(maxProfit5(new int[]{1, 2, 3, 4, 5}));     // expects 4. [buy, -, -, -, sell]
+        log(maxProfit5(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
     }
 }
