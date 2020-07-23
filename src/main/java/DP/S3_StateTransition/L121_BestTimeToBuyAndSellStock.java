@@ -45,7 +45,7 @@ public class L121_BestTimeToBuyAndSellStock {
      *     - 若不在 prices[2] 时买入，则最大收益就相当于 [3..n) 内的最大收益，即 f(3) 的解。
      *   ∴ 可得：f(2) = max(maxPrice[3..) - prices[2], f(3))。
      *   ∴ 递推表达式：f(i) = max(maxPrice[i..) - prices[i], f(i+1))。
-     * - 实现：∵ 递推表达式中要求任意 [i..) 内的最大值 ∴ 同样可以通过递推求得 —— 从最后往前依次递推出 [i..) 内的最大值。
+     * - 实现：递推表达式中要求任意 [i..) 内的最大值，这同样可以通过递推求得 —— 从最后往前依次递推出 [i..) 内的最大值。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxProfit2(int[] prices) {
@@ -56,7 +56,7 @@ public class L121_BestTimeToBuyAndSellStock {
         maxPrices[n - 1] = prices[n - 1];  // 最基本问题
 
         for (int i = n - 2; i >= 0; i--)   // 从后往前递推
-            maxPrices[i] = prices[i] > maxPrices[i + 1] ? prices[i] : maxPrices[i + 1];
+            maxPrices[i] = Math.max(prices[i], maxPrices[i + 1]);
 
         int[] dp = new int[n + 1];         // dp[i] 表示在 [i..) 范围内交易所能得到的最大收益
         dp[n] = 0;                         // ∵ 要计算 f(n-1) 需要先知道 f(n) ∴ 设其为0
@@ -90,7 +90,7 @@ public class L121_BestTimeToBuyAndSellStock {
 
     /*
      * 解法4：DP
-     * - 思路：与 L123_BestTimeToBuyAndSellStockIII 一致。
+     * - 思路：与 L123_BestTimeToBuyAndSellStockIII 一致（注意该解法与👆解法2的问题定义不同）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxProfit4(int[] prices) {
@@ -113,7 +113,7 @@ public class L121_BestTimeToBuyAndSellStock {
     }
 
     public static void main(String[] args) {
-        log(maxProfit4(new int[]{7, 1, 5, 3, 6, 4}));  // expects 5. [-, buy, -, -, sell, -]
-        log(maxProfit4(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
+        log(maxProfit2(new int[]{7, 1, 5, 3, 6, 4}));  // expects 5. [-, buy, -, -, sell, -]
+        log(maxProfit2(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
     }
 }
