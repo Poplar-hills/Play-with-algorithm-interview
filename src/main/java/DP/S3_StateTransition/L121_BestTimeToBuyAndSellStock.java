@@ -88,8 +88,32 @@ public class L121_BestTimeToBuyAndSellStock {
         return maxProfit;
     }
 
+    /*
+     * 解法4：DP
+     * - 思路：与 L123_BestTimeToBuyAndSellStockIII 一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int maxProfit4(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
+
+        int k = 1;
+        int n = prices.length;
+
+        int[][][] dp = new int[n][k+1][2];
+        dp[0][0][1] = dp[0][1][1] = -prices[0];
+
+        for (int d = 1; d < n; d++) {
+            for (int t = 1; t < k + 1; t++) {
+                dp[d][t][0] = Math.max(dp[d-1][t][0], dp[d-1][t][1] + prices[d]);
+                dp[d][t][1] = Math.max(dp[d-1][t][1], dp[d-1][t-1][0] - prices[d]);
+            }
+        }
+
+        return dp[n-1][k][0];
+    }
+
     public static void main(String[] args) {
-        log(maxProfit3(new int[]{7, 1, 5, 3, 6, 4}));  // expects 5. [-, buy, -, -, sell, -]
-        log(maxProfit3(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
+        log(maxProfit4(new int[]{7, 1, 5, 3, 6, 4}));  // expects 5. [-, buy, -, -, sell, -]
+        log(maxProfit4(new int[]{7, 6, 4, 3, 1}));     // expects 0. no transaction.
     }
 }
