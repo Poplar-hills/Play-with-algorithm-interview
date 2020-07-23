@@ -6,7 +6,7 @@ import static Utils.Helpers.*;
  * Best Time to Buy and Sell Stock with Cooldown
  *
  * - 给定一个数组，表示一只股票在某几天内的价格。设计一个使利益最大化的交易算法，条件：
- *   1. You may do as many transactions as you like (ie, buy one and sell one share of the stock multiple times.
+ *   1. You may do as many transactions as you like (ie, buy one and sell one share of the stock multiple times).
  *   2. You can't engage in multiple transactions at the same time (ie, must sell the stock before you buy again).
  *   3. After you sell your stock, you cannot buy stock on next day. (ie, cooldown 1 day).
  * */
@@ -22,7 +22,7 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
      *                               ↑        ↓  ↗—↘        ↖_↙
      *                               +----- hold0   |
      *                                           ↖_↙
-     *   - 另外该问题符合最优子结构性质 —— 通过求前 i-1 天的最大收益可获得前 i-1 天的最大收益。
+     *   - 另外该问题符合最优子结构性质 —— 通过求前 i-1 天的最大收益可获得前 i 天的最大收益。
      *   - 由以上两点可写出状态递推表达式：
      *       buy[i] = hold0[i-1] - prices[i]                  // 第i天买入后的最大收益 = 前一天持有后的收益 - 第i天的股价
      *       sell[i] = max(hold1[i-1], buy[i-1]) + prices[i]  // 第i天卖出后的最大收益 = max(前一天持有后的收益, 前一天买入后的收益) + 第i天的股价
@@ -83,11 +83,40 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
         return Math.max(lastSell, lastHold0);
     }
 
+    /*
+     * 解法3：DP
+     * - 思路：在 L123_BestTimeToBuyAndSellStockIII 解法2基础上进行改造：
+     *   - ∵ 可以交易任意多次 ∴ 不再需要交易次数 k 的维度；
+     *   - ∵ 在卖出之后需要 cooldown ∴ “能否做卖出操作”取决于前一天“是否在 cooldown”这一状态 ∴ 需要给 dp 数组增加“是否在
+     *     cooldown”这一维度，即 maxProfit[d][c][h] 表示“第 d 天、是/否在 cooldown、是/否持有股票时所能获得的最大收益”。
+     *   - ∴ 有递推表达式：
+     *     maxProfit[d][0][0] = max(maxProfit[d-1][0][0], maxProfit[d-1][1][0])
+     *     maxProfit[d][0][1] = max(maxProfit[d-1][0][1], maxProfit[d-1][0][0] - prices[d])
+     *     maxProfit[d][1][0] = maxProfit[d-1][0][1] + prices[d]
+     *     ∵ cooldown 一定发生在 sell 之后 ∴ 不会有 maxProfit[d][1][1] 的状态。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int maxProfit3(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
+
+        int n = prices.length;
+        int[][][] dp = new int[n][2][2];  // dp[d][c][h] 表示“第 d 天、是/否需要 cooldown、是/否持有股票时的最大收益”
+        dp[0][0][1] = -prices[0];
+
+        for (int d = 1; d < n; d++) {
+            dp[d][0][0] = Math.max(dp[d-1][0][0], dp[d-1][1][0]);
+            dp[d][0][1] = Math.max(dp[d-1][0][1], dp[d-1][0][0] - prices[d]);
+            dp[d][1][0] = dp[d-1][0][1] + prices[d];
+        }
+
+        return Math.max(dp[n-1][0][0], dp[n-1][1][0]);
+    }
+
     public static void main(String[] args) {
-        log(maxProfit2(new int[]{1, 2, 3, 0, 2}));  // expects 3. [buy, sell, hold0, buy, sell]
-        log(maxProfit2(new int[]{1, 4, 2}));        // expects 3. [buy, sell, hold0]
-        log(maxProfit2(new int[]{1, 2}));           // expects 1. [buy, sell]
-        log(maxProfit2(new int[]{2, 1}));           // expects 0. [hold0, hold0]
-        log(maxProfit2(new int[]{3, 3}));           // expects 0. [hold0, hold0] or [buy, sell]
+        log(maxProfit3(new int[]{1, 2, 3, 0, 2}));  // expects 3. [buy, sell, hold0, buy, sell]
+        log(maxProfit3(new int[]{1, 4, 2}));        // expects 3. [buy, sell, hold0]
+        log(maxProfit3(new int[]{1, 2}));           // expects 1. [buy, sell]
+        log(maxProfit3(new int[]{2, 1}));           // expects 0. [hold0, hold0]
+        log(maxProfit3(new int[]{3, 3}));           // expects 0. [hold0, hold0] or [buy, sell]
     }
 }
