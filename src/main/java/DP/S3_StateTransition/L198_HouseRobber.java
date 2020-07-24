@@ -128,7 +128,7 @@ public class L198_HouseRobber {
 
     /*
      * 解法5：DP（解法4的另一种写法，更直观）
-     * - 思路：与解法4一致。
+     * - 思路：基本思路与解法4一致，但定义子问题稍有区别：f(i) 表示“到第 i 所房子为止所能得到的最大收益”；
      * - 实现：dp 数组只开辟 n 大小，dp[0] 不再赋0。
      * - 👉注意：与解法4比较，加深理解解法4中 dp[0]=0 的作用）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -138,8 +138,8 @@ public class L198_HouseRobber {
 
         int n = nums.length;
         int[] dp = new int[n];
-        dp[0] = nums[0];
-        dp[1] = Math.max(nums[0], nums[1]);
+        dp[0] = nums[0];                     // 到第0所房子为止的最大收益
+        dp[1] = Math.max(nums[0], nums[1]);  // 到底1所房子为止的最大收益
 
         for (int i = 2; i < n; i++)
             dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1]);
@@ -174,7 +174,7 @@ public class L198_HouseRobber {
      *   另一种思路是将抢/不抢这两种行为对应的状态分开进行递推：
      *   - y(i) 表示“在前 i 所房子中，抢第 i 所房子能获得的最大收益”：y(i) = nums[i] + n(i-1)；
      *   - n(i) 表示“在前 i 所房子中，不抢第 i 所房子所能获得的最大收益”：n(i) = max(y(i-1), n(i-1))；
-     *   - f(i) = max(y(i), n(i)) 即是原问题的解。
+     *   ∴ 原问题的解 f(i) = max(y(i), n(i))。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int rob7(int[] nums) {
