@@ -191,10 +191,37 @@ public class L198_HouseRobber {
         return Math.max(skipPrev, robPrev);  // f(i) = max(y(i), n(i))
     }
 
+    /*
+     * 解法8：DP
+     * - 思路：与 L123_BestTimeToBuyAndSellStockIII 解法2一致。可得：
+     *   1. 子问题定义：
+     *      - maxProfit[i][0] 表示“不抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
+     *      - maxProfit[i][1] 表示“抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
+     *   2. 递推表达式：
+     *      - maxProfit[i][0] = max(maxProfit[i-1][1], maxProfit[i-1][0])
+     *      - maxProfit[i][1] = maxProfit[i-1][0] + nums[i]
+     *      ∴ maxProfit = max(maxProfit[i][0], maxProfit[i][1])
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static int rob8(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int n = nums.length;
+        int[][] dp = new int[n][2];
+        dp[0][1] = nums[0];
+
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1]);
+            dp[i][1] = dp[i-1][0] + nums[i];
+        }
+
+        return Math.max(dp[n-1][0], dp[n-1][1]);
+    }
+
     public static void main(String[] args) {
-        log(rob6(new int[]{3, 4, 1, 2}));     // expects 6.  [3, (4), 1, (2)]
-        log(rob6(new int[]{4, 3, 1, 2}));     // expects 6.  [(4), 3, 1, (2)]
-        log(rob6(new int[]{1, 2, 3, 1}));     // expects 4.  [(1), 2, (3), 1].
-        log(rob6(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
+        log(rob8(new int[]{3, 4, 1, 2}));     // expects 6.  [3, (4), 1, (2)]
+        log(rob8(new int[]{4, 3, 1, 2}));     // expects 6.  [(4), 3, 1, (2)]
+        log(rob8(new int[]{1, 2, 3, 1}));     // expects 4.  [(1), 2, (3), 1].
+        log(rob8(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
     }
 }
