@@ -128,8 +128,9 @@ public class L198_HouseRobber {
 
     /*
      * 解法5：DP（解法4的另一种写法，更直观）
-     * - 思路：基本思路与解法4一致，但定义子问题稍有区别：f(i) 表示“到第 i 所房子为止所能得到的最大收益”；
-     * - 实现：dp 数组只开辟 n 大小，dp[0] 不再赋0。
+     * - 思路：基本思路与解法4一致，但定义子问题稍有区别：f(i) 表示“从前 i 所房子里能抢到的最大收益”。于是递推表达式变成：
+     *   f(i) = max(nums[i] + f(i-2), f(i-1))
+     * - 实现：dp 数组只开辟 n 大小、dp[0] 不再赋0。
      * - 👉注意：与解法4比较，加深理解解法4中 dp[0]=0 的作用）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -211,11 +212,11 @@ public class L198_HouseRobber {
         dp[0][1] = nums[0];
 
         for (int i = 1; i < n; i++) {
-            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1]);
-            dp[i][1] = dp[i-1][0] + nums[i];
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1]);
+            dp[i][1] = dp[i - 1][0] + nums[i];
         }
 
-        return Math.max(dp[n-1][0], dp[n-1][1]);
+        return Math.max(dp[n - 1][0], dp[n - 1][1]);
     }
 
     public static void main(String[] args) {
