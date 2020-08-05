@@ -45,7 +45,7 @@ public class L213_HouseRobberII {
 
     /*
      * 解法2：DP（双路递推）
-     * - 思路：与 L198_HouseRobber 解法7一致，递推表达式为：
+     * - 思路：与 L198_HouseRobber 解法8一致，递推表达式为：
      *   - y(i) = nums[i] + n(i - 1)；
      *   - n(i) = max(y(i - 1), n(i - 1))。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
@@ -53,24 +53,27 @@ public class L213_HouseRobberII {
     public static int rob2(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
         int n = nums.length;
-        if (n == 1) return nums[0];
+        if (n == 1) return nums[0];     // 注意特殊情况的处理
         return Math.max(rob2(nums, 0, n - 2), rob2(nums, 1, n - 1));
     }
 
     private static int rob2(int[] nums, int l, int r) {
         int skipPrev = 0, robPrev = 0;
+        int skipCurr = 0, robCurr = 0;
+
         for (int i = l; i <= r; i++) {  // 遍历有效范围内的房子
-            int robCurr = skipPrev + nums[i];
-            int skipCurr = Math.max(skipPrev, robPrev);
+            robCurr = skipPrev + nums[i];
+            skipCurr = Math.max(skipPrev, robPrev);
             skipPrev = skipCurr;
             robPrev = robCurr;
         }
-        return Math.max(skipPrev, robPrev);
+
+        return Math.max(skipCurr, robCurr);
     }
 
     public static void main(String[] args) {
-        log(rob(new int[]{2, 3, 2}));     // expects 3. (Cannot rob house 1 and 3 as they are adjacent)
-        log(rob(new int[]{1, 2, 3, 1}));  // expects 4. [(1), 2, (3), 1]
-        log(rob(new int[]{0, 0}));        // expects 0.
+        log(rob2(new int[]{2, 3, 2}));     // expects 3. (Cannot rob house 1 and 3 as they are adjacent)
+        log(rob2(new int[]{1, 2, 3, 1}));  // expects 4. [(1), 2, (3), 1]
+        log(rob2(new int[]{0, 0}));        // expects 0.
     }
 }
