@@ -171,40 +171,17 @@ public class L198_HouseRobber {
 
     /*
      * 解法7：DP（双路递推）
-     * - 思路：解法3的思路是将 f(i) 定义为“从前 i 所房子中所能抢到的最大收益” —— 这里同时包含了抢以及不抢 i 这两种情况。
-     *   另一种思路是将抢/不抢这两种行为对应的状态分开进行递推：
-     *   - y(i) 表示“在前 i 所房子中，抢第 i 所房子能获得的最大收益”：y(i) = nums[i] + n(i-1)；
-     *   - n(i) 表示“在前 i 所房子中，不抢第 i 所房子所能获得的最大收益”：n(i) = max(y(i-1), n(i-1))；
-     *   ∴ 原问题的解 f(i) = max(y(i), n(i))。
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
-     * */
-    public static int rob7(int[] nums) {
-        int skipPrev = 0;                    // 抢前一间的最大收益
-        int robPrev = 0;                     // 不抢前一间的最大收益
-
-        for (int num : nums) {               // 从第一间房子开始对计算每间房子在抢/不抢时的最大收益
-            int robCurr = num + skipPrev;                // y(i) = nums[i] + n(i-1)
-            int skipCurr = Math.max(robPrev, skipPrev);  // n(i) = max(y(i-1), n(i-1))
-            skipPrev = skipCurr;
-            robPrev = robCurr;
-        }
-
-        return Math.max(skipPrev, robPrev);  // f(i) = max(y(i), n(i))
-    }
-
-    /*
-     * 解法8：DP
      * - 思路：与 L123_BestTimeToBuyAndSellStockIII 解法2一致。可得：
      *   1. 子问题定义：
-     *      - maxProfit[i][0] 表示“不抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
-     *      - maxProfit[i][1] 表示“抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
+     *      - f(i,0) 表示“不抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
+     *      - f(i,1) 表示“抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
      *   2. 递推表达式：
-     *      - maxProfit[i][0] = max(maxProfit[i-1][1], maxProfit[i-1][0])
-     *      - maxProfit[i][1] = maxProfit[i-1][0] + nums[i]
-     *      ∴ maxProfit = max(maxProfit[i][0], maxProfit[i][1])
+     *      - f(i,0) = max(f(i-1,1), f(i-1,0))
+     *      - f(i,1) = f(i-1,0) + nums[i]
+     *      ∴ f(i) = max(f(i,0), f(i,1))
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int rob8(int[] nums) {
+    public static int rob7(int[] nums) {
         if (nums == null || nums.length == 0) return 0;
 
         int n = nums.length;
@@ -217,6 +194,34 @@ public class L198_HouseRobber {
         }
 
         return Math.max(dp[n - 1][0], dp[n - 1][1]);
+    }
+
+    /*
+     * 解法8：DP（解法7的空间优化版）
+     * - 思路：与解法7一致。
+     * - 实现：
+     *   1. 解法7中第 dp[i][0]、dp[i][1] 只与 dp[i-1][0]、dp[i-1][1] 相关 ∴ 该维度不需要维护数组，可使用两个变量代替：
+     *      dp[i][0] -> curr[0]    dp[i-1][0] -> prev[0]
+     *      dp[i][1] -> curr[1]    dp[i-1][1] -> prev[1]
+     *   2. 第二个维度（抢/不抢）同样可以使用两个独立变量维护，从而更具语义：
+     *      curr[0] -> skipCurr    prev[0] -> skipPrev
+     *      curr[1] -> robCurr     prev[1] -> robPrev
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static int rob8(int[] nums) {
+        int skipPrev = 0;                  // 不抢前一间的最大收益
+        int robPrev = 0;                   // 抢前一间的最大收益
+        int skipCurr = 0;                  // 不抢当前房子的最大收益
+        int robCurr = 0;                   // 抢当前房子的最大收益
+
+        for (int num : nums) {             // 从第0间房子开始，计算在抢/不抢第 i 间房子时的最大收益
+            robCurr = num + skipPrev;                // y(i) = nums[i] + n(i-1)
+            skipCurr = Math.max(robPrev, skipPrev);  // n(i) = max(y(i-1), n(i-1))
+            skipPrev = skipCurr;
+            robPrev = robCurr;
+        }
+
+        return Math.max(skipCurr, robCurr);  // f(i) = max(y(i), n(i))
     }
 
     public static void main(String[] args) {
