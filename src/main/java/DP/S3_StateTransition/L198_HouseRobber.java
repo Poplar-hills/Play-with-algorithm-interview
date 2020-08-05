@@ -51,7 +51,7 @@ public class L198_HouseRobber {
     }
 
     private static int tryToRob(int[] nums, int i, int[] cache) {  // 计算 [i..n) 内的最大收益
-        if (i >= nums.length) return 0;
+        if (i >= nums.length) return 0;        // ∵ 下面会 +2 ∴ 这里要 i >= nums.length
         if (cache[i] != -1) return cache[i];
 
         int res = 0;
@@ -225,9 +225,9 @@ public class L198_HouseRobber {
     }
 
     public static void main(String[] args) {
-        log(rob8(new int[]{3, 4, 1, 2}));     // expects 6.  [3, (4), 1, (2)]
-        log(rob8(new int[]{4, 3, 1, 2}));     // expects 6.  [(4), 3, 1, (2)]
-        log(rob8(new int[]{1, 2, 3, 1}));     // expects 4.  [(1), 2, (3), 1].
-        log(rob8(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
+        log(rob1(new int[]{3, 4, 1, 2}));     // expects 6.  [3, (4), 1, (2)]
+        log(rob1(new int[]{4, 3, 1, 2}));     // expects 6.  [(4), 3, 1, (2)]
+        log(rob1(new int[]{1, 2, 3, 1}));     // expects 4.  [(1), 2, (3), 1].
+        log(rob1(new int[]{2, 7, 9, 3, 1}));  // expects 12. [(2), 7, (9), 3, (1)]
     }
 }
