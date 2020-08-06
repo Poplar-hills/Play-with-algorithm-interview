@@ -87,7 +87,7 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     /*
      * 解法3：DP
      * - 思路：在 L123_BestTimeToBuyAndSellStockIII 解法2基础上进行改造：
-     *   - ∵ 可以交易任意多次 ∴ 不再需要交易次数 k 的维度；
+     *   - ∵ 可以交易任意多次 ∴ 不再需要交易次数 k 的维度（该条件与 L122、L714 一致）；
      *   - ∵ 在卖出之后需要 cooldown ∴ “能否做卖出操作”取决于前一天“是否在 cooldown”这一状态 ∴ 需要给 dp 数组增加“是否在
      *     cooldown”这一维度，即 maxProfit[d][c][h] 表示“第 d 天、是/否在 cooldown、是/否持有股票时所能获得的最大收益”。
      *   - ∴ 有递推表达式：
