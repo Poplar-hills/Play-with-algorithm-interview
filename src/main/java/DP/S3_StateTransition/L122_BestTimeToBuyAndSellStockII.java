@@ -124,9 +124,11 @@ public class L122_BestTimeToBuyAndSellStockII {
 
     /*
      * 解法5：DP
-     * - 思路：在 L123_BestTimeToBuyAndSellStockIII 解法2基础上去掉交易次数的维度：
+     * - 思路：∵ 可以交易任意次 ∴ 在 L123_BestTimeToBuyAndSellStockIII 解法2基础上去掉交易次数的维度：
      *   maxProfit[d][0] = max(maxProfit[d-1][0], maxProfit[d-1][1] + prices[d]);
      *   maxProfit[d][1] = max(maxProfit[d-1][1], maxProfit[d-1][0] - prices[d]);
+     * - 💎注意：不要把“可以交易任意次”与 L188、L121、L123 中的“最多交易 k 次”混淆 —— 当可交易任意次时，dp 数组就不需要交易
+     *   次数的维度，而最多交易 k 次的情况下则需要。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxProfit5(int[] prices) {

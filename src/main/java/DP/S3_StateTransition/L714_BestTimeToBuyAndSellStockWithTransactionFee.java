@@ -72,38 +72,35 @@ public class L714_BestTimeToBuyAndSellStockWithTransactionFee {
     }
 
     /*
-     * 超时且超空间解：DP
-     * - 思路：与 L122_BestTimeToBuyAndSellStockIII 解法2一致（SEE：其中解释）。
+     * 解法1：DP
+     * - 思路：与 L122_BestTimeToBuyAndSellStockII 解法5一致 —— ∵ 可以交易任意次 ∴ dp 数组不需要交易次数的维度。
+     * - 💎注意：不要把“可以交易任意次”与 L188、L121、L123 中的“最多交易 k 次”混淆 —— 当可交易任意次时，dp 数组就不需要交易
+     *   次数的维度，而最多交易 k 次的情况下则需要。
      * - 时间复杂度 O(kn)，空间复杂度 O(kn)。
      * */
-    public static int maxProfit_3(int[] prices, int fee) {
+    public static int maxProfit(int[] prices, int fee) {
         if (prices == null || prices.length < 2) return 0;
 
         int n = prices.length;
-        int k = n / 2;                   // n 天最多交易 n/2 次
-        int[][][] dp = new int[n][k+1][2];
-
-        for (int t = 1; t <= k; t++)
-            dp[0][t][1] = -prices[0];
+        int[][] dp = new int[n][2];
+        dp[0][1] = -prices[0];
 
         for (int d = 1; d < n; d++) {
-            for (int t = 1; t <= k; t++) {
-                dp[d][t][0] = Math.max(dp[d-1][t][0], dp[d-1][t][1] + prices[d] - fee);
-                dp[d][t][1] = Math.max(dp[d-1][t][1], dp[d-1][t-1][0] - prices[d]);
-            }
+            dp[d][0] = Math.max(dp[d-1][0], dp[d-1][1] + prices[d] - fee);
+            dp[d][1] = Math.max(dp[d-1][1], dp[d-1][0] - prices[d]);
         }
 
-        return dp[n-1][k][0];
+        return dp[n-1][0];
     }
 
     /*
-     * 解法1：DP
+     * 解法2：DP
      * - 💎思路：👆两种解法都是先求出在不同交易次数（0~k）下，最后一天能获得的最大收益，然后再求出他们之中的最大者。这种
      *   思路虽然可行，但并不是最简的 ∵ 忽略了题中“可以交易任意次数”这一条件 —— 当可以交易任意次数时，最简单的解法是采用
      *   L122_BestTimeToBuyAndSellStockII 解法3的思路 —— 递推在第 i 天尝试买入、卖出的最大收益。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int maxProfit(int[] prices, int fee) {
+    public static int maxProfit2(int[] prices, int fee) {
         if (prices == null || prices.length < 2) return 0;
 
         int n = prices.length;
@@ -120,11 +117,11 @@ public class L714_BestTimeToBuyAndSellStockWithTransactionFee {
     }
 
     /*
-     * 解法2：DP
+     * 解法3：DP
      * - 思路：与解法1、L122_BestTimeToBuyAndSellStockII 解法4一致（SEE：其中解释）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
-    public static int maxProfit2(int[] prices, int fee) {
+    public static int maxProfit3(int[] prices, int fee) {
         if (prices == null || prices.length < 2) return 0;
 
         int lastBuy = -prices[0];
@@ -141,7 +138,7 @@ public class L714_BestTimeToBuyAndSellStockWithTransactionFee {
     }
 
     public static void main(String[] args) {
-        log(maxProfit_3(new int[]{1, 3, 2, 8, 4, 9}, 2));
+        log(maxProfit(new int[]{1, 3, 2, 8, 4, 9}, 2));
         // expects 8. [buy, -, -, sell, buy, sell]. Max profit = ((8-1)-2) + ((9-4)-2) = 8.
     }
 }
