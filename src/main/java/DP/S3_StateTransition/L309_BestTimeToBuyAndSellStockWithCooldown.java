@@ -64,24 +64,24 @@ public class L309_BestTimeToBuyAndSellStockWithCooldown {
     public static int maxProfit2(int[] prices) {
         if (prices == null || prices.length < 2) return 0;
 
-        int lastBuy = -prices[0];
-        int lastSell = 0;
-        int lastHold0 = 0;
-        int lastHold1 = -prices[0];
+        int prevBuy = -prices[0];
+        int prevSell = 0;
+        int prevHold0 = 0;
+        int prevHold1 = -prices[0];
 
         for (int price : prices) {
-            int buy = lastHold0 - price;
-            int sell = Math.max(lastHold1, lastBuy) + price;
-            int hold1 = Math.max(lastHold1, lastBuy);
-            int hold0 = Math.max(lastHold0, lastSell);
+            int buy = prevHold0 - price;
+            int sell = Math.max(prevHold1, prevBuy) + price;
+            int hold1 = Math.max(prevHold1, prevBuy);
+            int hold0 = Math.max(prevHold0, prevSell);
 
-            lastBuy = buy;
-            lastSell = sell;
-            lastHold1 = hold1;
-            lastHold0 = hold0;
+            prevBuy = buy;
+            prevSell = sell;
+            prevHold1 = hold1;
+            prevHold0 = hold0;
         }
 
-        return Math.max(lastSell, lastHold0);
+        return Math.max(prevSell, prevHold0);
     }
 
     /*

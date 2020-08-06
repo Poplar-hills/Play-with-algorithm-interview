@@ -127,7 +127,7 @@ public class L122_BestTimeToBuyAndSellStockII {
      * - 思路：在 L123_BestTimeToBuyAndSellStockIII 解法2基础上去掉交易次数的维度：
      *   maxProfit[d][0] = max(maxProfit[d-1][0], maxProfit[d-1][1] + prices[d]);
      *   maxProfit[d][1] = max(maxProfit[d-1][1], maxProfit[d-1][0] - prices[d]);
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxProfit5(int[] prices) {
         if (prices == null || prices.length < 2) return 0;
