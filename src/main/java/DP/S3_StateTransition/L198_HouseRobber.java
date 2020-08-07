@@ -173,12 +173,12 @@ public class L198_HouseRobber {
      * 解法7：DP（双路递推）
      * - 思路：与 L123_BestTimeToBuyAndSellStockIII 解法2一致。可得：
      *   1. 子问题定义：
-     *      - f(i,0) 表示“不抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
-     *      - f(i,1) 表示“抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
+     *      - maxProfit[i][0] 表示“不抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
+     *      - maxProfit[i][1] 表示“抢第 i 所房子时从前 i 所房子里能抢到的最大收益”；
      *   2. 递推表达式：
-     *      - f(i,0) = max(f(i-1,1), f(i-1,0))
-     *      - f(i,1) = f(i-1,0) + nums[i]
-     *      ∴ f(i) = max(f(i,0), f(i,1))
+     *      - maxProfit[i][0] = max(maxProfit[i-1][1], maxProfit[i-1][0])
+     *      - maxProfit[i][1] = maxProfit[i-1][0] + nums[i]
+     *      ∴ maxProfit[n-1] = max(maxProfit[i][0], maxProfit[i][1])
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int rob7(int[] nums) {
