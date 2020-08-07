@@ -117,7 +117,7 @@ public class B1_ZeroOneKnapsack {
 
     /*
      * 解法3：DP + 滚动数组（解法2的空间优化版）
-     * - 思路：观察解法2中的状态转移方程：f(i, j) = max(f(i-1, j), v(i) + f(i-1, j-w(i)))，可发现 f(i,..] 只与 f(i-1,..]
+     * - 思路：观察解法2中的状态转移方程：f(i,j) = max(f(i-1, j), v(i) + f(i-1, j-w(i)))，可发现 f(i,_) 只与 f(i-1,_)
      *   有关，即填表法中除第0行之外的每一行中的值都能通过上一行中的值求得，而与其他行无关。因此：
      *   1. 不需要缓存整个二维表，只需缓存第 i 行和第 i-1 行这两行即可；
      *   2. 在从上到下逐行计算时，交替使用这两行缓存，例如：当缓存了第0、1两行，需要计算第2行，此时不再需要第0行的值，因此可用第2行
@@ -132,11 +132,11 @@ public class B1_ZeroOneKnapsack {
 
         int[][] dp = new int[2][c + 1];
 
-        for (int j = 0; j < dp.length; j++)
+        for (int j = 0; j <= c; j++)
             dp[0][j] = (j >= w[0]) ? v[0] : 0;
 
         for (int i = 1; i < n; i++) {
-            for (int j = 0; j <= c; j++) {
+            for (int j = 1; j <= c; j++) {
                 dp[i % 2][j] = dp[(i-1) % 2][j];  // 若 i 为偶则写第0行，读第1行；若 i 为奇则写第1行，读第0行
                 if (j >= w[i])
                     dp[i % 2][j] = Math.max(dp[i % 2][j], v[i] + dp[(i-1) % 2][j - w[i]]);
@@ -148,11 +148,11 @@ public class B1_ZeroOneKnapsack {
 
     /*
      * 解法4：DP + 一维数组（解法3的空间优化版）
-     * - 思路：解法3中说 f(i,..] 只与 f(i-1,..] 有关。实际上还可以更具体 —— 因为状态转移方程中的 j-w(i) 总是 < j，所以
-     *   f(i, j) 只与 f(i-1, 1..j) 有关，即填表法中待计算行里的任意一格 [i,j] 的值只与上一行左半部分 [0..j] 区间里的值有关，
-     *   而与右边的值无关，因此可以将解法3中的两行 cache 合成一行，每次从右向左进行覆盖。可视化讲解 SEE:
+     * - 思路：解法3中说 f(i,_) 只与 f(i-1,_) 有关。实际上还可以更具体 —— ∵ 表达式中的 j-w(i) 总是 < j ∴ f(i,j) 只与
+     *   f(i-1, 1..j) 有关，即填表法中待计算行中的任意一格 [i,j] 的值只与上一行左半部分 [1..j] 区间里的值有关，而与右边的值
+     *   无关 ∴ 可以在每次放物品时从右向左覆盖以前的值，从而不再需要解法3中的两行 dp 数组（可以合成一行）。可视化讲解 SEE:
      *   https://coding.imooc.com/lesson/82.html#mid=2984 (8'20'')。
-     *   最终状态转移方程简化为：f(i, j) = max(f(j), v[i] + f(j - w[j]))。
+     *   最终状态转移方程简化为：f(i,j) = max(f(j), v[i] + f(j - w[j]))。
      * - 时间复杂度 O(n*c)，空间复杂度 O(c)，本次是常数级的优化，复杂度量级上没有变化。
      * */
     public static int knapsack4(int[] w, int[] v, int c) {
@@ -161,23 +161,23 @@ public class B1_ZeroOneKnapsack {
 
         int[] dp = new int[c + 1];
 
-        for (int j = 0; j < dp.length; j++)
+        for (int j = 0; j <= c; j++)
             dp[j] = (j >= w[0]) ? v[0] : 0;
 
         for (int i = 1; i < n; i++)
-            for (int j = c; j >= w[i]; j--)  // 只覆盖 j >= w[i] 的部分即可，因为 j < w[i]，物品放不进背包因此结果和上次计算是一样的
+            for (int j = c; j >= w[i]; j--)  // 只覆盖 j >= w[i] 的部分即可 ∵ j < w[i] 的部分中物品放不进背包 ∴ 无需计算
                 dp[j] = Math.max(dp[j], v[i] + dp[j - w[i]]);
 
         return dp[c];
     }
 
     public static void main(String[] args) {
-        log(knapsack2(             // expects 22. (10 + 12)
+        log(knapsack3(             // expects 22. (10 + 12)
             new int[]{1, 2, 3},    // weight
             new int[]{6, 10, 12},  // value
             5));                   // capacity
 
-        log(knapsack2(             // expects 17. (9 + 8)
+        log(knapsack3(             // expects 17. (9 + 8)
             new int[]{1, 3, 4, 2},
             new int[]{3, 9, 12, 8},
             5));
