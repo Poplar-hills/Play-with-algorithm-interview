@@ -23,9 +23,9 @@ import java.util.Arrays;
  *     局部最优策略 ∴ 很容易举出反例：  Item       0     1     2
  *                                 Weight     1     2     3
  *                                 Value      6     10    12
- *                                 v / w      6     10    12
+ *                                 v / w      6     5     4
  *     若背包容量为5，此时使用贪心算法优先放入性价比（v/w）最高的物品，则只能放入0、1号物品（价值16，占用3的容量），而剩余的2的容
- *     量就被浪费掉了。而事实上，全局最优解应该是放入1、2号物品（价值22，占用5的容量）∴ 贪心算法对本问题不可行。
+ *     量就被浪费掉了。全局最优解应该是放入1、2号物品（价值22，占用5的容量）∴ 贪心算法对本问题不可行。
  *
  *   - ⭐思路3：DP：
  *     能否采用 DP 取决于该问题是否：
@@ -71,19 +71,19 @@ public class B1_ZeroOneKnapsack {
      * */
     public static int knapsack(int[] w, int[] v, int c) {
         int n = w.length;
-        int[][] cache = new int[n][c + 1];  // ∵ 状态转移方程有两个输入变量 ∴ 缓存也是二维的（n 行 c+1 列；c 的取值范围是 [0,c]）
+        int[][] cache = new int[n][c + 1];  // ∵ 状态转移方程有两个输入变量 ∴ 缓存也需要是二维的（i ∈ [0,n), j ∈ [0,c]）
         for (int[] row : cache)
             Arrays.fill(row, -1);           // ∵ 要缓存的值可能有0 ∴ 初始化为-1
-        return helper(n - 1, c, w, v, cache);
+        return helper(0, c, w, v, cache);
     }
 
     private static int helper(int i, int j, int[] w, int[] v, int[][] cache) {
-        if (i < 0 || j == 0) return 0;
+        if (i == w.length || j == 0) return 0;
         if (cache[i][j] != -1) return cache[i][j];
 
-        int res = helper(i - 1, j, w, v, cache);  // 不放入第 i 个物品所能得到的最大价值
+        int res = helper(i + 1, j, w, v, cache);  // 不放入第 i 个物品所能得到的最大价值
         if (j >= w[i])                            // 若剩余容量充足则可以尝试放入第 i 个
-            res = Math.max(res, v[i] + helper(i - 1, j - w[i], w, v, cache));
+            res = Math.max(res, v[i] + helper(i + 1, j - w[i], w, v, cache));
 
         return cache[i][j] = res;
     }
@@ -148,11 +148,11 @@ public class B1_ZeroOneKnapsack {
 
     /*
      * 解法4：DP + 一维数组（解法3的空间优化版）
-     * - 思路：解法3中说 f(i,_) 只与 f(i-1,_) 有关。实际上还可以更具体 —— ∵ 表达式中的 j-w(i) 总是 < j ∴ f(i,j) 只与
+     * - 思路：解法3中说 f(i,_) 只与 f(i-1,_) 有关，但实际上还可以更具体 —— ∵ 表达式中的 j-w(i) 总是 < j ∴ f(i,j) 只与
      *   f(i-1, 1..j) 有关，即填表法中待计算行中的任意一格 [i,j] 的值只与上一行左半部分 [1..j] 区间里的值有关，而与右边的值
      *   无关 ∴ 可以在每次放物品时从右向左覆盖以前的值，从而不再需要解法3中的两行 dp 数组（可以合成一行）。可视化讲解 SEE:
      *   https://coding.imooc.com/lesson/82.html#mid=2984 (8'20'')。
-     *   最终状态转移方程简化为：f(i,j) = max(f(j), v[i] + f(j - w[j]))。
+     *   最终状态转移方程简化为：f(j) = max(f(j), v[i] + f(j - w[j]))。
      * - 时间复杂度 O(n*c)，空间复杂度 O(c)，本次是常数级的优化，复杂度量级上没有变化。
      * */
     public static int knapsack4(int[] w, int[] v, int c) {
@@ -172,12 +172,12 @@ public class B1_ZeroOneKnapsack {
     }
 
     public static void main(String[] args) {
-        log(knapsack3(             // expects 22. (10 + 12)
+        log(knapsack4(             // expects 22. (10 + 12)
             new int[]{1, 2, 3},    // weight
             new int[]{6, 10, 12},  // value
             5));                   // capacity
 
-        log(knapsack3(             // expects 17. (9 + 8)
+        log(knapsack4(             // expects 17. (9 + 8)
             new int[]{1, 3, 4, 2},
             new int[]{3, 9, 12, 8},
             5));
