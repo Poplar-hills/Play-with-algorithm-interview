@@ -1,6 +1,6 @@
 package DP.S4_KnapsackProblem;
 
-import static Utils.Helpers.*;
+import static Utils.Helpers.log;
 
 import java.util.Arrays;
 
@@ -105,17 +105,17 @@ public class B2_CompleteKnapsack {
 
     /*
      * 解法4：解法3的优化版
-     * - 思路：前3种解法相比 _ZeroOneKnapsack 中的解法来说多了一层对 k 的循环，用于确定“同样的物品应放几个最优”，但也因此提高
-     *   了时间复杂度（n*c*c）。优化方法是将“遍历 k 逐一尝试”的思路改为“基于前面的结果进行递推”的思路。
-     * - 实现：将对 j 的循环改为从左往右覆盖，即从第一个放得下物品 i 的容量 w[i] 开始，比较再放入/不再放入一个物品 i 的价值。例如：
+     * - 思路：前3种解法相比 B1_ZeroOneKnapsack 的解法多了一层对 k 的循环，用于确定“同样的物品应放几个最优”，但也因此提高
+     *   了时间复杂度（n*c*c）。优化方法是将“遍历 k 逐一尝试”的思路改为“基于前面的结果进行递推”的思路：将对 j 的循环改为从左
+     *   往右覆盖，即从第一个放得下物品 i 的容量 w[i] 开始，比较再放入/不再放入一个物品 i 的价值：
      *        w  v | i\c  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14
      *        5  5 |  0   0  0  0  0  0  5  5  5  5  5  10  10  10  10  10
      *        7  8 |  1   0  0  0  0  0  5  5  8  8  8  10  10  13  13  16
      *   当 i=1 时，j 从7开始向右遍历：
-     *     - 当 j=7 时 ∵ 7处刚好能容纳一个物品1 ∴ 比较放入/不放一个物品1的价值谁更大（v[1] 与 dp[7]），谁就是 dp[7] 的最新取值。
-     *     - 当 j=8 时 ∵ 8处已经能容纳一个物品1 ∴ 比较放入/不放一个物品1的价值谁更大（v[1] + dp[1] 与 dp[8]），谁就是 dp[8] 的最新取值。
-     *     - 当 j=14 时 ∵ 14处已经能容纳两个物品1 ∴ 比较再放入/不再放一个物品1的价值谁更大（v[1] + dp[7] 与 dp[14]），谁就是 dp[14] 的最新取值。
-     *   状态转移方程：f(i, j) = max(f(j), v[i] + f(j - w[j]))。
+     *     - 当 j=7 时刚好只能容纳一个物品1 ∴ 判断是否放入一个物品1会产生更大价值: dp[7] = max(dp[7], v[1])；
+     *     - 当 j=8 时能容纳一个物品1 ∴ 判断是否放入一个物品1会产生更大价值: dp[8] = max(dp[8], v[1] + dp[8-7])；
+     *     - 当 j=14 时能容纳两个物品1 ∴ 判断是否放入第二个物品1会产生更大价值: dp[14] = max(dp[14], v[1] + dp[14-7])。
+     *   状态转移方程：f(j) = max(f(j), v[i] + f(j - w[j]))。
      * - 时间复杂度 O(n*c)，空间复杂度 O(c)。
      * */
     public static int knapsack4(int[] w, int[] v, int c) {
@@ -125,41 +125,19 @@ public class B2_CompleteKnapsack {
         int[] dp = new int[c + 1];
 
         for (int i = 0; i < n; i++)
-            for (int j = w[i]; j <= c; j++)  // 从左到右 [w[i], c] 进行覆盖（这里是与 _ZeroOneKnapsack 解法4的最大区别）
+            for (int j = w[i]; j <= c; j++)  // 从左到右 [w[i], c] 进行覆盖（这是与 B1_ZeroOneKnapsack 解法4的最大区别）
                 dp[j] = Math.max(dp[j], v[i] + dp[j - w[i]]);
 
         return dp[c];
     }
 
-
-
-
-    public static int knapsack0(int[] w, int[] v, int c) {
-        int n = w.length;
-
-        int[][] dp = new int[n][c + 1];
-
-        for (int j = 0; j <= c; j++)
-            dp[0][j] = (j / w[0]) * v[0];
-
-        for (int i = 1; i < n; i++) {
-            for (int j = 1; j <= c; j++) {
-                dp[i][j] = dp[i - 1][j];
-                for (int k = 0; k * w[i] <= j; k++)
-                    dp[i][j] = Math.max(dp[i][j], dp[i-1][j-w[i]*k] + v[i]*k);
-            }
-        }
-
-        return dp[n-1][c];
-    }
-
     public static void main(String[] args) {
-        log(knapsack0(         // expects 10. (5 + 5)
+        log(knapsack4(         // expects 10. (5 + 5)
             new int[]{5, 7},  // weight
             new int[]{5, 8},  // value
             10));             // capacity
 
-        log(knapsack0(         // expects 16. (8 + 8)
+        log(knapsack4(         // expects 16. (8 + 8)
             new int[]{5, 7},
             new int[]{5, 8},
             14));
