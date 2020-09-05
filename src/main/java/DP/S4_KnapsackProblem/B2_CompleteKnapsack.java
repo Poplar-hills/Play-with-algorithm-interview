@@ -68,10 +68,10 @@ public class B2_CompleteKnapsack {
         int[][] dp = new int[n][c + 1];
 
         for (int j = 0; j <= c; j++)
-            dp[0][j] = (j / w[0]) * v[0];  // 解决最基本问题（填充第一行）
+            dp[0][j] = (j / w[0]) * v[0];  // 解决最基本问题（填充第一行），注意这里与 B1_ZeroOneKnapsack 的区别
 
         for (int i = 1; i < n; i++) {
-            for (int j = 0; j <= c; j++) {
+            for (int j = 1; j <= c; j++) {
                 dp[i][j] = dp[i - 1][j];
                 for (int k = 0; w[i] * k <= j; k++)
                     dp[i][j] = Math.max(dp[i][j], v[i] * k + dp[i - 1][j - w[i] * k]);
@@ -131,13 +131,35 @@ public class B2_CompleteKnapsack {
         return dp[c];
     }
 
+
+
+
+    public static int knapsack0(int[] w, int[] v, int c) {
+        int n = w.length;
+
+        int[][] dp = new int[n][c + 1];
+
+        for (int j = 0; j <= c; j++)
+            dp[0][j] = (j / w[0]) * v[0];
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j <= c; j++) {
+                dp[i][j] = dp[i - 1][j];
+                for (int k = 0; k * w[i] <= j; k++)
+                    dp[i][j] = Math.max(dp[i][j], dp[i-1][j-w[i]*k] + v[i]*k);
+            }
+        }
+
+        return dp[n-1][c];
+    }
+
     public static void main(String[] args) {
-        log(knapsack(         // expects 10. (5 + 5)
+        log(knapsack0(         // expects 10. (5 + 5)
             new int[]{5, 7},  // weight
             new int[]{5, 8},  // value
             10));             // capacity
 
-        log(knapsack(         // expects 16. (8 + 8)
+        log(knapsack0(         // expects 16. (8 + 8)
             new int[]{5, 7},
             new int[]{5, 8},
             14));
