@@ -7,7 +7,7 @@ import java.util.Arrays;
 /*
  * DP Basics: Multi Knapsack Problem
  *
- * - 在完全背包问题基础上改变一点 —— 每种物品不再又有无限多个，而是只有固定数量个。
+ * - 在完全背包问题基础上改变一点 —— 每种物品不再有无限多个，而是只有固定数量个。
  *
  * - 分析：采用 DP 思路的关键是寻找原问题的子问题，并写出状态转移方程：
  *   - 子问题与0/1背包、完全背包一样，仍然是：f(i, j) 表示“当背包剩余容量为 j 时，从前 i 个物品中能得到的最大价值”。
@@ -43,8 +43,31 @@ public class B3_MultiKnapsack {
     }
 
     /*
-     * 解法2：DP + 一维数组
-     * - 思路：类似 _CompleteKnapsack 中的解法3。
+     * 解法2：DP + 二维数组
+     * - 思路：类似 B2_CompleteKnapsack 中的解法2。
+     * - 时间复杂度 O(n*c*k)，空间复杂度 O(n*c)，其中 k 为每种物品的最多件数。
+     * */
+    public static int knapsack0(int[] w, int[] v, int[] q, int c) {
+        int n = w.length;
+        int[][] dp = new int[n][c + 1];
+
+        for (int j = 0; j <= c; j++)
+            dp[0][j] = Math.min(j / w[0], q[0]) * v[0];
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j <= c; j++) {
+                dp[i][j] = dp[i-1][j];
+                for (int k = 0; k <= q[i] && w[i] * k <= j; k++)
+                    dp[i][j] = Math.max(dp[i][j], dp[i-1][j-w[i]*k] + v[i]*k);
+            }
+        }
+
+        return dp[n - 1][c];
+    }
+
+    /*
+     * 解法3：DP + 一维数组
+     * - 思路：类似 B2_CompleteKnapsack 中的解法3。
      * - 时间复杂度 O(n*c*k)，空间复杂度 O(c)，其中 k 为每种物品的最多件数。
      * */
     public static int knapsack2(int[] w, int[] v, int[] q, int c) {
