@@ -57,7 +57,7 @@ public class B3_MultiKnapsack {
         for (int i = 1; i < n; i++) {
             for (int j = 1; j <= c; j++) {
                 dp[i][j] = dp[i-1][j];
-                for (int k = 0; k <= q[i] && w[i] * k <= j; k++)
+                for (int k = 0; k <= q[i] && w[i] * k <= j; k++)  // 增加物品件数的约束
                     dp[i][j] = Math.max(dp[i][j], dp[i-1][j-w[i]*k] + v[i]*k);
             }
         }
@@ -76,15 +76,13 @@ public class B3_MultiKnapsack {
 
         int[] dp = new int[c + 1];
 
-        for (int j = 0; j <= c; j++) {
-            int maxNum = j / w[0];                            // 容量为 j 时最多能装下物品0的件数
-            dp[j] = (maxNum <= q[0] ? maxNum : q[0]) * v[0];  // 增加物品件数的约束
-        }
+        for (int j = 0; j <= c; j++)
+            dp[j] = Math.min(j / w[0], q[0]) * v[0];
 
         for (int i = 1; i < n; i++)
             for (int j = c; j >= 0; j--)
-                for (int k = 0; k <= q[i] && w[i] * k <= j; k++)  // 增加物品件数的约束
-                    dp[j] = Math.max(dp[j], v[i] * k + dp[j - w[i] * k]);
+                for (int k = 0; k <= q[i] && w[i] * k <= j; k++)
+                    dp[j] = Math.max(dp[j], dp[j-w[i]*k] + v[i]*k);
 
         return dp[c];
     }
