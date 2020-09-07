@@ -138,10 +138,48 @@ public class L322_CoinChange {
         return cache[j] = (min == Integer.MAX_VALUE) ? -1 : min;
     }
 
+
+
+
+
+
+
+
+
+
+    // f(i,j) -> 使用前 i 个硬币兑换 j 面额需要的最少个数
+    // f(i,j) = min(f(i-1,j), f(i-1,j-v[i]*k) + 1*k)
+    //
+    //  v  i\a 0  1  2  3  4  5  6  7  8  9  10 11
+    //  2  0   -1 -1 1  -1 2  -1 3  -1 4  -1  5 -1
+    //  5  1   -1 -1 1  -1 2  1  3  2  4  3  2  4
+    //
+
+    public static int coinChange0(int[] coins, int amount) {
+        if (coins == null || coins.length == 0 || amount == 0) return -1;
+
+        int n = coins.length;
+        int[][] dp = new int[n][amount + 1];
+
+        for (int j = 0; j <= amount; j++)
+            dp[0][j] = (j >= coins[0] && j % coins[0] == 0) ? (j / coins[0]) : -1;
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j <= amount; j++) {
+                dp[i][j] = dp[i - 1][j];
+                for (int k = 0; coins[i] * k <= j; k++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i-1][j - coins[i]*k] + k);
+                }
+            }
+        }
+
+        return dp[n - 1][amount];
+    }
+
     public static void main(String[] args) {
-        log(coinChange(new int[]{2, 5}, 11));         // expects 4. (5 + 2 + 2 + 2)
-        log(coinChange(new int[]{2, 5, 10, 1}, 27));  // expects 4. (10 + 10 + 5 + 2)
-        log(coinChange(new int[]{1, 2, 5}, 11));      // expects 3. (5 + 5 + 1)
-        log(coinChange(new int[]{2}, 3));             // expects -1.
+        log(coinChange0(new int[]{2, 5}, 11));         // expects 4. (5 + 2 + 2 + 2)
+        log(coinChange0(new int[]{2, 5, 10, 1}, 27));  // expects 4. (10 + 10 + 5 + 2)
+        log(coinChange0(new int[]{1, 2, 5}, 11));      // expects 3. (5 + 5 + 1)
+        log(coinChange0(new int[]{2}, 3));             // expects -1.
     }
 }
