@@ -39,7 +39,7 @@ public class L322_CoinChange {
         int[][] dp = new int[n][amount + 1];
 
         for (int j = 0; j <= amount; j++)
-            dp[0][j] = (j % coins[0] == 0) ? (j / coins[0]) : Integer.MAX_VALUE;
+            dp[0][j] = (j % coins[0] == 0) ? (j / coins[0]) : Integer.MAX_VALUE;  // 解决最基本问题（∵ 要求的是最小值 ∴ 初值设为正最大）
 
         for (int i = 1; i < n; i++)
             for (int j = 0; j <= amount; j++)
@@ -52,7 +52,9 @@ public class L322_CoinChange {
 
     /*
      * 解法2：DP + 一维数组
-     * - 思路：参考 _CompleteKnapsack 解法3，状态转移方程化简为 f(j) = min(f(j), 1 + f(j-v[i]))。
+     * - 思路：类似 B2_CompleteKnapsack 解法3 ∵ 解法1中的表达式里的 j-v[i] 总是 < j ∴ f(i,j) 只与 f(i-1, 1..j) 有关，
+     *   即填表法中待计算行中的任意一格 [i,j] 的值只与上一行左半部分 [1..j] 区间里的值有关，而与右边的值无关 ∴ 可以在每次放
+     *   物品时从右向左覆盖以前的值 ∴ 解法1中的两行 dp 数组可以合成一行。递推表达式简化为 f(j) = min(f(j), 1 + f(j-v[i]))。
      * - 时间复杂度 O(n*amount^2)，空间复杂度 O(amount)。
      * */
     public static int coinChange2(int[] coins, int amount) {
@@ -75,7 +77,8 @@ public class L322_CoinChange {
 
     /*
      * 解法3：DP + 一维数组
-     * - 思路：参考 _CompleteKnapsack 解法4，去除了内层对 k 的循环，对 j 的循环改为从左向右。
+     * - 思路：参考 B2_CompleteKnapsack 解法4，将“遍历 k 逐一尝试”的思路改为“基于前面的结果进行递推”的思路：将对 j 的循环
+     *   改为从左往右覆盖，从第一个可容纳 coins[i] 的 amount 开始遍历，比较再放入/不再放入一个 coins[i] 的价值。
      * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
      * */
     public static int coinChange3(int[] coins, int amount) {
@@ -84,10 +87,10 @@ public class L322_CoinChange {
         int[] dp = new int[amount + 1];
 
         for (int j = 0; j <= amount; j++)
-            dp[j] = (j % coins[0] == 0) ? (j / coins[0]) : Integer.MAX_VALUE;  // 解决最基本问题（∵ 要求的是最小值 ∴ 初值设为正最大）
+            dp[j] = (j % coins[0] == 0) ? (j / coins[0]) : Integer.MAX_VALUE;
 
-        for (int i = 1; i < coins.length; i++)        // i 从1开始遍历
-            for (int j = coins[i]; j <= amount; j++)  // 从第一个能放入 coins[i] 的容量开始向右进行遍历和覆盖
+        for (int i = 1; i < coins.length; i++)
+            for (int j = coins[i]; j <= amount; j++)  // 从第一个能放入 coins[i] 的 amount 开始向右进行遍历和覆盖
                 if (dp[j - coins[i]] != Integer.MAX_VALUE)
                     dp[j] = Math.min(dp[j], dp[j - coins[i]] + 1);
 
@@ -162,18 +165,19 @@ public class L322_CoinChange {
         int[][] dp = new int[n][amount + 1];
 
         for (int j = 0; j <= amount; j++)
-            dp[0][j] = (j >= coins[0] && j % coins[0] == 0) ? (j / coins[0]) : -1;
+            dp[0][j] = (j >= coins[0] && j % coins[0] == 0) ? (j / coins[0]) : Integer.MAX_VALUE;
 
         for (int i = 1; i < n; i++) {
             for (int j = 0; j <= amount; j++) {
                 dp[i][j] = dp[i - 1][j];
                 for (int k = 0; coins[i] * k <= j; k++) {
-                    dp[i][j] = Math.min(dp[i][j], dp[i-1][j - coins[i]*k] + k);
+                    if (dp[i-1][j - coins[i]*k] != Integer.MAX_VALUE)
+                        dp[i][j] = Math.min(dp[i][j], dp[i-1][j - coins[i]*k] + k);
                 }
             }
         }
 
-        return dp[n - 1][amount];
+        return dp[n - 1][amount] == Integer.MAX_VALUE ? -1 : dp[n - 1][amount];
     }
 
     public static void main(String[] args) {

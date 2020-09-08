@@ -58,7 +58,7 @@ public class B2_CompleteKnapsack {
 
     /*
      * 解法2：DP + 二维数组
-     * - 思路：类似 _ZeroOneKnapsack 的解法2。
+     * - 思路：类似 B1_ZeroOneKnapsack 的解法2。
      * - 时间复杂度 O(n*c^2)，空间复杂度 O(n*c)。
      * */
     public static int knapsack2(int[] w, int[] v, int c) {
@@ -83,7 +83,7 @@ public class B2_CompleteKnapsack {
 
     /*
      * 解法3：DP + 一维数组（解法2的空间优化版）
-     * - 思路：类似 _ZeroOneKnapsack 中的解法4，状态转移方程简化为：f(i, j) = max(f(j), v[i]*k + f(j - w[j]*k))。
+     * - 思路：类似 B1_ZeroOneKnapsack 中的解法4，状态转移方程简化为：f(i, j) = max(f(j), v[i]*k + f(j - w[j]*k))。
      * - 时间复杂度 O(n*c^2)，空间复杂度 O(c)。
      * */
     public static int knapsack3(int[] w, int[] v, int c) {
@@ -112,9 +112,9 @@ public class B2_CompleteKnapsack {
      *        5  5 |  0   0  0  0  0  0  5  5  5  5  5  10  10  10  10  10
      *        7  8 |  1   0  0  0  0  0  5  5  8  8  8  10  10  13  13  16
      *   当 i=1 时，j 从7开始向右遍历：
-     *     - 当 j=7 时刚好只能容纳一个物品1 ∴ 判断是否放入一个物品1会产生更大价值: dp[7] = max(dp[7], v[1])；
-     *     - 当 j=8 时能容纳一个物品1 ∴ 判断是否放入一个物品1会产生更大价值: dp[8] = max(dp[8], v[1] + dp[8-7])；
-     *     - 当 j=14 时能容纳两个物品1 ∴ 判断是否放入第二个物品1会产生更大价值: dp[14] = max(dp[14], v[1] + dp[14-7])。
+     *     - 当 j=7 时刚好只能容纳一个物品1 ∴ 判断放入一个物品1是否会得到更大价值: dp[7] = max(dp[7], v[1])；
+     *     - 当 j=8 时能容纳一个物品1 ∴ 判断放入一个物品1是否会得到更大价值: dp[8] = max(dp[8], v[1] + dp[8-7])；
+     *     - 当 j=14 时能容纳两个物品1 ∴ 判断放入第二个物品1是否会得到更大价值: dp[14] = max(dp[14], v[1] + dp[14-7])。
      *   状态转移方程：f(j) = max(f(j), v[i] + f(j - w[j]))。
      * - 时间复杂度 O(n*c)，空间复杂度 O(c)。
      * */
