@@ -78,7 +78,17 @@ public class L322_CoinChange {
     /*
      * 解法3：DP + 一维数组
      * - 思路：参考 B2_CompleteKnapsack 解法4，将“遍历 k 逐一尝试”的思路改为“基于前面的结果进行递推”的思路：将对 j 的循环
-     *   改为从左往右覆盖，从第一个可容纳 coins[i] 的 amount 开始遍历，比较再放入/不再放入一个 coins[i] 的价值。
+     *   改为从左往右覆盖，从第一个可容纳 coins[i] 的 amount 开始遍历，比较再放入/不再放入一个 coins[i] 的价值：
+     *        v | i\j  0  1  2  3  4  5  6  7  8  9  10 11
+     *        2 |  0   0  M  1  M  2  M  3  M  4  M  5  M
+     *        5 |  1   -  -  -  -  -  1  3  2  4  3  2  4
+     *     - 当 i=0 时，遍历解决基本问题；
+     *     - 当 i=1 时，直接从 j=5 处开始遍历：
+     *       - 当 j=5 时，∵ dp[j-coins[i]] != MAX_VALUE，说明放入一个 v=5 的硬币后可以用 n 个其它硬币填满剩余额度
+     *         （此处是用0个 v=2 的硬币填满剩余额度0）∴ dp[j] = min(dp[j], dp[0] + 1) = 1。
+     *       - 当 j=6 时，∵ dp[j-coins[i]] == MAX_VALUE，说明放入一个 v=5 的硬币后没法用 n 个其它硬币填满剩余额度
+     *         ∴ 此时 dp[j] 处的值不变，仍是 i=0 时的值3。
+     *       - 如此递归...
      * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
      * */
     public static int coinChange3(int[] coins, int amount) {
@@ -91,15 +101,15 @@ public class L322_CoinChange {
 
         for (int i = 1; i < coins.length; i++)
             for (int j = coins[i]; j <= amount; j++)  // 从第一个能放入 coins[i] 的 amount 开始向右进行遍历和覆盖
-                if (dp[j - coins[i]] != Integer.MAX_VALUE)
+                if (dp[j - coins[i]] != Integer.MAX_VALUE)  // 若 == MAX_VALUE，则
                     dp[j] = Math.min(dp[j], dp[j - coins[i]] + 1);
 
         return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
     }
 
     /*
-     * 解法4：解法3的简化版
-     * - 思路：本解法与解法3的不同之处在于对最基本问题的设定不同。
+     * 解法4：解法3的另一种写法
+     * - 思路：与解法3一致。
      * - 时间复杂度 O(n*amount)，空间复杂度 O(amount)。
      * */
     public static int coinChange4(int[] coins, int amount) {
