@@ -8,12 +8,13 @@ import java.util.Arrays;
  * Combination Sum IV
  *
  * - Given an integer array with all positive numbers and no duplicates, find the number of possible
- *   combinations that add up to a positive integer target. (与 L39_CombinationSum 的不同之处在于：1. 只返回解的
- *   个数即可；2. 解中元素是顺序相关的，见 Notes 第2点)。
+ *   combinations that add up to a positive integer target. 该题与 L39_CombinationSum 的不同之处在于：
+ *     1. 只返回解的个数即可；
+ *     2. 解中元素是顺序相关的，见 Notes 第2点。
  *
  * - Notes：
  *   1. 数组中的整数可被重复使用；
- *   2. 结果是顺序相关的，即 112 和 211 是两种不同组合。
+ *   2. 结果是顺序相关的，即 1+1+2 和 2+1+1 是两种不同组合。
  * */
 
 public class L377_CombinationSumIV {
@@ -71,13 +72,45 @@ public class L377_CombinationSumIV {
     }
 
     /*
-     * 解法2：DP
-     * - 思路：基于超时解中的递归过程，可知：
-     *   - 定义子问题：f(i) 表示“用 nums 中的元素凑出 i 的方法个数”；
-     *   - 状态转移方程：f(i) = sum(f(i - nums[j]))，其中 j ∈ [0, nums.length) && i >= nums[j]。
+     * TODO: 未完成的解法2：DP
+     * - 思路：
+     *   - 定义子问题：f(i,j) 表示“用 nums 中的前 i 个元素凑出 j 的方法个数”；
+     *   - 递推表达式：f(i,j) = sum(f(i - nums[j]))，其中 j ∈ [0, n) && i >= nums[j]。
+     *
+     *   n | i\t  0  1  2  3  4  5  6
+     *   2 |  0   1  -  1  -  1  -  1
+     *   3 |  1   1  -  1  1  1  2  2
+     *   4 |  2   1  -  1  1  2  2  4
+     *
      * - 时间复杂度 O(n*target)，空间复杂度 O(target)。
      * */
     public static int combinationSum2(int[] nums, int target) {
+        if (target <= 0 || nums == null || nums.length == 0) return 0;
+
+        int n = nums.length;
+        int[][] dp = new int[n][target + 1];
+
+        for (int j = 0; j <= target; j++)
+            dp[0][j] = (j % nums[0] == 0) ? 1 : -1;
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j <= target; j++) {
+                if (j >= nums[i])
+                    dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i]];
+            }
+        }
+
+        return dp[n - 1][target];
+    }
+
+    /*
+     * 解法3：DP
+     * - 思路：基于超时解中的递归过程，可知：
+     *   - 定义子问题：f(i) 表示“用 nums 中的元素凑出 i 的方法个数”；
+     *   - 递推表达式：f(i) = sum(f(i - nums[j]))，其中 j ∈ [0, n) && i >= nums[j]。
+     * - 时间复杂度 O(n*target)，空间复杂度 O(target)。
+     * */
+    public static int combinationSum3(int[] nums, int target) {
         if (target <= 0 || nums == null || nums.length == 0) return 0;
 
         int[] dp = new int[target + 1];    // dp[i] 表示用 nums 中的元素凑出 i 的方法个数（∵ 最后要取 dp[target] ∴ 这里开辟 target+1 的空间）
