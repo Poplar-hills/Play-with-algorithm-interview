@@ -17,9 +17,10 @@ public class L80_RemoveDuplicatesII {
      * */
     public static int removeDuplicates(int[] arr) {
         int nextValidIdx = 2;
-        for (int i = 2; i < arr.length; i++) {     // 从第3个元素开始遍历
-            if (arr[i] > arr[nextValidIdx - 2]) {  // 在有序数组中判断一个元素是否连续出现3次的方法（与上上个元素作比较）
-                arr[nextValidIdx] = arr[i];
+        for (int i = 2; i < arr.length; i++) {      // 从第3个元素开始遍历
+            if (arr[i] != arr[nextValidIdx - 2]) {  // 在有序数组中判断一个元素是否连续出现3次的方法（与上上个元素作比较）
+                if (nextValidIdx != i)
+                    arr[nextValidIdx] = arr[i];
                 nextValidIdx++;
             }
         }

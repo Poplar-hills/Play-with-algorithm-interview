@@ -51,12 +51,12 @@ public class L27_RemoveElement {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[]{3, 2, 2, 3};  // 去除数组中的所有3
-        log(removeElement2(arr1, 3));         // expects 2
-        log(arr1);                           // expects [2, 2, 2, 3]
+        int[] arr1 = new int[]{2, 3, 2, 2, 3};  // 去除数组中的所有3
+        log(removeElement(arr1, 3));         // expects 3
+        log(arr1);                           // expects [2, 2, 2, 2, 3]
 
         int[] arr2 = new int[] {0, 1, 2, 0, 0, 0, 3, 4};  // 去除数组中的所有0
-        log(removeElement2(arr2, 0));         // expects 4
+        log(removeElement(arr2, 0));         // expects 4
         log(arr2);                           // expects [1, 2, 3, 4, 0, 0, 3, 4]
     }
 }
