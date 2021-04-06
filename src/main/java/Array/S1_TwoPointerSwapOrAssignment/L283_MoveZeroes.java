@@ -43,7 +43,7 @@ public class L283_MoveZeroes {
 
     /*
      * 解法3：Assignment（解法2的时间优化版）
-     * - 思路：在解法2上进行改进，只遍历 arr 一次，同时进行复制与置零操作。
+     * - 思路：在解法2上改进，只遍历 arr 一次，同时进行复制与置零操作。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static void moveZeros3(int[] arr) {
