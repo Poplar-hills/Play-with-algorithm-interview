@@ -61,8 +61,14 @@ public class L75_SortColors {
 
     /*
      * 解法2：Standard merge sort
-     * - 思路：归并排序的过程是：1. 将数组不断二分，直到每个元素为一组；2.
-     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+     * - 思路：归并排序的过程是：
+     *     1. 将数组不断二分，直到每个元素为一组；
+     *     2. merge 两个各自有序的数组。
+     *   归并排序的实现有3个要点：
+     *     1. 要开辟辅助空间；
+     *     2. 遍历的是该辅助空间里的每个位置，而非遍历待合并数组；
+     *     3. 遍历过程中先讨论越界情况，再讨论没越界情况。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     private static void sortColors2(int[] arr) {
         if (arr == null || arr.length == 0) return;
@@ -117,14 +123,14 @@ public class L75_SortColors {
      * - 空间复杂度 O(1)。
      * */
     private static void sortColors4(int[] arr) {
-        int last0Idx = -1;                  // 指向最后一个等于0的元素
+        int last0Idx = -1;                 // 指向最后一个等于0的元素
         int first2Idx = arr.length;         // 指向第一个等于2的元素
         for (int i = 0; i < first2Idx; ) {  // 手动控制 i 的自增（∵ arr[i] == 2 时 i 不需要自增）
             if (arr[i] == 0)
                 swap(arr, i++, ++last0Idx);
             else if (arr[i] == 2)
                 swap(arr, i, --first2Idx);
-            else i++;                       // arr[i] == 1 的情况
+            else i++;                      // arr[i] == 1 的情况
         }
     }
 
