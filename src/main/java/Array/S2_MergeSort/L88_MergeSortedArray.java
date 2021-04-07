@@ -1,5 +1,7 @@
 package Array.S2_MergeSort;
 
+import java.util.Arrays;
+
 import static Utils.Helpers.log;
 
 /*
@@ -13,8 +15,20 @@ import static Utils.Helpers.log;
  * */
 
 public class L88_MergeSortedArray {
+    /**
+     * 解法1：copy & sort
+     * - 思路：先将 nums2 的元素追加到 nums1 尾部，然后对 nums1 进行排序。
+     * - 时间复杂度为 O(n + (m+n)log(m+n))，即 O(nlogn) 量级。
+     * - 空间复杂度为 O(1)，没有开辟额外空间。
+     */
+    private static void merge(int[] nums1, int m, int[] nums2, int n) {
+        for (int j = 0; j < nums2.length; j++)
+            nums1[m + j] = nums2[j];
+        Arrays.sort(nums1);
+    }
+
     /*
-     * 解法1：Merge sort
+     * 解法2：Merge sort
      * - 思路：要将两个有序数组合二为一，并且结果也要有序 ∴ 整体思路是归并排序。
      * - 实现：基本的归并排序的实现有3个要点：
      *   1. 要开辟辅助空间；
@@ -22,7 +36,7 @@ public class L88_MergeSortedArray {
      *   3. 遍历过程中先讨论越界情况，再讨论没越界情况。
      * - 时间复杂度为 O(m+n)，空间复杂度 O(m+n)。
      * */
-    private static void merge(int[] nums1, int m, int[] nums2, int n) {
+    private static void merge2(int[] nums1, int m, int[] nums2, int n) {
         int[] aux = new int[m + n];             // 开辟辅助空间
         int i = 0, j = 0;
 
@@ -42,7 +56,7 @@ public class L88_MergeSortedArray {
     }
 
     /*
-     * 解法2：Merge sort（解法1的时空优化版）
+     * 解法3：Merge sort（解法1的时空优化版）
      * - 思路：与解法1一致，都是归并排序。
      * - 实现：解法1中之所以需要辅助空间是因为若在 nums1 中原地排序，当 nums1[i] > nums2[j] 时，需 nums1[k] = nums2[j]，
      *   从而可能冲掉了还未处理的元素 nums1[k]，导致排序错误。但该题中说了 nums1 尾部有足够空间 ∴ 可以直接利用尾部空间而不再
@@ -61,7 +75,7 @@ public class L88_MergeSortedArray {
      *
      * - 时间复杂度 O(m)，空间复杂度 O(1)。
      * */
-    private static void merge2(int[] nums1, int m, int[] nums2, int n) {
+    private static void merge3(int[] nums1, int m, int[] nums2, int n) {
         int i = m - 1, j = n - 1;
         for (int k = nums1.length - 1; k >= 0 && j >= 0; k--) {  // 加上条件 j>=0 就是要在 nums2 中的元素全部处理完时结束整个排序
             if (i >= 0 && nums1[i] >= nums2[j])
