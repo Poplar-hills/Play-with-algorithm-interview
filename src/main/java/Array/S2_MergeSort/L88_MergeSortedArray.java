@@ -77,7 +77,7 @@ public class L88_MergeSortedArray {
      * */
     private static void merge3(int[] nums1, int m, int[] nums2, int n) {
         int i = m - 1, j = n - 1;
-        for (int k = nums1.length - 1; k >= 0 && j >= 0; k--) {  // 加上条件 j>=0 就是要在 nums2 中的元素全部处理完时结束整个排序
+        for (int k = m + n - 1; k >= 0 && j >= 0; k--) {  // 加上条件 j>=0 就是要在 nums2 中的元素全部处理完时结束整个排序
             if (i >= 0 && nums1[i] >= nums2[j])
                 nums1[k] = nums1[i--];
             else
