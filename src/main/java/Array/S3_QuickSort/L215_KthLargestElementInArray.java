@@ -28,7 +28,7 @@ public class L215_KthLargestElementInArray {
      * */
     public static int kthLargest(int[] nums, int k) {
         PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());  // 最大堆（PriorityQueue 默认是最小堆）
-        for (int n : nums) pq.add(n);            // ∵ PriorityQueue 没有 heapify 方法 ∴ 需要手动添加
+        for (int n : nums) pq.offer(n);          // ∵ PriorityQueue 没有 heapify 方法 ∴ 需要手动添加
         for (int i = 1; i < k; i++) pq.poll();   // 将最大的 k-1 个元素从堆中移除
         return pq.poll();
     }
@@ -43,7 +43,7 @@ public class L215_KthLargestElementInArray {
     public static int kthLargest2(int[] nums, int k) {
         PriorityQueue<Integer> pq = new PriorityQueue<>(k + 1);  // 最小堆（∵ 后面要判断堆大小是否超过 k ∴ 这里开辟 k+1 的空间）
         for (int n : nums) {
-            pq.add(n);
+            pq.offer(n);
             if (pq.size() == k + 1)  // 在往堆中添加元素过程中，一旦堆大小超过 k 就移除堆中最小的元素
                 pq.poll();
         }
@@ -130,12 +130,12 @@ public class L215_KthLargestElementInArray {
 
     public static void main(String[] args) {
         int[] arr1 = new int[]{3, 2, 1, 5, 6, 4};
-        log(kthLargest4(arr1, 2));  // expects 5
+        log(kthLargest(arr1, 2));  // expects 5
 
         int[] arr2 = new int[]{0, -2, 4, 4 -2, 0};
-        log(kthLargest4(arr2, 3));  // expects 0
+        log(kthLargest(arr2, 3));  // expects 0
 
         int[] arr3 = new int[]{0, -2, 4, 4 -2, 0};
-        log(kthLargest4(arr3, 4));  // expects 0
+        log(kthLargest(arr3, 4));  // expects 0
     }
 }

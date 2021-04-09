@@ -36,7 +36,7 @@ public class L75_SortColors {
 
     private static void quickSort(int[] arr, int l, int r) {
         if (l >= r) return;
-        int[] ps = partition(arr, l, r);
+        int[] ps = partition(arr, l, r);  // 快速排序在"分"上下功夫，通过 partition 找到 pivot 后再"治" pivot 两边的元素
         quickSort(arr, l, ps[0]);
         quickSort(arr, ps[1], r);
     }
