@@ -18,25 +18,25 @@ import static Utils.Helpers.log;
 public class L3_LongestSubstringWithoutRepeatingCharacters {
     /*
      * 解法1：滑动窗口 + Set
-     * - 思路：窗口左右界初始都在0位置上（即初始窗口中包含一个元素），每次检查 r 处的字符是否存在于窗口中，若不存在则 r++，否则
-     *   l++，且每次窗口长度变化时都与之前的最长记录比较。
-     * - 实现：1. 借助 Set 检查 r 处的字符是否位于窗口中；
-     *        2. 计算当前窗口长度时要用 r-l（而非 r-l+1）∵ r++ 后会指向下一个待进入窗口的字符，而非当前窗口中的最后一个字符。
-     * - 👉注意：滑动窗口的题目要定义好窗口左右边界的语义，如右边界是指向当前窗口中的最后一个字符还是指向下一个待进入窗口的字符。
+     * - 思路：窗口左右界初始都在0位置上，每次检查 r 处的字符是否存在于窗口中，若不存在则纳入窗口并 r++，否则将 l 处的字符从窗口
+     *   中移除并 l++。在窗口每次长度增加时比较并记录窗口最大长度。
+     * - 实现：借助 Set 检查 r 处的字符是否位于窗口中。
+     * - 👉 注意：滑动窗口的题目要定义好窗口左右边界的语义，如 r 指向当前窗口中的最后一个字符还是指向下一个待进入窗口的字符。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring(String s) {
         if (s == null) return 0;
         char[] chars = s.toCharArray();
-        int maxLen = 0, l = 0, r = 0, n = chars.length;
+        int maxLen = 0;
         Set<Character> set = new HashSet<>();
 
-        while (r < n) {
-            if (r < n && !set.contains(chars[r]))
+        for (int l = 0, r = 0; r < chars.length; ) {
+            if (!set.contains(chars[r])) {
                 set.add(chars[r++]);
-            else
-                set.remove(chars[l++]);  // l 总是 ≤ r ∴ 不用担心 l 会越界
-            maxLen = Math.max(maxLen, r - l);
+                maxLen = Math.max(maxLen, set.size());
+            } else {
+                set.remove(chars[l++]);
+            }
         }
 
         return maxLen;
@@ -188,12 +188,12 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     public static void main(String[] args) {
-        log(lengthOfLongestSubstring5("abcabcbb"));  // expects 3 ("abc" or "bca" or "cab")
-        log(lengthOfLongestSubstring5("pwwkew"));    // expects 3 ("wke")
-        log(lengthOfLongestSubstring5("cdd"));       // expects 2 ("cd")
-        log(lengthOfLongestSubstring5("abba"));      // expects 2 ("ab" or "ba")
-        log(lengthOfLongestSubstring5("bbbbba"));    // expects 2 ("ba")
-        log(lengthOfLongestSubstring5("bbbbb"));     // expects 1 ("b")
-        log(lengthOfLongestSubstring5(""));          // expects 0
+        log(lengthOfLongestSubstring7("abbcaccb"));  // expects 3 ("bca")
+        log(lengthOfLongestSubstring7("pwwkew"));    // expects 3 ("wke")
+        log(lengthOfLongestSubstring7("cdd"));       // expects 2 ("cd")
+        log(lengthOfLongestSubstring7("abba"));      // expects 2 ("ab" or "ba")
+        log(lengthOfLongestSubstring7("bbbbba"));    // expects 2 ("ba")
+        log(lengthOfLongestSubstring7("bbbbb"));     // expects 1 ("b")
+        log(lengthOfLongestSubstring7(""));          // expects 0
     }
 }
