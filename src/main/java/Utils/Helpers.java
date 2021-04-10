@@ -27,7 +27,7 @@ public class Helpers {
 
     public static void log(TreeNode node) { System.out.println(node == null ? null : node.getVal()); }
 
-    public static <E> void swap(E[] arr, int i, int j) {
+    public static <E> void swap(E[] arr, int i, int j) {  // generic swap 方法（但不支持原始类型）
         if (i < 0 || i >= arr.length || j < 0 || j >= arr.length)
             throw new IllegalArgumentException("swap failed. Index is out of bounds.");
         E temp = arr[i];
@@ -35,7 +35,7 @@ public class Helpers {
         arr[j] = temp;
     }
 
-    public static void swap(int[] arr, int i, int j) {
+    public static void swap(int[] arr, int i, int j) {  // int 类型的 swap 方法
         if (i < 0 || i >= arr.length || j < 0 || j >= arr.length)
             throw new IllegalArgumentException("swap failed. Index is out of bounds.");
         int temp = arr[i];
@@ -43,7 +43,7 @@ public class Helpers {
         arr[j] = temp;
     }
 
-    public static void swap(char[] arr, int i, int j) {
+    public static void swap(char[] arr, int i, int j) {  // char 类型的 swap 方法
         char temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;

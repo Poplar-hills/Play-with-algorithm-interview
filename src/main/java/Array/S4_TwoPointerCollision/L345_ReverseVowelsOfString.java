@@ -12,7 +12,7 @@ import static Utils.Helpers.swap;
  *
  * - Write a function that takes a string as input and reverse only the vowels of the string.
  *
- * - 👉Java 语法：
+ * - 👉 Java 语法：
  *   1. 将 char[] 连接成一个 String 的方式：new String(chars) 或 String.valueOf(chars);
  *   2. 将 String 打散成 char[] 的方式：str.toCharArray();
  *   3. reverse 一个 String 的最快方式：new StringBuilder(str).reverse().toString()。
@@ -37,8 +37,8 @@ public class L345_ReverseVowelsOfString {
     }
 
     private static boolean isVowel(char c) {
-        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'
-            || c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U';
+        char lc = Character.toLowerCase(c);
+        return lc == 'a' || lc == 'e' || lc == 'i' || lc == 'o' || lc == 'u';
     }
 
     /*
