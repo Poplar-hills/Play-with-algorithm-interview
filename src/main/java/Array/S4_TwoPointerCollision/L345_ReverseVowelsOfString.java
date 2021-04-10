@@ -49,14 +49,14 @@ public class L345_ReverseVowelsOfString {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static String reverseVowels2(String s) {
-        Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));  // 从列表生成 Set
+        Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));  // 从 List 生成 Set
         char[] chars = s.toCharArray();
         for (int i = 0, j = s.length() - 1; i < j; i++, j--) {
             while (i < j && !vowels.contains(Character.toLowerCase(chars[i]))) i++;
             while (i < j && !vowels.contains(Character.toLowerCase(chars[j]))) j--;
             if (i != j) swap(chars, i, j);
         }
-        return String.valueOf(chars);
+        return new String(chars);
     }
 
     public static void main(String[] args) {
