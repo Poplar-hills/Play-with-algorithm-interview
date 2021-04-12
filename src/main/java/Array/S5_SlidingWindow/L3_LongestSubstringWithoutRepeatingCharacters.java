@@ -27,14 +27,14 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         if (s == null) return 0;
         char[] chars = s.toCharArray();
         int maxLen = 0;
-        Set<Character> set = new HashSet<>();
+        Set<Character> window = new HashSet<>();  // 以 Set 为窗口
 
         for (int l = 0, r = 0; r < chars.length; ) {
-            if (!set.contains(chars[r])) {
-                set.add(chars[r++]);
-                maxLen = Math.max(maxLen, set.size());
+            if (!window.contains(chars[r])) {
+                window.add(chars[r++]);
+                maxLen = Math.max(maxLen, window.size());
             } else {
-                set.remove(chars[l++]);
+                window.remove(chars[l++]);
             }
         }
 
@@ -145,19 +145,20 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
 
     /*
      * 解法6：滑动窗口 + Map 记录字符索引（最优解）
-     * - 思路：该解法使用 Map 记录每个字符的索引，重复元素进入窗口时，l 不再是一步一步右移来越过重复元素，而是从 indexMap 中取
-     *   得重复元素的索引，并直接跳到该索引+1处，从而快速去除了重复元素。该思路与前面解法的最大不同点是，l 是跳跃的，只有 r 在滑动。
-     * - 实现：利用了 map.put(k, v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，否则返回 null）来简化对 l 的更新。
+     * - 思路：该解法以 Map 为窗口，并记录每个字符的索引。当重复元素进入窗口时，l 不再是一步一步右移来越过重复元素，而是直接从
+     *   Map 中取得重复元素的上一个索引，并直接跳到该索引+1处，从而快速去除了重复元素。该思路与前面解法的最大不同点是，l 是跳跃的，
+     *   只有 r 在滑动。
+     * - 👉 实现：利用了 map.put(k,v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，否则返回 null）来简化对 l 的更新。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring6(String s) {
         if (s == null) return 0;
         char[] chars = s.toCharArray();
-        int maxLen = 0, l = 0;
-        Map<Character, Integer> indexMap = new HashMap<>();
+        int maxLen = 0;
+        Map<Character, Integer> window = new HashMap<>();
 
-        for (int r = 0; r < chars.length; r++) {
-            Integer prevIndex = indexMap.put(chars[r], r);
+        for (int l = 0, r = 0; r < chars.length; r++) {
+            Integer prevIndex = window.put(chars[r], r);
             if (prevIndex != null)               // 判断字符是否已存在于窗口中
                 l = Math.max(l, prevIndex + 1);  // 取 Math.max 是为了确保 test case 4（"abba"）
             maxLen = Math.max(maxLen, r - l + 1);
