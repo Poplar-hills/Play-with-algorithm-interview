@@ -2,8 +2,7 @@ package Array.S5_SlidingWindow;
 
 import static Utils.Helpers.log;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /*
  * Minimum Window Substring
@@ -31,11 +30,11 @@ public class L76_MinimumWindowSubstring {
      * */
     public static String minWindow(String s, String t) {
         Map<Character, Integer> freq = new HashMap<>();
-        for (char c : t.toCharArray())            // 先构建 t 的频谱
-            freq.merge(c, 1, Integer::sum);       // 相当于 freq.put(c, freq.getDefault(c)+1);
+        for (char c : t.toCharArray())              // 先构建 t 的频谱
+            freq.merge(c, 1, Integer::sum);   // 相当于 freq.put(c, freq.getDefault(c)+1);
 
         int l = 0, r = 0, matchCount = 0;
-        int minLen = s.length() + 1, start = -1;  // minLen 记录匹配上的子串的最小长度，start 记录其起始索引，用于最后截取
+        int minLen = s.length() + 1, start = -1;    // minLen 记录匹配上的子串的最小长度，start 记录其起始索引，用于最后截取
         char[] chars = s.toCharArray();
 
         while (r < s.length()) {
