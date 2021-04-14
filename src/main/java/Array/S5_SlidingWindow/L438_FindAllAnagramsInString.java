@@ -144,38 +144,46 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法4：解法3的 int[256] 版
-     * - 思路：与解法3一致。
-     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
+     * 解法4：
+     * - 思路：
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> findAnagrams4(String s, String p) {
         List<Integer> res = new ArrayList<>();
-        if (s == null || p == null) return res;
+        if (s == null || s.isEmpty()) return res;
 
-        int[] freq = new int[256];
-        for (char c : p.toCharArray()) freq[c]++;
+        Map<Character, Integer> freq = new HashMap<>();
+        for (char c : p.toCharArray())
+            freq.merge(c, 1, Integer::sum);
 
-        int matchCount = 0, l = 0, r = 0;
-
+        int matchCnt = 0, l = 0, r = 0;
+        char[] sChars = s.toCharArray();
         while (r < s.length()) {
-            if (freq[s.charAt(r)] > 0) {
-                freq[s.charAt(r++)]--;
-                matchCount++;
-            } else {
-                freq[s.charAt(l++)]++;
-                matchCount--;
+            if (freq.containsKey(sChars[r])) {
+                if (freq.get(sChars[r]) > 0)
+                    matchCnt++;
+                freq.merge(sChars[r], -1, Integer::sum);
             }
-            if (matchCount == p.length())
-                res.add(l);
+            r++;
+            while (matchCnt == p.length()) {
+                if (r - l == p.length())
+                    res.add(l);
+                if (freq.containsKey(sChars[l])) {
+                    if (freq.get(sChars[l]) == 0)
+                        matchCnt--;
+                    freq.merge(sChars[l], 1, Integer::sum);
+                }
+                l++;
+            }
         }
 
         return res;
     }
 
     public static void main(String[] args) {
-        log(findAnagrams("eecbaebabacd", "abc"));  // expects [2, 8] ("cba", "bac")
-        log(findAnagrams("xxyxxy", "xxy"));        // expects [0, 1, 2, 3] ("xxy", "xyx", "yxx", "xxy")
-        log(findAnagrams("cccddd", "dc"));         // expects [2] ("cd")
-        log(findAnagrams("z", "zz"));              // expects []
+        log(findAnagrams4("eecbaebabacd", "abc"));  // expects [2, 8] ("cba", "bac")
+        log(findAnagrams4("xxyxxy", "xxy"));        // expects [0, 1, 2, 3] ("xxy", "xyx", "yxx", "xxy")
+        log(findAnagrams4("cccddd", "dc"));         // expects [2] ("cd")
+        log(findAnagrams4("z", "zz"));              // expects []
     }
 }
