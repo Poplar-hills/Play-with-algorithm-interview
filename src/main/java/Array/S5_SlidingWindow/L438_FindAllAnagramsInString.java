@@ -144,8 +144,8 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法4：
-     * - 思路：
+     * 解法4：滑动窗口
+     * - 思路：与 L76 解法1一致，在 while 循环中
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> findAnagrams4(String s, String p) {
@@ -158,6 +158,7 @@ public class L438_FindAllAnagramsInString {
 
         int matchCnt = 0, l = 0, r = 0;
         char[] sChars = s.toCharArray();
+
         while (r < s.length()) {
             if (freq.containsKey(sChars[r])) {
                 if (freq.get(sChars[r]) > 0)
@@ -166,7 +167,7 @@ public class L438_FindAllAnagramsInString {
             }
             r++;
             while (matchCnt == p.length()) {
-                if (r - l == p.length())
+                if (r - l == p.length())  // ∵ 在判断 matchCnt == p.length() 之前 r 已经自增 ∴ 这里不再是 r-l+1
                     res.add(l);
                 if (freq.containsKey(sChars[l])) {
                     if (freq.get(sChars[l]) == 0)
