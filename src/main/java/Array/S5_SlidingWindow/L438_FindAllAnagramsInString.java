@@ -96,59 +96,11 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法3：滑动窗口（比解法1、2更简洁但也更费解）
-     * - 思路：与解法1、2不同，该解法中的窗口控制方式是：只要 r 处字符没有匹配上，就让 l 右滑（∴ l 不总是在 r 的左侧，即窗口
-     *   长度可能为-1），并且一旦没匹配上就让该字符加入频谱使得下再出现时一定能匹配上。若匹配上了，则让 r 右滑：
-     *        "e  e  c  b  a  e  b  a  b  a  c  d"
-     *         lr                                   - {a:1, b:1, c:1}, matchCount=0
-     *         r  l                                 - {a:1, b:1, c:1, e:1}, matchCount=-1
-     *            lr                                - {a:1, b:1, c:1, e:0}, matchCount=0
-     *            r  l                              - {a:1, b:1, c:1, e:1}, matchCount=-1
-     *               lr                             - {a:1, b:1, c:1, e:0}, matchCount=0
-     *               l  r                           - {a:1, b:1, c:0, e:0}, matchCount=1
-     *               l     r                        - {a:1, b:0, c:0, e:0}, matchCount=2
-     *               l        r                     - {a:0, b:0, c:0, e:0}, matchCount=3
-     *                  l     r                     - {a:0, b:0, c:1, e:0}, matchCount=2
-     *                     l  r                     - {a:0, b:1, c:1, e:0}, matchCount=1
-     *                        lr                    - {a:1, b:1, c:1, e:0}, matchCount=0
-     *                        r  l                  - {a:1, b:1, c:1, e:1}, matchCount=-1
-     *
-     * - 注：该方法中 matchCount 可能为负、l 可能会大于 r（见 test case 1 中的 "ee"）因此会有点反直觉（但其实很巧妙），
-     *   需要单步调试才能更好理解。
+     * 解法3：滑动窗口
+     * - 思路：与 L76 解法1一致。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> findAnagrams3(String s, String p) {
-        List<Integer> res = new ArrayList<>();
-        if (s == null || s.length() == 0) return res;
-
-        Map<Character, Integer> freq = new HashMap<>();  // 频谱中初始只有 p 中的字符（但开始遍历之后还会加入属于 s 但不属于 p 的字符）
-        for (char c : p.toCharArray())
-            freq.merge(c, 1, Integer::sum);
-
-        int matchCount = 0, l = 0, r = 0;
-        char[] chars = s.toCharArray();
-
-        while (r < s.length()) {
-            if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0) {  // 在频谱中且频次 >0 表示 r 处字符匹配上了
-                freq.merge(chars[r++], -1, Integer::sum);                // 这里与解法1、2不同，只有当匹配上了才让 r 右滑
-                matchCount++;
-            } else {                                      // 若 r 处字符没有匹配上
-                freq.merge(chars[l++], 1, Integer::sum);  // 则将该字符其加入频谱，并向右收缩窗口
-                matchCount--;
-            }
-            if (matchCount == p.length())                 // 匹配的字符数 == p 中的字符数，即找到了一个 anagram
-                res.add(l);
-        }
-
-        return res;
-    }
-
-    /*
-     * 解法4：滑动窗口
-     * - 思路：与 L76 解法1一致，在 while 循环中
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
-     * */
-    public static List<Integer> findAnagrams4(String s, String p) {
         List<Integer> res = new ArrayList<>();
         if (s == null || s.isEmpty()) return res;
 
@@ -175,6 +127,40 @@ public class L438_FindAllAnagramsInString {
                     freq.merge(sChars[l], 1, Integer::sum);
                 }
                 l++;
+            }
+        }
+
+        return res;
+    }
+
+    /*
+     * 解法4：解法3的简化版
+     * - 思路：与解法3一致。
+     * - 实现：与 L76 解法2一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<Integer> findAnagrams4(String s, String p) {
+        List<Integer> res = new ArrayList<>();
+        if (s == null || s.isEmpty()) return res;
+
+        Map<Character, Integer> freq = new HashMap<>();
+        for (char c : p.toCharArray())
+            freq.merge(c, 1, Integer::sum);
+
+        int matchCnt = 0, l = 0, r = 0;
+        char[] sChars = s.toCharArray();
+
+        while (r < s.length()) {
+            if (freq.containsKey(sChars[r]) && freq.get(sChars[r]) > 0)
+                matchCnt++;
+            freq.merge(sChars[r++], -1, Integer::sum);
+
+            while (matchCnt == p.length()) {
+                if (r - l == p.length())
+                    res.add(l);
+                if (freq.get(sChars[l]) == 0)
+                    matchCnt--;
+                freq.merge(sChars[l++], 1, Integer::sum);
             }
         }
 

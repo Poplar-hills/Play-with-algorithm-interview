@@ -37,7 +37,7 @@ public class L76_MinimumWindowSubstring {
         int minLen = s.length() + 1, start = -1;    // minLen 记录匹配上的子串的最小长度，start 记录其起始索引，用于最后截取
         char[] chars = s.toCharArray();
 
-        while (r < s.length()) {
+        while (r < s.length()) {                    // ∵ 每扩展一个字符后都会进行充分收缩 ∴ r 到达最后一个字符，且 l 进行充分收缩后整个滑动过程结束
             if (freq.containsKey(chars[r])) {       // 先扩展窗口（减小 r 处字符在频谱中的频次）
                 if (freq.get(chars[r]) > 0)         // 若频次 >0 表示 r 处字符匹配上了
                     matchCount++;
@@ -65,7 +65,12 @@ public class L76_MinimumWindowSubstring {
     /*
      * 解法2：解法1的简化版
      * - 思路：与解法1一致。
-     * - 实现：
+     * - 实现：在扩展、收缩窗口时不再需要判断 r、l 处的字符是否在 freq 中（即是否为 t 中字符），即使是非 t 中字符也可以添加进去。
+     * - 💎 套路：扩展/收缩滑动窗口类型的题目都可以采用该模式
+     *   1. 大 while 循环内 r 每扩展一个字符后都让 l 进行充分收缩（r 用 if 扩展，l 用 while 收缩）；
+     *   2. 扩展/收缩时检测 r/l 处的字符在频谱 freq 中的值来增/减 matchCount；
+     *   3. 在每次收缩后比较并记录子串长度；
+     *   4. 大 while 结束条件为 r < n。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static String minWindow2(String s, String t) {
