@@ -141,11 +141,11 @@ public class L560_SubarraySumEqualsK {
      * */
     public static int subarraySum3(int[] nums, int k) {
         int count = 0, sum = 0;
-        Map<Integer, Integer> map = new HashMap<>();  // 存储 {prefix sum: frequency}
-        map.put(0, 1);                                // 需要先插入 {0:1} 用于 sum == k 的情况（例如👆sum=10 的情况）
+        Map<Integer, Integer> map = new HashMap<>();  // 存储 {sum: frequency}
+        map.put(0, 1);                                // 先插入 {0:1}，用于 sum == k 的情况（例如👆sum=10 的情况）
 
         for (int n : nums) {
-            sum += n;                                 // 累积 prefix sum
+            sum += n;
             int complement = sum - k;                 // 得到其 complement（sum - complement == k）
             if (map.containsKey(complement))
                 count += map.get(complement);         // map 中 complement 的频次即是能与 sum 相加 == k 的 subarray 的个数
@@ -174,11 +174,11 @@ public class L560_SubarraySumEqualsK {
     }
 
     public static void main(String[] args) {
-//        log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
-//        log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
-//        log(subarraySum4(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
-//        log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
-        log(subarraySum3(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
-//        log(subarraySum4(new int[]{4, 2, -1}, 0));                // expects 0.
+        log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
+        log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
+        log(subarraySum4(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
+        log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
+        log(subarraySum4(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
+        log(subarraySum4(new int[]{4, 2, -1}, 0));                // expects 0.
     }
 }
