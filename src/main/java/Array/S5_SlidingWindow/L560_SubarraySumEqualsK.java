@@ -74,7 +74,7 @@ public class L560_SubarraySumEqualsK {
     }
 
     /*
-     * 解法1：双指针 + 累加计数
+     * 解法1：双指针 + 累加
      * - 思路：超时解中的累加求和过程其实可以与右移 r 的过程同步进行，从而去掉最内从的循环，将时间复杂度降低一个次方。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
@@ -117,13 +117,21 @@ public class L560_SubarraySumEqualsK {
     }
 
     /*
-     * 解法3：双指针 + Two Sum
+     * 解法3：累加 + Two Sum
      * - 思路：解法2通过双重循遍历所有的 subarray 来查找是否存在 sums[r] - sums[l] + nums[l] == k，该过程是个典型的
      *   Two Sum 查找问题 ∴ 可以采用 L1_TwoSum 解法4的思路将时间复杂度再降低一个次方。
      * - 实现：
-     *     1. 一边累加 nums[0..i] 之和 sum；
-     *     2. 一边检查 sum 的 complement（即 sum - k）是否存在于 Map 中（注意不能是 k - sum[i]）；
-     *     3. 一边将 sum 在 Map 中插入或更新。
+     *    1. 一边累加 nums[0..i] 之和 sum；
+     *    2. 一边检查 sum 的 complement（即 sum - k）是否存在于 Map 中（注意不能是 k - sum[i]）；
+     *    3. 一边将 sum 在 Map 中插入或更新。
+     *   对于：[4,  2, -1,  5, -5,  5],  k = 5
+     *         i                        sum=4, complement=-1, miss, count=0, {0:1, 4:1}
+     *             i                    sum=6, complement=1,  miss, count=0, {0:1, 4:1, 6:1}
+     *                 i                sum=5, complement=0,  hit, count=1,  {0:1, 4:1, 6:1, 5:1},
+     *                     i            sum=10, complement=5, hit, count=2,  {0:1, 4:1, 6:1, 5:1, 10:1}
+     *                         i        sum=5, complement=0,  hit, count=3,  {0:1, 4:1, 6:1, 5:2, 10:1}
+     *                             i    sum=10, complement=5, hit, count=5,  {0:1, 4:1, 6:1, 5:2, 10:2}
+     *
      * - 注意：代码中 count += 的必须是 sum-k 的频率，而不能是 count++。举例说明：在👆最后一行中，complimenet=5 在 Map
      *   中值为2的意义是“能与当前 prefix sum 相减等于 k（即 10 - sums[0..j-1] == 5）的 subarray 一共有2个”（sum[0..2]
      *   和 sum[0..4]）∴ 要把这个个数加到 count 上。
@@ -165,11 +173,11 @@ public class L560_SubarraySumEqualsK {
     }
 
     public static void main(String[] args) {
-        log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
-        log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
-        log(subarraySum4(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
-        log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
-        log(subarraySum4(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
-        log(subarraySum4(new int[]{4, 2, -1}, 0));                // expects 0.
+//        log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
+//        log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
+//        log(subarraySum4(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
+//        log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
+        log(subarraySum3(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
+//        log(subarraySum4(new int[]{4, 2, -1}, 0));                // expects 0.
     }
 }
