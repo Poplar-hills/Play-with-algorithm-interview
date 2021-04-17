@@ -8,8 +8,7 @@ import java.util.Map;
 /*
  * Subarray Sum Equals K
  *
- * - Given an array of integers and an integer k, you need to find the total number of continuous subarrays
- *   whose sum equals to k.
+ * - Given an integer array and an integer k, find the total number of continuous subarrays whose sum equals to k.
  *
  * - 👉 此题非常经典，5个解法，从超时 -> O(n^3) -> O(n^2) -> O(n) -> 代码优化，层层递进，且涉及多种解决经典问题的技巧。
  *
@@ -18,6 +17,28 @@ import java.util.Map;
  * */
 
 public class L560_SubarraySumEqualsK {
+    /*
+     * 错误解：滑动窗口
+     * - 💎 原因：该题乍一看可以使用类似 L438、L209 的滑动窗口方法求解，但要注意的是，滑动窗口的是基于扩展、收缩来求解的过程，
+     *   因此需要根据一个逻辑来判断何时该扩展窗口、何时该收缩。但在 test case 1-3 中，可以根据 subarray sum < k 时扩展、
+     *   > k 时收缩来判断。但在 test case 4 中，由于存在负数，使该判断方式失灵 ∴ 该题无法使用滑动窗口求解。
+     * */
+    public static int subarraySum0(int[] nums, int k) {
+        if (nums == null || nums.length == 0) return 0;
+        int sum = 0, count = 0, l = 0, r = 0;
+
+        while (r < nums.length) {
+            if (sum < k)
+                sum += nums[r++];
+            while (sum >= k) {
+                if (sum == k) count++;
+                sum -= nums[l++];
+            }
+        }
+
+        return count;
+    }
+
     /*
      * 超时解：Brute Force
      * - 思路：找到 nums 中的所有 subarray，为每个 subarray 求元素之和，并与 k 比较。遍历过程如下：
@@ -144,10 +165,10 @@ public class L560_SubarraySumEqualsK {
     }
 
     public static void main(String[] args) {
-        log(subarraySum3(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
-        log(subarraySum3(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
-        log(subarraySum3(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
-        log(subarraySum3(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
-        log(subarraySum3(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
+        log(subarraySum0(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
+        log(subarraySum0(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
+        log(subarraySum0(new int[]{4, 2, 1, 5, 2, 6, 8, 7}, 8));  // expects 4. (2+1+5, 1+5+2, 2+6, 8)
+        log(subarraySum0(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
+        log(subarraySum0(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
     }
 }
