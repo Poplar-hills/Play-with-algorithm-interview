@@ -43,21 +43,21 @@ public class L438_FindAllAnagramsInString {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null) return res;
 
-        Map<Character, Integer> freq = new HashMap<>();  // 频谱中初始只有 p 中的字符（但开始遍历之后还会加入属于 s 但不属于 p 的字符）
+        Map<Character, Integer> freq = new HashMap<>();  // p 的频谱（开始遍历之后还会加入属于 s 但不属于 p 的字符）
         for (char c : p.toCharArray())
-            freq.merge(c, 1, Integer::sum);  // 将 p 中每个字符的出现频次初始化为1，相当于 freq.put(c, freq.get(c)+1);
+            freq.merge(c, 1, Integer::sum);  // p 中每个字符的频次初始化为1，相当于 freq.put(c, freq.getOrDefault(c,0) + 1);
 
         int matchCount = 0, l = 0, r = 0;
         char[] chars = s.toCharArray();
 
-        while (r < s.length()) {                       // 当 r 抵达末尾时遍历结束
+        while (r < s.length()) {                   // 当 r 抵达末尾，且 l 完成收缩时遍历结束
             if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0)  // 在频谱中且频次 >0 表示 r 处字符匹配上了
                 matchCount++;
             freq.merge(chars[r++], -1, Integer::sum);  // 让 chars[r] 的频次-1（即使 chars[r] 不在频谱中也将其加入并设置频率为-1）
 
             if (matchCount == p.length()) res.add(l);
 
-            if (r - l + 1 > p.length()) {              // 每当窗口长度 >p 的长度，收缩一下窗口（收缩一步就不再 >p 了）
+            if (r - l + 1 > p.length()) {          // 每当窗口长度 >p 的长度就收缩一下 l
                 if (freq.get(chars[l]) == 0) matchCount--;
                 freq.merge(chars[l++], 1, Integer::sum);
             }
@@ -108,22 +108,22 @@ public class L438_FindAllAnagramsInString {
         for (char c : p.toCharArray())
             freq.merge(c, 1, Integer::sum);
 
-        int matchCnt = 0, l = 0, r = 0;
+        int matchCount = 0, l = 0, r = 0;
         char[] sChars = s.toCharArray();
 
         while (r < s.length()) {
             if (freq.containsKey(sChars[r])) {
                 if (freq.get(sChars[r]) > 0)
-                    matchCnt++;
+                    matchCount++;
                 freq.merge(sChars[r], -1, Integer::sum);
             }
             r++;
-            while (matchCnt == p.length()) {
-                if (r - l == p.length())  // ∵ 在判断 matchCnt == p.length() 之前 r 已经自增 ∴ 这里不再是 r-l+1
+            while (matchCount == p.length()) {
+                if (r - l == p.length())  // ∵ 在判断 matchCount == p.length() 之前 r 已经自增 ∴ 这里不再是 r-l+1
                     res.add(l);
                 if (freq.containsKey(sChars[l])) {
                     if (freq.get(sChars[l]) == 0)
-                        matchCnt--;
+                        matchCount--;
                     freq.merge(sChars[l], 1, Integer::sum);
                 }
                 l++;
@@ -134,9 +134,10 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法4：解法3的简化版
+     * 解法4：解法3的简化版（最优解）
      * - 思路：与解法3一致。
      * - 实现：与 L76 解法2一致。
+     * - 总结：比起解法1，该解法通用性更强，还可解决 L76 的"包含"类问题。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> findAnagrams4(String s, String p) {
@@ -147,19 +148,19 @@ public class L438_FindAllAnagramsInString {
         for (char c : p.toCharArray())
             freq.merge(c, 1, Integer::sum);
 
-        int matchCnt = 0, l = 0, r = 0;
+        int matchCount = 0, l = 0, r = 0;
         char[] sChars = s.toCharArray();
 
         while (r < s.length()) {
             if (freq.containsKey(sChars[r]) && freq.get(sChars[r]) > 0)
-                matchCnt++;
+                matchCount++;
             freq.merge(sChars[r++], -1, Integer::sum);
 
-            while (matchCnt == p.length()) {
+            while (matchCount == p.length()) {
                 if (r - l == p.length())
                     res.add(l);
                 if (freq.get(sChars[l]) == 0)
-                    matchCnt--;
+                    matchCount--;
                 freq.merge(sChars[l++], 1, Integer::sum);
             }
         }

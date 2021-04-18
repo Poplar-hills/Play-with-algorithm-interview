@@ -168,7 +168,7 @@ public class L560_SubarraySumEqualsK {
         for (int n : nums) {
             sum += n;
             count += map.getOrDefault(sum - k, 0);  // 技巧：map.containsKey + map.get = map.getOrDefault
-            map.merge(sum, 1, Integer::sum);        // 技巧：相当于 map.put(sum, map.getOrDefault(sum) + 1)
+            map.merge(sum, 1, Integer::sum);        // 技巧：相当于 map.put(sum, map.getOrDefault(sum,0) + 1)
         }
 
         return count;
