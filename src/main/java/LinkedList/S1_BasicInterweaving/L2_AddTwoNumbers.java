@@ -119,13 +119,13 @@ public class L2_AddTwoNumbers {
         int sum = val1 + val2 + carry;
 
         carry = sum / 10;
-        ListNode node = new ListNode(sum % 10);
+        ListNode node = new ListNode(sum % 10);   // 每层递归创建一个节点
 
         ListNode next1 = l1 == null ? null : l1.next;
         ListNode next2 = l2 == null ? null : l2.next;
-        node.next = addTwoNumbers3(next1, next2, carry);
+        node.next = addTwoNumbers3(next1, next2, carry);  // 下层创建的节点链接到该层创建的节点后面
 
-        return node;
+        return node;  // 每层递归最后返回该层创建出来的节点
     }
 
     public static void main(String[] args) {
