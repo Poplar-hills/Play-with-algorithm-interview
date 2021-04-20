@@ -13,7 +13,7 @@ import static Utils.Helpers.*;
 public class L83_RemoveDuplicatesFromSortedList {
     /*
      * 解法1：迭代
-     * - 思路：原地跳过重复节点
+     * - 思路：当发现下一个节点与当前节点重复时，跳过下一个节点。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode deleteDuplicates(ListNode head) {
@@ -28,9 +28,8 @@ public class L83_RemoveDuplicatesFromSortedList {
     }
 
     /*
-     * 解法2：递归
-     * - 思路：与解法1一致。
-     * - 实现：在递归去程路上跳过下一个节点。
+     * 解法2：递归（解法1的递归版）
+     * - 思路：在递归去程路上，若发现下一个节点与当前节点重复时，跳过下一个节点。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode deleteDuplicates2(ListNode head) {
@@ -50,9 +49,8 @@ public class L83_RemoveDuplicatesFromSortedList {
     }
 
     /*
-     * 解法3：递归（解法2的简化版）
-     * - 思路：与解法1、2一致。
-     * - 实现：在递归回程路上跳过当前节点。
+     * 解法3：递归
+     * - 思路：在递归回程路上，若发现下一个节点与当前节点重复时，跳过当前节点。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode deleteDuplicates3(ListNode head) {
