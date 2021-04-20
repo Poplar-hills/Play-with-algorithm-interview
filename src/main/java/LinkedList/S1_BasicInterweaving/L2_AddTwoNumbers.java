@@ -45,7 +45,36 @@ public class L2_AddTwoNumbers {
     }
 
     /*
+     * 错误解：
+     * - 思路：模拟加法运算，遍历链表，手动处理进位。
+     * - 实现：∵ while 的条件是 l1 != null && l2 != null ∴ 当抵达较短的链表尾部时循环就结束了，之后再将较长链表的剩余节点
+     *   拼接到 node 后面。
+     * - 问题：这种实现在 test case 2 中会出错 ∵ 在拼接剩余节点时，没有（也不易）处理进位问题。
+     * */
+    public static ListNode addTwoNumbers0(ListNode l1, ListNode l2) {
+        if (l1 == null && l2 == null) return null;
+
+        ListNode dummyHead = new ListNode();
+        ListNode node = dummyHead;
+        int carry = 0;
+
+        while (l1 != null && l2 != null) {  // 当抵达较短的链表尾部时就结束循环
+            int sum = l1.val + l2.val + carry;
+            carry = sum / 10;
+            node.next = new ListNode(sum % 10);
+            node = node.next;
+            l1 = l1.next;
+            l2 = l2.next;
+        }
+
+        if (l1 != null) node.next = l1;  // 循环结束后再将较长链表的剩余元素拼接到 node 后面
+        if (l2 != null) node.next = l2;
+        return dummyHead.next;
+    }
+
+    /*
      * 解法1：模拟加法运算
+     * - 实现：不同于上面的错误解，该解法的循环次数取决于较长的链表 ∴ 也会一直处理进位直到最后，从而避免了上面错误解中的问题。
      * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
      * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
@@ -102,11 +131,11 @@ public class L2_AddTwoNumbers {
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{2, 4, 3});
         ListNode l2 = createLinkedList(new int[]{5, 6, 4, 1});
-        printLinkedList(addTwoNumbers(l1, l2));   // expects 7->0->8->1->NULL
+        printLinkedList(addTwoNumbers0(l1, l2));   // expects 7->0->8->1->NULL
 
         ListNode l3 = createLinkedList(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
         ListNode l4 = createLinkedList(new int[]{7});
-        printLinkedList(addTwoNumbers(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
+        printLinkedList(addTwoNumbers0(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
     }
 }
 
