@@ -10,11 +10,35 @@ import static Utils.Helpers.*;
 
 public class L206_ReverseLinkedList {
     /*
-     * 解法1：迭代
+     * 解法1：遍历
+     * - 思路：在遍历过程中不断将当前节点插入到 dummyHead 之后。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)
+     * */
+    private static ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) return head;
+
+        ListNode dummyHead = new ListNode();
+        dummyHead.next = head;
+        ListNode prev = head, curr = head.next;
+
+        while (curr != null) {
+            ListNode next = curr.next;
+            ListNode tail = dummyHead.next;
+            dummyHead.next = curr;
+            curr.next = tail;
+            prev.next = next;
+            curr = next;
+        }
+
+        return dummyHead.next;
+    }
+
+    /*
+     * 解法2：遍历
      * - 思路：在遍历过程中不断反向两个节点间的链接。
      * - 时间复杂度 O(n)，空间复杂度 O(1)
      * */
-    public static ListNode reverseList(ListNode head) {
+    public static ListNode reverseList2(ListNode head) {
         if (head == null) return null;
         ListNode prev = null, curr = head;
 
@@ -28,7 +52,7 @@ public class L206_ReverseLinkedList {
     }
 
     /*
-     * 解法2：递归
+     * 解法3：递归
      * - 思路：当使用递归反向链表时，我们期望的过程是：
      *           0 -> 1 -> 2 -> 3 -> 4
      *                             ← 4
@@ -48,7 +72,7 @@ public class L206_ReverseLinkedList {
      *                       |___________↑
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static ListNode reverseList2(ListNode head) {
+    public static ListNode reverseList3(ListNode head) {
         if (head.next == null) return head;
         ListNode newHead = reverseList2(head.next);
         head.next.next = head;
@@ -57,11 +81,11 @@ public class L206_ReverseLinkedList {
     }
 
     /*
-     * 解法3：Stack
+     * 解法4：Stack
      * - 思路：说起"反向"就应该能联想到 Stack 这种数据结构。BST 的前序、中序遍历就是同样的思路。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static ListNode reverseList3(ListNode head) {
+    public static ListNode reverseList4(ListNode head) {
         Stack<ListNode> stack = new Stack<>();
         while (head != null) {
             stack.push(head);
