@@ -48,7 +48,7 @@ public class L206_ReverseLinkedList {
             prev = curr;
             curr = next;
         }
-        return prev;  // 注意最后返回的是 prev 而非 curr
+        return prev;  // 注意最后返回的是 prev 而非 curr（∵ 此时 curr 抵达 null 而 prev 抵达尾节点）
     }
 
     /*
@@ -81,8 +81,9 @@ public class L206_ReverseLinkedList {
     }
 
     /*
-     * 解法4：Stack
-     * - 思路：说起"反向"就应该能联想到 Stack 这种数据结构。BST 的前序、中序遍历就是同样的思路。
+     * 解法4：利用数据结构 Stack
+     * - 💎 思路：说起"反向"就应该能联想到 Stack 这种数据结构。
+     * - 注：BST 的前序、中序遍历就是同样的思路。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode reverseList4(ListNode head) {
@@ -92,12 +93,12 @@ public class L206_ReverseLinkedList {
             head = head.next;
         }
 
-        ListNode dummyHead = new ListNode(), curr = dummyHead;
+        ListNode dummyHead = new ListNode(), prev = dummyHead;
         while (!stack.isEmpty()) {
-            curr.next = stack.pop();
-            curr = curr.next;
+            prev.next = stack.pop();
+            prev = prev.next;
         }
-        curr.next = null;  // 注意要把最后一个节点的 next 置空（否则会与前一个节点形成双向链接）
+        prev.next = null;  // 注意要把最后一个节点的 next 置空（否则会与前一个节点形成双向链接）
 
         return dummyHead.next;
     }
