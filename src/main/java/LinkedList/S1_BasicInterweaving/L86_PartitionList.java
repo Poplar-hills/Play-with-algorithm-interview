@@ -20,10 +20,10 @@ public class L86_PartitionList {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode partition(ListNode head, int x) {
-        ListNode dummyhead = new ListNode();          // 用 dummyHead 来统一正常与特殊情况的处理（SEE test case 2）
-        dummyhead.next = head;
+        ListNode dummyHead = new ListNode();          // 用 dummyHead 来统一正常与特殊情况的处理（SEE test case 2）
+        dummyHead.next = head;
 
-        ListNode lastLtX = dummyhead, curr = head;
+        ListNode lastLtX = dummyHead, curr = head;
         while (curr != null && curr.val < x) {        // 先找到最后一个 < x 的节点标记为 lastLtX
             lastLtX = curr;
             curr = curr.next;
@@ -42,7 +42,7 @@ public class L86_PartitionList {
             }
         }
 
-        return dummyhead.next;
+        return dummyHead.next;
     }
 
     private static ListNode insertNode(ListNode node, ListNode prev) {  // 将 node 插入 prev 之后，返回 node 节点
@@ -59,10 +59,10 @@ public class L86_PartitionList {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode partition2(ListNode head, int x) {
-        ListNode l1 = new ListNode(), dummyHead1 = l1;
-        ListNode l2 = new ListNode(), dummyHead2 = l2;
+        ListNode dummyHead1 = new ListNode(), l1 = dummyHead1;
+        ListNode dummyHead2 = new ListNode(), l2 = dummyHead2;
 
-        while (head != null) {
+        for ( ; head != null; head = head.next) {
             if (head.val < x) {
                 l1.next = head;
                 l1 = l1.next;
@@ -70,7 +70,6 @@ public class L86_PartitionList {
                 l2.next = head;
                 l2 = l2.next;
             }
-            head = head.next;
         }
 
         l2.next = null;  // 注意 l2 的最后一个节点的 next 还链接着原来的节点，需要断开链接。
