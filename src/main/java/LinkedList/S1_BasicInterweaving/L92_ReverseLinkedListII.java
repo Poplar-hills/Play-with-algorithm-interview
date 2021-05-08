@@ -17,7 +17,7 @@ import Utils.Helpers.ListNode;
 public class L92_ReverseLinkedListII {
     /*
      * 解法1：反向节点间的链接
-     * - 思路：采用类似 L206_ReverseLinkedList 解法1的思路 —— 不交换节点，而是反向节点之间的链接。具体来说：
+     * - 思路：采用类似 L206_ReverseLinkedList 解法2的思路 —— 不交换节点，而是反向节点之间的链接。具体来说：
      *     1. 先将 [m, n] 范围内的节点链接反向；
      *     2. 再 fix 反向后的第 m、m-1、n、n+1 号节点间的链接。
      * - 实现：要进行上面第2步 fix 的话需先获得这4个节点的引用 ∴ 在遍历和反向的过程中要能记录到这4个节点。
@@ -41,7 +41,7 @@ public class L92_ReverseLinkedListII {
                 conn = prev;
                 rTail = curr;
             }
-            if (i <= m || i > n) {           // 注意 i == m 时也要移动 prev、curr
+            if (i <= m) {                    // 注意 i == m 时也要移动 prev、curr
                 prev = curr;
                 curr = curr.next;
             } else {                         // 将 (m,n] 内的链接反向（注意左边是开区间，要让 prev 进入区间后再开始反向）
@@ -85,7 +85,7 @@ public class L92_ReverseLinkedListII {
         }
 
         ListNode conn = prev, rTail = curr;
-        while (n > 0) {        //
+        while (n > 0) {        // 开发反向 [m-1,n] 之间的链接
             ListNode next = curr.next;
             curr.next = prev;
             prev = curr;
@@ -215,7 +215,7 @@ public class L92_ReverseLinkedListII {
         }
     }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7});
         printLinkedList(reverseBetween4(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
 
