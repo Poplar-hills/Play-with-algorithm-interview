@@ -64,16 +64,38 @@ public class L205_IsomorphicStrings {
 
     /*
      * 解法3：双查找表（映射到统一的编码上）
-     * - 思路：不同于解法1、2中将 s、t 中的字符互相映射，该解法将 s、t 中的字符映射到索引+1上（统一编码），这样一来每次只需检查
+     * - 思路：不同于解法1、2中将 s、t 中的字符互相映射，该解法将 s、t 中的字符映射到索引 i 上（统一编码），这样每次只需检查
      *   s、t 对应位置上的字符是被否映射到了相同的数字上即可：
      *       例如对于 s="egg", t="add"：       而对于 s="aba", t="baa"：
-     *          e -> 1 <- a                      a ->    1   <- b    - sMap[a]=1，tMap[b]=1
-     *          g -> 2 <- d                      b ->    2   <- a    - sMap[b]=2，tMap[a]=2
-     *          g -> 3 <- d                      a -> 1 != 2 <- a    - sMap[a] != tMap[a] ∴ return false
-     * - 实现：注意要映射到索引+1 上，而不能直接映射到索引上 ∵ 不能映射成0，否则会跟 int[] 的默认值一样。
+     *          e -> 0 <- a                      a ->    0   <- b    - sMap[a]=1，tMap[b]=1
+     *          g -> 1 <- d                      b ->    1   <- a    - sMap[b]=2，tMap[a]=2
+     *          g -> 2 <- d                      a -> 0 != 1 <- a    - sMap[a] != tMap[a] ∴ return false
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
     public static boolean isIsomorphic3(String s, String t) {
+        if (s.length() != t.length()) return false;
+        Map<Character, Integer> sMap = new HashMap<>();
+        Map<Character, Integer> tMap = new HashMap<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            char sc = s.charAt(i), tc = t.charAt(i);
+            if (!sMap.containsKey(sc) && !tMap.containsKey(tc)) {
+                sMap.put(sc, i);
+                tMap.put(tc, i);
+            } else {
+                if (sMap.get(sc) != tMap.get(tc)) return false;
+            }
+        }
+
+        return true;
+    }
+
+    /*
+     * 解法4：双查找表（映射到统一的编码上）（解法3的 char[256] 版）
+     * - 实现：注意要映射到索引 i+1 上，而不能直接映射到 i 上 ∵ 不能映射成0，否则会跟 int[] 的默认值一样。
+     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
+     * */
+    public static boolean isIsomorphic4(String s, String t) {
         if (s.length() != t.length()) return false;
 
         int[] sMap = new int[256];
@@ -90,12 +112,12 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法4：解法3的单查找表版
-     * - 思路：与解法3一致。
+     * 解法5：解法4的单查找表版
+     * - 思路：与解法3、4一致。
      * - 实现：一个查找表分成上下两部分使用，两部分分别记录 s[i] -> i+1 和 t[i] -> i+1 的映射。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))：空间复杂度与解法3一样。
      * */
-    public static boolean isIsomorphic4(String s, String t) {
+    public static boolean isIsomorphic5(String s, String t) {
         if (s.length() != t.length()) return false;
 
         int[] map = new int[512];    // ∵ 要分成两部分使用 ∴ 无法用 Map 实现
@@ -111,17 +133,17 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法5：双查找表（匹配上次出现位置）
-     * - 思路：比较 s、t 中的字符上次出现的位置是否相等。该思路比解法1-4都更简单，实现也更简洁。
+     * 解法6：双查找表（匹配上次出现位置）
+     * - 思路：比较 s、t 中的字符上次出现的位置是否相等。该思路比解法1-5都更简单，实现也更简洁。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static boolean isIsomorphic5(String s, String t) {
+    public static boolean isIsomorphic6(String s, String t) {
         if (s.length() != t.length()) return false;
         Map<Character, Integer> sMap = new HashMap<>();
         Map<Character, Integer> tMap = new HashMap<>();
 
-        for (Integer i = 0; i < s.length(); i++) {  // 注意 i 必须使用 boxing type，否则存到2个 Map 里的 i 在经过 Integer 包装后不能用 == 比较
-            Integer lastSIdx = sMap.put(s.charAt(i), i);  // 这里也必须使用 boxing type ∵ put 可能返回 null
+        for (int i = 0; i < s.length(); i++) {
+            Integer lastSIdx = sMap.put(s.charAt(i), i);  // 注意这里需使用 boxing type 接返回值 ∵ put 可能返回 null
             Integer lastTIdx = tMap.put(t.charAt(i), i);
             if (lastSIdx != lastTIdx) return false;       // 若两边都为 null 或相等则说明匹配上了，否则匹配失败
         }
