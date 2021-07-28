@@ -25,29 +25,31 @@ public class L202_HappyNumber {
      * - 思路：从题意可知，本题的主体结构是递归；从纸上演算可知，递归的退出条件是 n=1 或检测到循环 ∴ 问题转化为了如何检测循环。
      *   若没有循环，则所有数字应该只出现一次，不会重复 ∴ 只需要使用 hash table 检测是否出现重复数字即可。
      * - 实现：使用 Map 记录 n 的出现频次。
+     * - 时间复杂度为 O(n)，空间复杂度为 O(n)。
      * */
     public static boolean isHappy(int n) {
         return helper(n, new HashMap<>());
     }
 
     private static boolean helper(int n, Map<Integer, Integer> map) {
-        map.merge(n, 1, Integer::sum);     // 相当于 map.put(n, map.getOrDefault(n, 0) + 1);
-        if (map.get(n) > 1) return false;  // ∵ 上面刚刚给 n 的频率 +1 ∴ 这里检测频率是否 >1
+        map.merge(n, 1, Integer::sum);  // 相当于 map.put(n, map.getOrDefault(n, 0) + 1);
+        if (map.get(n) > 1) return false;     // ∵ 上面刚刚给 n 的频率 +1 ∴ 这里检测频率是否 >1
 
-        int sum = 0;
+        int squareSum = 0;
         while (n != 0) {
             int rightMostDigit = n % 10;
-            sum += rightMostDigit;
+            squareSum += Math.pow(rightMostDigit, 2);
             n /= 10;
         }
 
-        return sum == 1 || helper(sum, map);
+        return squareSum == 1 || helper(squareSum, map);
     }
 
     /*
      * 解法2：Set + Recursion
      * - 思路：与解法1一致。
      * - 实现：∵ 只需要检查数字是否出现过 ∴ 可以采用 Set。
+     * - 时间复杂度为 O(n)，空间复杂度为 O(n)。
      * */
     public static boolean isHappy2(int n) {
         return helper2(n, new HashSet<>());
@@ -57,34 +59,35 @@ public class L202_HappyNumber {
         if (n == 1) return true;
         if (set.contains(n)) return false;
         set.add(n);
-        int sum = sumOfDigitSquare(n);
-        return helper2(sum, set);
+        int squareSum = sumOfDigitSquare(n);
+        return helper2(squareSum, set);
     }
 
     private static int sumOfDigitSquare(int n) {
-        int sum = 0;
+        int squareSum = 0;
         while (n != 0) {
             int rightMostDigit = n % 10;
-            sum += rightMostDigit;
+            squareSum += Math.pow(rightMostDigit, 2);
             n /= 10;
         }
-        return sum;
+        return squareSum;
     }
 
     /*
      * 解法3：Set + Iteration
      * - 思路：与解法1、2一致。
      * - 实现：迭代。
+     * - 时间复杂度为 O(n)，空间复杂度为 O(n)。
      * */
     public static boolean isHappy3(int n) {
         Set<Integer> set = new HashSet<>();
         set.add(n);
 
         while (n != 1) {  // 循环终止条件是抵达1
-            int sum = sumOfDigitSquare(n);
-            if (set.contains(sum)) return false;
-            set.add(sum);
-            n = sum;
+            int squareSum = sumOfDigitSquare(n);
+            if (set.contains(squareSum)) return false;
+            set.add(squareSum);
+            n = squareSum;
         }
 
         return true;
@@ -93,9 +96,9 @@ public class L202_HappyNumber {
     /*
      * 解法4：Floyd Cycle detection
      * - 思路：检测循环的一个经典方式是使用 Floyd Cycle detection（佛洛依德判圈算法，又称龟兔赛跑算法 Tortoise and hare）：
-     *     - 它是一个可以在有限状态机、迭代函数或者链表上判断是否存在环，以及判断环的起点与长度的算法。
-     *     - 它的基本思路是若一个链上存在环，则在其上以不同速度前进的2个指针必定会在某个时刻相遇，而相遇点就是环的入口。
-     *     - 时间复杂度为 O(n)，空间复杂度为 O(1)。
+     *   - 它是一个可以在有限状态机、迭代函数或者链表上判断是否存在环，以及判断环的起点与长度的算法。
+     *   - 它的基本思路是若一个链上存在环，则在其上以不同速度前进的2个指针必定会在某个时刻相遇，而相遇点就是环的入口。
+     *   - 时间复杂度为 O(n)，空间复杂度为 O(1)。
      * */
     public static boolean isHappy4(int n) {
         int slow = n, fast = n;
