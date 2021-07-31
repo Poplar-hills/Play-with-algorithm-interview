@@ -2,11 +2,7 @@ package BinaryTreeAndRecursion.S1_Basics;
 
 import static Utils.Helpers.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 
 import Utils.Helpers.TreeNode;
 
@@ -25,7 +21,7 @@ public class L101_SymmetricTree {
      * - 实现：注意 ∵ 题中 symmetric 的定义是 structure 和 value 都对应 ∴ 若只将非空节点放入线性结构则只能验证 value 是否
      *   对应，而无法验证 structure 对应（如 test case 4、5）∴ 还需要将 null 节点也放入线性结构，只有 null 节点的位置也
      *   对应上了才说明是 palindrome；
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * - 时间复杂度 O(n)，空间复杂度 O(n) ∵ q 中同时最多容纳 n/2 个节点（即完美二叉树的最后一行）∴ 是 O(n) 级别。
      * */
     public static boolean isSymmetric(TreeNode root) {
         Queue<TreeNode> q = new LinkedList<>();
@@ -47,11 +43,11 @@ public class L101_SymmetricTree {
     }
 
     private static boolean isPalindrome(List<TreeNode> list) {
-        for (int i = 0; i < list.size(); i++) {
-            TreeNode l = list.get(i);
-            TreeNode r = list.get(list.size() - 1 - i);
-            if (l == null && r == null) continue;   // 除了 TreeNode 节点，还要验证 null 节点是否对应
-            if (l == null || r == null || l.val != r.val) return false;
+        for (int l = 0, r = list.size() - 1; l < r; l++, r--) {
+            TreeNode lNode = list.get(l);
+            TreeNode rNode = list.get(r);
+            if (lNode == null && rNode == null) continue;
+            if (lNode == null || rNode == null || lNode.val != rNode.val) return false;
         }
         return true;
     }
@@ -96,7 +92,6 @@ public class L101_SymmetricTree {
             TreeNode n1 = q1.poll(), n2 = q2.poll();
             if (n1 == null && n2 == null) continue;
             if (n1 == null || n2 == null || n1.val != n2.val) return false;
-
             q1.offer(n1.left);   // q1 先入队 n1.left
             q1.offer(n1.right);
             q2.offer(n2.right);  // q2 先入队 n2.right
@@ -116,14 +111,13 @@ public class L101_SymmetricTree {
         if (root == null) return true;
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
-        q.offer(root);
+        q.offer(root);  // root 连续入队两次
 
         while (!q.isEmpty()) {
             TreeNode n1 = q.poll(), n2 = q.poll();
             if (n1 == null && n2 == null) continue;
             if (n1 == null || n2 == null || n1.val != n2.val) return false;
-
-            q.offer(n1.left);  // 注意这里跟解法2中的入队顺序不同，需对称入队
+            q.offer(n1.left);  // 注意这里跟解法2中的入队顺序不同，需对称入队，以便下次检查两节点是否对称
             q.offer(n2.right);
             q.offer(n1.right);
             q.offer(n2.left);
@@ -141,18 +135,17 @@ public class L101_SymmetricTree {
     public static boolean isSymmetric5(TreeNode root) {
         if (root == null) return true;
         Stack<TreeNode> s = new Stack<>();
-        s.add(root);
-        s.add(root);
+        s.push(root);
+        s.push(root);
 
         while (!s.isEmpty()) {
             TreeNode n1 = s.pop(), n2 = s.pop();
             if (n1 == null && n2 == null) continue;
             if (n1 == null || n2 == null || n1.val != n2.val) return false;
-
-            s.add(n1.left);  // 这里同解法4，需对称入栈
-            s.add(n2.right);
-            s.add(n1.right);
-            s.add(n2.left);
+            s.push(n1.left);  // 这里同解法4，需对称入栈
+            s.push(n2.right);
+            s.push(n1.right);
+            s.push(n2.left);
         }
 
         return true;
