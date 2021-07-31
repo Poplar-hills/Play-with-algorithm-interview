@@ -54,7 +54,7 @@ public class L17_LetterCombinationsOfPhoneNumber {
      * - 空间复杂度 O(len(digits))。
      * */
     private static final String[] letterMap =
-        {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};  // 前两个空字符串是为了便于后面的访问
+        {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};  // 前两个空字符串是为了便于使用2-9来访问
 
     public static List<String> letterCombinations(String digits) {
         List<String> res = new ArrayList<>();
@@ -68,8 +68,8 @@ public class L17_LetterCombinationsOfPhoneNumber {
             return;
         }
         String letters = letterMap[digits.charAt(i) - '0'];  // 将 char 转换为 int（'5'-'0'的结果为5）
-        for (Character c : letters.toCharArray())
-            backtrack(digits, i + 1, combo + c, res);
+        for (char c : letters.toCharArray())
+            backtrack(digits, i + 1, combo + c, res);  // String 和 char 可以直接用 '+' 连接
     }
 
     /*
