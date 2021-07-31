@@ -134,7 +134,7 @@ public class L100_SameTree {
         TreeNode t8 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, null, 4});
         log(isSameTree4(t7, t8));
         /*
-         * expects false.（结构相同而值不同）
+         * expects false.（结构不同而值相同）
          *      1         1
          *     / \       / \
          *    2   3     2   3
