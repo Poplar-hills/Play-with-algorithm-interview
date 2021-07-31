@@ -63,7 +63,7 @@ public class L17_LetterCombinationsOfPhoneNumber {
     }
 
     public static void backtrack(String digits, int i, String combo, List<String> res) {
-        if (i == digits.length()) {
+        if (i == digits.length()) {  // 递归到叶子节点
             res.add(combo);
             return;
         }
@@ -95,7 +95,7 @@ public class L17_LetterCombinationsOfPhoneNumber {
     public static List<String> letterCombinations2(String digits) {
         List<String> res = new ArrayList<>();
         if (digits.isEmpty()) return res;
-        res.add("");                    // 注意这里要先放入一个 trigger 才能启动后面的逻辑填入数据
+        res.add("");    // 注意这里要先放入一个 trigger 才能启动后面的逻辑填入数据
 
         for (char d : digits.toCharArray()) {
             List<String> temp = new ArrayList<>();
