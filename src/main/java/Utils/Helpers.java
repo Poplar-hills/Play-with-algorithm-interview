@@ -212,14 +212,14 @@ public class Helpers {
         q.offer(tree);
 
         for (int i = 1; i < arr.length && !q.isEmpty(); i += 2) {  // 遍历 arr，每次消费两个元素用于创建左右子节点
-            TreeNode curr = q.poll();                        // 得到父节点
-            if (arr[i] != null) {                            // 用 arr[i] 创建左子节点
-                curr.left = new TreeNode(arr[i]);
-                q.offer(curr.left);
+            TreeNode node = q.poll();               // 得到父节点
+            if (arr[i] != null) {                   // 用 arr[i] 创建左子节点
+                node.left = new TreeNode(arr[i]);
+                q.offer(node.left);
             }
             if (i + 1 < arr.length && arr[i + 1] != null) {  // 用 arr[i+1] 创建右子节点
-                curr.right = new TreeNode(arr[i + 1]);
-                q.offer(curr.right);
+                node.right = new TreeNode(arr[i + 1]);
+                q.offer(node.right);
             }
         }
         return tree;

@@ -75,10 +75,14 @@ public class L100_SameTree {
         return true;
     }
 
+//    private static void createBinaryTreeBreadthFirst(int[] arr) {
+//
+//    }
+
     public static void main(String[] args) {
-        TreeNode p1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
-        TreeNode q1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
-        log(isSameTree3(p1, q1));
+        TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
+        log(isSameTree3(t1, t2));
         /*
          * expects true.
          *      1         1
@@ -86,9 +90,9 @@ public class L100_SameTree {
          *    2   3     2   3
          * */
 
-        TreeNode p2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2});
-        TreeNode q2 = createBinaryTreeBreadthFirst(new Integer[]{1, null, 2});
-        log(isSameTree3(p2, q2));
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2});
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, null, 2});
+        log(isSameTree3(t3, t4));
         /*
          * expects false. (值相同而结构不同)
          *      1         1
@@ -96,9 +100,9 @@ public class L100_SameTree {
          *    2             2
          * */
 
-        TreeNode p3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 1});
-        TreeNode q3 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 2});
-        log(isSameTree3(p3, q3));
+        TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 1});
+        TreeNode t6 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 2});
+        log(isSameTree3(t5, t6));
         /*
          * expects false.（结构相同而值不同）
          *      1         1
