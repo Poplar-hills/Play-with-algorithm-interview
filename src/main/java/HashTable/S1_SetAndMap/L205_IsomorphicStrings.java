@@ -134,7 +134,7 @@ public class L205_IsomorphicStrings {
 
     /*
      * 解法6：双查找表（匹配上次出现位置）
-     * - 思路：比较 s、t 中的字符上次出现的位置是否相等。该思路比解法1-5都更简单，实现也更简洁。
+     * - 思路：不对 s、t 中的字符进行互相映射，而是比较 s、t 中每个字符上次出现的位置是否相等。该思路比解法1-5都更简单，实现也更简洁。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isIsomorphic6(String s, String t) {
