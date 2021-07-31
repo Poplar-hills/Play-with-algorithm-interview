@@ -59,43 +59,41 @@ public class L100_SameTree {
         q1.offer(t1);
         q2.offer(t2);
 
-        while (!q1.isEmpty() && !q2.isEmpty()) {
-            TreeNode node1 = q1.poll();
-            TreeNode node2 = q2.poll();
-            if (node1 == null && node2 == null) continue;
-            if (node1 == null || node2 == null || node1.val != node2.val) return false;
-            q1.offer(node1.left);
-            q1.offer(node1.right);
-            q2.offer(node2.left);
-            q2.offer(node2.right);
+        while (!q1.isEmpty()) {
+            TreeNode n1 = q1.poll();
+            TreeNode n2 = q2.poll();
+            if (n1 == null && n2 == null) continue;
+            if (n1 == null || n2 == null || n1.val != n2.val) return false;
+            q1.offer(n1.left);
+            q1.offer(n1.right);
+            q2.offer(n2.left);
+            q2.offer(n2.right);
         }
 
-        return q1.isEmpty() && q2.isEmpty();  // 使用两个 queue 的时候注意最后要确认两个 queue 是否都为空
+        return true;
     }
 
     /*
      * 解法4：Iteration (DFS)
-     * - 思路：与解法2的逻辑一致，与 L226_InvertBinaryTree 解法3的思路一致。
-     * - 实现：不同与解法2，该解法：
-     *   1. DFS 使用 Stack 实现；
-     *   2. 采用2个 Stack<TreeNode> 而不是一个 Queue 中存储 Pair<TreeNode, TreeNode>。
+     * - 思路：使用 DFS 求解，与 L226_InvertBinaryTree 解法3的思路一致。
+     * - 实现：与解法3一致，只不过使用 Stack 实现。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSameTree4(TreeNode p, TreeNode q) {
-        Stack<TreeNode> pStack = new Stack<>();
-        Stack<TreeNode> qStack = new Stack<>();
-        pStack.push(p);
-        qStack.push(q);
+        Stack<TreeNode> s1 = new Stack<>();
+        Stack<TreeNode> s2 = new Stack<>();
+        s1.push(p);
+        s2.push(q);
 
-        while (!pStack.isEmpty()) {
-            TreeNode pNode = pStack.pop();
-            TreeNode qNode = qStack.pop();
-            if (pNode == null && qNode == null) continue;
-            if (pNode == null || qNode == null || pNode.val != qNode.val) return false;
-            pStack.push(pNode.left);
-            pStack.push(pNode.right);
-            qStack.push(qNode.left);
-            qStack.push(qNode.right);
+        while (!s1.isEmpty()) {
+            TreeNode n1 = s1.pop();
+            TreeNode n2 = s2.pop();
+            if (n1 == null && n2 == null) continue;
+            if (n1 == null || n2 == null || n1.val != n2.val) return false;
+            s1.push(n1.left);
+            s1.push(n1.right);
+            s2.push(n2.left);
+            s2.push(n2.right);
         }
 
         return true;
@@ -104,7 +102,7 @@ public class L100_SameTree {
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
-        log(isSameTree3(t1, t2));
+        log(isSameTree4(t1, t2));
         /*
          * expects true.
          *      1         1
@@ -114,7 +112,7 @@ public class L100_SameTree {
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1, 2});
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{1, null, 2});
-        log(isSameTree3(t3, t4));
+        log(isSameTree4(t3, t4));
         /*
          * expects false. (值相同而结构不同)
          *      1         1
@@ -124,12 +122,24 @@ public class L100_SameTree {
 
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 1});
         TreeNode t6 = createBinaryTreeBreadthFirst(new Integer[]{1, 1, 2});
-        log(isSameTree3(t5, t6));
+        log(isSameTree4(t5, t6));
         /*
          * expects false.（结构相同而值不同）
          *      1         1
          *     / \       / \
          *    2   1     1   2
+         * */
+
+        TreeNode t7 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
+        TreeNode t8 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, null, 4});
+        log(isSameTree4(t7, t8));
+        /*
+         * expects false.（结构相同而值不同）
+         *      1         1
+         *     / \       / \
+         *    2   3     2   3
+         *                 /
+         *                4
          * */
     }
 }
