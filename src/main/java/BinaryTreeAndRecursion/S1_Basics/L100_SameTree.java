@@ -48,14 +48,40 @@ public class L100_SameTree {
     }
 
     /*
-     * 解法3：Iteration (DFS)
+     * 解法3：Iteration (BFS)
+     * - 思路：与解法2一致。
+     * - 实现：使用双 queue。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isSameTree3(TreeNode t1, TreeNode t2) {
+        Queue<TreeNode> q1 = new LinkedList<>();
+        Queue<TreeNode> q2 = new LinkedList<>();
+        q1.offer(t1);
+        q2.offer(t2);
+
+        while (!q1.isEmpty() && !q2.isEmpty()) {
+            TreeNode node1 = q1.poll();
+            TreeNode node2 = q2.poll();
+            if (node1 == null && node2 == null) continue;
+            if (node1 == null || node2 == null || node1.val != node2.val) return false;
+            q1.offer(node1.left);
+            q1.offer(node1.right);
+            q2.offer(node2.left);
+            q2.offer(node2.right);
+        }
+
+        return q1.isEmpty() && q2.isEmpty();  // 使用两个 queue 的时候注意最后要确认两个 queue 是否都为空
+    }
+
+    /*
+     * 解法4：Iteration (DFS)
      * - 思路：与解法2的逻辑一致，与 L226_InvertBinaryTree 解法3的思路一致。
      * - 实现：不同与解法2，该解法：
      *   1. DFS 使用 Stack 实现；
      *   2. 采用2个 Stack<TreeNode> 而不是一个 Queue 中存储 Pair<TreeNode, TreeNode>。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static boolean isSameTree3(TreeNode p, TreeNode q) {
+    public static boolean isSameTree4(TreeNode p, TreeNode q) {
         Stack<TreeNode> pStack = new Stack<>();
         Stack<TreeNode> qStack = new Stack<>();
         pStack.push(p);
@@ -74,10 +100,6 @@ public class L100_SameTree {
 
         return true;
     }
-
-//    private static void createBinaryTreeBreadthFirst(int[] arr) {
-//
-//    }
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});

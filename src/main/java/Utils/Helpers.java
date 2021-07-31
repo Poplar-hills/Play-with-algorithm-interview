@@ -203,7 +203,7 @@ public class Helpers {
     }
 
     // 以广度优先的方式从数组生成二叉树
-    public static TreeNode createBinaryTreeBreadthFirst(Integer[] arr) {
+    public static TreeNode createBinaryTreeBreadthFirst(Integer[] arr) {  // ∵ 树中节点可能为 null ∴ 使用 Integer 数组
         if (arr == null || arr.length == 0 || arr[0] == null)
             return null;
 
