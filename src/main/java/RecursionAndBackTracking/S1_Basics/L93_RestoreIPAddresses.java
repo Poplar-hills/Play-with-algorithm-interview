@@ -80,10 +80,10 @@ public class L93_RestoreIPAddresses {
 
     private static void backtrack2(String s, int i, String ip, int count, List<String> res) {
         if (count > 4) return;                           // tooManyDigits 的情况
-        if (count == 4 && i == s.length()) res.add(ip);  // notEnoughDigits 的情况
+        if (count == 4 && i == s.length()) res.add(ip);
 
         for (int j = 0; j < 3; j++) {
-            if (i + j >= s.length()) break;
+            if (i + j >= s.length()) break;  // notEnoughDigits 的情况
             String comp = s.substring(i, i + j + 1);
             if (isValidIpComp(comp)) {
                 String newIp = ip + comp + (count == 3 ? "" : ".");  // 拼接 ip
@@ -110,7 +110,7 @@ public class L93_RestoreIPAddresses {
      * - 时间复杂度 O(n^3)，空间复杂度 O(1)，其中 n 为 s 的长度（注：O(2^n) 只是量级，并不精确）。
      * */
     public static List<String> restoreIpAddresses3(String s) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         int len = s.length();
 
         for (int i = 1; i < 4 && i < len - 2; i++) {  // i、j、k 的活动范围都要 <4，即每段地址最多3位；同时 i < len-2，给 j、k 留出余地
