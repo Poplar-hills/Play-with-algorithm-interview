@@ -113,7 +113,7 @@ public class L290_WordPattern {
         String[] words = str.split(" ");
         if (words.length != pattern.length()) return false;
 
-        Map map = new HashMap();
+        Map map = new HashMap();  // 注意这里的 Map 不指定 key 的类型
         for (Integer i = 0; i < words.length; i++)  // 同样 i 得用 boxing type
             if (map.put(pattern.charAt(i), i) != map.put(words[i], i))
                 return false;
@@ -123,7 +123,7 @@ public class L290_WordPattern {
 
     public static void main(String[] args) {
         log(wordPattern3("abba", "dog cat cat dog"));   // true
-        log(wordPattern3("abba", "dog cat cat fish"));  // false
+        log(wordPattern3("abba", "dog cat cat fish"));   // false
         log(wordPattern3("abba", "dog dog dog dog"));   // false
         log(wordPattern3("xxx", "dog dog dog"));        // true
         log(wordPattern3("xxx", "dog cat dog"));        // false
