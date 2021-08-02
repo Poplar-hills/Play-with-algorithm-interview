@@ -38,8 +38,7 @@ public class L83_RemoveDuplicatesFromSortedList {
     }
     
     public static void helper2(ListNode head) {
-        if (head == null || head.next == null)
-            return;
+        if (head == null || head.next == null) return;
         if (head.val == head.next.val) {
             head.next = head.next.next;
             helper2(head);
