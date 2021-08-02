@@ -59,7 +59,7 @@ public class L242_ValidAnagram {
         if (t.length() != s.length()) return false;
 
         Map<Character, Integer> map = new HashMap<>();
-        for (int i = 0; i < s.length(); i++) {        // 第一行已经处理过长度不等的情况，因此这里可以一次遍历处理两个字符串
+        for (int i = 0; i < s.length(); i++) {  // 第一行已经处理过长度不等的情况 ∴ 这里可以一次遍历处理两个字符串
             map.merge(s.charAt(i), 1, Integer::sum);
             map.merge(t.charAt(i), -1, Integer::sum);
         }
