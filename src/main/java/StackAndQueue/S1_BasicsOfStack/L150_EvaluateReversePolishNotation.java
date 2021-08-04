@@ -76,7 +76,7 @@ public class L150_EvaluateReversePolishNotation {
             case "-": return (x, y) -> x - y;
             case "*": return (x, y) -> x * y;
             case "/": return (x, y) -> x / y;
-            default: throw new IllegalArgumentException("Invalid operator");
+            default: return null;  // 若 operator 不是运算符则返回 null
         }
     }
 
