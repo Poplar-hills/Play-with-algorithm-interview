@@ -11,6 +11,11 @@ import java.util.Stack;
  *
  * - Given two binary trees, check if they are the same or not.
  * - Two binary trees are considered the same if they are identical in both structure and nodes.
+ *
+ * - 注：在开始做这个章节的题之前先认真看一遍树的基础知识：
+ *   1. 二叉树分类、树的平衡性、树的遍历、树与其他数据结构的查找性能对比、BST 的实现：.../Play-with-data-structure/.../BST.java
+ *   2. 二三树、红黑树：.../Play-with-data-structure/.../RedBlackTree.java
+ *   3. B 树：.../Play-with-data-structure/.../RedBlackTree/_BTree
  * */
 
 public class L100_SameTree {
