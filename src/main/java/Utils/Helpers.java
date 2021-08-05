@@ -301,8 +301,8 @@ public class Helpers {
             if (this == o) return true;
             if (o instanceof Pair) {
                 Pair pair = (Pair) o;
-                if (key != null ? !key.equals(pair.key) : pair.key != null) return false;
-                if (value != null ? !value.equals(pair.value) : pair.value != null) return false;
+                if (key == null ? pair.key != null : !key.equals(pair.key)) return false;
+                if (value == null ? pair.value != null : !value.equals(pair.value)) return false;
                 return true;
             }
             return false;

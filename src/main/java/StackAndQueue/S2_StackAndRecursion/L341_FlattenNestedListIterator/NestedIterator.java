@@ -109,7 +109,7 @@ class NestedIterator3 implements Iterator<Integer> {
 
     @Override
     public boolean hasNext() {
-        while (!callStack.isEmpty()) {  // 在消费时再进行计算（解析数据）
+        while (!callStack.isEmpty()) {  // 在栈内循环查找 int
             if (callStack.peek().isInteger())  // 若是 int 则放在那等待消费
                 return true;
             pushInReverseOrder(callStack.pop().getList());  // 否则再加载到调用栈中进行解析
