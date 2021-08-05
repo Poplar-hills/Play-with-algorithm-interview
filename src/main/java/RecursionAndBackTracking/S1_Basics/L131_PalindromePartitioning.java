@@ -16,15 +16,15 @@ public class L131_PalindromePartitioning {
     /*
      * 解法1：Recursion + Backtracking
      * - 思路：该题是一个组合问题 ∴ 可以转化为树形问题，采用回溯进行搜索。例如对于 s="aabb" 来说：
-     *                          [ ]
-     *               /           |           \
-     *           [a]            [aa]          [aabb]    - 得到解 ["aabb"]
-     *            |            /    \
-     *          [a,a]       [aa,b] [aa,bb]              - 得到解 ["aa","bb"]
-     *         /     \        |
-     *    [a,a,b] [a,a,bb] [aa,b,b]                     - 得到解 ["a","a","bb"]、["aa","b","b"]
-     *       |
-     *   [a,a,b,b]                                      - 得到解 ["a","a","b","b"]
+     *                      aabb
+     *               a/           aa|
+     *              abb             bb
+     *              a|           b/   bb\
+     *              bb           b      ""    - 得到解4：[aa,bb]
+     *          b/   bb\        b|
+     *          b      ""        ""           - 得到解2、3：[a,a,bb]、[aa,b,b]
+     *         b|
+     *         ""                             - 得到解1：[a,a,b,b]
      *
      * - 时间复杂度 O(2^n * n^2)：一个长度为 n 的字符串有 n-1 个间隔，而在每个间隔上都有2种选择：切分或不切分 ∴ 该字符串共有
      *   2^(n-1) 种切分方式，即需要 2^(n-1) 次递归 ∴ 是 O(2^n) 量级的复杂度。而每次递归需要复制 list + 执行 isPalindrome，
@@ -43,12 +43,12 @@ public class L131_PalindromePartitioning {
             res.add(list);
             return;
         }
-        for (int j = i + 1; j <= s.length(); j++) {  // j 的语义是 substring 方法中的 endIndex ∴ j ∈ [i+1, s.length()]
-            String comp = s.substring(i, j);
+        for (int j = i; j < s.length(); j++) {
+            String comp = s.substring(i, j + 1);
             if (isPalindrome(comp)) {
-                List<String> newPath = new ArrayList<>(list);  // 复制字符串列表
-                newPath.add(comp);
-                backtrack(s, j, newPath, res);       // 下一层递归的起点为 j
+                List<String> newList = new ArrayList<>(list);  // 复制字符串列表
+                newList.add(comp);
+                backtrack(s, j + 1, newList, res);  // 下一层递归的起点为 j+1
             }
         }
     }
@@ -77,17 +77,25 @@ public class L131_PalindromePartitioning {
 
     private static void backtrack2(String s, int i, List<String> list, List<List<String>> res) {
         if (i == s.length()) {
-            res.add(new ArrayList<>(list));       // ∵ list 在回溯过程中是复用的 ∴ 只需在最后将 list 复制进 res 中即可
+            res.add(new ArrayList<>(list));  // ∵ list 在回溯过程中是复用的 ∴ 只需在最后将 list 复制进 res 中即可
             return;
         }
-        for (int j = i; j < s.length(); j++) {    // j 的语义是截取 s 时的右边界 s[i..j]
+        for (int j = i; j < s.length(); j++) {  // j 的语义是截取 s 时的右边界 s[i..j]
             String comp = s.substring(i, j + 1);
-            if (isPalindrome(comp)) {
+            if (isPalindrome2(comp)) {
                 list.add(comp);
                 backtrack2(s, j + 1, list, res);  // 下一层的递归起点为 j+1
-                list.remove(list.size() - 1);     // 恢复上一层中 list 的状态，以便继续回溯查找
+                list.remove(list.size() - 1);  // 恢复上一层中 list 的状态，以便继续回溯查找
             }
         }
+    }
+
+    private static boolean isPalindrome2(String comp) {
+        char[] arr = comp.toCharArray();  // 解法1中的 charAt(i) 内部是要遍历找到第 i 个字符的 ∴ 这里先 toCharArray() 可以提升性能
+        for (int l = 0, r = arr.length - 1; l < r; l++, r--)
+            if (arr[l] != arr[r])
+                return false;
+        return true;
     }
 
     /*
@@ -133,10 +141,10 @@ public class L131_PalindromePartitioning {
     }
 
     public static void main(String[] args) {
-        log(partition3("aab"));   // expects [["aa","b"], ["a","a","b"]]
-        log(partition3("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
-        log(partition3("zz"));    // expects [["z","z"], ["zz"]]
-        log(partition3("zzz"));   // expects [["z","z","z"], ["z","zz"], ["zz","z"], ["zzz"]]
-        log(partition3(""));      // expects []
+        log(partition2("aab"));   // expects [["aa","b"], ["a","a","b"]]
+        log(partition2("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
+        log(partition2("zz"));    // expects [["z","z"], ["zz"]]
+        log(partition2("zzz"));   // expects [["z","z","z"], ["z","zz"], ["zz","z"], ["zzz"]]
+        log(partition2(""));      // expects []
     }
 }
