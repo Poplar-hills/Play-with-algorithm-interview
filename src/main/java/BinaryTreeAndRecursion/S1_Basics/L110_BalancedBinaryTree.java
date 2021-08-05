@@ -16,7 +16,6 @@ import Utils.Helpers.TreeNode;
  * */
 
 public class L110_BalancedBinaryTree {
-
     /*
      * 解法1：DFS (Recursion)
      * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树的高度差 <= 1” ∴ 按照该定义设计程序，自下而上为每个节点
@@ -130,15 +129,6 @@ public class L110_BalancedBinaryTree {
         }
 
         return true;
-    }
-
-
-
-
-
-
-    public static boolean isBalanced0(TreeNode root) {
-        // solution: top-down-top recursion - Math.abs(maxDepth(node.left) - maxDepth(node.right)) <= 1
     }
 
     public static void main(String[] args) {
