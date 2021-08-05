@@ -16,35 +16,60 @@ import Utils.Helpers.TreeNode;
  * */
 
 public class L110_BalancedBinaryTree {
+
     /*
      * 解法1：DFS (Recursion)
-     * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树的深度差 <= 1” ∴ 按照该定义设计程序，自下而上为每个节点
-     *   计算其左右子树的深度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
+     * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树的高度差 <= 1” ∴ 按照该定义设计程序，自下而上为每个节点
+     *   计算其左右子树的高度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced(TreeNode root) {
-        return maxDepth(root) != -1;
+        Pair<Boolean, Integer> res = getBalanceInfo(root);
+        return res.getKey();
     }
 
-    private static int maxDepth(TreeNode root) {
-        if (root == null) return 0;
-        int l = maxDepth(root.left);
-        if (l == -1) return -1;
-        int r = maxDepth(root.right);
-        if (r == -1) return -1;
-        return Math.abs(l - r) <= 1 ? Math.max(l, r) + 1 : -1;
+    private static Pair<Boolean, Integer> getBalanceInfo(TreeNode root) {
+        if (root == null) return new Pair<>(true, 0);
+
+        Pair<Boolean, Integer> lInfo = getBalanceInfo(root.left);
+        Pair<Boolean, Integer> rInfo = getBalanceInfo(root.right);
+        if (!lInfo.getKey() || !rInfo.getKey())  // 若左右子树任一不是 height-balanced 的，则整棵树就不是
+            return new Pair<>(false, null);
+
+        boolean isCurrBalanced = Math.abs(lInfo.getValue() - rInfo.getValue()) <= 1;  // 最后再看当前节点上是否平衡
+        int currDepth = Math.max(lInfo.getValue(), rInfo.getValue()) + 1;
+        return new Pair<>(isCurrBalanced, currDepth);
     }
 
     /*
-     * 解法2：DFS (Iteration, post-order traversal)
-     * - 思路：与解法1一致，都是使用 DFS 自下而上的为每个节点计算最大深度，判断以该节点为根的二叉树是否平衡。
+     * 解法2：DFS (Recursion)
+     * - 思路：思路与解法1一致。
+     * - 实现：与解法1不同，该解法用 -1 表示不平衡，用自然数表示高度差，从而统一 balanceInfo 的返回值类型。
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * */
+    public static boolean isBalanced2(TreeNode root) {
+        return getBalanceInfo2(root) != -1;
+    }
+
+    private static int getBalanceInfo2(TreeNode root) {
+        if (root == null) return 0;
+        int lInfo = getBalanceInfo2(root.left);
+        if (lInfo == -1) return -1;  // 不同于解法1，若一边子树已经不是平衡的，则没有必要再对另一子树执行 getBalanceInfo
+        int rInfo = getBalanceInfo2(root.right);
+        if (rInfo == -1) return -1;
+        return Math.abs(lInfo - rInfo) <= 1 ? Math.max(lInfo, rInfo) + 1 : -1;
+    }
+
+    /*
+     * 解法3：DFS (Iteration, post-order traversal)
+     * - 思路：与解法2一致，都是使用 DFS 自下而上的为每个节点计算最大深度，判断以该节点为根的二叉树是否平衡。
      * - 实现：∵ 是自下而上 ∴ 需要先获得其左右子树的深度，即先访问左右子节点，再访问父节点，这其实就是二叉树后续遍历的过程。
      *   ∴ 只要在后续遍历的基础上将访问每个节点的逻辑替换成计算以该节点为根的树的深度即可。
      * - 👉 回顾：再反观解法1，其实就是二叉树后续遍历的递归实现（先为左右子节点进行计算，再为父节点计算）。
      * - 💎 总结：该解法是二叉树后续遍历的典型应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static boolean isBalanced2(TreeNode root) {
+    public static boolean isBalanced3(TreeNode root) {
         if (root == null) return true;
         Map<TreeNode, Integer> map = new HashMap<>();  // 记录 <节点, 以该节点为根的树的最大深度>
         Stack<TreeNode> stack = new Stack<>();         // 后续遍历是 DFS 的一种 ∴ 使用 stack 结构进行辅助
@@ -73,11 +98,11 @@ public class L110_BalancedBinaryTree {
     }
 
     /*
-     * 解法3：DFS (Iteration, post-order traversal)
-     * - 思路：与解法2一致，只是采用后续遍历非递归的另一种实现。
+     * 解法4：DFS (Iteration, post-order traversal)
+     * - 思路：与解法3一致，只是采用后续遍历非递归的另一种实现。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
-    public static boolean isBalanced3(TreeNode root) {
+    public static boolean isBalanced4(TreeNode root) {
         if (root == null) return true;
         Map<TreeNode, Integer> map = new HashMap<>();
         Stack<TreeNode> stack = new Stack<>();
@@ -105,6 +130,15 @@ public class L110_BalancedBinaryTree {
         }
 
         return true;
+    }
+
+
+
+
+
+
+    public static boolean isBalanced0(TreeNode root) {
+        // solution: top-down-top recursion - Math.abs(maxDepth(node.left) - maxDepth(node.right)) <= 1
     }
 
     public static void main(String[] args) {
@@ -161,7 +195,7 @@ public class L110_BalancedBinaryTree {
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 3, null, null, 4, 4});
         log(isBalanced(t5));
         /*
-         * expects false.
+         * expects false. (节点1的左、右子树都是平衡树，但两个平衡树的高度差 > 1 ∴ 整体不平衡)
          *           1
          *          / \
          *         2   2
