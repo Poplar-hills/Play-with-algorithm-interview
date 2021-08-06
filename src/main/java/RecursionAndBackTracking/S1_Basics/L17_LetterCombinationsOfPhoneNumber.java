@@ -75,21 +75,21 @@ public class L17_LetterCombinationsOfPhoneNumber {
     /*
      * 解法2：Iteration
      * - 思路：纯用循环遍历实现：对于 digits="23" 来说：
-     *                       res = [""]                 - 将 res 中的每一个元素与"2"对应的每一个字母组合
-     *            / "a"  ->  ""+"a" -> temp=["a"]
-     *        "2" - "b"  ->  ""+"b" -> temp=["a", "b"]
-     *            \ "c"  ->  ""+"c" -> temp=["a", "b", "c"]
+     *                     res = [""]               - 将 res 中的每一个元素与"2"对应的每一个字母组合
+     *            / a  ->  '' + a -> temp=["a"]
+     *          2 - b  ->  '' + b -> temp=["a", "b"]
+     *            \ c  ->  '' + c -> temp=["a", "b", "c"]
      *
-     *                       res = ["a", "b", "c"]      - 将 res 中的每一个元素与"3"对应的每一个字母组合
-     *                  /->  "a"+"d" -> temp=["ad"]
-     *            / "d" -->  "b"+"d" -> temp=["ad", "bd"]
-     *           /      \->  "c"+"d" -> temp=["ad", "bd", "cd"]
-     *          /       /->  "a"+"e" -> temp=["ad", "bd", "cd", "ae"]
-     *        "3" - "e" -->  "b"+"e" -> temp=["ad", "bd", "cd", "ae", "be"]
-     *          \       \->  "c"+"e" -> temp=["ad", "bd", "cd", "ae", "be", "ce"]
-     *           \      /->  "a"+"f" -> temp=["ad", "bd", "cd", "ae", "be", "ce", "af"]
-     *            \ "f" -->  "b"+"f" -> temp=["ad", "bd", "cd", "ae", "be", "ce", "af", "bf"]
-     *                  \->  "c"+"f" -> temp=["ad", "bd", "cd", "ae", "be", "ce", "af", "bf", "cf"]
+     *                     res = ["a", "b", "c"]    - 将 res 中的每一个元素与"3"对应的每一个字母组合
+     *                /->  a + d -> temp=["ad"]
+     *            / d -->  b + d -> temp=["ad", "bd"]
+     *           /    \->  c + d -> temp=["ad", "bd", "cd"]
+     *          /     /->  a + e -> temp=["ad", "bd", "cd", "ae"]
+     *         3 -- e -->  b + e -> temp=["ad", "bd", "cd", "ae", "be"]
+     *          \     \->  c + e -> temp=["ad", "bd", "cd", "ae", "be", "ce"]
+     *           \    /->  a + f -> temp=["ad", "bd", "cd", "ae", "be", "ce", "af"]
+     *            \ f -->  b + f -> temp=["ad", "bd", "cd", "ae", "be", "ce", "af", "bf"]
+     *                \->  c + f -> temp=["ad", "bd", "cd", "ae", "be", "ce", "af", "bf", "cf"]
      * - 时间复杂度 O(3^n * 4^m)，空间复杂度 O(1)。
      * */
     public static List<String> letterCombinations2(String digits) {

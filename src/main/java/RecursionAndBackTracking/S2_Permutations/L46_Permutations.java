@@ -88,16 +88,15 @@ public class L46_Permutations {
     }
 
     /*
-     * 解法3：Recursion + Backtracking + In-place swap（解法2的性能优化版）
-     * - 思路：与解法1、2一致。
-     * - 实现：但每次递归中采用原地交换元素的方式获得新的排列：
+     * 解法3：Recursion + Backtracking + In-place swap
+     * - 思路：每次递归中采用原地交换元素的方式获得新的排列：
      *                            [1,2,3]
      *                    /          |           \             - 将0号元素交换到 [0..n) 号位置上
      *              [1,2,3]       [2,1,3]        [2,3,1]
      *              /    \        /    \         /     \       - 将1号元素交换到 [1..n) 号位置上
      *        [1,2,3] [1,3,2] [2,1,3] [2,3,1] [2,3,1] [2,1,3]
      *
-     * - 👉 技巧：将 int[] 转为 List<Integer> 的另一种写法是：
+     * - 👉 语法技巧：将 int[] 转为 List<Integer> 的另一种写法是：
      *   Arrays.stream(nums).boxed().collect(Collectors.toList())。
      * - 时间复杂度 O(n!)，空间复杂度 O(n)。
      * */
@@ -109,7 +108,7 @@ public class L46_Permutations {
     }
 
     private static void backtrack3(int[] nums, int i, List<List<Integer>> res) {
-        if (i == nums.length - 1) {                  // 递归到底
+        if (i == nums.length - 1) {
             List<Integer> list = new ArrayList<>();  // 将数组转化为列表后再放入 res
             for (int n : nums) list.add(n);
             res.add(list);
@@ -126,17 +125,13 @@ public class L46_Permutations {
      * 解法4：Iteration
      * - 思路：采用类似 L17_LetterCombinationsOfPhoneNumber 解法2的思路，对于 nums 中的每个元素，都放到 res 中的每个列表
      *   里的每个插入点上，生成一个新的排列。例如，对于 [1,2,3] 来说：
-     *                           /--> [3,2,1]
-     *                         3/
-     *                 /-> [2,1] -3-> [2,3,1]
-     *                /        3\
-     *         1    2/           \--> [2,1,3]
-     *     [] --> [1]
-     *              2\           /--> [3,1,2]
-     *                \        3/
-     *                 \-> [1,2] -3-> [1,3,2]
-     *                         3\
-     *                           \--> [1,2,3]
+     *                           /-3-> [3,2,1]
+     *                /-2-> [2,1] -3-> [2,3,1]
+     *               /           \-3-> [2,1,3]
+     *    [] -1-> [1]
+     *               \           /-3-> [3,1,2]
+     *                \-2-> [1,2] -3-> [1,3,2]
+     *                           \-3-> [1,2,3]
      *
      * - 时间复杂度 O(n * n!)：n 个元素的全排列有 n! 种结果，而每个结果中又有 n 个元素。
      * - 空间复杂度 O(1)。
@@ -144,7 +139,7 @@ public class L46_Permutations {
     public static List<List<Integer>> permute4(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length == 0) return res;
-        res.add(new ArrayList<>());        // 需要一个 trigger 元素
+        res.add(new ArrayList<>());  // 需要一个 trigger 元素
 
         for (int n : nums) {
             List<List<Integer>> newRes = new ArrayList<>();  // ∵ 下面要遍历 res 中的元素，不能一边遍历一遍添加 ∴ 这里要创建一个新的
@@ -163,7 +158,7 @@ public class L46_Permutations {
 
     /*
      * 解法5：Iteration (解法4的简化版)
-     * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法1中对 res 中元素加工和添加的过程。
+     * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法4中对 res 中元素加工和添加的过程。
      * - 时间复杂度 O(n * n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permute5(int[] nums) {
