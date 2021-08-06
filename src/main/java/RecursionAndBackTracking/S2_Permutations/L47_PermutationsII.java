@@ -19,7 +19,7 @@ import java.util.Set;
 public class L47_PermutationsII {
     /*
      * 解法1：Recursion + Backtracking + Set
-     * - 思路：在 L46_Permutations 解法1的基础上加入用于去重的 Set。
+     * - 思路：结合 L46_Permutations 解法1、2，使用 set 去重，同时最后复制 list。
      * - 时间复杂度 O(n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permuteUnique(int[] nums) {
@@ -47,7 +47,7 @@ public class L47_PermutationsII {
 
     /*
      * 解法2：Iteration + Set
-     * - 思路：在 L46_Permutations 解法4的基础上加入用于去重的 Set。
+     * - 思路：在 L46_Permutations 解法5的基础上加入用于去重的 Set。
      * - 时间复杂度 O(n * n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permuteUnique2(int[] nums) {
@@ -71,7 +71,7 @@ public class L47_PermutationsII {
 
     /*
      * 解法3：Recursion + In-place swap + Set
-     * - 思路：在 L46_Permutations 解法4的基础上加入用于去重的 Set。
+     * - 思路：在 L46_Permutations 解法5的基础上加入用于去重的 Set。
      * - 时间复杂度 O(n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permuteUnique3(int[] nums) {

@@ -65,7 +65,7 @@ public class L131_PalindromePartitioning {
      * 具体来说可采用类似 L17、L93 中解法1的回溯法
      * - 思路：与解法1一致。
      * - 实现：该解法不在每次分支时复制 list，而只在递归到底找到符合条件的 list 时将其复制进 res 中 ∴ 减少了 list 的复制，
-     *   从而提升性能。但要注意在返回上一层递归时要去掉最后一个加入 list 的元素，以恢复上一层中 list 的状态。
+     *   从而提升性能。👉 但要注意在返回上一层递归时要去掉最后一个加入 list 的元素，以恢复上一层中 list 的状态。
      * - 时间复杂度 O(n * 2^n)，空间复杂度 O(n)。
      * */
     public static List<List<String>> partition2(String s) {

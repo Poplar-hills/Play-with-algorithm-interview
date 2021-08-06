@@ -2,10 +2,7 @@ package RecursionAndBackTracking.S2_Permutations;
 
 import static Utils.Helpers.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /*
  * Permutations
@@ -22,7 +19,7 @@ import java.util.Queue;
 
 public class L46_Permutations {
     /*
-     * 解法1：Recursion + Backtracking
+     * 解法1：Recursion + Backtracking + Set
      * - 思路：将排列问题转化为树形问题，再使用回溯搜索解。具体来说，每次往列表中添加元素时选择 nums 中的不同元素。例如：
      *                             []
      *                 1/          2|           3\
@@ -36,32 +33,63 @@ public class L46_Permutations {
      *   但这种方式需要在添加元素时判断待添加的元素是否已经用过了 ∴ 需要一个辅助数据结构来进行高效查询。
      * - 时间复杂度 O(n!)，即 n 个元素进行全排列；空间复杂度 O(n)。
      * */
-    public static List<List<Integer>> permute(int[] nums) {
+    public static List<List<Integer>> permute(int[] arr) {
         List<List<Integer>> res = new ArrayList<>();
-        if (nums.length == 0) return res;
-        backtrack(nums, new ArrayList<>(), new boolean[nums.length], res);  // 布尔数组用于记录哪些元素已经用过了
+        if (arr == null) return res;
+        findPermutation(arr, new ArrayList<>(), new HashSet<>(), res);  // 使用 set 记录元素是否使用过
         return res;
     }
 
-    private static void backtrack(int[] nums, List<Integer> list, boolean[] used, List<List<Integer>> res) {
+    private static void findPermutation(int[] arr, List<Integer> list, Set<Integer> set, List<List<Integer>> res) {
+        if (list.size() == arr.length) {
+            res.add(list);
+            return;
+        }
+        for (int el : arr) {
+            if (!set.contains(el)) {
+                List<Integer> newList = new ArrayList<>(list);  // 在每个分支处都重新创建 list 和 set
+                Set<Integer> newSet = new HashSet<>(set);
+                newList.add(el);
+                newSet.add(el);
+                findPermutation(arr, newList, newSet, res);
+            }
+        }
+    }
+
+    /*
+     * 解法2：Recursion + Backtracking + boolean[]
+     * - 思路：与解法1一致。
+     * - 实现：与解法1的区别：
+     *   1. 使用 boolean[] 来记录哪些元素已经使用过了。
+     *   2. 最后再复制 list。
+     * - 时间复杂度 O(n!)，即 n 个元素进行全排列；空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> permute2(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums.length == 0) return res;
+        backtrack2(nums, new ArrayList<>(), new boolean[nums.length], res);  // 布尔数组用于记录哪些元素已经用过了
+        return res;
+    }
+
+    private static void backtrack2(int[] nums, List<Integer> list, boolean[] used, List<List<Integer>> res) {
         if (list.size() == nums.length) {
-            res.add(new ArrayList<>(list));
+            res.add(new ArrayList<>(list));  // 最后再复制 list
             return;
         }
         for (int i = 0; i < nums.length; i++) {
             if (!used[i]) {
                 list.add(nums[i]);
                 used[i] = true;
-                backtrack(nums, list, used, res);
-                list.remove(list.size() - 1);
-                used[i] = false;
+                backtrack2(nums, list, used, res);
+                list.remove(list.size() - 1);  // ∵ 最后再复制 list ∴ 返回上层递归后要恢复 list 状态
+                used[i] = false;                      // 同时也要恢复去重数组的状态（解法1无法实现 ∵ 使用的是 set）
             }
         }
     }
 
     /*
-     * 解法2：Recursion + Backtracking + In-place swap（解法1的性能优化版）
-     * - 思路：与解法1一致。
+     * 解法3：Recursion + Backtracking + In-place swap（解法1的性能优化版）
+     * - 思路：与解法1、2一致。
      * - 实现：但每次递归中采用原地交换元素的方式获得新的排列：
      *                            [1,2,3]
      *                    /          |           \             - 将0号元素交换到 [0..n) 号位置上
@@ -73,14 +101,14 @@ public class L46_Permutations {
      *   Arrays.stream(nums).boxed().collect(Collectors.toList())。
      * - 时间复杂度 O(n!)，空间复杂度 O(n)。
      * */
-    public static List<List<Integer>> permute2(int[] nums) {
+    public static List<List<Integer>> permute3(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums.length == 0) return res;
-        backtrack2(nums, 0, res);
+        backtrack3(nums, 0, res);
         return res;
     }
 
-    private static void backtrack2(int[] nums, int i, List<List<Integer>> res) {
+    private static void backtrack3(int[] nums, int i, List<List<Integer>> res) {
         if (i == nums.length - 1) {                  // 递归到底
             List<Integer> list = new ArrayList<>();  // 将数组转化为列表后再放入 res
             for (int n : nums) list.add(n);
@@ -89,13 +117,13 @@ public class L46_Permutations {
         }
         for (int j = i; j < nums.length; j++) {  // j ∈ [i..n)，即让第 i 个元素分别与 [i..n) 个元素 swap
             swap(nums, i, j);
-            backtrack2(nums, i + 1, res);
+            backtrack3(nums, i + 1, res);
             swap(nums, i, j);                    // 在回到上一层之前将 nums 恢复原状
         }
     }
 
     /*
-     * 解法3：Iteration
+     * 解法4：Iteration
      * - 思路：采用类似 L17_LetterCombinationsOfPhoneNumber 解法2的思路，对于 nums 中的每个元素，都放到 res 中的每个列表
      *   里的每个插入点上，生成一个新的排列。例如，对于 [1,2,3] 来说：
      *                           /--> [3,2,1]
@@ -113,7 +141,7 @@ public class L46_Permutations {
      * - 时间复杂度 O(n * n!)：n 个元素的全排列有 n! 种结果，而每个结果中又有 n 个元素。
      * - 空间复杂度 O(1)。
      * */
-    public static List<List<Integer>> permute3(int[] nums) {
+    public static List<List<Integer>> permute4(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums.length == 0) return res;
         res.add(new ArrayList<>());        // 需要一个 trigger 元素
@@ -134,11 +162,11 @@ public class L46_Permutations {
     }
 
     /*
-     * 解法4：Iteration (解法3的简化版)
+     * 解法5：Iteration (解法4的简化版)
      * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法1中对 res 中元素加工和添加的过程。
      * - 时间复杂度 O(n * n!)，空间复杂度 O(n)。
      * */
-    public static List<List<Integer>> permute4(int[] nums) {
+    public static List<List<Integer>> permute5(int[] nums) {
         Queue<List<Integer>> q = new LinkedList<>();
         if (nums.length == 0) return new ArrayList<>();
         q.offer(new ArrayList<>());
@@ -158,9 +186,9 @@ public class L46_Permutations {
     }
 
     public static void main(String[] args) {
-        log(permute2(new int[]{1, 2, 3}));  // expects [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
-        log(permute2(new int[]{1, 2}));     // expects [[1,2], [2,1]]
-        log(permute2(new int[]{1}));        // expects [[1]]
-        log(permute2(new int[]{}));         // expects []
+        log(permute(new int[]{1, 2, 3}));  // expects [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+        log(permute(new int[]{1, 2}));     // expects [[1,2], [2,1]]
+        log(permute(new int[]{1}));        // expects [[1]]
+        log(permute(new int[]{}));         // expects []
     }
 }
