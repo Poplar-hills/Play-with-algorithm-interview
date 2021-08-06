@@ -33,10 +33,10 @@ public class L46_Permutations {
      *   但这种方式需要在添加元素时判断待添加的元素是否已经用过了 ∴ 需要一个辅助数据结构来进行高效查询。
      * - 时间复杂度 O(n!)，即 n 个元素进行全排列；空间复杂度 O(n)。
      * */
-    public static List<List<Integer>> permute(int[] arr) {
+    public static List<List<Integer>> permute(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
-        if (arr == null) return res;
-        findPermutation(arr, new ArrayList<>(), new HashSet<>(), res);  // 使用 set 记录元素是否使用过
+        if (nums == null || nums.length == 0) return res;
+        findPermutation(nums, new ArrayList<>(), new HashSet<>(), res);  // 使用 set 记录元素是否使用过
         return res;
     }
 
@@ -66,7 +66,7 @@ public class L46_Permutations {
      * */
     public static List<List<Integer>> permute2(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
-        if (nums.length == 0) return res;
+        if (nums == null || nums.length == 0) return res;
         backtrack2(nums, new ArrayList<>(), new boolean[nums.length], res);  // 布尔数组用于记录哪些元素已经用过了
         return res;
     }
@@ -88,7 +88,7 @@ public class L46_Permutations {
     }
 
     /*
-     * 解法3：Recursion + Backtracking + In-place swap（解法1的性能优化版）
+     * 解法3：Recursion + Backtracking + In-place swap（解法2的性能优化版）
      * - 思路：与解法1、2一致。
      * - 实现：但每次递归中采用原地交换元素的方式获得新的排列：
      *                            [1,2,3]
@@ -103,7 +103,7 @@ public class L46_Permutations {
      * */
     public static List<List<Integer>> permute3(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
-        if (nums.length == 0) return res;
+        if (nums == null || nums.length == 0) return res;
         backtrack3(nums, 0, res);
         return res;
     }
@@ -143,7 +143,7 @@ public class L46_Permutations {
      * */
     public static List<List<Integer>> permute4(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
-        if (nums.length == 0) return res;
+        if (nums == null || nums.length == 0) return res;
         res.add(new ArrayList<>());        // 需要一个 trigger 元素
 
         for (int n : nums) {
@@ -168,7 +168,7 @@ public class L46_Permutations {
      * */
     public static List<List<Integer>> permute5(int[] nums) {
         Queue<List<Integer>> q = new LinkedList<>();
-        if (nums.length == 0) return new ArrayList<>();
+        if (nums == null || nums.length == 0) return new ArrayList<>();
         q.offer(new ArrayList<>());
 
         for (int i = 0; i < nums.length; i++) {
