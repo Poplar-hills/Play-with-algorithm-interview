@@ -123,16 +123,16 @@ public class L131_PalindromePartitioning {
 		dp[0] = new ArrayList<>();
 		dp[0].add(new ArrayList<>());
 
-		for (int r = 0; r < s.length(); r++) {           // r 为子串的右边界
-			dp[r + 1] = new ArrayList<>();               // 初始化 dp[r+1] 处的列表（即 s[0..r] 上的解列表）
-			for (int l = 0; l <= r; l++) {               // l 为子串的左边界
+		for (int r = 0; r < s.length(); r++) {   // r 为子串的右边界
+			dp[r + 1] = new ArrayList<>();       // 初始化 dp[r+1] 处的列表（即 s[0..r] 上的解列表）
+			for (int l = 0; l <= r; l++) {       // l 为子串的左边界
 				if ((s.charAt(l) == s.charAt(r)) && (r - l <= 1 || palChecks[l + 1][r - 1])) { // 递推 s[l..r] 是否是回文串
 					palChecks[l][r] = true;
 					String comp = s.substring(l, r + 1);  // 获得回文串 s[l..r]
 					for (List<String> list : dp[l]) {    // dp[l] 中每个列表都是 s[0..l) 上的一个解
 						List<String> newList = new ArrayList<>(list);
 						newList.add(comp);
-						dp[r + 1].add(newList);          // 复制 s[0..l) 上的每一个解，追加上面获得的回文子串后再放入 dp[r+1] 中
+						dp[r + 1].add(newList);  // 复制 s[0..l) 上的每一个解，追加上面获得的回文子串后再放入 dp[r+1] 中
 					}
 				}
 			}

@@ -12,6 +12,11 @@ import java.util.Queue;
  *
  * - Given a collection of distinct integers, return all possible permutations (求 n 个不重复数字的全排列).
  *
+ * - 注：The difference between combinations and permutations is ordering. With permutations we care about
+ *   the order of the elements, whereas with combinations we don’t.
+ * - Permutation: 从 n 个元素中任取 m 个按照一定的顺序排成一列，所能得到的排列个数为：A(n,m) = n(n-1)(n-2)...(n-m+1)；
+ * - Combination: 从 n 个元素中任取 m 个组成一组，所能得到的组合个数为：C(n,m) = A(n,m) / m!；
+ *
  * - 💎 总结：排列问题（Permutation）通常可以转化为树形问题，并通过回溯法解决。
  * */
 
