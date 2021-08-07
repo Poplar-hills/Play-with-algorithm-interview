@@ -14,22 +14,22 @@ import static Utils.Helpers.*;
 public class L86_PartitionList {
     /*
      * 解法1：In-place Insertion
-     * - 思路：总体思路是仿照快速排序的方式将所有 < x 的节点移动到链表头部 ∴ 要先找到链表中最后一个 < x 的节点，并在往后遍历
-     *   过程中，每当遇到 < x 的节点，就将其插入到该节点后面。例如：1->2->4->3->5->0，x=3 中，最后一个 < x 的节点是2，则
-     *   在继续向后遍历过程中，将3插入到2后面、将0插入到3后面。
+     * - 思路：总体思路是仿照快速排序的方式将所有 < x 的节点移动到链表头部 ∴ 要先找到链表中连续 < x 的最后一个节点，并在往后
+     *   遍历过程中，每当遇到 < x 的节点，就将其插入到该节点后面。例如：1->2->4->1->5->0，x=3 中，连续 < x 的最后一个节点
+     *   是2，则在继续向后遍历过程中，将第二个1插入到2后面、将0插入到第二个1后面。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode partition(ListNode head, int x) {
-        ListNode dummyHead = new ListNode();          // 用 dummyHead 来统一正常与特殊情况的处理（SEE test case 2）
+        ListNode dummyHead = new ListNode();  // 用 dummyHead 来统一正常与特殊情况的处理（SEE test case 2）
         dummyHead.next = head;
 
         ListNode lastLtX = dummyHead, curr = head;
-        while (curr != null && curr.val < x) {        // 先找到最后一个 < x 的节点标记为 lastLtX
+        while (curr != null && curr.val < x) {  // 先找到最后一个 < x 的节点标记为 lastLtX
             lastLtX = curr;
             curr = curr.next;
         }
 
-        ListNode prev = lastLtX;                      // 从 lastLtX 节点继续遍历
+        ListNode prev = lastLtX;                // 从 lastLtX 节点继续遍历
         while (curr != null) {
             if (curr.val < x) {
                 ListNode next = curr.next;
@@ -72,7 +72,7 @@ public class L86_PartitionList {
             }
         }
 
-        l2.next = null;  // 注意 l2 的最后一个节点的 next 还链接着原来的节点，需要断开链接。
+        l2.next = null;  // 注意 l2 的最后一个节点的 next 可能还链接着原来的节点，需断开链接
         l1.next = dummyHead2.next;
         return dummyHead1.next;
     }
