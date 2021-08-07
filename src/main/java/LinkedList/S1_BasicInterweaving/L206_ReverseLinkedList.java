@@ -73,7 +73,7 @@ public class L206_ReverseLinkedList {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode reverseList3(ListNode head) {
-        if (head.next == null) return head;
+        if (head == null || head.next == null) return head;
         ListNode newHead = reverseList2(head.next);
         head.next.next = head;
         head.next = null;
@@ -105,6 +105,6 @@ public class L206_ReverseLinkedList {
 
     public static void main(String[] args) {
         ListNode l = createLinkedList(new int[]{0, 1, 2, 3, 4, 5});
-        printLinkedList(reverseList(l));    // expects 5->4->3->2->1->0->NULL
+        printLinkedList(reverseList(l));   // expects 5->4->3->2->1->0->NULL
     }
 }
