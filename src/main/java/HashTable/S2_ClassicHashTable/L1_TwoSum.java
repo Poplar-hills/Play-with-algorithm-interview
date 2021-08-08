@@ -46,15 +46,15 @@ public class L1_TwoSum {
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum2(int[] nums, int target) {
-        Pair<Integer, Integer>[] indexNums = new Pair[nums.length];  // 构建记录 <索引, 元素> 的数组
+        Pair<Integer, Integer>[] indexedNums = new Pair[nums.length];  // 构建记录 <索引, 元素> 的数组
         for (int i = 0; i < nums.length; i++)
-            indexNums[i] = new Pair<>(i, nums[i]);
+            indexedNums[i] = new Pair<>(i, nums[i]);
 
-        Arrays.sort(indexNums, Comparator.comparingInt(Pair::getValue));  // 根据元素值对 pair 进行排序
+        Arrays.sort(indexedNums, Comparator.comparingInt(Pair::getValue));  // 根据元素对 pair 进行排序
 
-        int l = 0, r = indexNums.length - 1;
-        while (l < r) {                                           // 指针对撞
-            Pair<Integer, Integer> lNum = indexNums[l], rNum = indexNums[r];
+        int l = 0, r = indexedNums.length - 1;
+        while (l < r) {                         // 开始指针对撞
+            Pair<Integer, Integer> lNum = indexedNums[l], rNum = indexedNums[r];
             int sum = lNum.getValue() + rNum.getValue();
             if (sum > target) r--;
             else if (sum < target) l++;
@@ -135,9 +135,9 @@ public class L1_TwoSum {
 
         for (int i = 0; i < nums.length; i++) {
             int complement = target - nums[i];
-            if (map.containsKey(complement))          // 先检查 complement 是否已存在
+            if (map.containsKey(complement))  // 先检查 complement 是否已存在
                 return new int[]{map.get(complement), i};
-            map.put(nums[i], i);                      // 再插入 nums[i]
+            map.put(nums[i], i);              // 再插入 nums[i]
         }
 
         throw new IllegalArgumentException("No solution");
