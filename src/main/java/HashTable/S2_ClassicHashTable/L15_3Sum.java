@@ -25,26 +25,25 @@ public class L15_3Sum {
         if (nums == null || nums.length < 3) return new ArrayList<>();
         Set<List<Integer>> resSet = new HashSet<>();  // 用于存储结果并对结果进行去重的 Set
         int n = nums.length;
+        Arrays.sort(nums);                     // 这里要重新排序，从而让 resSet 能对后面找到的三元组去重
 
-        Arrays.sort(nums);                            // 这里要新排序，resSet 才能对后面找到的三元组进行去重
-
-        Set<Integer> set = new HashSet<>();           // 放在 for 外面是为了复用，效率会高一些（也可以放在第一层 for 内部）
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = i + 1; j < n; j++) {         // 内部是标准的 2Sum（与 L1_TwoSum 解法5一致）
+        Set<Integer> set = new HashSet<>();    // 放在 for 外面是为了复用，效率会高一些（也可以放在第一层 for 内部）
+        for (int i = 0; i < n; i++) {          // 固定元素 nums[i]
+            for (int j = i + 1; j < n; j++) {  // 内部是标准的 2Sum（与 L1_TwoSum 解法5一致）
                 int complement = 0 - nums[i] - nums[j];
-                if (set.contains(complement))
+                if (set.contains(complement))  // 内部的 set 是用来查找 complement 的，而非用来去重
                     resSet.add(Arrays.asList(nums[i], nums[j], complement));
                 set.add(nums[j]);
             }
-            set.clear();                              // ∵ set 放在了 for 外面 ∴ 每轮 2Sum 完成之后要情况 set
+            set.clear();                       // ∵ set 放在了 for 外面 ∴ 每轮 2Sum 完成之后要情况 set
         }
 
-        return new ArrayList<>(resSet);               // Set 和 List 都是 Collection，可以通过构造函数互相转化
+        return new ArrayList<>(resSet);        // Set 和 List 都是 Collection，可以通过构造函数互相转化
     }
 
     /*
      * 解法2：3Sum -> 2Sum（指针对撞 + Set 去重）
-     * - 思路：与解法1一致，也是通过在遍历时挨个固定元素，将 3Sum 化简为 2Sum 问题。
+     * - 思路：与解法1一致。
      * - 实现：在“将 3Sum 转化为 2Sum 问题”的思路下可以采用 L1_TwoSum 中的任何一种实现来解决 2Sum 问题。本解法采用 L1 中
      *   解法2的指针对撞实现。而 ∵ 指针对撞的前提也是数组有序 ∴ 同样需要先对 nums 排序。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
@@ -53,7 +52,6 @@ public class L15_3Sum {
         if (nums == null || nums.length < 3) return new ArrayList<>();
         Set<List<Integer>> resSet = new HashSet<>();
         int n = nums.length;
-
         Arrays.sort(nums);
 
         for (int i = 0; i < n - 2; i++) {  // 外层固定一个元素，在内部通过指针对撞来搜索 2Sum
@@ -79,14 +77,13 @@ public class L15_3Sum {
         if (nums == null || nums.length < 3) return new ArrayList<>();
         Set<List<Integer>> resSet = new HashSet<>();
         int n = nums.length;
-
         Arrays.sort(nums);
 
         for (int i = 0; i < n - 2; i++) {
             for (int j = i + 1; j < n - 1; j++) {
                 int complement = 0 - nums[i] - nums[j];
-                int k = binarySearch(nums, j + 1, n - 1, complement);
-                if (k != -1) resSet.add(Arrays.asList(nums[i], nums[j], nums[k]));
+                if (binarySearch(nums, j + 1, n - 1, complement) != -1)
+                    resSet.add(Arrays.asList(nums[i], nums[j], complement));
             }
         }
 
@@ -104,7 +101,7 @@ public class L15_3Sum {
     /*
      * 解法4：3Sum -> 2Sum（指针对撞 + 手动去重）
      * - 思路：与解法2一致。
-     * - 实现：解法1、2、3都是使用 Set 自动去重，虽然方便但是效率较低 ∵ 要先找到解，再通过 Set 检查是否重复。而本解法中采用
+     * - 实现：解法1、2、3都是使用 Set 自动去重，虽然方便但是效率较低 ∵ 要先找到解，再通过 Set 检查是否重复。本解法中采用
      *   的手动去重的关键就是在对 nums 进行排序后，检查相邻的重复元素，若重复则无需再再后面搜索 2Sum。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
@@ -112,10 +109,9 @@ public class L15_3Sum {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length < 3) return res;
         int n = nums.length;
-
         Arrays.sort(nums);
 
-        for (int i = 0; i < n - 2; i++) {            // i < n-2 即可，不用再最后一个元素进行指针对撞了
+        for (int i = 0; i < n - 2; i++) {            // i < n-2 即可，不用再对最后一个元素进行指针对撞了
             if (i == 0 || nums[i] != nums[i - 1]) {  // 手动去重，后面的元素只要不等于前一个元素即可
                 int l = i + 1, r = n - 1;            // 在 (i..] 范围内进行指针对撞
                 while (l < r) {
@@ -143,7 +139,6 @@ public class L15_3Sum {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length < 3) return res;
         int n = nums.length;
-
         Arrays.sort(nums);
 
         Set<Integer> set = new HashSet<>();
@@ -164,9 +159,9 @@ public class L15_3Sum {
     }
 
     public static void main(String[] args) {
-        log(threeSum5(new int[]{-1, 0, 1, 2, -1, -4}));  // expects [[-1,0,1], [-1,-1,2]]
-        log(threeSum5(new int[]{1, 0, -2, 1, -2, 4}));   // expects [[1,-2,1], [-2,-2,4]]
-        log(threeSum5(new int[]{-1, 0, 1}));             // expects [-1, 0, 1]
-        log(threeSum5(new int[]{1, 0, 1, 0}));           // expects []
+        log(threeSum3(new int[]{-1, 0, 1, 2, -1, -4}));  // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum3(new int[]{1, 0, -2, 1, -2, 4}));   // expects [[1,-2,1], [-2,-2,4]]
+        log(threeSum3(new int[]{-1, 0, 1}));             // expects [-1, 0, 1]
+        log(threeSum3(new int[]{1, 0, 1, 0}));           // expects []
     }
 }
