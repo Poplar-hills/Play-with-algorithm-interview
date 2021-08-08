@@ -73,16 +73,16 @@ public class L1_TwoSum {
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum3(int[] nums, int target) {
-        int[][] indexNums = new int[nums.length][];
+        int[][] indexedNums = new int[nums.length][];
         for (int i = 0; i < nums.length; i++)
-            indexNums[i] = new int[]{i, nums[i]};  // 直接使用数组记录索引元素对
+            indexedNums[i] = new int[]{i, nums[i]};  // 直接使用数组记录索引元素对
 
-        Arrays.sort(indexNums, (a, b) -> a[1] - b[1]);
+        Arrays.sort(indexedNums, (a, b) -> a[1] - b[1]);  // 另一种写法：Comparator.comparingInt(x -> x[1])
 
-        for (int i = 0; i < indexNums.length; i++) {
-            int complement = target - indexNums[i][1];
-            int index = binarySearch(indexNums, i + 1, nums.length - 1, complement);
-            if (index != -1) return new int[]{indexNums[i][0], indexNums[index][0]};
+        for (int i = 0; i < indexedNums.length; i++) {
+            int complement = target - indexedNums[i][1];
+            int index = binarySearch(indexedNums, i + 1, nums.length - 1, complement);
+            if (index != -1) return new int[]{indexedNums[i][0], indexedNums[index][0]};
         }
 
         throw new IllegalArgumentException("No solution");
@@ -90,7 +90,7 @@ public class L1_TwoSum {
 
     private static int binarySearch(int[][] nums, int l, int r, int target) {
         if (l > r) return -1;
-        int mid = (r - l) / 2 + l;
+        int mid = (r - l) / 2 + l;  // 不直接 (r + l) / 2 是为了避免整型溢出
         if (target < nums[mid][1]) return binarySearch(nums, l, mid - 1, target);
         if (target > nums[mid][1]) return binarySearch(nums, mid + 1, r, target);
         return mid;
@@ -112,7 +112,7 @@ public class L1_TwoSum {
         for (int i = 0; i < nums.length; i++) {  // 再次遍历数组
             int complement = target - nums[i];
             if (map.containsKey(complement) && map.get(complement) != i)  // 检查索引确保 complement 不等于 nums[i] 自身
-                return new int[] {i, map.get(complement)};
+                return new int[]{i, map.get(complement)};
         }
 
         throw new IllegalArgumentException("No two sum solution");
