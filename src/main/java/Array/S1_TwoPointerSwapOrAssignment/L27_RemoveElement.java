@@ -16,7 +16,7 @@ import static Utils.Helpers.swap;
 
 public class L27_RemoveElement {
     /*
-     * 解法1：Assignment
+     * 解法1：双指针赋值
      * - 思路：与 L26_RemoveDuplicates、L283_MoveZeros 的思路一致，从前往后遍历，跳过不符合条件的元素，将符合条件的元素
      *   复制到数组前面。
      * - 时间复杂度为 O(n)，空间复杂度为 O(1)。
@@ -34,7 +34,7 @@ public class L27_RemoveElement {
     }
 
     /*
-     * 解法2：Swap
+     * 解法2：双指针 + Swap
      * - 思路：与解法1的唯一区别是，使用 swap 代替解法一中的赋值，将不等于 val 的元素 swap 到数组前面。
      * - 时间复杂度为 O(n)，空间复杂度为 O(1)。
      * */

@@ -15,7 +15,7 @@ import static Utils.Helpers.log;
 
 public class L26_RemoveDuplicates {
     /*
-     * 解法1：Assignment
+     * 解法1：双指针赋值
      * - 思路：从前往后遍历，在检测到非重复元素时，将其复制到数组头部形成不重复的元素序列（后面的元素是什么不用管）。思路与
      *   L283_MoveZeros, L27_RemoveElement 的解法1一致，只是判断条件不同。
      * - 实现：
