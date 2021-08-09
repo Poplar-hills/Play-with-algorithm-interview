@@ -112,7 +112,9 @@ public class Helpers {
         return true;
     }
 
-    // 链表节点类
+    /*
+     * 链表节点类
+     * */
     public static class ListNode {
         public int val;        // Have to make the attributes and the methods public
         public ListNode next;
@@ -136,7 +138,9 @@ public class Helpers {
         }
     }
 
-    // 从数组生成链表
+    /*
+     * 从数组生成链表
+     * */
     public static ListNode createLinkedList(int[] arr) {
         ListNode dummyHead = new ListNode();
         ListNode curr = dummyHead;
@@ -147,7 +151,9 @@ public class Helpers {
         return dummyHead.next;
     }
 
-    // 打印链表
+    /*
+     * 打印链表
+     * */
     public static void printLinkedList(ListNode head) {
         StringBuilder s = new StringBuilder();
         while (head != null) {
@@ -159,7 +165,9 @@ public class Helpers {
         log(s.toString());
     }
 
-    // 二叉树节点类
+    /*
+     * 二叉树节点类
+     * */
     public static class TreeNode {
         public int val;
         public TreeNode left;
@@ -180,7 +188,9 @@ public class Helpers {
         }
     }
 
-    // 以深度优先的方式从数组生成二叉树
+    /*
+     * 以深度优先的方式从数组生成二叉树（实现1）
+     * */
     public static TreeNode createBinaryTreeDepthFirst(Integer[] arr) {
         return arr.length == 0 ? null : createBinaryTreeDepthFirst(arr, 0).getValue();
     }
@@ -202,7 +212,29 @@ public class Helpers {
         return new Pair<>(i, node);
     }
 
-    // 以广度优先的方式从数组生成二叉树
+    /*
+     * 以广度优先的方式从数组生成二叉树（实现2）
+     * - 与👆实现1的差别就是把 i 作为类的成员变量来实现而已。
+     * */
+    private static int i = 0;
+
+    public static TreeNode createBinaryTreeDepthFirst2(Integer[] arr) {
+        if (arr == null || arr.length == 0) return null;
+        return helper(arr, new TreeNode(arr[0]));
+    }
+
+    private static TreeNode helper(Integer[] arr, TreeNode root) {
+        if (root == null) return null;
+        if (++i < arr.length && arr[i] != null)
+            root.left = helper(arr, new TreeNode(arr[i]));
+        if (++i < arr.length && arr[i] != null)
+            root.right = helper(arr, new TreeNode(arr[i]));
+        return root;
+    }
+
+    /*
+     * 以广度优先的方式从数组生成二叉树
+     * */
     public static TreeNode createBinaryTreeBreadthFirst(Integer[] arr) {  // ∵ 树中节点可能为 null ∴ 使用 Integer 数组
         if (arr == null || arr.length == 0 || arr[0] == null)
             return null;
@@ -225,7 +257,9 @@ public class Helpers {
         return tree;
     }
 
-    // 以深度优先的方式打印二叉树
+    /*
+     * 以深度优先的方式打印二叉树
+     * */
     public static void printBinaryTreeDepthFirst(TreeNode root) {
         List<Integer> list = new ArrayList<>();
         if (root != null) collectDepthFirst(root, list);
@@ -242,7 +276,9 @@ public class Helpers {
         collectDepthFirst(node.right, list);
     }
 
-    // 以广度优先的方式打印二叉树
+    /*
+     * 以广度优先的方式打印二叉树
+     * */
     public static void printBinaryTreeBreadthFirst(TreeNode root) {
         List<Integer> list = new ArrayList<>();
         if (root == null) {
@@ -275,7 +311,9 @@ public class Helpers {
         log(list.subList(0, last + 1));
     }
 
-    // Pair 类（copy from javafx.util）
+    /*
+     * Pair 类（copy from javafx.util）
+     * */
     public static class Pair<K,V> {
         private K key;
         private V value;
