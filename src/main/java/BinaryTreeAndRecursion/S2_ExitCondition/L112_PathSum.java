@@ -27,8 +27,7 @@ public class L112_PathSum {
      * */
     public static boolean hasPathSum(TreeNode root, int sum) {
         if (root == null) return false;
-        if (root.left == null && root.right == null)
-            return sum == root.val;
+        if (root.left == null && root.right == null) return sum == root.val;
         return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
     }
 
@@ -36,6 +35,7 @@ public class L112_PathSum {
      * 解法2：DFS (Iteration)
      * - 思路：与解法1一致，都是在访问节点时检查该节点是否是能使剩余 sum 得0的叶子节点，若是则说明找到解。
      * - 实现：采用两个 Stack 分别记录节点和当前路径的剩余 sum。
+     * - 注：也可以采用一个 Stack 存储 Pair<TreeNode, Integer>，即解法3的 stack 版。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean hasPathSum2(TreeNode root, int sum) {
@@ -47,18 +47,16 @@ public class L112_PathSum {
 
         while (!s1.isEmpty()) {
             TreeNode node = s1.pop();
-            int remainingSum = s2.pop();
-
-            if (node.left == null && node.right == null && remainingSum == node.val)
+            int rest = s2.pop();
+            if (node.left == null && node.right == null && rest == node.val)
                 return true;
-
             if (node.left != null) {
                 s1.push(node.left);
-                s2.push(remainingSum - node.val);
+                s2.push(rest - node.val);
             }
             if (node.right != null) {
                 s1.push(node.right);
-                s2.push(remainingSum - node.val);
+                s2.push(rest - node.val);
             }
         }
 
@@ -79,15 +77,13 @@ public class L112_PathSum {
         while (!q.isEmpty()) {
             Pair<TreeNode, Integer> pair = q.poll();
             TreeNode node = pair.getKey();
-            int remainingSum = pair.getValue();
-
-            if (node.left == null && node.right == null && remainingSum == node.val)
+            int rest = pair.getValue();
+            if (node.left == null && node.right == null && rest == node.val)
                 return true;
-
             if (node.left != null)
-                q.offer(new Pair<>(node.left, remainingSum - node.val));
+                q.offer(new Pair<>(node.left, rest - node.val));
             if (node.right != null)
-                q.offer(new Pair<>(node.right, remainingSum - node.val));
+                q.offer(new Pair<>(node.right, rest - node.val));
         }
 
         return false;
@@ -96,7 +92,7 @@ public class L112_PathSum {
     /*
      * 解法4：BFS (Recursion)
      * - 思路：与解法1、2、3一致。
-     * - 实现：采用 BFS 的递归实现，递归对象是 queue，递归退出条件是找到解或 q 中元素耗尽。
+     * - 实现：采用 BFS 递归实现，递归对象是 queue，递归退出条件是找到解或 q 中元素耗尽。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean hasPathSum4(TreeNode root, int sum) {
@@ -106,18 +102,17 @@ public class L112_PathSum {
         return helper4(q);
     }
 
-    private static boolean helper4(Queue<Pair<TreeNode, Integer>> q) {
+    private static boolean helper4(Queue<Pair<TreeNode, Integer>> q) {  // 这个递归只是代替了解法3中的 while 循环而已
         if (q.isEmpty()) return false;  // 若 q 中节点已经耗尽则说明无解
 
         Pair<TreeNode, Integer> pair = q.poll();
         TreeNode node = pair.getKey();
-        int remindingSum = pair.getValue();
+        int rest = pair.getValue();
 
-        if (node.left == null && node.right == null && remindingSum == node.val)
-            return true;                // 若叶子节点符合条件则返回 true，否则也不返回 false，而是继续递归，从 q 中出队
-                                        // 下一个节点（若这里返回 false 则会提前退出递归，导致无法遍历 q 中剩下的节点）
-        if (node.left != null) q.offer(new Pair<>(node.left, remindingSum - node.val));
-        if (node.right != null) q.offer(new Pair<>(node.right, remindingSum - node.val));
+        if (node.left == null && node.right == null && rest == node.val)
+            return true;
+        if (node.left != null) q.offer(new Pair<>(node.left, rest - node.val));
+        if (node.right != null) q.offer(new Pair<>(node.right, rest - node.val));
         return helper4(q);
     }
 
