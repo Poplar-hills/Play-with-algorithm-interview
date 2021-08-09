@@ -28,14 +28,14 @@ public class L404_SumOfLeftLeaves {
         if (root == null) return 0;
         int sum = 0;
         Queue<Pair<TreeNode, Boolean>> q = new LinkedList<>();
-        q.offer(new Pair<>(root, false));  // 根节点不是左子节点
+        q.offer(new Pair<>(root, false));  // 根节点不是左叶子节点
 
         while (!q.isEmpty()) {
             Pair<TreeNode, Boolean> pair = q.poll();
             TreeNode node = pair.getKey();
-            boolean isLeftChild = pair.getValue();
+            boolean isLeft = pair.getValue();
 
-            if (node.left == null && node.right == null && isLeftChild)
+            if (node.left == null && node.right == null && isLeft)
                 sum += node.val;
 
             if (node.left != null)
@@ -56,14 +56,14 @@ public class L404_SumOfLeftLeaves {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static int sumOfLeftLeaves2(TreeNode root) {
-        return helper2(root, false);
+        return dfs2(root, false);
     }
 
-    private static int helper2(TreeNode root, boolean isLeft) {
+    private static int dfs2(TreeNode root, boolean isLeft) {
         if (root == null) return 0;
         if (root.left == null && root.right == null)
             return isLeft ? root.val : 0;
-        return helper2(root.left, true) + helper2(root.right, false);
+        return dfs2(root.left, true) + dfs2(root.right, false);
     }
 
     /*
@@ -77,13 +77,13 @@ public class L404_SumOfLeftLeaves {
     public static int sumOfLeftLeaves3(TreeNode root) {
         if (root == null) return 0;
         if (root.left != null && root.left.left == null && root.left.right == null)
-            return root.left.val + sumOfLeftLeaves3(root.right);  // 访问节点（注意若有右子节点则要继续递归）
+            return root.left.val + sumOfLeftLeaves3(root.right);  // 访问节点继续递归右子树
         return sumOfLeftLeaves3(root.left) + sumOfLeftLeaves3(root.right);
     }
 
     /*
      * 解法4：BFS
-     * - 思路：与解法3一致。
+     * - 思路：解法3的迭代版。
      * - 实现：将 Queue 改为 Stack 即是相同思路下的 DFS 迭代实现。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -95,20 +95,19 @@ public class L404_SumOfLeftLeaves {
 
         while (!q.isEmpty()) {
             TreeNode node = q.poll();
-
             if (node.left != null) {
                 if (node.left.left == null && node.left.right == null)
                     sum += node.left.val;  // 若是叶子节点则累计节点值
                 else
                     q.offer(node.left);    // 若不是叶子节点则将其入队
             }
-
-            if (node.right != null) q.offer(node.right);
+            if (node.right != null)
+                q.offer(node.right);
         }
 
         return sum;
     }
-
+    
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, null, 4, 5});
         log(sumOfLeftLeaves4(t1));
