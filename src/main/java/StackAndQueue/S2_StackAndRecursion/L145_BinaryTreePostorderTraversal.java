@@ -53,8 +53,8 @@ public class L145_BinaryTreePostorderTraversal {
                 curr = curr.left;
             }
             curr = stack.pop();
-            if (curr.right != null && curr.right != prev) {  // 若父节点有右子节点且还未被访问过，则把父节点放回 stack 中，先遍历右子树
-                stack.push(curr);
+            if (curr.right != null && curr.right != prev) {  // 若父节点有右子节点且还未被访问过
+                stack.push(curr);   // 则把父节点放回 stack 中，先遍历右子树
                 curr = curr.right;
             } else {                // 若父节点没有右子节点，或有右子节点但已经被访问过，则访问父节点
                 res.add(curr.val);
@@ -98,12 +98,12 @@ public class L145_BinaryTreePostorderTraversal {
 
     /*
      * 解法4：迭代
-     * - 思路：前序遍历的方法之一是先往左遍历到底，一路上访问节点，当到底后再转向访问右子树，如此循环。由此可想：若若从根节点开始
+     * - 思路：前序遍历的方法之一是先往左遍历到底，一路上访问节点，当到底后再转向访问右子树，如此循环。由此可想：若从根节点开始
      *   先往右遍历，一路上访问节点，当没有右子节点时再转向访问左子树，如此循环会得到什么？结果是访问到的节点顺序刚好与后序遍历
      *   应有的结果顺序相反 ∴ 可以使用一个 stack 将该结果倒序输出即可。
      * - 实现：根据该思路可知需要2个 stack —— 一个用于实现往右遍历，另一个用于倒序输出遍历结果。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-     * - 👉语法：Java 中：
+     * - 👉 语法：Java 中：
      *   - Stack 接口的实现有：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated，推荐用 Deque 代替）；
      *   - Deque 接口的实现有：ArrayDeque, LinkedList；
      * */

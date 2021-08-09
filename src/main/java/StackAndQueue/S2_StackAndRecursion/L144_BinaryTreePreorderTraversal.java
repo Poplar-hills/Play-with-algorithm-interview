@@ -53,6 +53,7 @@ public class L144_BinaryTreePreorderTraversal {
     /*
      * 解法3：迭代2
      * - 思路：先向左递归到底，一路上访问每一个节点并入栈每一个左子节点，到底后出栈节点并开始从其右子节点重复前面这样的过程。
+     *   ∵ 在一路向左下走到底的过程中已经访问了父节点、左子节点 ∴ 当再无左子节点时就可以转向开始访问右子节点了。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> preorderTraversal3(TreeNode root) {
