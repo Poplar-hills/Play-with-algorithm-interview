@@ -8,6 +8,7 @@ import static Utils.Helpers.*;
  * Binary Tree Preorder Traversal
  *
  * - Given a binary tree, return the preorder traversal of its nodes' values.
+ * - Preorder traversal：首先访问根结点，然后遍历左子树，最后遍历右子树（根结点最先访问）。
  * */
 
 public class L144_BinaryTreePreorderTraversal {
@@ -113,10 +114,14 @@ public class L144_BinaryTreePreorderTraversal {
      * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L145 的解法5）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
-    private static class Command {  // 将节点和指令的 pair 抽象成 Command
-        String type;                // "traverse" or "visit"（更好的方式是用枚举类）
+    public enum CmdType {
+        TRAVERSE, VISIT
+    }
+
+    private static class Command {
+        CmdType type;
         TreeNode node;
-        Command(String type, TreeNode node) {
+        Command(CmdType type, TreeNode node) {
             this.type = type;
             this.node = node;
         }
@@ -125,20 +130,20 @@ public class L144_BinaryTreePreorderTraversal {
     public static List<Integer> preorderTraversal5(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        Stack<Command> stack = new Stack<>();   // 栈中存的是 Command
-        stack.push(new Command("traverse", root));
+        Stack<Command> stack = new Stack<>();
+        stack.push(new Command(CmdType.TRAVERSE, root));
 
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
             TreeNode node = cmd.node;
-            if (cmd.type.equals("visit"))
+            if (cmd.type == CmdType.VISIT)
                 res.add(node.val);
-            else {                  // 若 type 是 "traverse"
+            else {
                 if (node.right != null)
-                    stack.push(new Command("traverse", node.right));
+                    stack.push(new Command(CmdType.TRAVERSE, node.right));
                 if (node.left != null)
-                    stack.push(new Command("traverse", node.left));
-                stack.push(new Command("visit", node));  // "visit" 指令最后入栈、最先执行
+                    stack.push(new Command(CmdType.TRAVERSE, node.left));
+                stack.push(new Command(CmdType.VISIT, node));  // VISIT 指令最后入栈、最先执行
             }
         }
 
@@ -146,8 +151,19 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
+        TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
         log(preorderTraversal(t1));
+        /*
+         * expects [5, 3, 1, 4, 7, 6]
+         *         5
+         *       /   \
+         *      3     7
+         *     / \   /
+         *    1   4 6
+         * */
+
+        TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
+        log(preorderTraversal(t2));
         /*
          * expects [1, 2, 3]
          *      1
@@ -157,21 +173,10 @@ public class L144_BinaryTreePreorderTraversal {
          *      3
          * */
 
-        TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(preorderTraversal(t2));
-        /*
-         * expects []
-         * */
-
-        TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
+        TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{});
         log(preorderTraversal(t3));
         /*
-         * expects [5, 3, 1, 4, 7, 6]
-         *         5
-         *       /   \
-         *      3     7
-         *     / \   /
-         *    1   4 6
+         * expects []
          * */
     }
 }

@@ -8,6 +8,7 @@ import static Utils.Helpers.*;
  * Binary Tree Postorder Traversal
  *
  * - Given a binary tree, return the postorder traversal of its nodes' values.
+ * - Postorder traversal：首先遍历右子树，然后遍历左子树，最后访问根结点（根结点最后访问）。
  * */
 
 public class L145_BinaryTreePostorderTraversal {

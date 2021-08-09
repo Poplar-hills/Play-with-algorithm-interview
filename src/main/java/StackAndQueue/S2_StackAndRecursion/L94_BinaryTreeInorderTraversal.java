@@ -8,11 +8,12 @@ import static Utils.Helpers.*;
  * Binary Tree Inorder Traversal
  *
  * - Given a binary tree, return the inorder traversal of its nodes' values.
+ * - Inorder traversal：首先遍历左子树，然后访问根结点，最后遍历右子树（根结点在中间访问）；
  * */
 
 public class L94_BinaryTreeInorderTraversal {
     /*
-     * 解法1：DFS
+     * 解法1：递归
      * - 实现：最简单常见的 DFS 就是使用递归实现。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
@@ -30,9 +31,9 @@ public class L94_BinaryTreeInorderTraversal {
     }
 
     /*
-     * 解法2：DFS
-     * - 思路：用迭代的方式实现 DFS —— 与 L144 解法3类似，区别在于访问节点的时机 —— 先向左迭代到底，一路上只入栈而不不访问节点，
-     *   到底之后开始出栈时再访问节点。
+     * 解法2：迭代
+     * - 思路：与 L144 解法3类似，区别在于访问节点的时机 —— 先向左迭代到底，一路上只入栈而不不访问节点，到底之后开始出栈
+     *   时再访问节点。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
     public static List<Integer> inorderTraversal2(TreeNode root) {
