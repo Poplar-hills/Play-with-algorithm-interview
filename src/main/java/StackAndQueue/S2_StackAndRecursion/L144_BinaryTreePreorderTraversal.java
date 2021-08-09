@@ -22,11 +22,11 @@ public class L144_BinaryTreePreorderTraversal {
         return res;
     }
 
-    private static void preorderTraversal(TreeNode node, List<Integer> list) {
+    private static void preorderTraversal(TreeNode node, List<Integer> res) {
         if (node == null) return;
-        list.add(node.val);
-        preorderTraversal(node.left, list);
-        preorderTraversal(node.right, list);
+        res.add(node.val);
+        preorderTraversal(node.left, res);
+        preorderTraversal(node.right, res);
     }
 
     /*

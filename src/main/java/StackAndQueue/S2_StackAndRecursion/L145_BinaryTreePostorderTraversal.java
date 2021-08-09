@@ -22,11 +22,11 @@ public class L145_BinaryTreePostorderTraversal {
         return res;
     }
 
-    private static void postorderTraversal(TreeNode node, List<Integer> list) {
+    private static void postorderTraversal(TreeNode node, List<Integer> res) {
         if (node == null) return;
-        postorderTraversal(node.left, list);
-        postorderTraversal(node.right, list);
-        list.add(node.val);
+        postorderTraversal(node.left, res);
+        postorderTraversal(node.right, res);
+        res.add(node.val);
     }
 
     /*
@@ -35,7 +35,7 @@ public class L145_BinaryTreePostorderTraversal {
      *   1. 经过父节点时，需要知道其右子节点是否被访问过；
      *   2. 若右子节点未被访问过，则经过父节点拿到右子节点后需要把父节点再放回 stack 中，等右子节点访问完后再回来处理父节点。
      * - 💎 技巧：
-     *   - 对于要求节点访问顺序的题目，可以考虑 👆这种把节点拿出来再放回去的技巧。
+     *   - 对于要求节点访问顺序的题目，可以考虑👆这种把节点拿出来再放回去的技巧。
      *   - 这种遍历树的题目中可以使用 curr = null 来改变代码行进路线，本解法中：
      *     > 若 curr 有右子树，则最后 curr 会指向右子节点，并在下一轮循环中会继续走进内层 while，对右子树进行遍历；
      *     > 若 curr 没有右子树，则访问父节点，且最后的 curr = null 会让代码在下一轮循环中避开内层 while，直接 stack.pop()。
@@ -141,10 +141,14 @@ public class L145_BinaryTreePostorderTraversal {
      * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L94 的解法4、L144 的解法5）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * */
-    static class Command {
-        String type;
+    public enum CmdType {
+        TRAVERSE, VISIT
+    }
+
+    private static class Command {
+        CmdType type;
         TreeNode node;
-        Command(String type, TreeNode node) {
+        Command(CmdType type, TreeNode node) {
             this.type = type;
             this.node = node;
         }
@@ -153,20 +157,20 @@ public class L145_BinaryTreePostorderTraversal {
     public static List<Integer> postorderTraversal5(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        Stack<Command> stack = new Stack<>();   // 栈中存的是 Command（将节点和指令的 pair）
-        stack.push(new Command("traverse", root));
+        Stack<Command> stack = new Stack<>();
+        stack.push(new Command(CmdType.TRAVERSE, root));
 
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
             TreeNode curr = cmd.node;
-            if (cmd.type.equals("visit"))
+            if (cmd.type == CmdType.VISIT)
                 res.add(cmd.node.val);
             else {
-                stack.push(new Command("visit", curr));  // visit 指令最先入栈、最后执行
+                stack.push(new Command(CmdType.VISIT, curr));  // VISIT 指令最先入栈、最后执行
                 if (curr.right != null)
-                    stack.push(new Command("traverse", curr.right));
+                    stack.push(new Command(CmdType.TRAVERSE, curr.right));
                 if (curr.left != null)
-                    stack.push(new Command("traverse", curr.left));
+                    stack.push(new Command(CmdType.TRAVERSE, curr.left));
             }
         }
 
@@ -177,29 +181,23 @@ public class L145_BinaryTreePostorderTraversal {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
         Stack<TreeNode> stack = new Stack<>();
-        TreeNode prev = null, curr = root;
-
-        while (curr != null || !stack.isEmpty()) {
-            while (curr != null) {
-                stack.push(curr);
-                curr = curr.left;
-            }
-            curr = stack.pop();
-            if (curr.right != null && curr.right != prev) {
-                stack.push(curr);
-                curr = curr.right;
-            } else {
-                res.add(curr.val);
-                prev = curr;
-            }
-        }
-
         return res;
     }
 
     public static void main(String[] args) {
-        TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(postorderTraversal2(t1));
+        TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
+        log(postorderTraversal0(t1));
+        /*
+         * expects [1, 4, 3, 6, 7, 5]
+         *         5
+         *       /   \
+         *      3     7
+         *     / \   /
+         *    1   4 6
+         * */
+
+        TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
+        log(postorderTraversal0(t2));
         /*
          * expects [3, 2, 1]
          *      1
@@ -209,21 +207,10 @@ public class L145_BinaryTreePostorderTraversal {
          *      3
          * */
 
-        TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(postorderTraversal2(t2));
+        TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{});
+        log(postorderTraversal0(t3));
         /*
          * expects []
-         * */
-
-        TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(postorderTraversal2(t3));
-        /*
-         * expects [1, 4, 3, 6, 7, 5]
-         *         5
-         *       /   \
-         *      3     7
-         *     / \   /
-         *    1   4 6
          * */
     }
 }
