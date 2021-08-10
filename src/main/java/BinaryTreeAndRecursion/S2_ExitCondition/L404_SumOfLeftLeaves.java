@@ -107,7 +107,7 @@ public class L404_SumOfLeftLeaves {
 
         return sum;
     }
-    
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, null, 4, 5});
         log(sumOfLeftLeaves4(t1));

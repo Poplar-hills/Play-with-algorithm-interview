@@ -2,11 +2,7 @@ package RecursionAndBackTracking.S3_Combinations;
 
 import static Utils.Helpers.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /*
  * Combination Sum
@@ -23,8 +19,8 @@ import java.util.Set;
 public class L39_CombinationSum {
     /*
      * 解法1：Recursion + Backtracking + Set
-     * - 思路：尝试用 candidates 中的每一个元素对 target 进行递归分解，其中：
-     *     1. 若 target 减去一个 candidate 之后等于0则找到一个解；
+     * - 思路：尝试用 nums 中的每一个元素对 target 进行递归分解，其中：
+     *     1. 若 target 减去一个 num 之后等于0则找到一个解；
      *     2. candidate 必须 <= target 才可以相减。
      *                              8
      *               2/            3|            5\
@@ -38,24 +34,24 @@ public class L39_CombinationSum {
      *   但 ∵ 组合不关注顺序（如 [3,5] 和 [5,3] 等价）∴ 需对找到的解进行去重，在找到解时先对其中的元素进行排序，再用 Set 去重。
      * - 时间复杂度 O(n^n)，空间复杂度 O(???)。
      * */
-    public static List<List<Integer>> combinationSum(int[] candidates, int target) {
+    public static List<List<Integer>> combinationSum(int[] nums, int target) {
         Set<List<Integer>> set = new HashSet<>();
-        if (candidates == null || candidates.length == 0) return new ArrayList<>();
-        backtrack(candidates, target, new ArrayList<>(), set);
+        if (nums == null || nums.length == 0) return new ArrayList<>();
+        backtrack(nums, target, new ArrayList<>(), set);
         return new ArrayList<>(set);
     }
 
     private static void backtrack(int[] candidates, int target, List<Integer> list, Set<List<Integer>> set) {
         if (target == 0) {
-            List<Integer> newList = new ArrayList<>(list);
-            newList.sort((a, b) -> a - b);  // 先对解中元素排序
-            set.add(newList);               // 再通过 Set 去重
+            List<Integer> newList = new ArrayList<>(list);  // 先复制
+            newList.sort((a, b) -> a - b);  // 再排序
+            set.add(newList);               // 最后 Set 去重
             return;
         }
-        for (int c : candidates) {
-            if (target >= c) {               // Pruning
-                list.add(c);
-                backtrack(candidates, target - c, list, set);
+        for (int n : candidates) {
+            if (target >= n) {               // Pruning
+                list.add(n);
+                backtrack(candidates, target - n, list, set);
                 list.remove(list.size() - 1);
             }
         }
@@ -65,7 +61,7 @@ public class L39_CombinationSum {
      * 解法2：Recursion + Backtracking
      * - 思路：与解法1一致。
      * - 实现：解法1是在找到解之后再去重，而更优的做法是根本不产生重复解，即对树进行更进一步的剪枝以避免进入产生重复解的分支。
-     *   ∴ 可让每个节点在遍历 candidates 时不回头，只遍历 >= 当前节点的 candidates ∴ 解法1中的树会被剪成这样：
+     *   ∴ 可让每个节点在遍历 nums 时不回头，只遍历 >= 当前节点的 nums ∴ 解法1中的树会被剪成这样：
      *                            8
      *               2/          3|          5\
      *               6            5            3    - 5节点不再考虑分支2，只考虑 >= 3 的分支；3节点不再考虑分支2、3，且5的分支无效 ∴ 无解
@@ -77,23 +73,22 @@ public class L39_CombinationSum {
      *       0                                      - 找到解 [2,2,2,2]
      * - 时间复杂度 << O(n^n)，空间复杂度 O(target)。
      * */
-    public static List<List<Integer>> combinationSum2(int[] candidates, int target) {
+    public static List<List<Integer>> combinationSum2(int[] nums, int target) {
         List<List<Integer>> res = new ArrayList<>();
-        if (candidates == null || candidates.length == 0) return res;
-        backtrack2(candidates, target, 0, new ArrayList<>(), res);
+        if (nums == null || nums.length == 0) return res;
+        backtrack2(nums, target, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void backtrack2(int[] candidates, int target, int i, List<Integer> list, List<List<Integer>> res) {
+    private static void backtrack2(int[] nums, int target, int i, List<Integer> list, List<List<Integer>> res) {
         if (target == 0) {
             res.add(new ArrayList<>(list));
             return;
         }
-        for (int j = i; j < candidates.length; j++) {  // 在遍历 candidates 时不回头，只遍历 [i..) 范围的
-            int c = candidates[j];
-            if (target >= c) {
-                list.add(c);
-                backtrack2(candidates, target - c, j, list, res);
+        for (int j = i; j < nums.length; j++) {  // 在遍历 nums 时不回头，只遍历 [i..) 范围的
+            if (target >= nums[j]) {
+                list.add(nums[j]);
+                backtrack2(nums, target - nums[j], j, list, res);  // 因此要在递归函数里多传一个索引 j
                 list.remove(list.size() - 1);
             }
         }
@@ -102,31 +97,31 @@ public class L39_CombinationSum {
     /*
      * 解法3：Recursion + Backtracking + sort + 剪枝
      * - 思路：与解法1、2一致。
-     * - 实现：解法2通过不回头的遍历 candidates 进行了进一步剪枝，而该解法更进一步，再添加一种剪枝的情况，进一步提升算法效率：
-     *   例如对于 target=3, candidates=[2,3,5,6] 来说：
+     * - 实现：解法2通过不回头的遍历 nums 进行了进一步剪枝，而该解法更进一步，再添加一种剪枝的情况，进一步提升算法效率：
+     *   例如对于 target=3, nums=[2,3,5,6] 来说：
      *                   3
      *         2/    3|    5|   6\
      *        ...     √     ×    ×
-     *   可见，当遍历到 c=3 时 target - c 就已经等于0了 ∴ 无需再遍历5、6了（即对5、6进行剪枝）。但这种剪枝方式依赖于
-     *   candidates 有序 ∴ 可以在回溯开始前对 candidates 进行从小到大排序。
+     *   可见，当遍历到 n=3 时 target - n 就已经等于0了 ∴ 无需再遍历5、6了（即对5、6进行剪枝）。但这种剪枝方式依赖于
+     *   nums 有序 ∴ 可以在回溯开始前对 nums 进行从小到大排序。
      * - 时间复杂度 << O(n^n)，空间复杂度 O(target)。
      * */
-    public static List<List<Integer>> combinationSum3(int[] candidates, int target) {
+    public static List<List<Integer>> combinationSum3(int[] nums, int target) {
         List<List<Integer>> res = new ArrayList<>();
-        if (candidates == null || candidates.length == 0) return res;
-        Arrays.sort(candidates);
-        backtrack3(candidates, target, 0, new ArrayList<>(), res);
+        if (nums == null || nums.length == 0) return res;
+        Arrays.sort(nums);
+        backtrack3(nums, target, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void backtrack3(int[] candidates, int target, int i, List<Integer> list, List<List<Integer>> res) {
+    private static void backtrack3(int[] nums, int target, int i, List<Integer> list, List<List<Integer>> res) {
         if (target == 0) {
             res.add(new ArrayList<>(list));
             return;
         }
-        for (int j = i; j < candidates.length && target >= candidates[j]; j++) {  // 若 c > target 则可直接退出循循环
-            list.add(candidates[j]);
-            backtrack3(candidates, target - candidates[j], j, list, res);
+        for (int j = i; j < nums.length && nums[j] <= target; j++) {  // 若 n > target 则可直接退出循循环
+            list.add(nums[j]);
+            backtrack3(nums, target - nums[j], j, list, res);
             list.remove(list.size() - 1);
         }
     }
@@ -136,23 +131,23 @@ public class L39_CombinationSum {
      * - 思路：// TODO: ????
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
-    public static List<List<Integer>> combinationSum4(int[] candidates, int target) {
-        Arrays.sort(candidates);
+    public static List<List<Integer>> combinationSum4(int[] nums, int target) {
+        Arrays.sort(nums);
         List<List<Integer>>[] dp = new List[target + 1];  // dp[i] 保存所有和为 i 的组合（∴ 最后返回 dp[target] 即可）
 
         for (int i = 0; i <= target; i++) {
             List<List<Integer>> comboList = new ArrayList<>();  // 和为 i 的组合
 
-            for (int j = 0; j < candidates.length && candidates[j] <= i; j++) {  // 找到所有和为 i 的组合 j ∈ [0,i]
-                int c = candidates[j];
-                if (c == i) {
-                    comboList.add(Arrays.asList(c));     // c == i 的情况需特殊处理
+            for (int j = 0; j < nums.length && nums[j] <= i; j++) {  // 找到所有和为 i 的组合 j ∈ [0,i]
+                int n = nums[j];
+                if (n == i) {
+                    comboList.add(Arrays.asList(n));     // n == i 的情况需特殊处理
                     continue;
                 }
-                for (List<Integer> list : dp[i - c]) {      // 遍历 dp[i-c] 中的每一个组合
-                    if (c >= list.get(list.size() - 1)) {
+                for (List<Integer> list : dp[i - n]) {      // 遍历 dp[i-n] 中的每一个组合
+                    if (n >= list.get(list.size() - 1)) {
                         List<Integer> newList = new ArrayList<>(list);
-                        newList.add(c);
+                        newList.add(n);
                         comboList.add(newList);
                     }
                 }
