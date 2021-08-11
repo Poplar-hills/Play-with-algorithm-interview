@@ -9,11 +9,11 @@ import java.util.List;
 /*
  * Combination Sum II
  *
- * - Given a collection of candidate numbers and a target number, find all unique combinations in the
- *   candidates where the candidates sums to the target. (注意不同于 L39，candidates 中的元素可能有重复)
+ * - Given a collection of numbers and a target number, find all unique combinations in the numbers
+ *   where the nums sum to the target. (注意不同于 L39，nums 中的元素可能有重复)
  *
  * - Notes:
- *   1. Each number in candidates may only be used once in the combination.
+ *   1. Each number may only be used once in the combination.
  *   2. All numbers (including target) will be positive integers.
  *   3. The solution set must not contain duplicate combinations.
  * */
@@ -22,37 +22,36 @@ public class L40_CombinationSumII {
     /*
      * 解法1：Recursion + Backtracking
      * - 思路：将组合问题转化为树形问题，采用回溯搜索求解。
-     * - 实现：L39_CombinationSum 中的限制是不能产生重复解，而该题中除了该限制之外还多了不能重复使用 candidate 的限制。因此：
-     *   - 为了不重复使用 candidate，需在向下递归的过程中，让每层在遍历 candidates 时的起始位置+1；
-     *   - 为了不产生重复解，还需对 candidates 排序，并在每次遍历时跳过相同的元素。
-     *   例如，对于 cancdidates=[2,5,2,1,2], target=5 来说，排序后的 cancdidates=[1,2,2,2,5]，于是有：
+     * - 实现：L39_CombinationSum 中的限制是不能产生重复解，而该题中除了该限制之外还多了不能重复使用 num 的限制。因此：
+     *   - 为了不重复使用元素，需在向下递归的过程中，让每层在遍历 nums 时的起始位置+1；
+     *   - 为了不产生重复解，还需对 nums 排序，并在每次遍历时跳过相同的元素。
+     *   例如，对于 nums=[2,5,2,1,2], target=5 来说，排序后的 nums=[1,2,2,2,5]，于是有：
      *                                5
-     *                   1/     2/    2|    2\     5\    - 遍历 candidates[0..)
+     *                   1/     2/    2|    2\     5\    - 遍历 nums[0..)
      *                   4       3     ×     ×      0    - 跳过重复的2
-     *             2/ 2| 2| 5\  2|                       - 遍历 candidates[1..)
+     *             2/ 2| 2| 5\  2|                       - 遍历 nums[1..)
      *              2  ×  ×  ×   1
      *             2|        2/ 2| 5\
      *              0        ×   ×   ×
      * - 时间复杂度 << O(n^n)，空间复杂度 O(target)。
      * */
-    public static List<List<Integer>> combinationSum(int[] candidates, int target) {
+    public static List<List<Integer>> combinationSum(int[] nums, int target) {
         List<List<Integer>> res = new ArrayList<>();
-        if (candidates == null || candidates.length == 0) return res;
-        Arrays.sort(candidates);
-        backtrack(candidates, target, 0, new ArrayList<>(), res);
+        if (nums == null || nums.length == 0) return res;
+        Arrays.sort(nums);
+        backtrack(nums, target, 0, new ArrayList<>(), res);
         return res;
     }
 
-    private static void backtrack(int[] candidates, int target, int i, List<Integer> list, List<List<Integer>> res) {
+    private static void backtrack(int[] nums, int target, int i, List<Integer> list, List<List<Integer>> res) {
         if (target == 0) {
             res.add(new ArrayList<>(list));
             return;
         }
-        for (int j = i; j < candidates.length && target >= candidates[j]; j++) {
-            int c = candidates[j];
-            if (j > i && c == candidates[j - 1]) continue;     // 跳过可能产生重复解的元素（注意 j>i，而不能是 j>0）
-            list.add(c);
-            backtrack(candidates, target - c, j + 1, list, res);  // 下一层递归从第 j+1 个元素开始遍历，以保证不使用已用过的元素
+        for (int j = i; j < nums.length && target >= nums[j]; j++) {
+            if (j > i && nums[j] == nums[j - 1]) continue;  // 跳过重复元素（注意是 j>i，而非 j>0 ∵ j=i 是本层第一个遍历到的元素 ∴ j>i 表示从第二个元素开始）
+            list.add(nums[j]);
+            backtrack(nums, target - nums[j], j + 1, list, res);  // 下一层递归从第 j+1 个元素开始遍历，以保证不使用已用过的元素
             list.remove(list.size() - 1);
         }
     }
