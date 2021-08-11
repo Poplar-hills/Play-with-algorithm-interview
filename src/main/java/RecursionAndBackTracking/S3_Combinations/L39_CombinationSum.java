@@ -7,13 +7,17 @@ import java.util.*;
 /*
  * Combination Sum
  *
- * - Given a set of unique candidate numbers and a target number, find all the unique combinations in the
- *   candidate where the candidates sums to the target. (注意不同于 L40，candidates 中的所有元素都是唯一的)
+ * - Given a set of unique numbers and a target number, find all the unique combinations in the numbers
+ *   where the numbers sums to the target.
  *
  * - Notes:
- *   1. The same repeated number may be chosen from candidates unlimited number of times.
+ *   1. The same repeated number may be chosen from nums unlimited number of times.
  *   2. All numbers (including target) will be positive integers.
  *   3. The solution set must not contain duplicate combinations.
+ *
+ * - 注意不同于 L40 的不同点：
+ *   1. nums 中的所有元素都是唯一的；
+ *   2. nums 中的所有元素都可以使用无限多次。
  * */
 
 public class L39_CombinationSum {
@@ -49,7 +53,7 @@ public class L39_CombinationSum {
             return;
         }
         for (int n : candidates) {
-            if (target >= n) {               // Pruning
+            if (n <= target) {   // Pruning，跳过 target - n < 0 的分支
                 list.add(n);
                 backtrack(candidates, target - n, list, set);
                 list.remove(list.size() - 1);
@@ -64,13 +68,16 @@ public class L39_CombinationSum {
      *   ∴ 可让每个节点在遍历 nums 时不回头，只遍历 >= 当前节点的 nums ∴ 解法1中的树会被剪成这样：
      *                            8
      *               2/          3|          5\
-     *               6            5            3    - 5节点不再考虑分支2，只考虑 >= 3 的分支；3节点不再考虑分支2、3，且5的分支无效 ∴ 无解
+     *               6            5           3     - 5节点不再考虑分支2，只考虑 >= 3 的分支；3节点不再考虑分支2、3，且5的分支无效 ∴ 无解
      *         2/   3|   5\    3/  5\
      *         4     3    1    2    0               - 3节点不再考虑分支2，只考虑 >= 3 的分支；2节点不在的考虑分支2；找到解 [3,5]
      *       2/ 3\  3|
      *       2   1   0                              - 找到解 [2,3,3]
      *      2|
      *       0                                      - 找到解 [2,2,2,2]
+     *
+     * - 注意：∵ 题中说了 nums 中的元素可以被使用无限多次 ∴ 👆说"5节点不再考虑分支2，只考虑 >= 3 的分支"时是要包含 == 3的分支。
+     *   ∴ 在向下递归时要传的是 j，而非 j+1（这是与 L40 的不同点）。
      * - 时间复杂度 << O(n^n)，空间复杂度 O(target)。
      * */
     public static List<List<Integer>> combinationSum2(int[] nums, int target) {
@@ -88,7 +95,7 @@ public class L39_CombinationSum {
         for (int j = i; j < nums.length; j++) {  // 在遍历 nums 时不回头，只遍历 [i..) 范围的
             if (target >= nums[j]) {
                 list.add(nums[j]);
-                backtrack2(nums, target - nums[j], j, list, res);  // 因此要在递归函数里多传一个索引 j
+                backtrack2(nums, target - nums[j], j, list, res);  // 向下递归时要传 j，而非 j+1（这是与 L40 的不同点）
                 list.remove(list.size() - 1);
             }
         }
@@ -159,9 +166,9 @@ public class L39_CombinationSum {
     }
 
     public static void main(String[] args) {
-        log(combinationSum4(new int[]{2, 7, 3, 6}, 7));  // expects [[7], [2,2,3]]
-        log(combinationSum4(new int[]{2, 3, 5}, 8));     // expects [[2,2,2,2], [2,3,3], [3,5]]
-        log(combinationSum4(new int[]{2, 3, 5}, 5));     // expects [[2,3], [5]]
-        log(combinationSum4(new int[]{3}, 8));           // expects []
+        log(combinationSum2(new int[]{2, 7, 3, 6}, 7));  // expects [[7], [2,2,3]]
+        log(combinationSum2(new int[]{2, 3, 5}, 8));     // expects [[2,2,2,2], [2,3,3], [3,5]]
+        log(combinationSum2(new int[]{2, 3, 5}, 5));     // expects [[2,3], [5]]
+        log(combinationSum2(new int[]{3}, 8));           // expects []
     }
 }

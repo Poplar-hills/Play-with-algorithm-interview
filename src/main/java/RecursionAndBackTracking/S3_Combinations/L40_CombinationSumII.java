@@ -10,12 +10,16 @@ import java.util.List;
  * Combination Sum II
  *
  * - Given a collection of numbers and a target number, find all unique combinations in the numbers
- *   where the nums sum to the target. (注意不同于 L39，nums 中的元素可能有重复)
+ *   where the nums sum to the target.
  *
  * - Notes:
  *   1. Each number may only be used once in the combination.
  *   2. All numbers (including target) will be positive integers.
  *   3. The solution set must not contain duplicate combinations.
+ *
+ * - 注意不同于 L39 的不同点：
+ *   1. nums 中的元素可能重复；
+ *   2. nums 中的元素都只能使用一次。
  * */
 
 public class L40_CombinationSumII {
@@ -28,8 +32,8 @@ public class L40_CombinationSumII {
      *   例如，对于 nums=[2,5,2,1,2], target=5 来说，排序后的 nums=[1,2,2,2,5]，于是有：
      *                                5
      *                   1/     2/    2|    2\     5\    - 遍历 nums[0..)
-     *                   4       3     ×     ×      0    - 跳过重复的2
-     *             2/ 2| 2| 5\  2|                       - 遍历 nums[1..)
+     *                   4      3      ×     ×      0    - 跳过重复元素 2、2
+     *             2/ 2| 2| 5\  2|                       - 跳过0号元素，遍历 nums[1..) ∵ nums 中的元素都只能使用一次
      *              2  ×  ×  ×   1
      *             2|        2/ 2| 5\
      *              0        ×   ×   ×
@@ -51,7 +55,7 @@ public class L40_CombinationSumII {
         for (int j = i; j < nums.length && target >= nums[j]; j++) {
             if (j > i && nums[j] == nums[j - 1]) continue;  // 跳过重复元素（注意是 j>i，而非 j>0 ∵ j=i 是本层第一个遍历到的元素 ∴ j>i 表示从第二个元素开始）
             list.add(nums[j]);
-            backtrack(nums, target - nums[j], j + 1, list, res);  // 下一层递归从第 j+1 个元素开始遍历，以保证不使用已用过的元素
+            backtrack(nums, target - nums[j], j + 1, list, res);  // j 号元素在本层已使用过 ∴ 下层递归从第 j+1 号元素开始遍历（这是与 L39 不同之处）
             list.remove(list.size() - 1);
         }
     }
