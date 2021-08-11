@@ -22,7 +22,7 @@ import java.util.*;
 
 public class L39_CombinationSum {
     /*
-     * 解法1：Recursion + Backtracking + Set
+     * 解法1：Recursion + Backtracking + Set 去重
      * - 思路：尝试用 nums 中的每一个元素对 target 进行递归分解，其中：
      *     1. 若 target 减去一个 num 之后等于0则找到一个解；
      *     2. candidate 必须 <= target 才可以相减。
@@ -45,17 +45,17 @@ public class L39_CombinationSum {
         return new ArrayList<>(set);
     }
 
-    private static void backtrack(int[] candidates, int target, List<Integer> list, Set<List<Integer>> set) {
+    private static void backtrack(int[] nums, int target, List<Integer> list, Set<List<Integer>> set) {
         if (target == 0) {
             List<Integer> newList = new ArrayList<>(list);  // 先复制
             newList.sort((a, b) -> a - b);  // 再排序
             set.add(newList);               // 最后 Set 去重
             return;
         }
-        for (int n : candidates) {
-            if (n <= target) {   // Pruning，跳过 target - n < 0 的分支
-                list.add(n);
-                backtrack(candidates, target - n, list, set);
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] <= target) {        // Pruning，跳过 target - nums[i] < 0 的分支
+                list.add(nums[i]);
+                backtrack(nums, target - nums[i], list, set);
                 list.remove(list.size() - 1);
             }
         }
@@ -65,7 +65,7 @@ public class L39_CombinationSum {
      * 解法2：Recursion + Backtracking
      * - 思路：与解法1一致。
      * - 实现：解法1是在找到解之后再去重，而更优的做法是根本不产生重复解，即对树进行更进一步的剪枝以避免进入产生重复解的分支。
-     *   ∴ 可让每个节点在遍历 nums 时不回头，只遍历 >= 当前节点的 nums ∴ 解法1中的树会被剪成这样：
+     *   具体做法是让每个节点在遍历 nums 时不回头，只遍历 >= 当前节点的 nums ∴ 解法1中的树会被剪成这样：
      *                            8
      *               2/          3|          5\
      *               6            5           3     - 5节点不再考虑分支2，只考虑 >= 3 的分支；3节点不再考虑分支2、3，且5的分支无效 ∴ 无解
@@ -93,7 +93,7 @@ public class L39_CombinationSum {
             return;
         }
         for (int j = i; j < nums.length; j++) {  // 在遍历 nums 时不回头，只遍历 [i..) 范围的
-            if (target >= nums[j]) {
+            if (nums[j] <= target) {
                 list.add(nums[j]);
                 backtrack2(nums, target - nums[j], j, list, res);  // 向下递归时要传 j，而非 j+1（这是与 L40 的不同点）
                 list.remove(list.size() - 1);
