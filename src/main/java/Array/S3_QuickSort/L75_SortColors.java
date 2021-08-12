@@ -120,6 +120,16 @@ public class L75_SortColors {
     /*
      * 解法4：One-pass 3-way quick sort（单次遍历的三路快排）
      * - 思路：∵ arr 中只有三种值 ∴ 三路快排只需一轮 partition 就可以完成排序，无需对每个分区再进行递归。
+     *        [2, 0, 2, 1, 1, 0]
+     *      l  i                 f   - arr[i] == 2 ∴ swap(i++, --f)
+     *        [0, 0, 2, 1, 1, 2]
+     *      l     i           f      - arr[i] == 0 ∴ swap(i++, ++l)
+     *        [0, 0, 2, 1, 1, 2]
+     *         l     i        f      - arr[i] == 2 ∴ swap(i++, --f)
+     *        [0, 0, 1, 1, 2, 2]
+     *         l        i  f         - arr[i] == 1 ∴ i++
+     *        [0, 0, 1, 1, 2, 2]
+     *         l           if        - i == f, loop ends
      * - 时间复杂度 O(n) ∵ 没有递归过程 ∴ 只遍历数组1遍 ∴ 复杂度是 O(n)；
      * - 空间复杂度 O(1)。
      * */
