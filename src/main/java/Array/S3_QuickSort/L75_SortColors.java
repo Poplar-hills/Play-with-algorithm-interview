@@ -25,38 +25,22 @@ import java.util.Random;
  * */
 
 public class L75_SortColors {
+
     /*
-     * 解法1：Standard 3-way quick sort
-     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+     * 解法1：Counting sort（计数排序）
+     * - 时间复杂度 O(2n)，遍历数组2遍；
+     * - 空间复杂度 O(1)。
      * */
     private static void sortColors(int[] arr) {
-        if (arr == null || arr.length == 0) return;
-        quickSort(arr, 0, arr.length - 1);
-    }
-
-    private static void quickSort(int[] arr, int l, int r) {
-        if (l >= r) return;
-        int[] ps = partition(arr, l, r);  // 快速排序在"分"上下功夫，通过 partition 找到 pivot 后再"治" pivot 两边的元素
-        quickSort(arr, l, ps[0]);
-        quickSort(arr, ps[1], r);
-    }
-
-    private static int[] partition(int[] arr, int l, int r) {
-        int vIndex = new Random().nextInt(r - l + 1) + l;  // 随机选取 [l,r] 中的值作为 pivot index
-        swap(arr, l, vIndex);                // 将 pivot 换到数组第0位上
-
-        int v = arr[l], lt = l, gt = r + 1;  // v 即是 pivot；lt 指向 < v 的最后一个元素；gt 指向 > v 的第一个元素
-        for (int i = l + 1; i < gt; ) {      // 遍历 [l+1, gt)（注意：1.gt 是动态的；2.∵ arr[l] 是 pivot ∴ 跳过）
-            if (arr[i] < v)
-                swap(arr, i++, ++lt);
-            else if (arr[i] > v)
-                swap(arr, i, --gt);
-            else
-                i++;
+        int[] buckets = new int[3];      // 构造 bucket 数组，三个位置分别存储 arr 中0，1，2的个数（计数过程）
+        for (int c : arr) {              // 遍历 arr 填充 bucket
+            assert (c >= 0 && c <= 2);   // 在赋值之前先检元素的有效性
+            buckets[c]++;
         }
-        swap(arr, l, lt);          // 再将 pivot 放到正确的位置上（即所有 < v 的元素之后、所有 == v 的元素之前）
-        lt--;                      // ∵ 把 pivot 放到了 lt 上 ∴ lt 需要-1才能继续指向 < v 的最后一个元素
-        return new int[]{lt, gt};
+        int i = 0;
+        for (int b = 0; b < buckets.length; b++)  // 遍历 bucket，根据0，1，2的个数重新填充 arr
+            for (int n = 0; n < buckets[b]; n++)
+                arr[i++] = b;
     }
 
     /*
@@ -100,20 +84,37 @@ public class L75_SortColors {
     }
 
     /*
-     * 解法3：Counting sort（计数排序）
-     * - 时间复杂度 O(2n)，遍历数组2遍；
-     * - 空间复杂度 O(1)。
+     * 解法3：Standard 3-way quick sort
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     private static void sortColors3(int[] arr) {
-        int[] buckets = new int[3];               // 构造 bucket 数组，三个位置分别存储 arr 中0，1，2的个数（计数过程）
-        for (int i = 0; i < arr.length; i++) {    // 遍历 arr 填充 bucket
-            assert(arr[i] >= 0 && arr[i] <= 2);   // 在赋值之前先检元素的有效性
-            buckets[arr[i]]++;
+        if (arr == null || arr.length == 0) return;
+        quickSort(arr, 0, arr.length - 1);
+    }
+
+    private static void quickSort(int[] arr, int l, int r) {
+        if (l >= r) return;
+        int[] ps = partition(arr, l, r);  // 快速排序在"分"上下功夫，通过 partition 找到 pivot 后再"治" pivot 两边的元素
+        quickSort(arr, l, ps[0]);
+        quickSort(arr, ps[1], r);
+    }
+
+    private static int[] partition(int[] arr, int l, int r) {
+        int vIndex = new Random().nextInt(r - l + 1) + l;  // 随机选取 [l,r] 中的值作为 pivot index
+        swap(arr, l, vIndex);                // 将 pivot 换到数组第0位上
+
+        int v = arr[l], lt = l, gt = r + 1;  // v 即是 pivot；lt 指向 < v 的最后一个元素；gt 指向 > v 的第一个元素
+        for (int i = l + 1; i < gt; ) {      // 遍历 [l+1, gt)（注意：1.gt 是动态的；2.∵ arr[l] 是 pivot ∴ 跳过）
+            if (arr[i] < v)
+                swap(arr, i++, ++lt);
+            else if (arr[i] > v)
+                swap(arr, i, --gt);
+            else
+                i++;
         }
-        int i = 0;
-        for (int b = 0; b < buckets.length; b++)  // 遍历 bucket，根据0，1，2的个数重新填充 arr
-            for (int n = 0; n < buckets[b]; n++)
-                arr[i++] = b;
+        swap(arr, l, lt);          // 再将 pivot 放到正确的位置上（即所有 < v 的元素之后、所有 == v 的元素之前）
+        lt--;                      // ∵ 把 pivot 放到了 lt 上 ∴ lt 需要-1才能继续指向 < v 的最后一个元素
+        return new int[]{lt, gt};
     }
 
     /*
@@ -136,11 +137,11 @@ public class L75_SortColors {
 
     public static void main(String[] args) {
         int[] arr1 = new int[]{2, 0, 2, 1, 1, 0};
-        sortColors2(arr1);
+        sortColors(arr1);
         log(arr1);  // expects [0, 0, 1, 1, 2, 2]
 
         int[] arr2 = new int[]{0, 1, 2, 2, 1, 0};
-        sortColors2(arr2);
+        sortColors(arr2);
         log(arr2);  // expects [0, 0, 1, 1, 2, 2]
     }
 }

@@ -1,4 +1,9 @@
 
 
 - LinkedList
+  - L92_ReverseLinkedList
   - L82_RemoveDuplicatesFromSortedListII
+
+- HashTable
+  - L205_IsomorphicStrings
+  - L15_3Sum
