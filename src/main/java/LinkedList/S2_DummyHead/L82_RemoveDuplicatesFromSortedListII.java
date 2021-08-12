@@ -5,7 +5,9 @@ import Utils.Helpers.ListNode;
 import static Utils.Helpers.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /*
  * Remove Duplicates from Sorted List II
@@ -37,7 +39,7 @@ public class L82_RemoveDuplicatesFromSortedListII {
         curr = head;
         while (curr != null) {
             if (freq.get(curr.val) > 1)
-                prev.next = curr.next;        // 将重复节点移除后 prev 不动，只更新 curr 的指向即可
+                prev.next = curr.next;  // 将重复节点移除后 prev 不动，只更新 curr 的指向即可
             else
                 prev = curr;
             curr = prev.next;
@@ -116,7 +118,7 @@ public class L82_RemoveDuplicatesFromSortedListII {
         ListNode next = pair.getKey();
         boolean foundDuplicate = pair.getValue();
 
-        if (head.val == next.val)            // 若发现重复节点，则跳过当前节点，返回上一节点，并标志位为 true
+        if (head.val == next.val)  // 若发现重复节点，则跳过当前 head 节点，并标志位置为 true
             return new Pair<>(next, true);
         head.next = foundDuplicate ? next.next : next;  // 若未发现重复节点，则看标志位（可能真的没有重复节点，也可能
         return new Pair<>(head, false);                 // 当前节点为最后一个重复节点）
@@ -141,11 +143,11 @@ public class L82_RemoveDuplicatesFromSortedListII {
                 duplicateVal = curr.val;                           // 先记录下重复节点值
                 while (curr.next != null && curr.next.val == duplicateVal)  // 用 while 走到最后一个重复节点上
                     curr = curr.next;
-                prev.next = curr = curr.next;                      // 将 curr.next 链接到 prev 上
+                prev.next = curr.next;  // 将 curr.next 链接到 prev 上
             } else {
                 prev = curr;
-                curr = curr.next;
             }
+            curr = curr.next;
         }
 
         return dummyHead.next;
@@ -155,7 +157,7 @@ public class L82_RemoveDuplicatesFromSortedListII {
      * 解法5：递归 + 迭代
      * - 思路：采用递归 + 迭代的方式，在递归去程路上检查是否与下一个节点重复，若是则通过 while 走到最后一个重复节点上，并从对
      *   其后面的节点继续递归（相当于跳过了所有重复节点）；若否的话则正常递归下去。
-     * - 💎技巧：这种递归 + 迭代的实现其实非常 straightforward。
+     * - 💎 技巧：这种递归 + 迭代的实现其实非常 straightforward。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode deleteDuplicates5(ListNode head) {
@@ -172,16 +174,16 @@ public class L82_RemoveDuplicatesFromSortedListII {
     }
 
     public static void main(String[] args) {
-        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 3, 4, 4, 5});
-        printLinkedList(deleteDuplicates5(l1));  // expects 1->2->5->NULL
+        ListNode l1 = createLinkedList(new int[]{1, 2, 3, 3, 3, 4, 4, 5});
+        printLinkedList(deleteDuplicates4(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 1, 1, 2, 3});
-        printLinkedList(deleteDuplicates5(l2));  // expects 2->3->NULL
+        printLinkedList(deleteDuplicates4(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 1});
-        printLinkedList(deleteDuplicates5(l3));  // expects NULL
+        printLinkedList(deleteDuplicates4(l3));  // expects NULL
 
         ListNode l4 = createLinkedList(new int[]{});
-        printLinkedList(deleteDuplicates5(l4));  // expects NULL
+        printLinkedList(deleteDuplicates4(l4));  // expects NULL
     }
 }
