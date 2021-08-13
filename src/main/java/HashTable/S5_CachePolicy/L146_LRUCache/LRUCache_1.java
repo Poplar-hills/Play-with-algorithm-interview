@@ -1,4 +1,4 @@
-package HashTable.S5_CachePolicy;
+package HashTable.S5_CachePolicy.L146_LRUCache;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +17,12 @@ import static Utils.Helpers.log;
  *   4. The functions get and put must each run in O(1) average time complexity.
  * */
 
-public class L146_LRUCache {
-    /*
-     * 解法1：Doubly linked list + Map
-     * */
+/*
+ * 解法1：Doubly linked list + Map
+ * -
+ * */
+public class LRUCache_1 {
+
     private static class Node {  // 双向链表节点类
         int key, val;
         Node prev, next;
@@ -34,7 +36,7 @@ public class L146_LRUCache {
     int capacity, count;
     Node head, tail;
 
-    public L146_LRUCache(int capacity) {
+    public LRUCache_1(int capacity) {
         keys = new HashMap<>();
         this.capacity = capacity;
         count = 0;
@@ -86,7 +88,7 @@ public class L146_LRUCache {
     }
 
     public static void main(String[] args) {
-        L146_LRUCache lRUCache = new L146_LRUCache(2);
+        LRUCache_1 lRUCache = new LRUCache_1(2);
         lRUCache.put(1, 1);    // cache is {1:1}
         lRUCache.put(2, 2);    // cache is {1:1, 2:2}
         log(lRUCache.get(1));  // return 1
