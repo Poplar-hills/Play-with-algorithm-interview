@@ -13,17 +13,20 @@ import static Utils.Helpers.log;
  * - Implement the LRUCache class:
  *   1. LRUCache(int capacity) Initialize the LRU cache with positive size capacity.
  *   2. int get(int key) Return the value of the key if the key exists, otherwise return -1.
- *   3. void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key.
+ *   3. void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value
+ *      pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently
+ *      used key.
  *   4. The functions get and put must each run in O(1) average time complexity.
  * */
 
 /*
- * 解法1：Doubly linked list + Map
- * -
+ * 解法1：Doubly linked list (DLL) + Map
+ * - 思路：使用双向链表，从头部添加数据（访问数据时也重新插入到投入），尾部淘汰数据；
+ * - 时间复杂度：get、put 操作都是 O(1)；空间复杂度 O(n)。
  * */
 public class LRUCache_1 {
 
-    private static class Node {  // 双向链表节点类
+    private static class Node {  // 双向链表（DLL）的节点类
         int key, val;
         Node prev, next;
         public Node(int key, int val) {
@@ -32,59 +35,61 @@ public class LRUCache_1 {
         }
     }
 
-    Map<Integer, Node> keys;
-    int capacity, count;
-    Node head, tail;
+    private final Map<Integer, Node> map;  // 注意 map 存储的是数据的 key -> 该数据在链表上对应 node 的映射
+    private final Node dummyHead, dummyTail;
+    private final int capacity;
 
     public LRUCache_1(int capacity) {
-        keys = new HashMap<>();
         this.capacity = capacity;
-        count = 0;
-        head = new Node(0,0);
-        tail = new Node(0,0);
-        head.next = tail;
-        tail.prev = head;
+        map = new HashMap<>();
+        dummyHead = new Node(0,0);
+        dummyTail = new Node(0,0);
+        join(dummyHead, dummyTail);  // 初始化头尾两个节点，并互相连接
+    }
+
+    private void join(Node node1, Node node2) {
+        node1.next = node2;
+        node2.prev = node1;
     }
 
     public int get(int key) {
-        if (!keys.containsKey(key)) return -1;
-        update(keys.get(key), 0);
-        return keys.get(key).val;
+        if (!map.containsKey(key)) return -1;
+        Node node = map.get(key);
+        remove(node);      // 将该节点从 DLL 上移除
+        moveToHead(node);  // 并移动到链表头部
+        return node.val;
     }
 
-    private void update(Node node, int val) {
-        if (val != 0)
-            node.val = val;
-        node.prev.next = node.next;
-        node.next.prev = node.prev;
-        add(node, 0);
+    private void remove(Node node) {  // remove a node from the DLL
+        join(node.prev, node.next);
     }
 
-    private void add(Node node, int key) {
-        node.prev = head;
-        node.next = head.next;
-        head.next = node;
-        node.next.prev = node;
-        if (key != 0) {
-            keys.put(key, node);
-            count++;
-        }
+    private void moveToHead(Node node) {
+        Node next = dummyHead.next;
+        join(dummyHead, node);
+        join(node, next);
     }
 
     public void put(int key, int value) {
-        if (!keys.containsKey(key)) {
-            add(new Node(key, value), key);
-            if (count > capacity)
-                evict();
+        if (map.containsKey(key)) {  // 若 key 已存在，则更新对于的 value 并将该节点移动到头部
+            Node node = map.get(key);
+            node.val = value;
+            remove(node);
+            moveToHead(node);
         } else {
-            update(keys.get(key), value);
+            if (map.size() == capacity)  // 若缓存已达最大容量
+                evict();
+            Node node = new Node(key, value);
+            map.put(key, node);
+            moveToHead(node);
         }
     }
 
-    private void evict() {
-        keys.remove(tail.prev.key);
-        tail.prev = tail.prev.prev;
-        tail.prev.next = tail;
+    private void evict() {  // 清理掉最长时间没使用到的数据项（即 DLL 上的 dummyTail.prev）
+        if (dummyHead.next != dummyTail) {  // 或者判断 !map.isEmpty() 也可以
+            map.remove(dummyTail.prev.key);  // 注意这两句不能颠倒顺序，若先 remove 掉节点，dummyTail.prev 已不再指向同一个节点
+            remove(dummyTail.prev);
+        }
     }
 
     public static void main(String[] args) {
