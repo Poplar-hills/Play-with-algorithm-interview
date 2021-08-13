@@ -7,7 +7,7 @@ import static Utils.Helpers.log;
 
 /*
  * 解法2：LinkedHashMap
- * - 思路：
+ * - 思路：直接使用 java 内置的 LinkedHashMap。
  * */
 
 public class LRUCache_2 extends LinkedHashMap<Integer, Integer> {  // 直接扩展 LinkedHashMap（但这样做封装性不是很好）
