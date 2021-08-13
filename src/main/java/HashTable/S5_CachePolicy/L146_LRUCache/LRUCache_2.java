@@ -10,8 +10,8 @@ import static Utils.Helpers.log;
  * - 思路：
  * */
 
-public class LRUCache_2 extends LinkedHashMap<Integer, Integer> {
-    private int capacity;
+public class LRUCache_2 extends LinkedHashMap<Integer, Integer> {  // 直接扩展 LinkedHashMap（但这样做封装性不是很好）
+    private final int capacity;
 
     public LRUCache_2(int capacity) {
         super(capacity, 0.75f, true);

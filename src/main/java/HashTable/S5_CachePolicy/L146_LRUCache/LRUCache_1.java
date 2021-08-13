@@ -71,7 +71,7 @@ public class LRUCache_1 {
     }
 
     public void put(int key, int value) {
-        if (map.containsKey(key)) {  // 若 key 已存在，则更新对于的 value 并将该节点移动到头部
+        if (map.containsKey(key)) {  // 若 key 已存在，则只更新 value，并将该节点移动到头部
             Node node = map.get(key);
             node.val = value;
             remove(node);
@@ -79,7 +79,7 @@ public class LRUCache_1 {
         } else {
             if (map.size() == capacity)  // 若缓存已达最大容量
                 evict();
-            Node node = new Node(key, value);
+            Node node = new Node(key, value);  // 创建新节点
             map.put(key, node);
             moveToHead(node);
         }
