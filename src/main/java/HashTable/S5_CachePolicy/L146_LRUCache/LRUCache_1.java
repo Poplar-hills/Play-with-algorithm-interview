@@ -21,7 +21,10 @@ import static Utils.Helpers.log;
 
 /*
  * 解法1：Doubly linked list (DLL) + Map
- * - 思路：使用双向链表，从头部添加数据（访问数据时也重新插入到投入），尾部淘汰数据；
+ * - 思路：使用 Map 以 O(1) 速度访问数据（访问数据时也重新插入到头部）；使用双向链表记录数据的访问时间，以 O(1) 的速度从尾部淘汰数据；
+ *               k1     k2     k3     k4            - Map 的 keys
+ *                ↓      ↓      ↓      ↓
+ *      head <-> n1 <-> n2 <-> n3 <-> n4 <-> tail   - Map 的 values，同时也是双向链表
  * - 时间复杂度：get、put 操作都是 O(1)；空间复杂度 O(n)。
  * */
 public class LRUCache_1 {
