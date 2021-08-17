@@ -27,7 +27,7 @@ import static Utils.Helpers.log;
 
 /*
  * 解法1：
- * - 思路：根据题意，LFU 在淘汰数据时先比较使用次数，对于使用次数相同的缓存数据会退化成 LRU，即比较其最近的使用时间。因此整体思路为：
+ * - 思路：根据题意，LFU 在淘汰数据时先比较使用次数，对于使用次数相同的缓存数据会退化成 LRU，即比较其最近的使用时间 ∴ 整体思路为：
  *   1. 用1个 Map 保存缓存数据：用 key 查 value；
  *   2. 用1个 Map 保存缓存数据的访问次数：用 key 查 count；
  *   3. 用1个 Map 保存不同访问次数所对应的缓存数据（查询次数相同的数据用要保存访问先后顺序）：用 count 查 keys。
@@ -46,11 +46,11 @@ public class LFUCache_1 {
     private final HashMap<Integer, LinkedHashSet<Integer>> countToLRUKeys;  // 不同访问次数所对应的缓存数据（查询次数相同的数据用 LinkedHashSet 保存访问的先后顺序）
 
     public LFUCache_1(int capacity) {
-        this.minCount = -1;
         this.capacity = capacity;
-        this.keyToVal = new HashMap<>();
-        this.keyToCount = new HashMap<>();
-        this.countToLRUKeys = new HashMap<>();
+        minCount = -1;
+        keyToVal = new HashMap<>();
+        keyToCount = new HashMap<>();
+        countToLRUKeys = new HashMap<>();
     }
 
     public int get(int key) {
