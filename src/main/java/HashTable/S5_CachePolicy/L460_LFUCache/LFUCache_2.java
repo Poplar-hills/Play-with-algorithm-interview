@@ -40,7 +40,7 @@ public class LFUCache_2 {
         this.capacity = capacity;
         stamp = 0;
         keyToVal = new HashMap<>();
-        treeMap = new TreeMap<>((c1, c2) -> c1.count == c2.count  // 自定义 key-sort function 的 TreeMap
+        treeMap = new TreeMap<>((c1, c2) -> c1.count == c2.count  // 自定义 TreeMap 的 key-sort function
                 ? c1.stamp - c2.stamp     // 两个缓存数据，当 count 相同时，比较 timestamp（在遍历时，较小的会先被遍历到）
                 : c1.count - c2.count);
     }
@@ -70,7 +70,7 @@ public class LFUCache_2 {
         } else {
             // if key doesn't exist, create a new one
             if (treeMap.size() == capacity) {
-                int endKey = treeMap.pollFirstEntry().getValue();  // returns the first Entry in the TreeMap according to the TreeMap's key-sort function
+                int endKey = treeMap.pollFirstEntry().getValue();  // 根据 TreeMap 的 key-sort function 返回第一个 entry（即 TreeMap 的最左叶子节点）
                 keyToVal.remove(endKey);  // evict the LRU
             }
             CacheVal newCacheVal = new CacheVal(value, stamp++, 1);
