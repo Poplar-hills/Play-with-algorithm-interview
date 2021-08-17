@@ -35,7 +35,7 @@ import static Utils.Helpers.log;
  *   - LinkedHashSet.remove(1) will take 1 as an object;
  *   - LinkedList.remove(1) will take 1 as index;
  *   - For example 1->6->3, when remove(1), linkedHashSet will remove 1 itself while LinkedList will remove 6 (index=1)
- * - 时间复杂度：；空间复杂度：。
+ * - 时间复杂度：get、put 方法均为 O(1)。
  * */
 public class LFUCache_1 {
 
