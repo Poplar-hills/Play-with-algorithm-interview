@@ -58,7 +58,7 @@ public class LFUCache_1 {
 
         int count = keyToCount.get(key);
         countToLRUKeys.get(count).remove(key);  // ∵ 访问数据时要将访问次数+1 ∴ 要将该 count 对应的数据从 countToLRUKeys 中删除
-        if (countToLRUKeys.get(count).size() == 0 && count == minCount)  // 若上一行中从 countToLRUKeys 删除数据后，该 count
+        if (countToLRUKeys.get(count).isEmpty() && count == minCount)  // 若上一行中从 countToLRUKeys 删除数据后，该 count
             minCount++;                         // 不再有对应的数据，且该 count == minCount，说明此时 minCount 需要自增
 
         putCount(key, count + 1);  // 更新该数据的 count
