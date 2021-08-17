@@ -27,16 +27,23 @@ import static Utils.Helpers.log;
 
 /*
  * 解法1：
- * - 思路：
+ * - 思路：根据题意，LFU 在淘汰数据时先比较使用次数，对于使用次数相同的缓存数据会退化成 LRU，即比较其最近的使用时间。因此整体思路为：
+ *   1. 用1个 Map 保存缓存数据：用 key 查 value；
+ *   2. 用1个 Map 保存缓存数据的访问次数：用 key 查 count；
+ *   3. 用1个 Map 保存不同访问次数所对应的缓存数据（查询次数相同的数据用要保存访问先后顺序）：用 count 查 keys。
+ * - Java 语法：
+ *   - LinkedHashSet.remove(1) will take 1 as an object;
+ *   - LinkedList.remove(1) will take 1 as index;
+ *   - For example 1->6->3, when remove(1), linkedHashSet will remove 1 itself while LinkedList will remove 6 (index=1)
  * - 时间复杂度：；空间复杂度：。
  * */
 public class LFUCache_1 {
 
-    private int minCount;
+    private int minCount;  // 维护最小访问次数值（从而能以 O(1) 速度淘汰数据）
     private final int capacity;
     private final HashMap<Integer, Integer> keyToVal;    // 记录缓存数据
-    private final HashMap<Integer, Integer> keyToCount;  // 记录缓存数据中每个 key 的访问次数
-    private final HashMap<Integer, LinkedHashSet<Integer>> countToLRUKeys;  // 记录每个访问次数对应的 keys（借由 LinkedHashSet 保存 keys 的插入顺序）
+    private final HashMap<Integer, Integer> keyToCount;  // 记录每条缓存数据的访问次数
+    private final HashMap<Integer, LinkedHashSet<Integer>> countToLRUKeys;  // 不同访问次数所对应的缓存数据（查询次数相同的数据用 LinkedHashSet 保存访问的先后顺序）
 
     public LFUCache_1(int capacity) {
         this.minCount = -1;
@@ -50,11 +57,11 @@ public class LFUCache_1 {
         if (!keyToVal.containsKey(key)) return -1;
 
         int count = keyToCount.get(key);
-        countToLRUKeys.get(count).remove(key);  // remove key from current count (since we will inc count)
-        if (count == minCount && countToLRUKeys.get(count).size() == 0)
-            minCount++;  // nothing in the current min bucket
+        countToLRUKeys.get(count).remove(key);  // ∵ 访问数据时要将访问次数+1 ∴ 要将该 count 对应的数据从 countToLRUKeys 中删除
+        if (countToLRUKeys.get(count).size() == 0 && count == minCount)  // 若上一行中从 countToLRUKeys 删除数据后，该 count
+            minCount++;                         // 不再有对应的数据，且该 count == minCount，说明此时 minCount 需要自增
 
-        putCount(key, count + 1);
+        putCount(key, count + 1);  // 更新该数据的 count
         return keyToVal.get(key);
     }
 
@@ -62,13 +69,13 @@ public class LFUCache_1 {
         if (capacity <= 0) return;
         // 若 key 存在于缓存中
         if (keyToVal.containsKey(key)) {
-            keyToVal.put(key, value);     // 更新该 key 的 value
-            get(key);                     // 更新该 key 的 count（通过 get 方法来实现更新）
+            keyToVal.put(key, value);  // 更新该 key 的 value
+            get(key);                  // 更新该 key 的 count（通过 get 方法来实现更新）
             return;
         }
         // 若超过缓存容量则淘汰 count 最小的数据
         if (keyToVal.size() >= capacity)
-            evict(countToLRUKeys.get(minCount).iterator().next());  // evict LRU from this min count bucket
+            evict(countToLRUKeys.get(minCount).iterator().next());  // evict LRU from the min count bucket
         // 向缓存中新增数据
         minCount = 1;
         putCount(key, minCount);   // adding new key and count
