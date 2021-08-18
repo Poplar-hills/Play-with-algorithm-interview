@@ -106,27 +106,27 @@ public class L102_BinaryTreeLevelOrderTraversal {
     public static List<List<Integer>> levelOrder2(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
-        levelOrder2(root, res, 0);
+        dfs2(root, res, 0);
         return res;
     }
 
-    private static void levelOrder2(TreeNode node, List<List<Integer>> res, int level) {
+    private static void dfs2(TreeNode node, List<List<Integer>> res, int level) {
         if (node == null) return;
         if (level == res.size())
             res.add(new ArrayList<>());
         res.get(level).add(node.val);
-        levelOrder2(node.left, res, level + 1);
-        levelOrder2(node.right, res, level + 1);
+        dfs2(node.left, res, level + 1);
+        dfs2(node.right, res, level + 1);
     }
 
 	public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7, 1, 2});
         /*
-         *         3
-         *      /     \
-         *     9      20
-         *      \     / \
-         *       8   15  7
+         *          3
+         *      /       \
+         *     9        20
+         *      \       / \
+         *       8     15  7
          *      / \
          *     1   2
          * */
