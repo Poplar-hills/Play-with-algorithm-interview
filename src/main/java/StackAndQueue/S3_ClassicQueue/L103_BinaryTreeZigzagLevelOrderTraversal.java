@@ -87,11 +87,11 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
     public static List<List<Integer>> zigzagLevelOrder3(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
-        helper3(root, res, 0);
+        helper3(root, 0, res);
         return res;
     }
 
-    private static void helper3(TreeNode node, List<List<Integer>> res, int level) {
+    private static void helper3(TreeNode node, int level, List<List<Integer>> res) {
         if (node == null) return;
         if (level == res.size())
             res.add(new ArrayList<>());
@@ -99,8 +99,8 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
             res.get(level).add(node.val);
         else
             res.get(level).add(0, node.val);
-        helper3(node.left, res, level + 1);
-        helper3(node.right, res, level + 1);
+        helper3(node.left, level + 1, res);
+        helper3(node.right, level + 1, res);
     }
 
     /*
@@ -117,8 +117,7 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
 
         while (!q.isEmpty()) {
             List<Integer> levelList = new ArrayList<>();  // 每轮循环都将该层级的列表生成完后再进入下一轮
-            int size = q.size();
-            for (int i = 0; i < size; i++) {              // 当前层级中的元素个数 == 上一轮循环中往 q 中添加的元素个数
+            for (int i = 0, size = q.size(); i < size; i++) {  // 当前层级中的元素个数 == 上一轮循环中往 q 中添加的元素个数
                 Pair<TreeNode, Integer> pair = q.poll();
                 TreeNode node = pair.getKey();
                 int level = pair.getValue();
@@ -126,7 +125,7 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
                 if (level % 2 == 0)
                     levelList.add(node.val);
                 else
-                    levelList.add(0, node.val);
+                    levelList.add(0, node.val);  // 若 level 为奇数，则插入 levelList 头部
 
                 if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
                 if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
@@ -141,7 +140,8 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
      * 解法5：迭代（层级列表 + reverse）
      * - 思路：与解法4类似，区别在于不在队列中保持节点的层级信息，而是在层级列表 levelList 生成完之后判断该层是否需要 reverse，
      *   判断的依据就是当前迭代到了第几层，这就需要在每次创建 levelList 时进行计数。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n*h)，其中遍历节点是 O(n)，h/2 个 levelList 需要 reverse，每个 levelList 最多有 n/2 个元素 ∴ 是 O(n*h)；
+     * - 空间复杂度 O(n)。
      * */
     public static List<List<Integer>> zigzagLevelOrder5(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
@@ -149,22 +149,21 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
         Queue<TreeNode> q = new LinkedList<>();
         q.offer(root);
 
-        int levelCount = 0;
+        int levelNum = 0;
         while (!q.isEmpty()) {
             List<Integer> levelList = new ArrayList<>();
-            int size = q.size();
-            for (int i = 0; i < size; i++) {
+            for (int i = 0, size = q.size(); i < size; i++) {
                 TreeNode node = q.poll();
                 levelList.add(node.val);
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
 
-            if (levelCount % 2 == 1)  // levelList 创建完后判断当前在第几层，若是奇数层则 reverse
+            if (levelNum % 2 == 1)  // levelList 创建完后判断当前在第几层，若是奇数层则 reverse
                 Collections.reverse(levelList);
 
             res.add(levelList);
-            levelCount++;
+            levelNum++;
         }
 
         return res;
