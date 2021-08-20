@@ -221,8 +221,10 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     /*
      * 解法6：递归 + reverse
      * - 思路：与解法3类似，仍然是 DFS。
-     * - 实现：区别在于递归结束后再统一 reverse，而非在每层递归中通过 res.get 找到应加入的列表 ∴ 统计性能稍差于解法3。
-     * - 时间复杂度 O(n*h)：其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表）；
+     * - 实现：区别在于：
+     *   1. 递归结束后再统一 reverse，而非在每层递归中通过 res.get 找到应加入的列表 ∴ 统计性能稍差于解法3；
+     *   2. 本解法中采用后续遍历，节点访问放在两个 helper(...) 之后。
+     * - 时间复杂度 O(n+h)：其中遍历节点是 O(n)，而最后 reverse 是 O(h)（res 中有 h 个列表）；
      * - 空间复杂度 O(h)。
      * */
     public static List<List<Integer>> levelOrderBottom6(TreeNode root) {
