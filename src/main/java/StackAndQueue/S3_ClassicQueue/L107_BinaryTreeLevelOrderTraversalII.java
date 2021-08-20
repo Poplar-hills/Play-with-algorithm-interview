@@ -145,7 +145,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     public static List<List<Integer>> levelOrderBottom3(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
-        Queue<TreeNode> q = new LinkedList<>();
+        Queue<TreeNode> q = new LinkedList<>();  // queue 里无需带上层级信息
         q.offer(root);
 
         while (!q.isEmpty()) {
@@ -156,7 +156,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
-            res.add(0, levelList);   // 最后将该层列表添加到 res 头部
+            res.add(0, levelList);  // 最后将该层列表添加到 res 头部
         }
 
         return res;
@@ -183,7 +183,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
             if (res.size() == level)
                 res.add(0, new ArrayList<>());  // 创建新列表时，总是插入 res 头部
 
-            res.get(res.size() - level - 1).add(node.val);  // 访问节点时，将节点值放入对应列表中
+            res.get(res.size() - 1 - level).add(node.val);  // 访问节点时，将节点值放入对应列表中
             if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
             if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
         }
@@ -192,12 +192,14 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-     * 解法5：递归 DFS
-     * - 思路：类似 L102 的解法2，同样采用 DFS 来实现 BFS 的效果：
-     *   1. 通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
-     *   2. 将遍历到的节点插入到结果集中的对应列表里。
-     * - 实现：注意在往 res 中插入空列表时要插入到 res 的头部，否则 test case 2 的右倾的二叉树会出错（当左侧递归已完成时，
-     *   右侧递归的最底层节点需要插入到 res 的头部才行）。
+     * 解法5：解法4的 DFS 递归版
+     * - 思路：类似 L102 的解法2，同样采用 DFS 来实现 BFS 的效果 ∵ 在递归中传递了 level 信息 ∴ 在遍历到节点时可直接 add 到第
+     *   level 个列表中，与是 BFS 还是 DFS 遍历无关。
+     * - 实现：
+     *   1. 本实现采用前序遍历（先访问父节点，后访问左右子节点），但实际上 ∵ 只要在访问节点时找到对应的列表插入 ∴ 遍历顺序无关紧要，
+     *      使用后续遍历（在两个 helper(...) 之后再访问节点）同样可行；
+     *   2. 注意在往 res 中插入空列表时要插入到 res 的头部，否则 test case 2 的右倾的二叉树会出错（当左侧递归已完成时，右侧递归
+     *      的最底层节点需要插入到 res 的头部才行）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */
     public static List<List<Integer>> levelOrderBottom5(TreeNode root) {
@@ -211,9 +213,9 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         if (node == null) return;
         if (level == res.size())
             res.add(0, new ArrayList<>());  // 在递归去程时向 res 中插入空列表（注意要插入在 res 的头部）
+        res.get(res.size() - 1 - level).add(node.val);  // 将节点值推入 res 中的对应列表里
         helper4(node.left, level + 1, res);
         helper4(node.right, level + 1, res);
-        res.get(res.size() - 1 - level).add(node.val);  // 递归到底之后再开始将节点值推入 res 中的对应列表里
     }
 
     /*
@@ -253,7 +255,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
         log(basicLevelOrderBottom(t1));   // expects [1, 2, 8, 15, 7, 9, 20, 3]
         log(basicLevelOrderBottom2(t1));  // expects [1, 2, 8, 15, 7, 9, 20, 3]
-        log(levelOrderBottom3(t1));       // expects [[1,2], [8,15,7], [9,20], [3]]
+        log(levelOrderBottom5(t1));       // expects [[1,2], [8,15,7], [9,20], [3]]
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
         /*
@@ -264,6 +266,6 @@ public class L107_BinaryTreeLevelOrderTraversalII {
          *           15   7
          * */
 
-        log(levelOrderBottom3(t2));  // expects [[15,7], [9,20], [3]] (注意不能是 [[9,15,7], [20], [3]])
+        log(levelOrderBottom5(t2));  // expects [[15,7], [9,20], [3]] (注意不能是 [[9,15,7], [20], [3]])
     }
 }
