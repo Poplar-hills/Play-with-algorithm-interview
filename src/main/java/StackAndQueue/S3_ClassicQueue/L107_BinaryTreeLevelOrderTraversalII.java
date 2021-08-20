@@ -20,7 +20,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
      *     2. 对遍历结果进行 reverse。
      * - 实现：用 Queue 进行广度优先遍历，另外再用一个 Stack 对结果进行 reverse。另一种方法，也可以不使用 Stack，直接放入 res
      *   在最后 return 之前先 Collections.reverse(res); 即可。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(2n)，空间复杂度 O(n)。
      * */
     public static List<Integer> basicLevelOrderBottom(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -47,7 +47,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
      * - 思路：与解法1一致。
      * - 实现：既能为元素排队实现广度优先遍历，又能倒序输出 —— 这两个需求其实用 ArrayList 一种数据结构就可满足（∵ ArrayList
      *   可以作为 Queue、Stack 的底层实现 ∴ 自然具有它们两者的特性）。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)（空间复杂度比基础1降低一半）。
+     * - 时间复杂度 O(2n)，空间复杂度 O(n)（空间复杂度比基础1降低一半）。
      * */
     public static List<Integer> basicLevelOrderBottom2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -73,7 +73,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
      * - 实现：
      *   - Queue 用于 BFS，但 ∵ 需要分组 ∴ Queue 中的每个节点要带上 level 信息；
      *   - Stack 只用于对结果进行 reverse ∴ 在 reverse 之前 Stack 中存储的应是分好组的节点，即 Stack 中的数据类型是 List<Integer>。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(2n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> levelOrderBottom(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
@@ -105,7 +105,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
      * 解法2：迭代2
      * - 思路：在广度优先遍历树上节点时，让每个节点带上层级信息以 Pair 的形式存在 List 中。同时根据层级信息先往结果集中插入 h
      *   个空列表，当遍历完所有节点后即可得到树的高度 h，这样就能为每个 Pair 中的节点计算出应该放到结果集中的哪个列表里了。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(2n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> levelOrderBottom2(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
@@ -118,7 +118,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
             int level = l.get(i).getValue();
 
             if (level == res.size())
-                res.add(new ArrayList<>());               // 往 res 中添加空列表
+                res.add(new ArrayList<>());  // 往 res 中添加空列表
             if (node.left != null)
                 l.add(new Pair<>(node.left, level + 1));  // 遍历子节点时先 left 再 right（这样在下面插入对应分组时的顺序才是对的）
             if (node.right != null)
@@ -129,7 +129,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         for (int i = 0; i < l.size(); i++) {
             TreeNode node = l.get(i).getKey();
             int level = l.get(i).getValue();
-            res.get(h - level).add(node.val);    // h - level 得到该节点值应放入 res 中的哪个列表里
+            res.get(h - level).add(node.val);  // h - level 得到该节点值应放入 res 中的哪个列表里
         }
 
         return res;
@@ -149,9 +149,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         q.offer(root);
 
         while (!q.isEmpty()) {
-            List<Integer> levelList = new ArrayList<>();
-            int size = q.size();              // 注意 size 不能 inline，否则 q.size() 每次取值会不同（∵ 循环体中会 offer）
-            for (int i = 0; i < size; i++) {  // 遍历该层的所有节点（此时 q 中的就是这一层的所有节点）
+            List<Integer> levelList = new ArrayList<>();  // 创建临时的层级列表
+            for (int i = 0, size = q.size(); i < size; i++) {  // 遍历该层的所有节点（此时 q 中的就是这一层的所有节点）
                 TreeNode node = q.poll();
                 levelList.add(node.val);
                 if (node.left != null) q.offer(node.left);
@@ -254,7 +253,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
         log(basicLevelOrderBottom(t1));   // expects [1, 2, 8, 15, 7, 9, 20, 3]
         log(basicLevelOrderBottom2(t1));  // expects [1, 2, 8, 15, 7, 9, 20, 3]
-        log(levelOrderBottom4(t1));       // expects [[1,2], [8,15,7], [9,20], [3]]
+        log(levelOrderBottom3(t1));       // expects [[1,2], [8,15,7], [9,20], [3]]
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
         /*
@@ -265,6 +264,6 @@ public class L107_BinaryTreeLevelOrderTraversalII {
          *           15   7
          * */
 
-        log(levelOrderBottom4(t2));  // expects [[15,7], [9,20], [3]] (注意不能是 [[9,15,7], [20], [3]])
+        log(levelOrderBottom3(t2));  // expects [[15,7], [9,20], [3]] (注意不能是 [[9,15,7], [20], [3]])
     }
 }
