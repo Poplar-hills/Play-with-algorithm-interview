@@ -41,7 +41,7 @@ public class L112_PathSum {
     public static boolean hasPathSum2(TreeNode root, int sum) {
         if (root == null) return false;
         Stack<TreeNode> s1 = new Stack<>();  // node stack
-        Stack<Integer> s2 = new Stack<>();   // sum stack
+        Stack<Integer> s2 = new Stack<>();   // remaining sum stack
         s1.push(root);
         s2.push(sum);
 
@@ -78,8 +78,10 @@ public class L112_PathSum {
             Pair<TreeNode, Integer> pair = q.poll();
             TreeNode node = pair.getKey();
             int rest = pair.getValue();
+
             if (node.left == null && node.right == null && rest == node.val)
                 return true;
+
             if (node.left != null)
                 q.offer(new Pair<>(node.left, rest - node.val));
             if (node.right != null)
@@ -111,6 +113,7 @@ public class L112_PathSum {
 
         if (node.left == null && node.right == null && rest == node.val)
             return true;
+
         if (node.left != null) q.offer(new Pair<>(node.left, rest - node.val));
         if (node.right != null) q.offer(new Pair<>(node.right, rest - node.val));
         return helper4(q);
