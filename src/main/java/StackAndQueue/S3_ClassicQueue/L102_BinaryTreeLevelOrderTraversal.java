@@ -97,7 +97,8 @@ public class L102_BinaryTreeLevelOrderTraversal {
     /*
      * 解法2：递归（DFS）
      * - 思路：不同于解法1、基础2，该解法使用 DFS 对二叉树进行前序遍历，将遍历到的节点值追加到结果集中相应 level 的分组中，从而
-     *   通过 DFS 实现了 BFS 的遍历效果。
+     *   通过 DFS 实现了 BFS 的遍历效果 —— ∵ 在递归中传递了 level 信息 ∴ 在遍历到节点时可直接 add 到第 level 个列表中，与
+     *   是 BFS 还是 DFS 遍历无关。
      * - 实现：
      *   - 在递归层级中传递 level 信息；
      *   - 根据 level 该信息判断当前节点值应该放在 res 中的第几个 list 里。

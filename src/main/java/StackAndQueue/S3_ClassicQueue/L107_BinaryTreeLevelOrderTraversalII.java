@@ -210,17 +210,37 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         res.get(level).add(node.val);   // 直接获取第 level 个列表，因此递归结束后得到的 res 是反着的
     }
 
+
+
+
+
+
+
+
+
+
+    public static List<Integer> basicLevelOrderBottom0(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+
+        return res;
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, 8, 15, 7, 1, 2});
         /*
-         *            3
-         *         /     \
-         *        9      20
-         *         \    /  \
-         *          8  15   7
+         *             3
+         *         /       \
+         *        9        20
+         *         \      /  \
+         *          8    15   7
          *         / \
          *        1   2
          * */
+
+        log(basicLevelOrderBottom(t1));   // expects [1, 2, 8, 15, 7, 9, 20, 3]
+        log(basicLevelOrderBottom2(t1));  // expects [1, 2, 8, 15, 7, 9, 20, 3]
+        log(levelOrderBottom4(t1));       // expects [[1,2], [8,15,7], [9,20], [3]]
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
         /*
@@ -231,10 +251,6 @@ public class L107_BinaryTreeLevelOrderTraversalII {
          *           15   7
          * */
 
-        log(basicLevelOrderBottom(t1));   // expects [1, 2, 8, 15, 7, 9, 20, 3]
-        log(basicLevelOrderBottom2(t1));  // expects [1, 2, 8, 15, 7, 9, 20, 3]
-
-        log(levelOrderBottom4(t1));        // expects [[1,2], [8,15,7], [9,20], [3]]
-        log(levelOrderBottom4(t2));        // expects [[15,7], [9,20], [3]] (注意不能是 [[9,15,7], [20], [3]])
+        log(levelOrderBottom4(t2));  // expects [[15,7], [9,20], [3]] (注意不能是 [[9,15,7], [20], [3]])
     }
 }
