@@ -18,7 +18,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
      *   层序遍历基础上改造，满足：
      *     1. 先访问右子树再访问左子树；
      *     2. 对遍历结果进行 reverse。
-     * - 实现：用 Queue 进行广度优先遍历，另外再用一个 Stack 对结果进行 reverse。
+     * - 实现：用 Queue 进行广度优先遍历，另外再用一个 Stack 对结果进行 reverse。另一种方法，也可以不使用 Stack，直接放入 res
+     *   在最后 return 之前先 Collections.reverse(res); 即可。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> basicLevelOrderBottom(TreeNode root) {
@@ -44,7 +45,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     /*
      * 基础2：自底向上的层序遍历（ArrayList 版）
      * - 思路：与解法1一致。
-     * - 实现：即能为元素排队实现广度优先遍历，又能倒序输出 —— 这两个需求其实用 ArrayList 一种数据结构就可满足（∵ ArrayList
+     * - 实现：既能为元素排队实现广度优先遍历，又能倒序输出 —— 这两个需求其实用 ArrayList 一种数据结构就可满足（∵ ArrayList
      *   可以作为 Queue、Stack 的底层实现 ∴ 自然具有它们两者的特性）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)（空间复杂度比基础1降低一半）。
      * */
@@ -95,7 +96,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         }
 
         while (!stack.isEmpty())
-            res.add(stack.pop());               // 或先 Collections.reverse(stack); 再 res.addAll(stack);
+            res.add(stack.pop());  // 或先 Collections.reverse(stack); 再 res.addAll(stack);
 
         return res;
     }
@@ -156,22 +157,51 @@ public class L107_BinaryTreeLevelOrderTraversalII {
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
-            res.add(0, levelList);            // 最后将该层列表添加到 res 头部
+            res.add(0, levelList);   // 最后将该层列表添加到 res 头部
         }
 
         return res;
     }
 
     /*
-     * 解法4：递归 DFS
+     * 解法4：迭代4
+     * - 思路：在正常 BFS 遍历基础上做两个修改：
+     *   1. 创建新列表时，总是插入 res 头部；
+     *   2. 访问节点时，通过索引计算，将节点值放入对应列表中。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static List<List<Integer>> levelOrderBottom4(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(root, 0));
+
+        while (!q.isEmpty()) {
+            Pair<TreeNode, Integer> p = q.poll();
+            TreeNode node = p.getKey();
+            int level = p.getValue();
+
+            if (res.size() == level)
+                res.add(0, new ArrayList<>());  // 创建新列表时，总是插入 res 头部
+
+            res.get(res.size() - level - 1).add(node.val);  // 访问节点时，将节点值放入对应列表中
+            if (node.left != null) q.offer(new Pair<>(node.left, level + 1));
+            if (node.right != null) q.offer(new Pair<>(node.right, level + 1));
+        }
+
+        return res;
+    }
+
+    /*
+     * 解法5：递归 DFS
      * - 思路：类似 L102 的解法2，同样采用 DFS 来实现 BFS 的效果：
-     *     1. 通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
-     *     2. 将遍历到的节点插入到结果集中的对应列表里。
+     *   1. 通过后续遍历（先访问子节点再访问父节点）实现对二叉树的从下到上的遍历（后续遍历的特点就是从下到上遍历）；
+     *   2. 将遍历到的节点插入到结果集中的对应列表里。
      * - 实现：注意在往 res 中插入空列表时要插入到 res 的头部，否则 test case 2 的右倾的二叉树会出错（当左侧递归已完成时，
      *   右侧递归的最底层节点需要插入到 res 的头部才行）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */
-    public static List<List<Integer>> levelOrderBottom4(TreeNode root) {
+    public static List<List<Integer>> levelOrderBottom5(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
         helper4(root, 0, res);
@@ -188,13 +218,13 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-     * 解法5：递归 + reverse
+     * 解法6：递归 + reverse
      * - 思路：与解法3类似，仍然是 DFS。
      * - 实现：区别在于递归结束后再统一 reverse，而非在每层递归中通过 res.get 找到应加入的列表 ∴ 统计性能稍差于解法3。
      * - 时间复杂度 O(n*h)：其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表）；
      * - 空间复杂度 O(h)。
      * */
-    public static List<List<Integer>> levelOrderBottom5(TreeNode root) {
+    public static List<List<Integer>> levelOrderBottom6(TreeNode root) {
         List<List<Integer>> res = new LinkedList<>();
         helper5(root, 0, res);
         Collections.reverse(res);  // 递归结束后需要再 reverse 一下
@@ -208,22 +238,6 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         helper5(node.left, level + 1, res);
         helper5(node.right, level + 1, res);
         res.get(level).add(node.val);   // 直接获取第 level 个列表，因此递归结束后得到的 res 是反着的
-    }
-
-
-
-
-
-
-
-
-
-
-    public static List<Integer> basicLevelOrderBottom0(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        if (root == null) return res;
-
-        return res;
     }
 
     public static void main(String[] args) {
