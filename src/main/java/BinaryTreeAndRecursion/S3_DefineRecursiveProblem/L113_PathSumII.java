@@ -68,13 +68,13 @@ public class L113_PathSumII {
         path.add(root.val);
 
         if (root.left == null && root.right == null && root.val == sum) {
-            res.add(new ArrayList<>(path));  // 若是符合要求的 path，则复制进 res 里
-            path.remove(path.size() - 1);    // 返回上层递归之前将添加的元素移除，让 path 恢复原状，这样回到上层后才能继续复用 path
+            res.add(new ArrayList<>(path));      // 若是符合要求的 path，则复制进 res 里
+            path.remove(path.size() - 1);  // 返回上层递归之前将添加的元素移除，让 path 恢复原状，这样回到上层后才能继续复用 path
             return;
         }
         helper2(root.left, sum - root.val, path, res);  // 则继续递归并复用 path
         helper2(root.right, sum - root.val, path, res);
-        path.remove(path.size() - 1);        // 同样在返回上层递归之前要将 path 恢复原状
+        path.remove(path.size() - 1);      // 同样在返回上层递归之前要将 path 恢复原状
     }
 
     /*
@@ -88,22 +88,22 @@ public class L113_PathSumII {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<List<Integer>> pathSum3(TreeNode root, int sum) {
-        List<List<Integer>> res = new ArrayList<>();
+        List<List<Integer>> res = new ArrayList<>();  // 每递归一层都新建一个列表
         if (root == null) return res;
 
-        if (root.left == null && root.right == null && sum == root.val) {  // 若找到解则创建 path 并塞入 res
+        if (root.left == null && root.right == null && sum == root.val) {  // 若为符合条件的叶子节点则创建 path 并塞入 res
             List<Integer> path = new ArrayList<>();
             path.add(root.val);
             res.add(path);
             return res;
         }
 
-        List<List<Integer>> leftPaths = pathSum3(root.left, sum - root.val);  // 分别对左右子树进行递归
+        List<List<Integer>> leftPaths = pathSum3(root.left, sum - root.val);  // 若非叶子节点，则分别递归左右子树
         List<List<Integer>> rightPaths = pathSum3(root.right, sum - root.val);
 
         return Stream.of(leftPaths, rightPaths)
-            .flatMap(Collection::stream)      // 将左右子树返回的结果合起来（或者 leftPaths.addAll(rightPaths) 也可以）
-            .map(path -> { path.add(0, root.val); return path; })  // 向连接后的 res 中的每个 path 头部添加当前节点值
+            .flatMap(Collection::stream)  // 合并左右子树返回的结果（或者 leftPaths.addAll(rightPaths) 也可以）
+            .peek(path -> path.add(0, root.val))  // 向连接后的 res 中的每个 path 头部添加当前节点值
             .collect(Collectors.toList());
     }
 
