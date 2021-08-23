@@ -71,7 +71,7 @@ public class L113_PathSumII {
         }
         helper2(root.left, sum - root.val, path, res);  // 则继续递归并复用 path
         helper2(root.right, sum - root.val, path, res);
-        path.remove(path.size() - 1);      // 同样在返回上层递归之前要将 path 恢复原状
+        path.remove(path.size() - 1);      // 同样在返回上层递归之前要将 path 恢复原状（移除本层 add 进来的节点值）
     }
 
     /*
