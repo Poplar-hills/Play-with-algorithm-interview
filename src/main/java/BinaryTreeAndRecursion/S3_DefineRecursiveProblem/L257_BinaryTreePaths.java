@@ -88,7 +88,7 @@ public class L257_BinaryTreePaths {
     /*
      * 解法3：DFS + Concat path (Post-order traversal)
      * - 思路：类似 L113_PathSumII 解法3，采用后续遍历 —— 即先递归到底，在回程的路上拼接字符串，并返回上层：
-     *               1          [["1->2->4"],["1->3"]]
+     *               1          [["1->2->4"], ["1->3"]]
      *             /   \               ↗       ↖
      *            2     3   -->   ["2->4"]     ["3"]
      *             \                   ↖

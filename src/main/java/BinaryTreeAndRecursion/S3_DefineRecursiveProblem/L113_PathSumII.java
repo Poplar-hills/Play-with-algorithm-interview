@@ -3,10 +3,7 @@ package BinaryTreeAndRecursion.S3_DefineRecursiveProblem;
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,8 +79,13 @@ public class L113_PathSumII {
      * - 思路：
      *   1. 不同于解法1、2中的递归是从上到下的，该解法采用从下到上的递归思路，即先递归到底，找到符合要求的 path，然后在回程路上
      *      开始自底向上拼接 path（∴ 是 Post-order traversal，与 L257_BinaryTreePaths 解法1一致）；
+     *               1             [[1,2,4], [1,3]]
+     *             /   \               ↗       ↖
+     *            2     3   -->    [[2,4]]    [[3]]
+     *             \                   ↖
+     *              4                   [[4]]
      *   2. ∵ 递归思路不同 ∴ 递归函数的语义也与不同：f(n, sum) 返回以 n 为根的二叉树上节点值之和为 sum 的 root-to-leaf paths。
-     *   👉 采用从上到下、从下到上两种递归思路的题目还有 L111_MinimumDepthOfBinaryTree。
+     * - 👉 采用从上到下、从下到上两种递归思路的题目还有 L111_MinimumDepthOfBinaryTree。
      * - 💎 总结：对比解法2、3可加深对前序、后续遍历的理解。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -109,7 +111,7 @@ public class L113_PathSumII {
 
 	/*
      * 解法4：DFS (Iteration) (解法1的迭代版)
-     * - 思路：与 L257_BinaryTreePaths 解法3一致。
+     * - 思路：与 L257_BinaryTreePaths 解法4一致。
      * - 同理：只需将 Stack 替换为 Queue 就得到了 BFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -118,26 +120,26 @@ public class L113_PathSumII {
         if (root == null) return res;
 
         Stack<Pair<List<TreeNode>, Integer>> stack = new Stack<>();  // 保存 <path 节点列表, path 节点之和>
-        List<TreeNode> initialList = new ArrayList<>();
-        initialList.add(root);
-        stack.push(new Pair<>(initialList, root.val));
+        List<TreeNode> initPath = new ArrayList<>();
+        initPath.add(root);
+        stack.push(new Pair<>(initPath, root.val));
 
         while (!stack.isEmpty()) {
-            Pair<List<TreeNode>, Integer> pair = stack.pop();
-            List<TreeNode> list = pair.getKey();
-            int currSum = pair.getValue();
-            TreeNode lastNode = list.get(list.size() - 1);
+            Pair<List<TreeNode>, Integer> p = stack.pop();
+            List<TreeNode> path = p.getKey();
+            int currSum = p.getValue();
+            TreeNode lastNode = path.get(path.size() - 1);
 
-            if (currSum == sum && lastNode.left == null && lastNode.right == null) {
-                List<Integer> valList = list.stream().map(n -> n.val).collect(Collectors.toList());  // 将节点列表转化为整型列表
+            if (lastNode.left == null && lastNode.right == null && currSum == sum) {
+                List<Integer> valList = path.stream().map(n -> n.val).collect(Collectors.toList());  // 将节点列表转化为整型列表
                 res.add(valList);
                 continue;
             }
 
             Consumer<TreeNode> fn = node -> {
-                List<TreeNode> newList = new ArrayList<>(list);
-                newList.add(node);
-                stack.push(new Pair<>(newList, currSum + node.val));
+                List<TreeNode> newPath = new ArrayList<>(path);  // 在每个分支的地方复制 path
+                newPath.add(node);
+                stack.push(new Pair<>(newPath, currSum + node.val));
             };
 
             if (lastNode.left != null) fn.accept(lastNode.left);
