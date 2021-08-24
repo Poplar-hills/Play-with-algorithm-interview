@@ -43,7 +43,6 @@ public class L129_SumRootToLeafNumbers {
     private static void helper(TreeNode root, int pathNum) {
         if (root == null) return;
         pathNum = pathNum * 10 + root.val;
-
         if (root.left == null && root.right == null) {
             sum += pathNum;
             return;
@@ -92,9 +91,9 @@ public class L129_SumRootToLeafNumbers {
         stack.push(new Pair<>(root, 0));
 
         while (!stack.isEmpty()) {
-            Pair<TreeNode, Integer> pair = stack.pop();
-            TreeNode node = pair.getKey();
-            int pathNum = pair.getValue() * 10 + node.val;
+            Pair<TreeNode, Integer> p = stack.pop();
+            TreeNode node = p.getKey();
+            int pathNum = p.getValue() * 10 + node.val;
 
             if (node.left == null && node.right == null)
                 sum += pathNum;
@@ -141,14 +140,9 @@ public class L129_SumRootToLeafNumbers {
                 .collect(Collectors.toList());
     }
 
-
-    public static int sumNumbers0(TreeNode root) {
-        // solution 1: bfs, iteration, store nodes in the path, calc the value when reaching leaf node
-    }
-
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
-        log(sumNumbers0(t1));
+        log(sumNumbers(t1));
         /*
          * expects 25. (12 + 13)
          *        1
@@ -157,7 +151,7 @@ public class L129_SumRootToLeafNumbers {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{4, 9, 0, 5, 1});
-        log(sumNumbers0(t2));
+        log(sumNumbers(t2));
         /*
          * expects 1026. (495 + 491 + 40)
          *        4
@@ -168,7 +162,7 @@ public class L129_SumRootToLeafNumbers {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 2, 7, 0, 6, null, null, null, 0});
-        log(sumNumbers0(t3));
+        log(sumNumbers(t3));
         /*
          * expects 6363. (537 + 5300 + 526)
          *           5
