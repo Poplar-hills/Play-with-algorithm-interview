@@ -45,12 +45,12 @@ public class L46_Permutations {
             res.add(list);
             return;
         }
-        for (int el : arr) {
-            if (!set.contains(el)) {
+        for (int n : arr) {
+            if (!set.contains(n)) {
                 List<Integer> newList = new ArrayList<>(list);  // 在每个分支处都重新创建 list 和 set
                 Set<Integer> newSet = new HashSet<>(set);
-                newList.add(el);
-                newSet.add(el);
+                newList.add(n);
+                newSet.add(n);
                 findPermutation(arr, newList, newSet, res);
             }
         }
@@ -61,7 +61,7 @@ public class L46_Permutations {
      * - 思路：与解法1一致。
      * - 实现：与解法1的区别：
      *   1. 使用 boolean[] 来记录哪些元素已经使用过了。
-     *   2. 最后再复制 list。
+     *   2. 递归返回后恢复原状态，递归到底后再复制 list。
      * - 时间复杂度 O(n!)，即 n 个元素进行全排列；空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permute2(int[] nums) {
