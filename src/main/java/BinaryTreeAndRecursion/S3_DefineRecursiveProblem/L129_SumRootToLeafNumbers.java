@@ -3,7 +3,12 @@ package BinaryTreeAndRecursion.S3_DefineRecursiveProblem;
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import Utils.Helpers.TreeNode;
 
@@ -102,9 +107,48 @@ public class L129_SumRootToLeafNumbers {
         return sum;
     }
 
+    /*
+     * 解法4：DFS (Recursion)
+     * - 思路：在每个节点上拼接字符串，返回该节点下所有分支的路径的节点值字符串：
+     *           4               ['495','491','40']    -->  495 + 491 + 40
+     *          / \                 /         \
+     *         9   0    -->   ['95','91']    ['0']
+     *        / \               /    \
+     *       5   1          ['5']   ['1']
+     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
+     * - 注：最后在用 stream 求字符串之和时会遍历列表 ∵ 列表最大长度 = 完美二叉树分支数 = 完美二叉树最底层节点数 = 节点数/2
+     *   ∴ 遍历列表的时间复杂度为 O(n/2)。
+     * */
+    public static int sumNumbers4(TreeNode root) {
+        if (root == null) return 0;
+        List<String> res = helper4(root);
+        return res.stream()       // 用 stream 求字符串之和
+                .map(Integer::parseInt)
+                .reduce(0, Integer::sum);
+    }
+
+    private static List<String> helper4(TreeNode root) {
+        if (root.left == null && root.right == null)
+            return List.of(String.valueOf(root.val));
+
+        List<String> leftRes = new ArrayList<>(), rightRes = new ArrayList<>();
+        if (root.left != null) leftRes = helper4(root.left);
+        if (root.right != null) rightRes = helper4(root.right);
+
+        return Stream.of(leftRes, rightRes)  // 拼接两个字符串列表
+                .flatMap(Collection::stream)
+                .map(s -> root.val + s)      // 给每个字符串前面拼接当前节点值
+                .collect(Collectors.toList());
+    }
+
+
+    public static int sumNumbers0(TreeNode root) {
+        // solution 1: bfs, iteration, store nodes in the path, calc the value when reaching leaf node
+    }
+
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3});
-        log(sumNumbers3(t1));
+        log(sumNumbers0(t1));
         /*
          * expects 25. (12 + 13)
          *        1
@@ -113,7 +157,7 @@ public class L129_SumRootToLeafNumbers {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{4, 9, 0, 5, 1});
-        log(sumNumbers3(t2));
+        log(sumNumbers0(t2));
         /*
          * expects 1026. (495 + 491 + 40)
          *        4
@@ -121,6 +165,19 @@ public class L129_SumRootToLeafNumbers {
          *      9   0
          *     / \
          *    5   1
+         * */
+
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 2, 7, 0, 6, null, null, null, 0});
+        log(sumNumbers0(t3));
+        /*
+         * expects 6363. (537 + 5300 + 526)
+         *           5
+         *       /      \
+         *      3       2
+         *     / \     /
+         *    7   0   6
+         *       /
+         *      0
          * */
     }
 }
