@@ -12,3 +12,8 @@
 
 - BinaryTreeAndRecursion
   - L129_SumRootToLeafNumbers
+
+- RecursionAndBackTracking
+ - L47_Permutations
+ - L47_PermutationsII
+ - L39_CombinationSum

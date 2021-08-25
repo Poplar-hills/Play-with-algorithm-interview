@@ -25,7 +25,7 @@ public class L39_CombinationSum {
      * 解法1：Recursion + Backtracking + Set 去重
      * - 思路：尝试用 nums 中的每一个元素对 target 进行递归分解，其中：
      *     1. 若 target 减去一个 num 之后等于0则找到一个解；
-     *     2. candidate 必须 <= target 才可以相减。
+     *     2. num 必须 <= target 才可以相减。
      *                              8
      *               2/            3|            5\
      *               6              5              3
@@ -76,7 +76,7 @@ public class L39_CombinationSum {
      *      2|
      *       0                                      - 找到解 [2,2,2,2]
      *
-     * - 注意：∵ 题中说了 nums 中的元素可以被使用无限多次 ∴ 👆说"5节点不再考虑分支2，只考虑 >= 3 的分支"时是要包含 == 3的分支。
+     * - 注意：∵ 题中说了 nums 中的元素可以被使用无限多次 ∴ 👆说"5节点不再考虑分支2，只考虑 >= 3 的分支"时是要包含3的分支的。
      *   ∴ 在向下递归时要传的是 j，而非 j+1（这是与 L40 的不同点）。
      * - 时间复杂度 << O(n^n)，空间复杂度 O(target)。
      * */
