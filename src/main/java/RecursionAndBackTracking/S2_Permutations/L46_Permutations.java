@@ -142,7 +142,7 @@ public class L46_Permutations {
         res.add(new ArrayList<>());  // 需要一个 trigger 元素
 
         for (int n : nums) {
-            List<List<Integer>> newRes = new ArrayList<>();  // ∵ 下面要遍历 res 中的元素，不能一边遍历一遍添加 ∴ 这里要创建一个新的
+            List<List<Integer>> newRes = new ArrayList<>();  // ∵ 下面要遍历 res 中的列表，不能一边遍历一遍添加 ∴ 这里要创建一个新的
             for (List<Integer> list : res) {
                 for (int i = 0; i <= list.size(); i++) {     // 遍历 list 的每一个插入点（包括尾部的插入点）
                     List<Integer> newList = new ArrayList<>(list);
