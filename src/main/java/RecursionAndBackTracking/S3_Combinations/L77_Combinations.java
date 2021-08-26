@@ -52,7 +52,7 @@ public class L77_Combinations {
     }
 
     private static void backtrack(int n, int k, int i, List<Integer> list, List<List<Integer>> res) {
-        if (list.size() == k) {         // 或 i > k 也可以作为递归到底的条件
+        if (list.size() == k) {  // 或 i > k 也可以作为递归到底的条件
             res.add(new ArrayList<>(list));
             return;
         }
