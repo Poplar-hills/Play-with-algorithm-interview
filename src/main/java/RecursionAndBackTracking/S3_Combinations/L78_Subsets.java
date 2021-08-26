@@ -3,6 +3,7 @@ package RecursionAndBackTracking.S3_Combinations;
 import static Utils.Helpers.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -37,7 +38,7 @@ public class L78_Subsets {
     }
 
     private static void backtrack(int[] nums, int i, List<Integer> list, List<List<Integer>> res) {
-        res.add(new ArrayList<>(list));          // 收集所有中间、最终结果
+        res.add(new ArrayList<>(list));  // 收集所有中间、最终结果
         for (int j = i; j < nums.length; j++) {
             list.add(nums[j]);
             backtrack(nums, j + 1, list, res);
@@ -48,23 +49,20 @@ public class L78_Subsets {
     /*
      * 解法2：Iteration
      * - 思路：对于 nums 中的每个元素都有“用”或“不用”两种选择，例如对于 [1,2,3] 来说，最初有空集解 []，之后：
-     *   1. 若用1，则将1追加到 [] 中，得到解 [1]；若不用1，则还是 []；
-     *      合并两部分得到 [[],[1]]。
-     *   2. 若用2，则将2追加到 [[],[1]] 中的每个解里，得到解 [[2],[1,2]]；若不用2，则还是 [[],[1]]；
-     *      合并两部分得到 [[],[1],[2],[1,2]]。
-     *   3. 若用3，则将3追加到 [[],[1],[2],[1,2]] 中的每个解里，得到解 [[3],[1,3],[2,3],[1,2,3]]；若不用3，则还是
-     *      [[],[1],[2],[1,2]]；合并两部分得到 [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]。
+     *   - 添加 []：[[]]
+     *   - 添加 1：[[],[1]] - 不用1的是 []，用1的是 [1]；
+     *   - 添加 2：[[],[1],[2],[1,2]] - 不用2的是 [],[1]，用2的是 [2],[1,2]；
+     *   - 添加 3：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]] - 不用3的是 [],[1],[2],[1,2]，用3的是 [3],[1,3],[2,3],[1,2,3]；
      * - 时间复杂度 O(2^n)：nums 中的每个元素都有“用”或“不用”两种选择 ∴ 每个元素都会把解的个数翻倍 ∴ 复杂度是 O(2^n)。
      * - 空间复杂度 O(1)。
      * */
     public static List<List<Integer>> subsets2(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length == 0) return res;
-        res.add(new ArrayList<>());
+        res.add(new ArrayList<>());  // 先添加 []
 
         for (int n : nums) {
-            int size = res.size();
-            for (int i = 0; i < size; i++) {    // 遍历 res 中的每个解
+            for (int i = 0, size = res.size(); i < size; i++) {    // 遍历 res 中的每个解
                 List<Integer> list = new ArrayList<>(res.get(i));  // 复制解，并往里追加 n
                 list.add(n);
                 res.add(list);
@@ -75,7 +73,7 @@ public class L78_Subsets {
     }
 
     public static void main(String[] args) {
-        log(subsets2(new int[]{1, 2, 3}));  // expects [[], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]]
-        log(subsets2(new int[]{3, 2, 1}));  // expects [[], [3], [3,2], [3,2,1], [3,1], [2], [2,1], [1]]
+        log(subsets(new int[]{1, 2, 3}));  // expects [[], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]]
+        log(subsets(new int[]{3, 2, 1}));  // expects [[], [3], [3,2], [3,2,1], [3,1], [2], [2,1], [1]]
     }
 }
