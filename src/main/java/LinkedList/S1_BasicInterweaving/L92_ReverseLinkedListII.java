@@ -34,25 +34,25 @@ public class L92_ReverseLinkedListII {
     public static ListNode reverseBetween(ListNode head, int m, int n) {
         if (head == null) return null;
         ListNode prev = null, curr = head;
-        ListNode conn = head, rTail = head;  // conn 用于记录 m-1 号节点的引用，rTail 记录 m 号节点的引用（也就是 reverse 之后的尾节点）
+        ListNode conn = head, rTail = head;  // conn 指向第 m-1 个节点，rTail 指向第 m 个节点（即 reverse 之后的尾节点）
 
-        for (int i = 1; i <= n; i++) {       // ∵ m、n 从1开始 ∴ 这里从1开始遍历
-            if (i == m) {                    // 遍历到第 m-1、m 号节点时用 conn、rTail 记录索引
+        for (int i = 1; i <= n; i++) {  // ∵ m、n 从1开始 ∴ 这里从1开始遍历
+            if (i == m) {               // 遍历到第 m-1、m 号节点时用 conn、rTail 记录索引
                 conn = prev;
                 rTail = curr;
             }
-            if (i <= m) {                    // 注意 i == m 时也要移动 prev、curr
+            if (i <= m) {               // 注意 i == m 时也要移动 prev、curr
                 prev = curr;
                 curr = curr.next;
-            } else {                         // 将 (m,n] 内的链接反向（注意左边是开区间，要让 prev 进入区间后再开始反向）
+            } else {                    // 将 (m,n] 内的链接反向（注意左边是开区间，要让 prev 进入区间后再开始反向）
                 ListNode next = curr.next;
-                curr.next = prev;            // 后一个节点的 next 指向前一个节点
+                curr.next = prev;       // 反向节点间的链接
                 prev = curr;
                 curr = next;
             }
         }                                    // 遍历结束时 prev 停在第 n 号节点上，curr 停在 n+1 号节点上
         if (conn != null) conn.next = prev;  // 步骤2：将现在第 n 号节点链回原来的第 m-1 号节点上
-        else head = prev;                    // test case 2、3中 m=1 ∴ conn 是 null，需要特殊处理，此时第 n 号节点就是链表的新 head
+        else head = prev;                    // test case 2、3 中 m=1 ∴ conn 是 null，需要特殊处理，此时第 n 号节点就是链表的新 head
         rTail.next = curr;                   // 将 n-1 处的节点链到 m 处节点上
         return head;
     }
@@ -93,19 +93,19 @@ public class L92_ReverseLinkedListII {
             n--;
         }
 
-        if (conn != null) conn.next = prev;  // 与解法2一样
+        if (conn != null) conn.next = prev;  // 与解法1一样
         else head = prev;
         rTail.next = curr;
         return head;
     }
 
     /*
-     * 解法3：反向节点间的链接（解法3的递归版）
+     * 解法3：反向节点间的链接（解法1、2的递归版）
      * - 思路：与解法1、2一致。
-     * - 实现：与解法3不同之处在于：
-     *     1. 采用递归反向节点间的链接；
-     *     2. 反向的是 [m,n] 之间的链接（这里与解法1相同，与解法2不同）；
-     *     3. 反向后 m-1 与 m 之间的链接会断开（与解法1、2不同）。
+     * - 实现：
+     *   1. 采用递归反向节点间的链接；
+     *   2. 反向的是 [m,n] 之间的链接（这里与解法1相同，与解法2不同）；
+     *   3. 反向后 m-1 与 m 之间的链接会断开（与解法1、2不同）。
      * - 演示：
      *         m-1   m         n   n+1
      *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
@@ -217,12 +217,12 @@ public class L92_ReverseLinkedListII {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7});
-        printLinkedList(reverseBetween4(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
+        printLinkedList(reverseBetween(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
 
         ListNode l2 = createLinkedList(new int[]{3, 5});
-        printLinkedList(reverseBetween4(l2, 1, 2));  // expects 5->3->NULL
+        printLinkedList(reverseBetween(l2, 1, 2));  // expects 5->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{5});
-        printLinkedList(reverseBetween4(l3, 1, 1));  // expects 5->NULL
+        printLinkedList(reverseBetween(l3, 1, 1));  // expects 5->NULL
     }
 }
