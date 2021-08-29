@@ -97,7 +97,7 @@ public class L24_SwapNodesInPairs {
         if (head == null || head.next == null) return head;
         ListNode returned = helper3(head.next, !shouldSwap);
         if (shouldSwap) {
-            ListNode next =returned.next;
+            ListNode next = returned.next;
             returned.next = head;
             head.next = next;
             return returned;
