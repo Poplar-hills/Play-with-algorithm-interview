@@ -20,7 +20,7 @@ import java.util.Set;
 public class L82_RemoveDuplicatesFromSortedListII {
     /*
      * 解法1：Map 计数
-     * - 思路：使用 HashMap 记录链表中节点值的频次，然后再次遍历，将频次 >1 的节点移除。
+     * - 思路：使用 Map 记录链表中节点值的频次，然后再次遍历，将频次 >1 的节点移除。
      * - 实现：需要遍历链表两遍，效率较低。
      * - 时间复杂度 O(2n)，空间复杂度 O(n)。
      * */

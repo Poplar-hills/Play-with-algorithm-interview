@@ -73,7 +73,42 @@ public class L24_SwapNodesInPairs {
     }
 
     /*
-     * 解法3：递归（最简单、直接的版本）
+     * 解法3：递归 + 标记奇偶
+     * - 思路：使用递归，在回程上 swap 节点。但若链表为奇数个节点，则最后一个节点不能与倒数第二个 swap ∴ 需要在去程时标记节点
+     *   的奇偶，在奇数节点上进行 swap：
+     *        1 -> 2 -> 3 -> 4 -> 5 -> NULL
+     *        o
+     *             e
+     *                  o
+     *                       e
+     *                            o
+     *                          ← 5->NULL
+     *                       ← 4->5->NULL
+     *                  ← 4->3->5->NULL
+     *             ← 2->4->3->5->NULL
+     *        ← 2->1->4->3->5->NULL
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static ListNode swapPairs3(ListNode head) {
+        return helper3(head, true);
+    }
+
+    private static ListNode helper3(ListNode head, boolean shouldSwap) {
+        if (head == null || head.next == null) return head;
+        ListNode returned = helper3(head.next, !shouldSwap);
+        if (shouldSwap) {
+            ListNode next =returned.next;
+            returned.next = head;
+            head.next = next;
+            return returned;
+        } else {
+            head.next = returned;
+            return head;
+        }
+    }
+
+    /*
+     * 解法4：递归（最简单、直接的版本）
      * - 实现：不用想太多，直接写交换逻辑即可 —— 交换节点1和2，则1要链到2后面，1的下一个是3的递归结果：
      *        1 -> 2 -> 3 -> 4 -> 5 -> NULL
      *          → 1跟2交换：2.next = 1; 1.next = f(3);
@@ -83,7 +118,7 @@ public class L24_SwapNodesInPairs {
      *      ← f(1) = 2->1->4->3->5->N
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static ListNode swapPairs3(ListNode head) {
+    public static ListNode swapPairs4(ListNode head) {
         if (head == null || head.next == null) return head;
         ListNode second = head.next;
         head.next = swapPairs3(second.next);
