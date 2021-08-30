@@ -28,17 +28,17 @@ public class L25_ReverseNodesInKGroup {
 
         for (int i = 0; i < k; i++, temp = temp.next)  // 检查本组中是否有足够的节点
             if (temp == null)
-                return head;
+                return head;  // 若本组内节点数不足 k 个，则不进行反向
 
-        for (int i = 0; i < k; i++) {  // 反向本组中的节点
-            temp = curr.next;
+        for (int i = 0; i < k; i++) {  // 反向本组中的节点链接
+            ListNode next = curr.next;
             curr.next = prev;
             prev = curr;
-            curr = temp;
+            curr = next;
         }
 
-        head.next = reverseKGroup(curr, k);  // 反向完成后 head 变成了本组的尾节点、prev 变成了本组的头节点 ∴ 继续对 curr 进行递归
-        return prev;
+        head.next = reverseKGroup(curr, k);  // 反向完成后 head 变成了本组的尾节点、prev 变成了本组的头节点
+        return prev;                         // ∴ 继续对 curr 进行递归，并最后返回 prev
     }
 
     /*
@@ -51,7 +51,7 @@ public class L25_ReverseNodesInKGroup {
         ListNode curr = head;
         int count = 0;
 
-        while (curr != null && count < k) {  // 先让 curr 走过本组的节点已检查节点是否充足（最后 curr 停在下一组的第一个节点上）
+        while (curr != null && count < k) {  // 先让 curr 走过本组的节点以检查节点是否充足（最后 curr 停在下一组的第一个节点上）
             curr = curr.next;
             count++;
         }
@@ -60,13 +60,13 @@ public class L25_ReverseNodesInKGroup {
         curr = reverseKGroup2(curr, k);  // 若充足则进入下一层递归
 
         while (count-- > 0) {            // 递归返回之后再反向本组的节点
-            ListNode temp = head.next;
+            ListNode next = head.next;
             head.next = curr;
             curr = head;
-            head = temp;
+            head = next;
         }
 
-        return curr;                     // 反向完成后 curr 会指向本组头结点 ∴ 返回 curr
+        return curr;  // 反向完成后 curr 会指向本组头结点 ∴ 返回 curr
     }
 
     /*
@@ -101,7 +101,7 @@ public class L25_ReverseNodesInKGroup {
     /*
      * 解法4：迭代 + Stack
      * - 思路：与解法1、2、3类似，都是先检查本组节点数是否够 k 个，再决定是否反向本组。
-     * - 实现：该解法通过将一组的节点入栈、检查 stack.size() 来确定一组节点是否够数、是否需要反向。
+     * - 实现：该解法通过将一组的节点入栈、检查 stack.size() 来确定一组节点是否够数、是否需要反向，具体反向操作通过 Stack 完成。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode reverseKGroup4(ListNode head, int k) {
@@ -111,16 +111,16 @@ public class L25_ReverseNodesInKGroup {
         Stack<ListNode> stack = new Stack<>();
 
         while (curr != null) {
-            if (stack.size() < k) {     // 不够 k 个之前持续入栈
+            if (stack.size() < k) {  // 不够 k 个之前持续入栈
                 stack.push(curr);
                 curr = curr.next;
             }
-            if (stack.size() == k) {    // 若够了 k 个则开始反向
+            if (stack.size() == k) {  // 若够了 k 个则开始反向
                 while (!stack.isEmpty()) {
-                    prev.next = stack.pop();
+                    prev.next = stack.pop();  // 通过 Stack 反向输出链表节点
                     prev = prev.next;
                 }
-                prev.next = curr;       // 反向结束时 prev 指向本组反向后的最后一个节点 ∴ 要让下一组头结点链到它上
+                prev.next = curr;  // 反向结束时 prev 指向本组反向后的最后一个节点 ∴ 要让下一组头结点链到它上
             }
         }
 
@@ -146,7 +146,7 @@ public class L25_ReverseNodesInKGroup {
         if (stack.size() < k) return head;
 
         ListNode reversedHead = null;
-        if (curr != null)                     // 若该组节点充足且下个节点不为空则继续递归下一组
+        if (curr != null)          // 若该组节点充足且下个节点不为空则继续递归下一组
             reversedHead = reverseKGroup4(curr, k);
 
         ListNode dummyHead = new ListNode();  // 在回程时反向本组节点
@@ -155,9 +155,9 @@ public class L25_ReverseNodesInKGroup {
             prev.next = stack.pop();
             prev = prev.next;
         }
-        prev.next = reversedHead;             // 将上一组反向的解法链到本组反向后的尾节点上
+        prev.next = reversedHead;  // 将上一组反向的解法链到本组反向后的尾节点上
 
-        return dummyHead.next;                // 最后返回本组反向的结果
+        return dummyHead.next;     // 最后返回本组反向的结果
     }
 
     public static void main(String[] args) {

@@ -5,6 +5,7 @@
 - LinkedList
   - L92_ReverseLinkedListII
   - L82_RemoveDuplicatesFromSortedListII
+  - L25_ReverseNodesInKGroup
 
 - HashTable
   - L205_IsomorphicStrings
