@@ -99,12 +99,12 @@ public class L25_ReverseNodesInKGroup {
     }
 
     /*
-     * 解法3：迭代 + Stack
-     * - 思路：与解法1、2类似，都是先检查本组节点数是否够 k 个，再决定是否反向本组。
+     * 解法4：迭代 + Stack
+     * - 思路：与解法1、2、3类似，都是先检查本组节点数是否够 k 个，再决定是否反向本组。
      * - 实现：该解法通过将一组的节点入栈、检查 stack.size() 来确定一组节点是否够数、是否需要反向。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static ListNode reverseKGroup3(ListNode head, int k) {
+    public static ListNode reverseKGroup4(ListNode head, int k) {
         ListNode dummyHead = new ListNode();
         dummyHead.next = head;
         ListNode prev = dummyHead, curr = head;
@@ -128,12 +128,12 @@ public class L25_ReverseNodesInKGroup {
     }
 
     /*
-     * 解法3：递归 + Stack
-     * - 思路：与解法1、2、3一致。
+     * 解法5：递归 + Stack
+     * - 思路：与解法1、2、3、4一致。
      * - 实现：结合解法2的递归和解法3的 Stack。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static ListNode reverseKGroup4(ListNode head, int k) {
+    public static ListNode reverseKGroup5(ListNode head, int k) {
         Stack<ListNode> stack = new Stack<>();
         ListNode curr = head;
         int count = 0;
