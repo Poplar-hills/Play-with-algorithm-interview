@@ -93,7 +93,7 @@ public class L24_SwapNodesInPairs {
         return helper3(head, true);
     }
 
-    private static ListNode helper3(ListNode head, boolean shouldSwap) {
+    private static ListNode helper3(ListNode head, boolean shouldSwap) {  // 奇数节点 swap，偶数节点则不
         if (head == null || head.next == null) return head;
         ListNode returned = helper3(head.next, !shouldSwap);
         if (shouldSwap) {
@@ -109,7 +109,8 @@ public class L24_SwapNodesInPairs {
 
     /*
      * 解法4：递归（最简单、直接的版本）
-     * - 实现：不用想太多，直接写交换逻辑即可 —— 交换节点1和2，则1要链到2后面，1的下一个是3的递归结果：
+     * - 实现：不用想太多，直接写交换逻辑即可 —— 每层递归处理2个节点，例如第一层递归交换节点1和2，将1链到2后面，而1的下一个节点
+     *   则是下一层递归（对节点3的递归）结果：
      *        1 -> 2 -> 3 -> 4 -> 5 -> NULL
      *          → 1跟2交换：2.next = 1; 1.next = f(3);
      *                    → 3跟4交换：4.next = 3; 3.next = f(5);
@@ -120,9 +121,9 @@ public class L24_SwapNodesInPairs {
      * */
     public static ListNode swapPairs4(ListNode head) {
         if (head == null || head.next == null) return head;
-        ListNode second = head.next;
-        head.next = swapPairs3(second.next);
-        second.next = head;
+        ListNode second = head.next;          // 本层递归处理第1、2个节点
+        head.next = swapPairs4(second.next);  // 下一层递归处理第3、4个节点
+        second.next = head;                   // 反向两个节点间的链接
         return second;
     }
 
