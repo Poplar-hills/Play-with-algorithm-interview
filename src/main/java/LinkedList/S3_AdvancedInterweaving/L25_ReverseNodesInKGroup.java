@@ -19,7 +19,8 @@ import java.util.Stack;
 public class L25_ReverseNodesInKGroup {
     /*
      * 解法1：递归
-     * - 思路：非常 straightforward —— 在递归去程时先检查一组中的节点是否充足，若充足则进行反向，否则直接返回该组头节点。
+     * - 思路：非常 straightforward —— 每层递归处理 k 个节点，在递归去程时先检查一组中的节点是否充足，若充足则进行反向，否则
+     *   直接返回该组头节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode reverseKGroup(ListNode head, int k) {
