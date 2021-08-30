@@ -29,14 +29,14 @@ public class L86_PartitionList {
             curr = curr.next;
         }
 
-        ListNode prev = lastLtX;                // 从 lastLtX 节点继续遍历
+        ListNode prev = lastLtX;  // 从 lastLtX 节点继续遍历
         while (curr != null) {
             if (curr.val < x) {
                 ListNode next = curr.next;
                 lastLtX = insertNode(curr, lastLtX);  // 将 curr 插入到 lastLtX 后面，并更新 lastLtX 的指向
                 prev.next = next;                     // 让 prev 断开与 curr 的链接，链到下个节点上
                 curr = next;
-            } else {                                  // 若节点值 ≥ x 则直接跳过
+            } else {              // 若节点值 ≥ x 则直接跳过
                 prev = curr;
                 curr = curr.next;
             }
@@ -59,21 +59,21 @@ public class L86_PartitionList {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode partition2(ListNode head, int x) {
-        ListNode dummyHead1 = new ListNode(), l1 = dummyHead1;
-        ListNode dummyHead2 = new ListNode(), l2 = dummyHead2;
+        ListNode dummyHead1 = new ListNode(), prev1 = dummyHead1;
+        ListNode dummyHead2 = new ListNode(), prev2 = dummyHead2;
 
-        for ( ; head != null; head = head.next) {
+        for (; head != null; head = head.next) {
             if (head.val < x) {
-                l1.next = head;
-                l1 = l1.next;
+                prev1.next = head;
+                prev1 = prev1.next;
             } else {
-                l2.next = head;
-                l2 = l2.next;
+                prev2.next = head;
+                prev2 = prev2.next;
             }
         }
 
-        l2.next = null;  // 注意 l2 的最后一个节点的 next 可能还链接着原来的节点，需断开链接
-        l1.next = dummyHead2.next;
+        prev1.next = dummyHead2.next;
+        prev2.next = null;  // 注意 prev2 的最后一个节点的 next 可能还链接着原来的节点，需断开链接
         return dummyHead1.next;
     }
 
