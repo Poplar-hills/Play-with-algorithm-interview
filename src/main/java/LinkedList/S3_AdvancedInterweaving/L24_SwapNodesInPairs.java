@@ -15,11 +15,15 @@ public class L24_SwapNodesInPairs {
      * 解法1：遍历
      * - 思路：交换两个节点实际上需要4个节点的参与：两个节点 + 这两个节点之前、之后的节点，这样交换完之后才能再将后续链表链接回去。
      * - 演示：D -> 1 -> 2 -> 3 -> 4 -> 5 -> NULL
-     *        p    c    n    t                     - 交换节点1和2
+     *        p    c    s    t                     - 交换节点1和2
      *        D -> 2 -> 1 -> 3 -> 4 -> 5 -> NULL
-     *                  p    c    n    t           - 交换节点3和4
+     *        p    s    c    t                     - ∵ 交换完之后 s、c 的位置对调了 ∴ 向后移动两步只需让 p = c；c = c.next
+     *        D -> 2 -> 1 -> 3 -> 4 -> 5 -> NULL
+     *                  p    c    s    t           - 交换节点3和4
      *        D -> 2 -> 1 -> 4 -> 3 -> 5 -> NULL
-     *                            p    c     n     - ∵ c.next == null ∴ 停止交换
+     *                  p    s    c    t
+     *        D -> 2 -> 1 -> 4 -> 3 -> 5 -> NULL
+     *                            p    c     s     - ∵ c.next == null ∴ 停止交换
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
 
@@ -29,11 +33,11 @@ public class L24_SwapNodesInPairs {
         ListNode prev = dummyHead, curr = head;
 
         while (curr != null && curr.next != null) {  // 内部不断交换 curr 和 curr.next
-            ListNode next = curr.next;
-            ListNode temp = next.next;
-            prev.next = next;
-            next.next = curr;
-            curr.next = temp;
+            ListNode second = curr.next;
+            ListNode third = second.next;
+            prev.next = second;
+            second.next = curr;
+            curr.next = third;
 
             prev = curr;       // 交换完成后让 prev、curr 都向后移动两步
             curr = curr.next;
@@ -51,12 +55,12 @@ public class L24_SwapNodesInPairs {
      *                          ← f(5) = 5->N
      *                ← f(3) = 4->3->5->N
      *      ← f(1) = 2->1->4->3->5->N
-     * -  技巧：在交换节点时，由于是递，所以无需提供 first 的上一个节点。
+     * - 👉 技巧：在交换节点时，由于是递，所以无需提供 first 的上一个节点。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode swapPairs2(ListNode head) {
         if (head == null || head.next == null) return head;
-        ListNode first = swap(head);    // 交换 head 和 head.next，并将交换后的 head.next 赋给 first：
+        ListNode first = swap(head);   // 交换 head 和 head.next，并将交换后的 head.next 赋给 first：
         ListNode second = first.next;
         if (second != null)
             second.next = swapPairs2(second.next);
