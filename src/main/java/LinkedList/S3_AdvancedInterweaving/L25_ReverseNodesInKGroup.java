@@ -69,6 +69,35 @@ public class L25_ReverseNodesInKGroup {
     }
 
     /*
+    * 解法3：递归
+    * - 思路：与解法1、2一致，也是先检测每组几点数是否够 k 个，若够则反向，否则直接返回。
+    * - 实现：与 L92_ReverseLinkedListII 解法3类似，递归最终返回一个节点数组：[最后一个节点, 最后一个节点的下一个节点]。
+    * - 时间复杂度 O(n)，空间复杂度 O(n)。
+    * */
+    public static ListNode reverseKGroup0(ListNode head, int k) {
+        ListNode curr = head;
+        for (int i = 0; i < k; i++) {  // 检查本组中是否有足够的节点
+            if (curr == null) return head;
+            curr = curr.next;
+        }
+
+        ListNode[] reversed = reverseKNodes(head, k);  // 反向本组中的节点
+        ListNode newHead = reversed[0];
+        ListNode rest = reversed[1];
+
+        head.next = reverseKGroup0(rest, k);  // 继续处理下一组节点
+        return newHead;
+    }
+
+    private static ListNode[] reverseKNodes(ListNode head, int k) {
+        if (k == 1) return new ListNode[]{head, head.next};  // 递归到底后返回 [最后一个节点, 最后一个节点的下一个节点]
+        ListNode[] reversed = reverseKNodes(head.next, --k);
+        head.next.next = head;  // 将 A -> B -> C 改为 A <-> B   C
+        head.next = null;       // 将 A <-> B   C 改为 A <- B   C
+        return reversed;        // 返回的总是递归到底后返回的节点
+    }
+
+    /*
      * 解法3：迭代 + Stack
      * - 思路：与解法1、2类似，都是先检查本组节点数是否够 k 个，再决定是否反向本组。
      * - 实现：该解法通过将一组的节点入栈、检查 stack.size() 来确定一组节点是否够数、是否需要反向。
@@ -132,15 +161,15 @@ public class L25_ReverseNodesInKGroup {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-        printLinkedList(reverseKGroup4(l1, 2));  // expects 2->1->4->3->NULL
+        printLinkedList(reverseKGroup0(l1, 2));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4});
-        printLinkedList(reverseKGroup4(l2, 3));  // expects 3->2->1->4->NULL
+        printLinkedList(reverseKGroup0(l2, 3));  // expects 3->2->1->4->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7, 8});
-        printLinkedList(reverseKGroup4(l3, 3));  // expects 3->2->1->6->5->4->7->8->NULL. (最后一组不够3个 ∴ 应该保持不变)
+        printLinkedList(reverseKGroup0(l3, 3));  // expects 3->2->1->6->5->4->7->8->NULL. (最后一组不够3个 ∴ 应该保持不变)
 
         ListNode l4 = createLinkedList(new int[]{1, 2, 3});
-        printLinkedList(reverseKGroup4(l4, 1));  // expects 1->2->3->NULL
+        printLinkedList(reverseKGroup0(l4, 1));  // expects 1->2->3->NULL
     }
 }
