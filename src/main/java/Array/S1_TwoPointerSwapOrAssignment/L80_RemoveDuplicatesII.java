@@ -13,7 +13,8 @@ import static Utils.Helpers.swap;
 public class L80_RemoveDuplicatesII {
     /*
      * 解法1：双指针赋值
-     * - 思路：与 L26_RemoveDuplicates 一致，只是判断条件不同：
+     * - 思路：与 L26_RemoveDuplicates 一致，只是判断条件不同，L26 的判断条件是 arr[i] == arr[i-1]，两边都是用 i 取值，
+     *   而该解法中需要使用 arr[i] == arr[v-2] 比较：
      *     1, 1, 1, 2, 2, 3
      *           vi            - arr[i] == arr[v-2], v stays, i++
      *     1, 1, 1, 2, 2, 3
@@ -41,7 +42,7 @@ public class L80_RemoveDuplicatesII {
 
     /*
      * 解法2：双指针 + Swap
-     * - 思路：与解法1一致。
+     * - 思路：与解法1类似，但在判断条件上与 L26_RemoveDuplicates 一致，两边都是使用 i 取值 ∴ 更符合直觉。
      * - 实现：使用 swap 代替复制。注意 ∵ [1,1,1,2,2,3] 在 swap 之后会变成 [1,1,2,1,2,3] ∴ 不能只判断 arr[i] == arr[i-2]，
      *   而是必须判断 arr[i], arr[i-1], arr[i-2] 3个元素都相等才行。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
