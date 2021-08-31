@@ -13,7 +13,15 @@ import static Utils.Helpers.swap;
 public class L80_RemoveDuplicatesII {
     /*
      * 解法1：双指针赋值
-     * - 思路：与 L26_RemoveDuplicates 一致，只是判断条件不同。
+     * - 思路：与 L26_RemoveDuplicates 一致，只是判断条件不同：
+     *     1, 1, 1, 2, 2, 3
+     *           vi            - arr[i] == arr[v-2], v stays, i++
+     *     1, 1, 1, 2, 2, 3
+     *           v  i          - arr[i] != arr[v-2], v != i, arr[v] = arr[i], v++, i++
+     *     1, 1, 2, 2, 2, 3
+     *              v  i       - arr[i] != arr[v-2], v != i, arr[v] = arr[i], v++, i++
+     *     1, 1, 2, 2, 2, 3
+     *                 v  i    - arr[i] != arr[v-2], v != i, arr[v] = arr[i], v++, i++
      * - 实现：L26_RemoveDuplicates 的实现稍微难懂，而本实现中的逻辑更符合直觉。
      * - 👉 技巧：在有序数组中判断一个元素是否连续出现3次的方法（与上上个元素比较）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
@@ -22,7 +30,8 @@ public class L80_RemoveDuplicatesII {
         if (arr == null || arr.length <= 2) return arr.length;
         int nextValidIdx = 2;
         for (int i = 2; i < arr.length; i++) {  // 从第3个元素开始遍历
-            if (arr[i] == arr[nextValidIdx - 2]) continue;  // 若发现有元素连续出现3次，则只让 i++，nextValidIdx 不变
+            if (arr[i] == arr[nextValidIdx - 2])
+                continue;           // 若发现有元素连续出现3次，则只让 i++，nextValidIdx 不变
             if (nextValidIdx != i)
                 arr[nextValidIdx] = arr[i];
             nextValidIdx++;
