@@ -81,7 +81,7 @@ public class L215_KthLargestElementInArray {
         swap(nums, l, vIndex);
         int v = nums[l], lt = r + 1, gt = l;
 
-        for (int i = l + 1; i < lt; ) {    // 遍历 [l+1, lt)，注意 lt 是动态的
+        for (int i = l + 1; i < lt; ) {  // 遍历 [l+1, lt)，注意 lt 是动态的
             if (nums[i] < v)
                 swap(nums, i, --lt);
             else if (nums[i] > v)

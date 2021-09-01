@@ -32,8 +32,9 @@ public class L11_ContainerWithMostWater {
      * */
     public static int maxArea(int[] arr) {
         assert arr.length >= 2;
+        int l = 0, r = arr.length - 1;
         int maxArea = 0;
-        for (int l = 0, r = arr.length - 1; l < r; ) {  // 不同于 L125 该指针对撞不能同时移动 l, r
+        while (l < r) {  // 不同于 L125 该指针对撞不能同时移动 l, r
             maxArea = Math.max(maxArea, calcArea(arr, l, r));
             if (arr[l] < arr[r]) l++;
             else r--;
@@ -41,8 +42,8 @@ public class L11_ContainerWithMostWater {
         return maxArea;
     }
 
-    private static int calcArea(int[] arr, int i, int j) {
-        return Math.min(arr[i], arr[j]) * (j - i);
+    private static int calcArea(int[] arr, int l, int r) {
+        return Math.min(arr[l], arr[r]) * (r - l);
     }
 
     /*
@@ -53,8 +54,9 @@ public class L11_ContainerWithMostWater {
      * */
     public static int maxArea2(int[] arr) {
         assert arr.length >= 2;
+        int l = 0, r = arr.length - 1;
         int maxArea = 0;
-        for (int l = 0, r = arr.length - 1; l < r; ) {
+        while (l < r) {
             maxArea = Math.max(maxArea, calcArea(arr, l, r));
             if (arr[l] < arr[r]) {
                 int oldL = l;
