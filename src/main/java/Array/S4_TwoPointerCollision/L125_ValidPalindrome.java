@@ -23,7 +23,7 @@ public class L125_ValidPalindrome {
         char[] letters = s.toLowerCase().toCharArray();  // case-insensitive
         int l = 0, r = s.length() - 1;
         while (l < r) {                                  // 不同于 L11，该指针对撞需同时移动 l, r
-            while (l < r && !Character.isLetterOrDigit(letters[l])) l++;  // 注意越界情况、跳过无效字符
+            while (l < r && !Character.isLetterOrDigit(letters[l])) l++;  // 注意越界情况；跳过无效字符
             while (r > l && !Character.isLetterOrDigit(letters[r])) r--;
             if (letters[l] != letters[r]) return false;
             l++; r--;

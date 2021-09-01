@@ -50,6 +50,7 @@ public class L11_ContainerWithMostWater {
      * 解法2：指针对撞（解法1的时间优化版）
      * - 思路：在解法1的基础上，当每次找到短板时，不马上进入下一次循环求面积，而是先检查下一块板子是否比当前这块长，若还没当前
      *   这块长，则肯定不会得到比之前更大的面积，因此继续寻找。
+     * - 💎 经验：在使用 while 给 l、r 寻找下一个有效元素时，要注意判断越界情况：l < r；
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int maxArea2(int[] arr) {
@@ -60,7 +61,7 @@ public class L11_ContainerWithMostWater {
             maxArea = Math.max(maxArea, calcArea(arr, l, r));
             if (arr[l] < arr[r]) {
                 int oldL = l;
-                while (l < r && arr[l] <= arr[oldL]) l++;  // 直到找到比当前这块板子还长的新板子位置
+                while (l < r && arr[l] <= arr[oldL]) l++;  // 直到找到比当前板子长的新板子；注意判断越界情况（l < r）
             } else {
                 int oldR = r;
                 while (r > l && arr[r] <= arr[oldR]) r--;  // 同上
