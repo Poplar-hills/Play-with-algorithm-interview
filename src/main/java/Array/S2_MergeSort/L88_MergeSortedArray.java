@@ -56,7 +56,7 @@ public class L88_MergeSortedArray {
     }
 
     /*
-     * 解法3：Merge sort（解法1的时空优化版）
+     * 解法3：Merge sort（解法2的时空优化版）
      * - 思路：与解法1一致，都是归并排序。
      * - 实现：解法1中之所以需要辅助空间是因为若在 nums1 中原地排序，当 nums1[i] > nums2[j] 时，需 nums1[k] = nums2[j]，
      *   从而可能冲掉了还未处理的元素 nums1[k]，导致排序错误。但该题中说了 nums1 尾部有足够空间 ∴ 可以直接利用尾部空间而不再
