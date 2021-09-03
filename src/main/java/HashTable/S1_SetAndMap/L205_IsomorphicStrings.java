@@ -16,6 +16,7 @@ public class L205_IsomorphicStrings {
      * 解法1：双查找表
      * - 思路：根据题意中的“同构”和对 test case 4 的纸上演算可知，若只用一个 Map 记录 s -> t 的字符映射是不够的，同时还需要
      *   记录 t -> s 的字符映射，保证双向都能匹配上才行（例如 test case 4）∴ 使用双查找表。
+     * - 实现：对 s、t 的每一个字符进行递归，若中途发现字符对不上则返回 false，若递归到底都对上了，则返回 true。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isIsomorphic(String s, String t) {
@@ -39,8 +40,9 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法2：双查找表（解法1的 char[256] 版）
+     * 解法2：双查找表（解法1的 char[256] 迭代版）
      * - 思路：与解法1一致。
+     * - 实现：迭代实现。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
     public static boolean isIsomorphic2(String s, String t) {
@@ -133,8 +135,9 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法6：双查找表（匹配上次出现位置）
-     * - 思路：不对 s、t 中的字符进行互相映射，而是比较 s、t 中每个字符上次出现的位置是否相等。该思路比解法1-5都更简单，实现也更简洁。
+     * 解法6：双查找表 + 匹配上次出现位置（最优解）
+     * - 思路：不对 s、t 中的字符进行互相映射，而是比较 s、t 中每个字符上次出现的位置是否相等。该思路比解法1-5都更简单，实现更简洁。
+     * - 实现：利用 Java 中 map.put(...) 返回值的特性实现。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isIsomorphic6(String s, String t) {
