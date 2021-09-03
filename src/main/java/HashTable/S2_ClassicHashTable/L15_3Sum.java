@@ -17,8 +17,10 @@ public class L15_3Sum {
     /*
      * 解法1：3Sum -> 2Sum（查找表 + Set 去重）
      * - 思路：首先大体思路是在遍历过程中，每次固定一个元素 nums[i]，然后在 (i..] 范围内进行 2Sum 搜索。但这样可能会得到重复
-     *   的结果（如 test case 1 中 [-1,0,1]、[0,1,-1]）∴ 需要对解进行去重。∵ 解是使用 List 记录的 ∴ 若采用 Set 对 List
-     *   去重，则需要所有 List 有序 ∴ 最简单的办法就是直接在最开始对 nums 排序，从而后面得到的每个解都是有序的，从而可以去重。
+     *   的结果（如 test case 1 中 [-1,0,1]、[0,1,-1]）∴ 需要：
+     *   1. 在固定 i 时，j 的搜索范围不再包含 [0, i]，而是 j ∈ (i,..]；
+     *   2. 对解进行去重：∵ 解是使用 List 记录的 ∴ 若采用 Set 对 List 去重，则需要所有 List 有序 ∴ 最简单的办法就是直接在
+     *      最开始对 nums 排序，从而后面得到的每个解都是有序的，从而可以去重。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> threeSum(int[] nums) {
@@ -29,7 +31,7 @@ public class L15_3Sum {
 
         Set<Integer> set = new HashSet<>();    // 放在 for 外面是为了复用，效率会高一些（也可以放在第一层 for 内部）
         for (int i = 0; i < n; i++) {          // 固定元素 nums[i]
-            for (int j = i + 1; j < n; j++) {  // 内部是标准的 2Sum（与 L1_TwoSum 解法5一致）
+            for (int j = i + 1; j < n; j++) {  // 内部是标准的 2Sum（与 L1_TwoSum 解法5一致）；注意 j ∈ (i,..]
                 int complement = 0 - nums[i] - nums[j];
                 if (set.contains(complement))  // 内部的 set 是用来查找 complement 的，而非用来去重
                     resSet.add(Arrays.asList(nums[i], nums[j], complement));
@@ -102,7 +104,7 @@ public class L15_3Sum {
      * 解法4：3Sum -> 2Sum（指针对撞 + 手动去重）
      * - 思路：与解法2一致。
      * - 实现：解法1、2、3都是使用 Set 自动去重，虽然方便但是效率较低 ∵ 要先找到解，再通过 Set 检查是否重复。本解法中采用
-     *   的手动去重的关键就是在对 nums 进行排序后，检查相邻的重复元素，若重复则无需再再后面搜索 2Sum。
+     *   的手动去重的关键就是在对 nums 进行排序后，检查相邻的重复元素，若重复则无需再在后面搜索 2Sum。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> threeSum4(int[] nums) {
