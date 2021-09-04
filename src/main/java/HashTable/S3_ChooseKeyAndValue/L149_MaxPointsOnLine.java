@@ -24,33 +24,33 @@ public class L149_MaxPointsOnLine {
      * */
     public static int maxPoints(int[][] points) {
         if (points == null || points.length == 0) return 0;
-        int n = points.length, max = 0;
+        int n = points.length, maxCount = 0;
         if (n <= 2) return n;
 
         for (int i = 0; i < n; i++) {                        // 遍历每个点
-            Map<BigDecimal, Integer> map = new HashMap<>();  // 为每个点创建 {斜率: 点个数} 映射
+            Map<BigDecimal, Integer> map = new HashMap<>();  // 为每个点创建 <斜率, 点个数> 映射
             int sameXCount = 1;                              // 记录 x 坐标相同的点的个数（初始值设为1）
             int overlapCount = 0;                            // 记录重叠点的个数
 
-            for (int j = 0; j < n; j++) {                    // 在固定一个点的基础上遍历所有其他点
+            for (int j = 0; j < n; j++) {    // 在固定一个点的基础上遍历所有其他点
                 if (i == j) continue;
                 int[] p1 = points[i], p2 = points[j];
 
-                if (Arrays.equals(p1, p2))   // 两点重叠则单独记录，并在后面加到 max 里（∵ 重叠的点肯定在一条线上）
+                if (Arrays.equals(p1, p2))   // 两点重叠则单独记录，并在后面加到 maxCount 里（∵ 重叠的点肯定在一条线上）
                     overlapCount++;
                 if (p1[0] == p2[0]) {        // 若两点 x 坐标相等（包括两点重叠的情况）则直线平行于 y 轴，没有斜率，斜率公式分母为零会报错 ∴ 要单独处理
-                    max = Math.max(max, ++sameXCount);  // 处理方式是用变量单独记录与当前点有相同 x 坐标的点的个数，并与 max 比较
+                    maxCount = Math.max(maxCount, ++sameXCount);  // 处理方式是用变量单独记录与当前点有相同 x 坐标的点的个数，并与 maxCount 比较
                     continue;
                 }
-                BigDecimal k = getSlope(p1, p2);                 // 上面处理完两个特殊情况后，这里是一般情况
-                map.put(k, map.getOrDefault(k, 1) + 1);          // 初始值设为1
-                max = Math.max(max, map.get(k) + overlapCount);  // 记得要加上重叠的点的个数
+                BigDecimal k = calcSlope(p1, p2);       // 上面处理完两个特殊情况后，这里是一般情况
+                map.put(k, map.getOrDefault(k, 1) + 1);  // 初始值设为1
+                maxCount = Math.max(maxCount, map.get(k) + overlapCount);      // 记得要加上重叠的点的个数
             }
         }
-        return max;
+        return maxCount;
     }
 
-    private static BigDecimal getSlope(int[] p1, int[] p2) {   // double 可能会精度不足因此使用 BigDecimal（SEE test case 5）
+    private static BigDecimal calcSlope(int[] p1, int[] p2) {   // double 可能会精度不足因此使用 BigDecimal（SEE test case 5）
         BigDecimal diffX = BigDecimal.valueOf(p2[0] - p1[0]);
         BigDecimal diffY = BigDecimal.valueOf(p2[1] - p1[1]);
         return diffY.divide(diffX, new MathContext(20));       // 计算斜率: (y2 - y1) / (x2 - x1)
@@ -86,7 +86,7 @@ public class L149_MaxPointsOnLine {
          *  0 +---------->
          *    0  1  2  3
          * */
-        log(maxPoints(new int[][]{{1, 1}, {1, 1}, {2, 2}, {2, 2}}));  // expects 4.（重复点的情况）
+        log(maxPoints(new int[][]{{1, 1}, {1, 1}, {2, 2}, {2, 2}}));  // expects 4.（点重叠的情况）
 
         /*
          *    ^
@@ -95,7 +95,7 @@ public class L149_MaxPointsOnLine {
          *  0 +------->
          *    0  1  2
          * */
-        log(maxPoints(new int[][]{{1, 1}, {1, 1}, {1, 1}}));  // expects 3.（所有都是重复点的情况）
+        log(maxPoints(new int[][]{{1, 1}, {1, 1}, {1, 1}}));  // expects 3.（所有点都重叠的情况）
 
         log(maxPoints(new int[][]{{0, 0}, {94911151, 94911150}, {94911152, 94911151}}));
         // expects 2.（若使用 double 计算斜率则 r1->r2 的直线与 r1->r3 的直线斜率会相等，导致认为这三点在一条线上）
