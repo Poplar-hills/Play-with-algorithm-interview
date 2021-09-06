@@ -43,8 +43,8 @@ public class L149_MaxPointsOnLine {
                     continue;
                 }
                 BigDecimal k = calcSlope(p1, p2);       // 上面处理完两个特殊情况后，这里是一般情况
-                map.put(k, map.getOrDefault(k, 1) + 1);  // 初始值设为1
-                maxCount = Math.max(maxCount, map.get(k) + overlapCount);      // 记得要加上重叠的点的个数
+                map.put(k, map.getOrDefault(k, 1) + 1);  // 初始值设为1（要把源点个数算上）
+                maxCount = Math.max(maxCount, map.get(k) + overlapCount);  // 记得要加上重叠的点的个数
             }
         }
         return maxCount;

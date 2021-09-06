@@ -114,7 +114,7 @@ public class L101_SymmetricTree {
         q.offer(root);  // root 连续入队两次
 
         while (!q.isEmpty()) {
-            TreeNode n1 = q.poll(), n2 = q.poll();
+            TreeNode n1 = q.poll(), n2 = q.poll();  // 一次出队两个节点
             if (n1 == null && n2 == null) continue;
             if (n1 == null || n2 == null || n1.val != n2.val) return false;
             q.offer(n1.left);  // 注意这里跟解法2中的入队顺序不同，需对称入队，以便下次检查两节点是否对称

@@ -111,8 +111,10 @@ public class L113_PathSumII {
 
 	/*
      * 解法4：DFS (Iteration) (解法1的迭代版)
-     * - 思路：与 L257_BinaryTreePaths 解法4一致。
-     * - 同理：只需将 Stack 替换为 Queue 就得到了 BFS 解法。
+     * - 思路：与解法1一致。
+     * - 同理：
+     *   - 与解法1不同之处在于，由于是迭代遍历节点，path 不再是解法1中的节点值列表，而是节点列表（∵ 迭代遍历需要再次取出节点）。
+     *   - 只需将 Stack 替换为 Queue 就得到了 BFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> pathSum4(TreeNode root, int sum) {
@@ -131,13 +133,13 @@ public class L113_PathSumII {
             TreeNode lastNode = path.get(path.size() - 1);
 
             if (lastNode.left == null && lastNode.right == null && currSum == sum) {
-                List<Integer> valList = path.stream().map(n -> n.val).collect(Collectors.toList());  // 将节点列表转化为整型列表
-                res.add(valList);
+                List<Integer> vals = path.stream().map(n -> n.val).collect(Collectors.toList());  // 将节点列表转化为节点值列表
+                res.add(vals);
                 continue;
             }
 
             Consumer<TreeNode> fn = node -> {
-                List<TreeNode> newPath = new ArrayList<>(path);  // 在每个分支的地方复制 path
+                List<TreeNode> newPath = new ArrayList<>(path);  // 在每个分支处复制 path
                 newPath.add(node);
                 stack.push(new Pair<>(newPath, currSum + node.val));
             };

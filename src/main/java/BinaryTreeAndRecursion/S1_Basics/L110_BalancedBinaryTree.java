@@ -20,6 +20,9 @@ public class L110_BalancedBinaryTree {
      * 解法1：DFS (Recursion)
      * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树的高度差 <= 1” ∴ 按照该定义设计程序，自下而上为每个节点
      *   计算其左右子树的高度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
+     * - 实现：每层递归返回结构为 Pair<ifBalanced, heightDiff>：
+     *   - ifBalanced 表示以当前节点为根的二叉树是否平衡值；
+     *   - heightDiff 表示以当前节点为根的二叉树的左右子树的高度差；
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced(TreeNode root) {
@@ -43,7 +46,7 @@ public class L110_BalancedBinaryTree {
     /*
      * 解法2：DFS (Recursion)
      * - 思路：思路与解法1一致。
-     * - 实现：与解法1不同，该解法用 -1 表示不平衡，用自然数表示高度差，从而统一 balanceInfo 的返回值类型。
+     * - 实现：简化解法1中每层递归的返回结构，用 -1 表示不平衡，用自然数表示高度差，从而统一返回值类型，简化代码。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced2(TreeNode root) {

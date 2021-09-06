@@ -43,7 +43,7 @@ public class L104_MaximumDepthOfBinaryTree {
 	}
 
 	/*
-     * 解法1：DFS (Recursion)
+     * 解法2：DFS (Recursion)
      * - 思路：采用解法1中的思路2。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -54,7 +54,7 @@ public class L104_MaximumDepthOfBinaryTree {
 
     /*
      * 解法3：BFS (Level lists in res)
-     * - 思路：与 L102_BinaryTreeLevelOrderTraversal 解法1一致，将所有节点按深度分组，装入列表，最后返回列表长度。
+     * - 思路：与 L102_BinaryTreeLevelOrderTraversal 解法1一致，将所有节点按层分组，每层一个列表，最后返回层的个数。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth3(TreeNode root) {
@@ -70,7 +70,7 @@ public class L104_MaximumDepthOfBinaryTree {
 
             if (depth == res.size())
                 res.add(new ArrayList<>());
-            res.get(depth).add(node);  // 将节点装入对应深度的列表中
+            res.get(depth).add(node);  // 将节点装入对应层的列表中
 
             if (node.left != null) q.offer(new Pair<>(node.left, depth + 1));
             if (node.right != null) q.offer(new Pair<>(node.right, depth + 1));
@@ -105,6 +105,8 @@ public class L104_MaximumDepthOfBinaryTree {
 
     /*
      * 解法5：BFS（解法4的简化版）
+     * - 思路：与解法4一致。
+     * - 实现：一次性将 q 中同一层的节点都消费完后让 maxDepth++。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth5(TreeNode root) {
