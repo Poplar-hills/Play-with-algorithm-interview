@@ -23,7 +23,7 @@ import Utils.Helpers.TreeNode;
 public class L129_SumRootToLeafNumbers {
     /*
      * 解法1：DFS (Recursion)
-     * - 思路：在每个节点上拼接字符串，返回该节点下所有分支的路径的节点值字符串：
+     * - 思路：从下到上，在每个节点上拼接字符串，返回该节点下所有分支的路径的节点值字符串：
      *           4               ['495','491','40']    -->  495 + 491 + 40
      *          / \                 /         \
      *         9   0    -->   ['95','91']    ['0']
@@ -86,7 +86,7 @@ public class L129_SumRootToLeafNumbers {
     }
 
     /*
-     * 解法3：DFS (Recursion) (解法1的简化版，最优解)
+     * 解法3：DFS (Recursion) (解法2的简化版，最优解)
      * - 思路：与解法2一致，也是从上到下在每个节点上累积当前 path 的 pathNum。
      * - 实现：与解法2不同，该解法不使用外部变量记录，而是让每个递归函数 f(n, num) 都返回以 num 为基数、以 n 为根的二叉树的
      *   sum of root to leaf numbers，即每个递归函数是一个完整的子问题，从而最终从下到上递推出原问题的解：
