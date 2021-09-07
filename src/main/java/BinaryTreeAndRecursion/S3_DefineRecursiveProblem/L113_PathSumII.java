@@ -112,8 +112,9 @@ public class L113_PathSumII {
 	/*
      * 解法4：DFS (Iteration) (解法1的迭代版)
      * - 思路：与解法1一致。
-     * - 同理：
-     *   - 与解法1不同之处在于，由于是迭代遍历节点，path 不再是解法1中的节点值列表，而是节点列表（∵ 迭代遍历需要再次取出节点）。
+     * - 实现：与解法1不同之处在于：
+     *   1. 由于使用迭代方式遍历节点，path 里需要存储节点列表，而非解法1中的节点值列表（∵ 迭代遍历需要再次取出节点）。
+     *   2. 在 Stack 中存储节点列表，以及节点列表之和，结构较为复杂。
      *   - 只需将 Stack 替换为 Queue 就得到了 BFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -154,11 +155,11 @@ public class L113_PathSumII {
 	/*
      * 解法5：DFS (Iteration) (解法4的性能优化版)
      * - 思路：与解法4一致。
-     * - 实现：
-     *   1. 与解法4的不同点在于：stack 中不再存储由节点组成的 List<TreeNode> 而是存储由节点值组成的 List<Integer>，这样
-     *      在找到解之后无需再像解法4中那样遍历取出每个节点的值；
-     *   2. 但也因此需要单独记录每个 path 的最后一个节点 lastNode；
-     *   3. ∴ 将节点值列表、path 最后一个节点、path 当前的 sum 封装到 Path 类中。
+     * - 实现：与解法4的不同点在于：
+     *   1. Stack 中不再存储节点列表 List<TreeNode>，而是存储节点值列表 List<Integer>，这样在找到解之后无需再像解法4中
+     *      那样遍历取出每个节点的值；
+     *   2. 但也因此需要单独记录每个 path 的最后一个节点 lastNode，用于继续遍历左右子树；
+     *   3. 将节点值列表、path 最后一个节点、path 当前的 sum 统一封装到 Path 类中。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     private static class Path {
@@ -245,7 +246,7 @@ public class L113_PathSumII {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, 6, null, 5, -2, 2, 8, null, null, 7, 9});
-        log(pathSum5(t1, 9));
+        log(pathSum3(t1, 9));
         /*
          * expects [[1,3,-2,7], [1,3,5]].（注意 [1,2,6] 不是）
          *            1
@@ -258,7 +259,7 @@ public class L113_PathSumII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(pathSum5(t2, 1));
+        log(pathSum3(t2, 1));
         /*
          * expects [].
          * */
