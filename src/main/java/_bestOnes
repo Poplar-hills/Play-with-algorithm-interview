@@ -26,7 +26,7 @@
   - L113_PathSumIII
   - L98_ValidateBinarySearchTree
 
-- RecursionAndBackTracking (8/19)
-  - L47_Permutations
+- RecursionAndBackTracking (8/19): L17, L93, L46, L47, L39, L40, L78, L90
+  - L46_Permutations
   - L47_PermutationsII
   - L39_CombinationSum

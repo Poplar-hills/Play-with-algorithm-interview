@@ -24,8 +24,8 @@ public class L46_Permutations {
      *                             []
      *                 1/          2|           3\
      *              [1]            [2]            [3]
-     *           2/    3\       1/    3\        1/    2\
-     *        [1,2]   [1,3]   [2,1]   [2,3]   [3,1]   [3,2]
+     *           2/    3\       1/    3\        1/    2\         - ∵ 排列关注顺序 ∴ 往 [1] 里插入2与往 [2] 里插入1 不重复
+     *        [1,2]   [1,3]   [2,1]   [2,3]   [3,1]   [3,2]        （这是 permutation 与 combination 的区别）
      *         3|      2|      3|      1|      2|      1|
      *       [1,2,3] [1,3,2] [2,1,3] [2,3,1] [3,1,2] [3,2,1]
      *
@@ -60,8 +60,9 @@ public class L46_Permutations {
      * 解法2：Recursion + Backtracking + boolean[]
      * - 思路：与解法1一致。
      * - 实现：与解法1的区别：
-     *   1. 使用 boolean[] 来记录哪些元素已经使用过了。
-     *   2. 递归返回后恢复原状态，递归到底后再复制 list。
+     *   1. 使用 boolean[] 来记录哪些元素已经使用过了，而不用 Set 记录 ∴ 免除了每次复制 set 的成本。
+     *   2. 递归返回后恢复原状态，递归到底后再复制 list ∴ 免除了每次复制 list 的成本。
+     * - 👉 总结：相比于解法1，带有状态恢复的该解法是真正的 backtracking。
      * - 时间复杂度 O(n!)，即 n 个元素进行全排列；空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permute2(int[] nums) {
@@ -133,7 +134,8 @@ public class L46_Permutations {
      *                \-2-> [1,2] -3-> [1,3,2]
      *                           \-3-> [1,2,3]
      *
-     * - 时间复杂度 O(n * n!)：n 个元素的全排列有 n! 种结果，而每个结果中又有 n 个元素。
+     * - 时间复杂度 O(n * n!)：n 个元素的全排列有 n! 种结果，而每个结果中又有 n 个元素。另外，注意在 newList.add(i,n) 时，
+     *   方法底层实现是要对 List 做 System.arraycopy 的 ∴ 会有实际性能成本（虽然通常不体现在时间复杂度上）。
      * - 空间复杂度 O(1)。
      * */
     public static List<List<Integer>> permute4(int[] nums) {
