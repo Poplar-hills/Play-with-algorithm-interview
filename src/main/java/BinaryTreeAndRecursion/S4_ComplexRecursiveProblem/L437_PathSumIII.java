@@ -17,6 +17,11 @@ import Utils.Helpers.TreeNode;
  *   1. The path does not need to start or end at the root or a leaf, but it must go downwards (traveling
  *      only from parent nodes to child nodes).
  *   2. The tree has no more than 1,000 nodes and the values are in the range -1,000,000 to 1,000,000.
+ *
+ * - Path Sum 系列：
+ *   - L112_PathSum 判断是否存在节点和为 sum 的 root-to-leaf 路径；
+ *   - L113_PathSumII 打印所有节点和为 sum 的 root-to-leaf 路径；
+ *   - L437_PathSumIII 统计节点和为 sum 的路径个数（路径不必须为 root-to-leaf，可从任意节点开始/结束）。
  * */
 
 public class L437_PathSumIII {
