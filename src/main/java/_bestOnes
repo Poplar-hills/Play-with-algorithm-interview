@@ -22,8 +22,8 @@
   - L104_MaximumDepthOfBinaryTree
   - L110_BalancedBinaryTree
   - L113_PathSumII
-  - L113_PathSumIII
   - L129_SumRootToLeafNumbers
+  - L113_PathSumIII
 
 - RecursionAndBackTracking (8/19)
   - L47_Permutations

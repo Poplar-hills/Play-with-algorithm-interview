@@ -30,14 +30,15 @@ public class L437_PathSumIII {
      * - 思路：L112_PathSum、L113_PathSumII 中寻找符合条件的目标路径的方式是在递归过程中不断让 sum - node.val，这其实隐含了
      *   “node 节点一定在目标路径上”的信息。而本题中目标路径不一定是 root-to-leaf 的，即任意一个节点都有可能在或不在目标路径上
      *   ∴ 对每个节点都需要分情况讨论：
-     *     1. 若 node 在目标路径上，则继续使用 L112、L113 中的方法，检查 sum - node.val 是否为0来确定目标路径；
-     *     2. 若 node 不在目标路径上，递归地在 node 的子树中寻找目标路径。
+     *     1. 若 node 在目标路径上，则问题转化为求"以 node 为根的二叉树中有几条从 node 到任意节点，且节点和为 sum 的 path"，
+     *        该问题可继续使用 L112、L113 中的方法，检查 sum - node.val 是否为0来确定目标路径；
+     *     2. 若 node 不在目标路径上，则继续用同样的方法递归搜索 node 的左右子树。
      *   用公式表达：f(node, sum) = 包含 node 的目标路径数 + 不包含 node 的目标路径数
      *                          = f2(node, sum) + f(node.left, sum) + f(node.right, sum)。
-     *   其中“包含 node 的目标路径数”的完整表述是：求以 node 为根的二叉树中有几条从 node 到任意节点，且节点和为 sum 的 path。
-     *   其转态转移为：f(node, sum) = node.val == sum ? 1 : 0
-     *                            + f(node.left, sum - node.val)
-     *                            + f(node.right, sum - node.val)
+     *   其中，"以 node 为根的二叉树中有几条从 node 到任意节点，且节点和为 sum 的 path" 的状态转移方程为：
+     *             f2(node, sum) = node.val == sum ? 1 : 0
+     *                           + f(node.left, sum - node.val)
+     *                           + f(node.right, sum - node.val)
      * - 💎 总结：
      *   1. 该解法的实现采用两套递归来分别计算两种不同情况下的结果，最后加在一起返回；
      *   2. pathSumWithNode 方法可以单独单做一道题来做。
@@ -46,7 +47,7 @@ public class L437_PathSumIII {
     public static int pathSum(TreeNode root, int sum) {
         if (root == null) return 0;
         return pathSumWithNode(root, sum)                           // 包含节点 root 的目标路径数
-             + pathSum(root.left, sum) + pathSum(root.right, sum);  // 不包含节点 root 的目标路径数
+             + pathSum(root.left, sum) + pathSum(root.right, sum);  // 若不包含节点 root，则继续用同样的方法搜索左右子树
     }
 
     private static int pathSumWithNode(TreeNode node, int sum) {  // 返回以 node 为根的二叉树中有几条从 node 到任意节点，且节点和为 sum 的 path
