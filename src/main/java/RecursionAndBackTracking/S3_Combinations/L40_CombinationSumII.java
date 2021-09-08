@@ -17,9 +17,8 @@ import java.util.List;
  *   2. All numbers (including target) will be positive integers.
  *   3. The solution set must not contain duplicate combinations.
  *
- * - 注意不同于 L39 的不同点：
- *   1. nums 中的元素可能重复；
- *   2. nums 中的元素都只能使用一次。
+ * - L39_CombinationSum：nums 中的所有元素都是唯一的，且可以使用无限多次，但结果集中不能有重复解；
+ * - L40_CombinationSumII：nums 中的元素可能重复，且都只能使用一次，但结果集中不能有重复解。
  * */
 
 public class L40_CombinationSumII {
@@ -30,13 +29,13 @@ public class L40_CombinationSumII {
      *   - 为了不重复使用元素，需在向下递归的过程中，让每层在遍历 nums 时的起始位置+1；
      *   - 为了不产生重复解，还需对 nums 排序，并在每次遍历时跳过相同的元素。
      *   例如，对于 nums=[2,5,2,1,2], target=5 来说，排序后的 nums=[1,2,2,2,5]，于是有：
-     *                                5
-     *                   1/     2/    2|    2\     5\    - 遍历 nums[0..)
-     *                   4      3      ×     ×      0    - 跳过重复元素 2、2
-     *             2/ 2| 2| 5\  2|                       - 跳过0号元素，遍历 nums[1..) ∵ nums 中的元素都只能使用一次
-     *              2  ×  ×  ×   1
-     *             2|        2/ 2| 5\
-     *              0        ×   ×   ×
+     *                                  5
+     *                   1/      2/    2|    2\     5\    - 遍历 nums[0..)
+     *                   4       3      ×     ×      0    - 跳过重复元素（第二个2）
+     *             2/ 2| 2| 5\  2|                        - 跳过0号元素，遍历 nums[1..) ∵ nums 中的元素都只能使用一次
+     *             2   ×  ×  ×   1
+     *            2|         2/ 2| 5\
+     *             0         ×   ×   ×
      * - 时间复杂度 << O(n^n)，空间复杂度 O(target)。
      * */
     public static List<List<Integer>> combinationSum(int[] nums, int target) {

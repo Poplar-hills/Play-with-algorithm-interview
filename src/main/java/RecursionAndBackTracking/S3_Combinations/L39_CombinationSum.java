@@ -15,9 +15,8 @@ import java.util.*;
  *   2. All numbers (including target) will be positive integers.
  *   3. The solution set must not contain duplicate combinations.
  *
- * - 注意不同于 L40 的不同点：
- *   1. nums 中的所有元素都是唯一的；
- *   2. nums 中的所有元素都可以使用无限多次。
+ * - L39_CombinationSum：nums 中的所有元素都是唯一的，且可以使用无限多次，但结果集中不能有重复解；
+ * - L40_CombinationSumII：nums 中的元素可能重复，且都只能使用一次，但结果集中不能有重复解。
  * */
 
 public class L39_CombinationSum {
@@ -116,7 +115,7 @@ public class L39_CombinationSum {
     public static List<List<Integer>> combinationSum3(int[] nums, int target) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length == 0) return res;
-        Arrays.sort(nums);
+        Arrays.sort(nums);  // 先对 nums 排序
         backtrack3(nums, target, 0, new ArrayList<>(), res);
         return res;
     }
@@ -126,7 +125,7 @@ public class L39_CombinationSum {
             res.add(new ArrayList<>(list));
             return;
         }
-        for (int j = i; j < nums.length && nums[j] <= target; j++) {  // 若 n > target 则可直接退出循循环
+        for (int j = i; j < nums.length && nums[j] <= target; j++) {  // 若 n > target 时直接退出循循环（而非解法2中在循环内做判断）
             list.add(nums[j]);
             backtrack3(nums, target - nums[j], j, list, res);
             list.remove(list.size() - 1);
