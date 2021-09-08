@@ -14,6 +14,9 @@ import java.util.*;
  * - Permutation: 从 n 个元素中任取 m 个按照一定的顺序排成一列，所能得到的排列个数为：A(n,m) = n(n-1)(n-2)...(n-m+1)；
  * - Combination: 从 n 个元素中任取 m 个组成一组，所能得到的组合个数为：C(n,m) = A(n,m) / m!；
  *
+ * - L46_Permutations：给的数字无重复，返回所有可能的排列；
+ * - L47_PermutationsII：给的数字可能重复，返回所有 unique 的排列；
+ *
  * - 💎 总结：排列问题（Permutation）通常可以转化为树形问题，并通过回溯法解决。
  * */
 
