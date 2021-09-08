@@ -22,14 +22,14 @@ public class L79_WordSearch {
      *           ↑/   ←|   →\       - 往↓会越界 ∴ 没有往↓的分支
      *           C     D     E
      *              ↑/  ←\          - 往→会走到已走过的格子 ∴ 没有往→的分支
-     *              F    A
+     *              F     A
      *           ↑/←|→\             - 往↓会走到已走过的格子 ∴ 没有往↓的分支
      *           B  S  C
      * - 💎 技巧：directions 位移数组是平面搜索问题的常用技巧，但要注意搜索方向的是否需要有顺序性，如顺时针、只往右下搜索等限制。
      * - 时间复杂度 O(w*l * 4^n)，空间复杂度 O(w*l)，其中 w,l 为 board 的高和宽，n 为 word 的长度。
      * */
 
-    private static int l, w;
+    private static int m, n;
     private static boolean[][] visited;
     private static int[][] directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
 
@@ -37,23 +37,24 @@ public class L79_WordSearch {
         if (word == null || word.isEmpty() || board == null || board.length == 0)
             return false;
 
-        l = board.length;
-        w = board[0].length;
-        visited = new boolean[l][w];
+        m = board.length;   // m 排 n 列
+        n = board[0].length;
+        visited = new boolean[m][n];
 
-        for (int r = 0; r < l; r++)                       // 第1步：遍历 board 上的每个格子
-            for (int c = 0; c < w; c++)
+        for (int r = 0; r < m; r++)  // 第1步：遍历 board 上的每个格子
+            for (int c = 0; c < n; c++)
                 if (searchForWord(board, r, c, word, 0))  // 第2步：以每个格子为起点搜索 word
                     return true;
+
         return false;
     }
 
     private static boolean searchForWord(char[][] board, int r, int c, String word, int i) {
-        if (i == word.length() - 1)                // 先处理 test case 2 的情况（board 只有一个格时不会进入下一层递归）
+        if (i == word.length() - 1)  // 递归到底时的情况
             return board[r][c] == word.charAt(i);
 
-        if (i == word.length()) return true;       // 再处理正常情况
-        if (board[r][c] != word.charAt(i)) return false;
+        if (board[r][c] != word.charAt(i))  // 找不到下一个字符的情况
+            return false;
 
         visited[r][c] = true;
         for (int[] d : directions) {
@@ -67,8 +68,8 @@ public class L79_WordSearch {
         return false;
     }
 
-    private static boolean validPos(int m, int n) {
-        return m >= 0 && m < l && n >= 0 && n < w;
+    private static boolean validPos(int r, int c) {
+        return r >= 0 && r < m && c >= 0 && c < n;
     }
 
     public static void main(String[] args) {

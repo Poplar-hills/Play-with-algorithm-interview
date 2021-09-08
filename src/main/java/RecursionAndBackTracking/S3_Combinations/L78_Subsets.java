@@ -12,6 +12,9 @@ import java.util.List;
  * - Given a set of distinct integers, return all possible subsets (the power set 幂集).
  *
  * - Note: The solution set must not contain duplicate subsets (e.g. [1,2] and [2,1] are duplicate subsets).
+ *
+ * - L78_Subsets：给的数组无重复；
+ * - L90_SubsetsII：给的数组可能有重复。
  * */
 
 public class L78_Subsets {
@@ -63,7 +66,7 @@ public class L78_Subsets {
 
         for (int n : nums) {
             for (int i = 0, size = res.size(); i < size; i++) {    // 遍历 res 中的每个解
-                List<Integer> list = new ArrayList<>(res.get(i));  // 复制解，并往里追加 n
+                List<Integer> list = new ArrayList<>(res.get(i));  // 复制解，再往里追加 n
                 list.add(n);
                 res.add(list);
             }

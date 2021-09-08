@@ -12,6 +12,9 @@ import java.util.List;
  * - Given a collection of integers that might contain duplicates, return all possible subsets (the power set).
  *
  * - Note: The solution set must not contain duplicate subsets.
+ *
+ * - L78_Subsets：给的数组无重复；
+ * - L90_SubsetsII：给的数组可能有重复。
  * */
 
 public class L90_SubsetsII {
@@ -26,7 +29,6 @@ public class L90_SubsetsII {
      *      [1,2]   ×  [2,2]
      *       2|
      *     [1,2,2]
-     *
      * - 实现：对重复分支的判断逻辑与 L40_CombinationSumII 一致。
      * - 时间复杂度 O(2^n)：分析方法与 L78_Subsets 解法1一样，但 ∵ 该题中会跳过某些路径 ∴ 复杂度 < O(2^n)。
      * - 空间复杂度 O(n)。
@@ -34,7 +36,7 @@ public class L90_SubsetsII {
     public static List<List<Integer>> subsetsWithDup(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length == 0) return res;
-        Arrays.sort(nums);      // ∵ 后面对同层级的重复分支的检查是用 nums[j] 与 nums[j-1] 比较 ∴ 这里要先对 nums 排序
+        Arrays.sort(nums);  // ∵ 后面对同层级的重复分支的检查是用 nums[j] 与 nums[j-1] 比较 ∴ 这里要先对 nums 排序
         backtrack(nums, 0, new ArrayList<>(), res);
         return res;
     }
@@ -42,8 +44,8 @@ public class L90_SubsetsII {
     private static void backtrack(int[] nums, int i, List<Integer> list, List<List<Integer>> res) {
         res.add(new ArrayList<>(list));          // 收集所有中间结果和最终结果
         for (int j = i; j < nums.length; j++) {
-            if (j > i && nums[j] == nums[j-1]) continue;  // 注意是 j>i 而不能是 j>0 ∵ 要跳过的是同一层级中 i 之后的相同分支
-            list.add(nums[j]);                            // ，若写成 j>0 则会丢掉 [1,2,2]、[2,2] 两个解
+            if (j > i && nums[j] == nums[j-1]) continue;  // 注意是 j>i 而不能是 j>0 ∵ j 从 i 开始，要跳过的是 i 之后的相同分支
+            list.add(nums[j]);                            // 若写成 j>0 则会丢掉 [1,2,2]、[2,2] 两个解
             backtrack(nums, j + 1, list, res);
             list.remove(list.size() - 1);
         }
@@ -64,7 +66,7 @@ public class L90_SubsetsII {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length == 0) return res;
         Arrays.sort(nums);
-        res.add(new ArrayList<>());
+        res.add(new ArrayList<>());  // 先添加 []
 
         int size = 0, start;
         for (int i = 0; i < nums.length; i++) {
