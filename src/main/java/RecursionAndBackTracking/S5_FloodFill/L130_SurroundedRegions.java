@@ -220,7 +220,7 @@ public class L130_SurroundedRegions {
 
         public int find(int p) {
             while (parents[p] != p)
-                parents[p] = find(parents[p]);  // path compression 优化，将 p 和根节点之间的所有节点都直接连接到根节点上
+                parents[p] = parents[parents[p]];  // path compression 优化，不断将 p 连接到祖父节点上（与父节点同层）
             return parents[p];
         }
 
@@ -232,15 +232,15 @@ public class L130_SurroundedRegions {
     public static void solve4(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
 
-        n = board.length;
-        m = board[0].length;
+        m = board.length;
+        n = board[0].length;
         UnionFind uf = new UnionFind(m * n + 1);  // 最后多开辟1的空间存放虚拟节点
         int DUMMY_NODE = m * n;
 
-        for (int r = 0; r < n; r++) {  // 遍历 board 上所有的 'O'
-            for (int c = 0; c < m; c++) {
+        for (int r = 0; r < m; r++) {  // 遍历 board 上所有的 'O'
+            for (int c = 0; c < n; c++) {
                 if (board[r][c] != 'O') continue;
-                if (r == 0 || r == n - 1 || c == 0 || c == m - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
+                if (r == 0 || r == m - 1 || c == 0 || c == n - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
                     uf.unify(node(r, c), DUMMY_NODE);
                 else {  // 将不在边界上的 'O' 与四周相邻的 'O' 连通，从而让有效的跟有效的连通，无效的跟无效的连通
                     for (int[] d : directions) {
@@ -269,7 +269,7 @@ public class L130_SurroundedRegions {
             {'X', 'X', 'O', 'X'},    //   X X X X
             {'X', 'O', 'X', 'X'}     //   X O X X
         };
-        solve(board1);
+        solve4(board1);
         log(board1);
 
         char[][] board2 = {          // expects: (nothing changes)
@@ -278,7 +278,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},    //   X O O X
             {'X', 'O', 'X', 'O'}     //   X O X O
         };
-        solve(board2);
+        solve4(board2);
         log(board2);
 
         char[][] board3 = {          // expects: (nothing changes)
@@ -287,7 +287,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},    //   X O O X
             {'X', 'X', 'X', 'O'}     //   X X X O     // 该行第2个元素与上个 test case 不同
         };
-        solve(board3);
+        solve4(board3);
         log(board3);
     }
 }
