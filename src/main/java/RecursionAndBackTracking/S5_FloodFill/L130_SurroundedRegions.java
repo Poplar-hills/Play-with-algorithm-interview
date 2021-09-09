@@ -265,54 +265,31 @@ public class L130_SurroundedRegions {
     }
 
     public static void main(String[] args) {
-        char[][] board1 = {
-            {'X', 'X', 'X', 'X'},
-            {'X', 'O', 'O', 'X'},
-            {'X', 'X', 'O', 'X'},
-            {'X', 'O', 'X', 'X'}
+        char[][] board1 = {          // expects:
+            {'X', 'X', 'X', 'X'},    //   X X X X
+            {'X', 'O', 'O', 'X'},    //   X X X X
+            {'X', 'X', 'O', 'X'},    //   X X X X
+            {'X', 'O', 'X', 'X'}     //   X O X X
         };
         solve(board1);
         log(board1);
-        /*
-         * expects:
-         *   X X X X
-         *   X X X X
-         *   X X X X
-         *   X O X X
-         * */
 
-
-        char[][] board2 = {
-            {'O', 'O', 'O', 'O'},
-            {'X', 'O', 'X', 'O'},
-            {'X', 'O', 'O', 'X'},
-            {'X', 'O', 'X', 'O'}
+        char[][] board2 = {          // expects: (nothing changes)
+            {'O', 'O', 'O', 'O'},    //   O O O O
+            {'X', 'O', 'X', 'O'},    //   X O X O
+            {'X', 'O', 'O', 'X'},    //   X O O X
+            {'X', 'O', 'X', 'O'}     //   X O X O
         };
         solve(board2);
         log(board2);
-        /*
-         * expects: (nothing changes)
-         *   O O O O
-         *   X O X O
-         *   X O O X
-         *   X O X O
-         * */
 
-
-        char[][] board3 = {
-            {'O', 'O', 'O', 'O'},
-            {'X', 'O', 'X', 'O'},
-            {'X', 'O', 'O', 'X'},
-            {'X', 'X', 'X', 'O'}   // 该行第2个元素与 board2 中不同
+        char[][] board3 = {          // expects: (nothing changes)
+            {'O', 'O', 'O', 'O'},    //   O O O O
+            {'X', 'O', 'X', 'O'},    //   X O X O
+            {'X', 'O', 'O', 'X'},    //   X O O X
+            {'X', 'X', 'X', 'O'}     //   X X X O     // 该行第2个元素与上个 test case 不同
         };
         solve(board3);
         log(board3);
-        /*
-         * expects: (nothing changes)
-         *   O O O O
-         *   X O X O
-         *   X O O X
-         *   X X X O
-         * */
     }
 }
