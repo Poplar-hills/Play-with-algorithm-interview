@@ -159,7 +159,7 @@ public class L130_SurroundedRegions {
             if (board[0][c] == 'O') floodFill3(board, 0, c);          // 遍历上边界
             if (board[m - 1][c] == 'O') floodFill3(board, m - 1, c);  // 遍历下边界
         }
-        for (int r = 0; r < m; r++) {                                 // 最后完成替换
+        for (int r = 0; r < m; r++) {                                   // 最后完成替换
             for (int c = 0; c < n; c++) {
                 if (board[r][c] == 'O') board[r][c] = 'X';
                 if (board[r][c] == '*') board[r][c] = 'O';
@@ -204,7 +204,7 @@ public class L130_SurroundedRegions {
             }
         }
 
-        public void union(int p, int q) {
+        public void unify(int p, int q) {
             int pRoot = find(p), qRoot = find(q);
             if (pRoot == qRoot) return;
 
@@ -219,11 +219,9 @@ public class L130_SurroundedRegions {
         }
 
         public int find(int p) {
-            while (parents[p] != p) {
-                parents[p] = parents[parents[p]];  // path compression 优化，不断将 p 连接到祖父节点上（与父节点同层）
-                p = parents[p];
-            }
-            return p;
+            while (parents[p] != p)
+                parents[p] = find(parents[p]);  // path compression 优化，将 p 和根节点之间的所有节点都直接连接到根节点上
+            return parents[p];
         }
 
         public boolean isConnected(int p, int q) {
@@ -236,19 +234,19 @@ public class L130_SurroundedRegions {
 
         n = board.length;
         m = board[0].length;
-        UnionFind uf = new UnionFind(m * n + 1);      // 最后多开辟1的空间存放虚拟节点
-        int dummyNode = m * n;
+        UnionFind uf = new UnionFind(m * n + 1);  // 最后多开辟1的空间存放虚拟节点
+        int DUMMY_NODE = m * n;
 
-        for (int r = 0; r < n; r++) {                 // 遍历 board 上所有的 'O'
+        for (int r = 0; r < n; r++) {  // 遍历 board 上所有的 'O'
             for (int c = 0; c < m; c++) {
                 if (board[r][c] != 'O') continue;
                 if (r == 0 || r == n - 1 || c == 0 || c == m - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
-                    uf.union(node(r, c), dummyNode);
-                else {                                // 将不在边界上的 'O' 与四周相邻的 'O' 连通，从而让有效的跟有效
-                    for (int[] d : directions) {      // 的连通，无效的跟无效的连通
+                    uf.unify(node(r, c), DUMMY_NODE);
+                else {  // 将不在边界上的 'O' 与四周相邻的 'O' 连通，从而让有效的跟有效的连通，无效的跟无效的连通
+                    for (int[] d : directions) {
                         int newR = r + d[0], newC = c + d[1];
                         if (board[newR][newC] == 'O')
-                            uf.union(node(r, c), node(newR, newC));
+                            uf.unify(node(r, c), node(newR, newC));
                     }
                 }
             }
@@ -256,7 +254,7 @@ public class L130_SurroundedRegions {
 
         for (int r = 1; r < m - 1; r++)      // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
             for (int c = 1; c < n - 1; c++)
-                if (!uf.isConnected(node(r, c), dummyNode))
+                if (!uf.isConnected(node(r, c), DUMMY_NODE))
                     board[r][c] = 'X';
     }
 
