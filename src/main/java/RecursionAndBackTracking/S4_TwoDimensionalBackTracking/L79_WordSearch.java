@@ -31,14 +31,14 @@ public class L79_WordSearch {
 
     private static int m, n;
     private static boolean[][] visited;
-    private static int[][] directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
+    private static final int[][] directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};  // 顺序：上右下左
 
     public static boolean exist(char[][] board, String word) {
         if (word == null || word.isEmpty() || board == null || board.length == 0)
             return false;
 
-        m = board.length;   // m 排 n 列
-        n = board[0].length;
+        m = board.length;     // 行数
+        n = board[0].length;  // 列数
         visited = new boolean[m][n];
 
         for (int r = 0; r < m; r++)  // 第1步：遍历 board 上的每个格子

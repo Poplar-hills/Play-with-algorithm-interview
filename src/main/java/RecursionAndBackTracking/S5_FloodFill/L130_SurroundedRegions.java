@@ -34,28 +34,27 @@ public class L130_SurroundedRegions {
      *        X O X O  ->  X X X O    - 而当遍历到 [1,1] 时 ∵ [1,0] 在刚才已经被标记为已填充 ∴ 不会再访问。从而会误认为
      *        X O O X      X X X X      [1,1]、[2,1]、[2,2] 是一个有效的 region 而将他们 flip。
      *        X X X O      X X X O
-     *
      *   ∴ 应该采用方案1，一次性遍历完整个 region，即使发现该 region 无效也先不退出，而是等所有 'O' 都被标记为已填充之后再
      *   继续安心的在 board 上搜索下一个 region。
      *
-     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
 
-    private static int l, w;
+    private static int m, n;
     private static boolean[][] filled;
-    private static int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    private static final int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};  // 顺序：上右下左
 
     public static void solve(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
 
-        w = board.length;     // 行数
-        l = board[0].length;  // 列数
-        filled = new boolean[w][l];
+        m = board.length;     // 行数
+        n = board[0].length;  // 列数
+        filled = new boolean[m][n];
 
-        for (int r = 0; r < w; r++) {
-            for (int c = 0; c < l; c++) {
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
                 if (board[r][c] == 'O' && !filled[r][c]) {
-                    List<int[]> region = new ArrayList<>();  // 用于暂存当前 region 的所有格子
+                    List<int[]> region = new ArrayList<>();  // 用于暂存当前 region 的所有坐标
                     if (isValidRegion(board, r, c, region))  // 若该 region 有效，则 flip 该其中的所有 'O'
                         for (int[] p : region)
                             board[p[0]][p[1]] = 'X';
@@ -64,17 +63,17 @@ public class L130_SurroundedRegions {
         }
     }
 
-    private static boolean isValidRegion(char[][] board, int r, int c, List<int[]> list) {
-        boolean isValid = true;  // ∵ 要一次性遍历完当前 region，不能发现无效就中途 return ∴ 采用变量记录该 region 是否有效
-        filled[r][c] = true;
-        list.add(new int[]{r, c});
+    private static boolean isValidRegion(char[][] board, int r, int c, List<int[]> region) {
+        boolean isValid = true;  // ∵ 要一次性 fill 整个 region，不能中途发现无效就 return ∴ 采用变量记录该 region 是否有效
+        filled[r][c] = true;      // 每个格子 fill 之后无需恢复原状
+        region.add(new int[]{r, c});
 
         for (int[] d : directions) {
             int newR = r + d[0], newC = c + d[1];
             if (!isValidPos(newR, newC))
-                isValid = false;       // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效
+                isValid = false;       // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效（注意不能中途 return）
             else if (board[newR][newC] == 'O' && !filled[newR][newC])
-                if (!isValidRegion(board, newR, newC, list))
+                if (!isValidRegion(board, newR, newC, region))
                     isValid = false;
         }
 
@@ -82,28 +81,29 @@ public class L130_SurroundedRegions {
     }
 
     private static boolean isValidPos(int r, int c) {
-        return r >= 0 && r < w && c >= 0 && c < l;
+        return r >= 0 && r < m && c >= 0 && c < n;
     }
 
     /*
-     * 解法2：Inside-out Flood Fill (BFS, Iteration)
+     * 超时解（Time Limit Exceeded）：Inside-out Flood Fill (BFS, Iteration)
      * - 思路：与解法1一致。
-     * - 实现：解法1中的 Flood Fill 采用的是基于 DFS 的回溯，而该解法中采用基于 BFS 的回溯，比解法1更直观。
-     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     * - 实现：解法1采用的是基于 DFS recursion 的回溯，而该解法中采用基于 BFS iteration 的回溯。
+     * - 时间复杂度 O(m*n)，与解法1一致，但实际当中会超时，目前原因未知。
+     * - 空间复杂度 O(m*n)。
      * */
     public static void solve2(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
 
-        w = board.length;
-        l = board[0].length;
-        filled = new boolean[w][l];
-        List<int[]> region = new ArrayList<>();  // 用于暂存当前 region 的所有格子
+        m = board.length;
+        n = board[0].length;
+        filled = new boolean[m][n];
+        List<int[]> region = new ArrayList<>();
 
-        for (int r = 0; r < w; r++) {
-            for (int c = 0; c < l; c++) {
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
                 if (board[r][c] == 'O' && !filled[r][c]) {
-                    region.clear();                           // 每次使用前先清空
-                    if (isValidRegion2(board, r, c, region))  // 若该 region 有效，则 flip 该其中的所有 'O'
+                    region.clear();  // 每次使用前先清空
+                    if (isValidRegion2(board, r, c, region))
                         for (int[] p : region)
                             board[p[0]][p[1]] = 'X';
                 }
@@ -144,23 +144,23 @@ public class L130_SurroundedRegions {
      *     1. 先处理无效的 'O' ∴ 只需使用标准的 Flood Fill 即可，无需任何修改；
      *     2. 将遍历过的 'O' 替换成了 '*' ∴ 有 '*' 的格子即是被访问过的，无需再单独开辟 boolean[][]；
      * - 👉 总结：与解法1、2对比，该解法其实是从边界开始向内陆进行 Flood Fill，即 outside-in，而解法1、2是 inside-out。
-     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)，时空复杂度也比解法1、2更优。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)，时空复杂度也比解法1、2更优。
      * */
     public static void solve3(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
-        w = board.length;
-        l = board[0].length;
+        n = board.length;
+        m = board[0].length;
 
-        for (int r = 0; r < w; r++) {
+        for (int r = 0; r < n; r++) {
             if (board[r][0] == 'O') floodFill3(board, r, 0);          // 遍历左边界
-            if (board[r][l - 1] == 'O') floodFill3(board, r, l - 1);  // 遍历右边界
+            if (board[r][m - 1] == 'O') floodFill3(board, r, m - 1);  // 遍历右边界
         }
-        for (int c = 0; c < l; c++) {
+        for (int c = 0; c < m; c++) {
             if (board[0][c] == 'O') floodFill3(board, 0, c);          // 遍历上边界
-            if (board[w - 1][c] == 'O') floodFill3(board, w - 1, c);  // 遍历下边界
+            if (board[n - 1][c] == 'O') floodFill3(board, n - 1, c);  // 遍历下边界
         }
-        for (int r = 0; r < w; r++) {                                 // 最后完成替换
-            for (int c = 0; c < l; c++) {
+        for (int r = 0; r < n; r++) {                                 // 最后完成替换
+            for (int c = 0; c < m; c++) {
                 if (board[r][c] == 'O') board[r][c] = 'X';
                 if (board[r][c] == '*') board[r][c] = 'O';
             }
@@ -188,8 +188,8 @@ public class L130_SurroundedRegions {
      *     1. 并查集的实现比较标准，没有过多改变，需要的修改（如二维坐标到一维的映射）都放到主逻辑中，从而让并查集保持纯粹；
      *     2. 并查集若不做优化则会 Time Limit Exceeded ∴ 加入 path compression 和基于 rank 的优化。
      * - 👉 理解：该解法是真正理解并查集（及其优化方式）的极好题目，一定要下断点跟踪 parents 每一步的变化来加深理解。
-     * - 时间复杂度 O(l*w)：基于 path-compression + rank 的并查集的效率接近 O(1)；
-     * - 空间复杂度 O(l*w)。
+     * - 时间复杂度 O(m*n)：基于 path-compression + rank 的并查集的效率接近 O(1)；
+     * - 空间复杂度 O(m*n)。
      * */
     private static class UnionFind {
         private int [] parents;
@@ -234,15 +234,15 @@ public class L130_SurroundedRegions {
     public static void solve4(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
 
-        w = board.length;
-        l = board[0].length;
-        UnionFind uf = new UnionFind(l * w + 1);      // 最后多开辟1的空间存放虚拟节点
-        int dummyNode = l * w;
+        n = board.length;
+        m = board[0].length;
+        UnionFind uf = new UnionFind(m * n + 1);      // 最后多开辟1的空间存放虚拟节点
+        int dummyNode = m * n;
 
-        for (int r = 0; r < w; r++) {                 // 遍历 board 上所有的 'O'
-            for (int c = 0; c < l; c++) {
+        for (int r = 0; r < n; r++) {                 // 遍历 board 上所有的 'O'
+            for (int c = 0; c < m; c++) {
                 if (board[r][c] != 'O') continue;
-                if (r == 0 || r == w - 1 || c == 0 || c == l - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
+                if (r == 0 || r == n - 1 || c == 0 || c == m - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
                     uf.union(node(r, c), dummyNode);
                 else {                                // 将不在边界上的 'O' 与四周相邻的 'O' 连通，从而让有效的跟有效
                     for (int[] d : directions) {      // 的连通，无效的跟无效的连通
@@ -254,14 +254,14 @@ public class L130_SurroundedRegions {
             }
         }
 
-        for (int r = 1; r < l - 1; r++)      // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
-            for (int c = 1; c < w - 1; c++)
+        for (int r = 1; r < m - 1; r++)      // 最后对有效的 'O'（即不与虚拟节点连通的 'O'）进行替换
+            for (int c = 1; c < n - 1; c++)
                 if (!uf.isConnected(node(r, c), dummyNode))
                     board[r][c] = 'X';
     }
 
     private static int node(int r, int c) {  // 将二维坐标映射到一维数组索引上
-        return r * w + c;
+        return r * n + c;
     }
 
     public static void main(String[] args) {
@@ -271,7 +271,7 @@ public class L130_SurroundedRegions {
             {'X', 'X', 'O', 'X'},
             {'X', 'O', 'X', 'X'}
         };
-        solve4(board1);
+        solve(board1);
         log(board1);
         /*
          * expects:
@@ -288,7 +288,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'O', 'X', 'O'}
         };
-        solve4(board2);
+        solve(board2);
         log(board2);
         /*
          * expects: (nothing changes)
@@ -305,7 +305,7 @@ public class L130_SurroundedRegions {
             {'X', 'O', 'O', 'X'},
             {'X', 'X', 'X', 'O'}   // 该行第2个元素与 board2 中不同
         };
-        solve4(board3);
+        solve(board3);
         log(board3);
         /*
          * expects: (nothing changes)
