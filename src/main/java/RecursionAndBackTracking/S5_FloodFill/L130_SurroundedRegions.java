@@ -88,7 +88,7 @@ public class L130_SurroundedRegions {
      * 超时解（Time Limit Exceeded）：Inside-out Flood Fill (BFS, Iteration)
      * - 思路：与解法1一致。
      * - 实现：解法1采用的是基于 DFS recursion 的回溯，而该解法中采用基于 BFS iteration 的回溯。
-     * - 时间复杂度 O(m*n)，与解法1一致，但实际当中会超时，目前原因未知。
+     * - 时间复杂度 O(m*n)，与解法1一致，但实际当中会超时，目前原因未知（？？？）。
      * - 空间复杂度 O(m*n)。
      * */
     public static void solve2(char[][] board) {
@@ -137,7 +137,7 @@ public class L130_SurroundedRegions {
 
     /*
      * 解法3：Outside-in Flood Fill (DFS, Recursion)
-     * - 思路：另一种聪明的思路是，从 board 边界上的 'O' 开始 Flood Fill，将这些无效的 region 用特殊符号 '*' 填充。当所有
+     * - 思路：另一种聪明的思路是从 board 边界上的 'O' 开始 Flood Fill，将这些无效的 region 用特殊符号 '*' 填充。当所有
      *   的无效 region 被填充完之后，board 上剩余的 'O' 就都是有效的 region 了 ∴ 最后只需再将所有的 'O' flip 成 'X'、将
      *   所有的 '*' 替换回 'O' 即可。
      * - 实现：相比解法1、2，该解法更加简洁，原因是：
@@ -148,19 +148,19 @@ public class L130_SurroundedRegions {
      * */
     public static void solve3(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
-        n = board.length;
-        m = board[0].length;
+        m = board.length;
+        n = board[0].length;
 
-        for (int r = 0; r < n; r++) {
+        for (int r = 0; r < m; r++) {
             if (board[r][0] == 'O') floodFill3(board, r, 0);          // 遍历左边界
-            if (board[r][m - 1] == 'O') floodFill3(board, r, m - 1);  // 遍历右边界
+            if (board[r][n - 1] == 'O') floodFill3(board, r, n - 1);  // 遍历右边界
         }
-        for (int c = 0; c < m; c++) {
+        for (int c = 0; c < n; c++) {
             if (board[0][c] == 'O') floodFill3(board, 0, c);          // 遍历上边界
-            if (board[n - 1][c] == 'O') floodFill3(board, n - 1, c);  // 遍历下边界
+            if (board[m - 1][c] == 'O') floodFill3(board, m - 1, c);  // 遍历下边界
         }
-        for (int r = 0; r < n; r++) {                                 // 最后完成替换
-            for (int c = 0; c < m; c++) {
+        for (int r = 0; r < m; r++) {                                 // 最后完成替换
+            for (int c = 0; c < n; c++) {
                 if (board[r][c] == 'O') board[r][c] = 'X';
                 if (board[r][c] == '*') board[r][c] = 'O';
             }
