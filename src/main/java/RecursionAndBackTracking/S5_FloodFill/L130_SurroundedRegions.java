@@ -192,8 +192,8 @@ public class L130_SurroundedRegions {
      * - 空间复杂度 O(m*n)。
      * */
     private static class UnionFind {
-        private int [] parents;
-        private int [] ranks;
+        private final int [] parents;
+        private final int [] ranks;
 
         public UnionFind(int size) {  // 对比 L200 中的并查集，该并查集的构造方法无需传入整个 board，只使用其 size 即可
             parents = new int[size];
