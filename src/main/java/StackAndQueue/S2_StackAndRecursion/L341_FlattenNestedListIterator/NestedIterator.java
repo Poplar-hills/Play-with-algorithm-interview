@@ -27,7 +27,7 @@ import java.util.*;
  * - 时间复杂度 O(n)，空间复杂度 O(n)。
  * */
 class NestedIterator implements Iterator<Integer> {
-    private Queue<Integer> queue = new LinkedList<>();
+    private final Queue<Integer> queue = new LinkedList<>();
 
     public NestedIterator(List<NestedInteger> nestedList) {
         addToQueue(nestedList);
@@ -52,12 +52,12 @@ class NestedIterator implements Iterator<Integer> {
 /*
  * 解法2：Eager style + Iteration
  * - 思路：解法1的迭代版
- * - 💎 总结：将解法1的递归式改写为迭代式的关键在于用 stack + while 模拟系统调用栈 —— ∵ 使用递归的场景通常不确定需要遍历几次
+ * - 💎 实现：将解法1的递归式改写为迭代式的关键在于用 stack + while 模拟系统调用栈 —— ∵ 使用递归的场景通常不确定需要遍历几次
  *   ∴ 要在这种场景下使用迭代就需要用 stack + while 来模拟调用栈。
  * - 时间复杂度 O(n)，空间复杂度 O(n)。
  * */
 class NestedIterator2 implements Iterator<Integer> {
-    private Queue<Integer> queue = new LinkedList<>();
+    private final Queue<Integer> queue = new LinkedList<>();
 
     public NestedIterator2(List<NestedInteger> nestedList) {
         Stack<NestedInteger> callStack = new Stack<>();  // 模拟调用栈，存储还未解析的 NestedInteger（解析过的 int 则放入 Queue 中）
@@ -90,13 +90,14 @@ class NestedIterator2 implements Iterator<Integer> {
  *   everything into memory, which can be a big waste of resource。要解决这个问题可使用 lazy style：Lazy 与 eager
  *   的区别在于实例化时（构造器中）做的事情：
  *   - Eager iterator 在实例化时要完成所有计算和加载工作；
- *   - Lazy iterator 在实例化时只加载数据，而计算工作等到真正消费时（hasNext、next）再进行。
+ *   - Lazy iterator 在实例化时只加载数据（将 nestedList 入栈但不解析），而等到真正消费时（hasNext、next）再解析（找到
+ *     下一个可用的 integer）。
  * - 实现：与解法2类似，使用 stack + while 模拟调用栈：
  *   1. 在 constructor 中将数据加载到调用栈中；
  *   2. 在 next() 时去消费 stack 中的数据时去计算。
  * */
 class NestedIterator3 implements Iterator<Integer> {
-    private Stack<NestedInteger> callStack = new Stack<>();
+    private final Stack<NestedInteger> callStack = new Stack<>();
 
     public NestedIterator3(List<NestedInteger> nestedList) {
         pushInReverseOrder(nestedList);  // 实例化时只将数据加载到调用栈中

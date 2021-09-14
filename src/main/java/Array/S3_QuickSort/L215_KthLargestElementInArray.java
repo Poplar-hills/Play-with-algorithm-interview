@@ -1,8 +1,6 @@
 package Array.S3_QuickSort;
 
-import java.util.Collections;
-import java.util.PriorityQueue;
-import java.util.Random;
+import java.util.*;
 
 import static Utils.Helpers.log;
 import static Utils.Helpers.swap;
