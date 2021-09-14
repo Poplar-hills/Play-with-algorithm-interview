@@ -1,8 +1,8 @@
 package StackAndQueue.S4_BFSAndGraphShortestPath;
 
-import java.util.*;
-
 import Utils.Helpers.Pair;
+
+import java.util.*;
 
 import static Utils.Helpers.log;
 
@@ -67,7 +67,7 @@ public class L127_WordLadder {
      *   ∴ 需要一个 Set 记录哪些顶点还未被访问过，并且在寻找相邻顶点时只在该 Set 中寻找。
      * - 注意：当需要一边遍历 Set，一边增/删其中元素（动态增删）时，不能使用 for、while、forEach，需要使用 iterator。
      * - 优化：更简单的做法是使用 Set 记录已经访问过的顶点，这样就不需要入队之后将访问的顶点从 Set 中移除。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n^2 * l)，其中 l 为单词长度；空间复杂度 O(n)。
      * */
     public static int ladderLength1(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
@@ -83,7 +83,7 @@ public class L127_WordLadder {
             Iterator<String> it = unvisited.iterator();  // 遍历 unvisited 而非 wordList，时间复杂度 O(n)
             while (it.hasNext()) {
                 String w = it.next();
-                if (isSimilar(w, word)) {
+                if (isSimilar(w, word)) {                // 寻找可替换单词，时间复杂度 O(len(word))
                     if (w.equals(endWord)) return step + 1;
                     q.offer(new Pair<>(w, step + 1));    // 将相邻顶点入队待访问
                     it.remove();                         // 从 unvisited 中删除（动态删除 unvisited 中的元素）
@@ -100,7 +100,7 @@ public class L127_WordLadder {
      * - 实现：性能优化点在于寻找相邻顶点的过程：不同于解法1中的 isSimilar，该解法尝试对 word 中的每个字母用 a-z 进行替换，
      *   若替换后的 tWord 存在于 unvisitied 中，则说明 tWord 与 word 相邻。∵ 只有26个字母 ∴ 该方法复杂度为 len(word) * 26；
      *   而解法1中 isSimilar 的复杂度为 wordList.size() * len(word)，若 wordList 中元素个数 >26 时，性能会差于本解法。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 时间复杂度 O(26 * n * l^2)，空间复杂度 O(n)。
      * */
     public static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
@@ -141,15 +141,14 @@ public class L127_WordLadder {
      * - 思路：使用2个队列 beginQ、endQ，分别从 beginWord/endWord 开始交替进行正/反向 BFS，即交替遍历 beginQ、endQ 中的
      *   所有顶点，为每一个顶点寻找相邻顶点：
      *     1. 若其中任一相邻顶点出现在另一队列中（即出现在对面方向最外层顶点中），则说明正反向查找相遇，找到了最短路径，返回顶点数即可；
-     *     2. 若没有相邻顶点出现在另一队列中，则说明正反向查找还未相遇，则调换方向继续另一端的 BFS 过程。
-     * （将 endQ 作为 beginQ 开始新一轮遍历、将 neighbours 作为 endQ 用于查看下一轮
-     *         中的相邻顶点是否出现在对面方向最外层顶点中）。
+     *     2. 若没有相邻顶点出现在另一队列中，则说明正反向查找还未相遇，则调换方向继续另一端的 BFS 过程（将 endQ 作为 beginQ 开始
+     *        新一轮遍历、将 neighbours 作为 endQ 用于查看下一轮中的相邻顶点是否出现在对面方向最外层顶点中）。
      *
      * - 实现：
-     *   1. ∵ 本题中进行 BFS 时的顺序不重要（先访问哪个相邻顶点都可以，这是 graph 的一个特定），且对于两边队列中的每个顶点都要
-     *      检查其是否存在于另一边的队列（即另一边 BFS 的最外层顶点）中 ∴ 两边的队列 beginQ、endQ 可使用 Set 实现（beginSet、endSet）。
-     *   2. ∵ 使用 Set 代替队列 ∴ 对于 BFS 过程中找到的相邻顶点，不再需要将其入队回去，而是放入一个 neighbours Set 中，
-     *      最后在调换方向时直接用它来替换其中一边的队列 Set。
+     *   1. ∵ 本题中进行 BFS 时的顺序不重要（先访问哪个相邻顶点都可以，这是 graph 的一个特点），且对于两边队列中的每个顶点都要检查
+     *      其是否存在于另一边的队列（即另一边 BFS 的最外层顶点）中 ∴ 两个队列 beginQ、endQ 可使用 Set 实现（beginSet、endSet）。
+     *   2. ∵ 使用 Set 代替队列 ∴ 对于 BFS 过程中找到的相邻顶点，不再需要将其入队回去，而是放入一个 neighbours Set 中，最后在
+     *      调换方向时直接用它来替换其中一边的队列 Set。
      *   3. 在调换方向时，可以加一步判断 —— 不是每次都交替遍历 beginSet 和 endSet，而是每次都找到两者中元素数少的进行遍历。
      *      这样可以让两边队列 Set 中的元素数保持相对平衡，不会在一边持续产生指数型增长。
      *
