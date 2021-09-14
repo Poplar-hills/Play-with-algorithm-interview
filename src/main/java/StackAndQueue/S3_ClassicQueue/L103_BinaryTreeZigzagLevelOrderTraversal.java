@@ -45,9 +45,10 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
 
     /*
      * 解法2：迭代（BFS）
-     * - 思路：在 L102 解法1的基础上加入对层级数的奇偶判断，若是偶数层则下一层先遍历右子节点再遍历左子节点，若为奇数层则反过来。
-     * - 实现：另一种实现是，将对层级数的奇偶判断放在往 res 相应的 list 中插入元素的时候，若为偶数层，则向 list 尾部追加，若
-     *   为奇数层则往 list 头部插入（SEE 解法2）。
+     * - 思路：不同于解法1，更高效的做法是在 L102 解法1的基础上加入对层级数的奇偶判断，若为偶数层则倒序输出节点。
+     * - 实现：要在偶数层则倒序输出节点有2种方式：
+     *   1. 改变子节点入队顺序：先入队右子节点，再入队左子节点，从而在之后的遍历中实现从右到左遍历的效果（本解法）；
+     *   2. 头部追加节点：往 res 相应层级的 list 中追加节点时，追加到 list 头部（如解法3）；
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> zigzagLevelOrder2(TreeNode root) {
@@ -81,7 +82,7 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
      * 解法3：递归
      * - 思路：与解法1一致。
      * - 实现：1. 采用递归；
-     *        2. 采用解法1实现中描述的实现，将对层级数的奇偶判断放在往 res 相应的 list 中插入元素的时候。
+     *        2. 采用解法2"实现"中描述的方法2，往 res 相应层级的 list 中追加节点时，追加到 list 头部。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */
     public static List<List<Integer>> zigzagLevelOrder3(TreeNode root) {
@@ -106,7 +107,7 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
     /*
      * 解法4：迭代（层级列表）
      * - 思路：类似 L107 的解法3。
-     * - 实现：类似解法3。
+     * - 实现：类似解法3，往层级列表中追加节点时，追加到列表头部。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> zigzagLevelOrder4(TreeNode root) {
