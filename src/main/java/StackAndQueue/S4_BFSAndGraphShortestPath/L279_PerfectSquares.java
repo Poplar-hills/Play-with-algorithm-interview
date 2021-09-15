@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static Utils.Helpers.*;
+import static Utils.Helpers.Pair;
+import static Utils.Helpers.log;
 
 /*
  * Perfect Squares
@@ -20,16 +21,17 @@ public class L279_PerfectSquares {
      *   看成图上的两个顶点，把"减去一个完全平方数"看做两点间的一条边，则该问题可转化为"求顶点 n 到 0 之间的最短路径"，即将原
      *   问题转化为了一个在有向无权图上寻找 n → 0 间最短路径的问题。例如：
      *          ⓪ ← ⓵ ← ②              ⓪ ← ① ← ②              ⓪ ← ① ← ← ← ②
-     *          ↑         ↑              ↑    ↑    ↑              ↑    ↑     ↗  ↑
-     *          ⓸  →  →  ⓷              ↑   ⑤    ↑              ↑    ⑤ ← ⑥   ↑
-     *         n=4 时最短路径为1           ↑    ↓    ↑              ↑    ↓        ↑
-     *                                   +  ← ④ → ③              + ← ④ → → → ③
+     *          ↑         ↑              ↑    ↑    ↑               ↑   ↑     ↗  ↑
+     *          ⓸  →  →  ⓷              ↑   ⑤    ↑               ↑   ⑤ ← ⑥   ↑
+     *         n=4 时最短路径为1           ↑    ↓    ↑               ↑   ↓        ↑
+     *                                   +  ← ④ → ③               + ← ④ → → → ③
      *                                 n=5 时最短路径为2            n=6 时最短路径为3
      * - 💎 要点：
      *   1. 求无权图中两点的最短路径可使用 BFS（若是带权图的最短路径问题则可使用 Dijkstra）；
      *   2. 无权图上进行的 BFS 时，第一次访问某个顶点时的路径一定是从起点到该顶点的最短路径（当然可能存在多个最短路径，
-     *      如 👆 n=6 的例子中 6 → 5 → 1 → 0 和 6 → 2 → 1 → 0 都是最短路径）。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     *      如👆n=6 的例子中 6 → 5 → 1 → 0 和 6 → 2 → 1 → 0 都是最短路径）。
+     *   3. 注意避免重复访问顶点，如 6 → 5 → 1 和 6 → 2 → 1，若没有 visited 数组，则顶点1会被入队、处理两遍。
+     * - 时间复杂度 O(n * sqrt(n))，空间复杂度 O(n)。
      * */
     public static int numSquares(int n) {
         if (n <= 0) return 0;
@@ -65,11 +67,11 @@ public class L279_PerfectSquares {
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
     public static int numSquares_1(int n) {
-        if (n == 0) return 0;             // 顶点0到达自己的步数为0
+        if (n <= 1) return n;             // n=0/1 时，到达0的步数分别为0/1
 
         int minStep = Integer.MAX_VALUE;  // 用于记录当前顶点到0的最小步数
         for (int i = 1; i * i <= n; i++)  // 找到当前顶点的相邻顶点
-            minStep = Math.min(minStep, numSquares(n - i * i) + 1);  // 计算所有相邻顶点到0的最少步数，其中最小值+1即是当前顶点到0的最少步数
+            minStep = Math.min(minStep, numSquares_1(n - i * i) + 1);  // 计算所有相邻顶点到0的最少步数，其中最小值+1即是当前顶点到0的最少步数
 
         return minStep;
     }
@@ -80,20 +82,21 @@ public class L279_PerfectSquares {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int numSquares2(int n) {
-        int[] steps = new int[n + 1];  // steps[i] 保存顶点 i 到达0的最少步数（∵ 顶点取值范围是 [0,n] ∴ 要开 n+1 的空间）
-        Arrays.fill(steps, -1);
-        return helper2(n, steps);
+        int[] minSteps = new int[n + 1];  // minSteps[i] 保存顶点 i 到0的最少步数（∵ 顶点取值范围是 [0,n] ∴ 要开 n+1 的空间）
+        Arrays.fill(minSteps, -1);
+        minSteps[0] = 0;
+        minSteps[1] = 1;
+        return helper2(n, minSteps);
     }
 
-    private static int helper2(int n, int[] steps) {
-        if (n == 0) return 0;
-        if (steps[n] != -1) return steps[n];  // cache hit
+    private static int helper2(int n, int[] minSteps) {
+        if (minSteps[n] != -1) return minSteps[n];  // cache hit
 
         int minStep = Integer.MAX_VALUE;
         for (int i = 1; i * i <= n; i++)
-            minStep = Math.min(minStep, helper2(n - i * i, steps) + 1);
+            minStep = Math.min(minStep, helper2(n - i * i, minSteps) + 1);
 
-        return steps[n] = minStep;            // 赋值语句的返回值为所赋的值
+        return minSteps[n] = minStep;  // 赋值语句的返回值为所赋的值
     }
 
     /*
@@ -125,10 +128,17 @@ public class L279_PerfectSquares {
         return dp[n];
     }
 
+
+
+
+
+
+
+
     public static void main(String[] args) {
-        log(numSquares3(5));   // expects 2. (5 = 4 + 1)
-        log(numSquares3(6));   // expects 3. (6 = 4 + 1 + 1)
-        log(numSquares3(12));  // expects 3. (12 = 4 + 4 + 4)
-        log(numSquares3(13));  // expects 2. (13 = 4 + 9)
+        log(numSquares0(5));   // expects 2. (5 = 4 + 1)
+        log(numSquares0(6));   // expects 3. (6 = 4 + 1 + 1)
+        log(numSquares0(12));  // expects 3. (12 = 4 + 4 + 4)
+        log(numSquares0(13));  // expects 2. (13 = 4 + 9)
     }
 }
