@@ -118,8 +118,8 @@ public class L279_PerfectSquares {
      * */
     public static int numSquares3(int n) {
         int[] dp = new int[n + 1];
-        Arrays.fill(dp, Integer.MAX_VALUE);   // ∵ 求最小值 ∴ 初值为正无穷
-        dp[0] = 0;
+        Arrays.fill(dp, Integer.MAX_VALUE);    // ∵ 求每个位置上的最小值 ∴ 初值为正无穷
+        dp[0] = 0;                            // 也可以增加一行 dp[1]=1，然后下面从 i=2 开始 DP
 
         for (int i = 1; i <= n; i++)          // 从 1→n 逐个计算到达0的最少步数，从下往上层层递推出原问题 f(n) 的解
             for (int j = 1; j * j <= i; j++)  // 对于每个 i 找到不大于它的完全平方数 p（即 j*j）
