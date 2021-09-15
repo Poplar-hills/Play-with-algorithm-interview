@@ -203,7 +203,7 @@ public class L127_WordLadder {
     }
 
     private static int helper4(Set<String> beginSet, Set<String> endSet, Set<String> unvisited, int stepCount) {
-        if (beginSet.isEmpty()) return 0;  // 递归结束条件是一边已经没有更多未访问过的相邻顶点，此时正反向 BFS 还未相遇的话就说明没有联通路径
+        if (beginSet.isEmpty()) return 0;  // 递归结束条件是当一边已找不到未访问过的相邻顶点，此时若正反向 BFS 还未相遇，则说明两点间无连通路径
         Set<String> neighbours = new HashSet<>();
 
         for (String word : beginSet) {                  // 遍历 beginSet 中的单词
@@ -222,7 +222,7 @@ public class L127_WordLadder {
             }
         }
 
-        return endSet.size() < neighbours.size()        // 选择元素少的一边进行下一轮 BFS
+        return endSet.size() < neighbours.size()  // 选择元素少的一边进行下一轮 BFS
             ? helper4(endSet, neighbours, unvisited, stepCount + 1)
             : helper4(neighbours, endSet, unvisited, stepCount + 1);
     }
@@ -230,14 +230,14 @@ public class L127_WordLadder {
     /*
      * 解法5：先构建 Graph + BFS 生成 steps 数组
      * - 思路：
-     *     1. 不同于解法1-4中遍历到某个顶点时再现去搜索相邻顶点，该解法先构建邻接矩阵（Adjacency Matrix），从而在后面的 BFS
-     *        过程可以直接从邻接矩阵中取得任意顶点所有相邻顶点；
-     *     2. 不同于解法1-4中在 Queue 中存储 Pair<顶点，起点到该顶点的步数>，该解法中的 BFS 过程不再给每个顶点带上步数信息，
-     *        而是通过 BFS 建立一个 steps 数组，每个位置保存起点到每个顶点的最小步数信息，最终获得起点到终点的最小步数。
+     *     1. 不同于解法1-4中遍历到某个顶点时再现去搜索相邻顶点，该解法先构建无向图的邻接矩阵（Adjacency Matrix），一次性梳理出
+     *        所有节点间的链接关系，从而让后面的 BFS 可以直接使用邻接矩阵找到任意顶点的所有相邻顶点；
+     *     2. 不同于解法2在 Queue 中存储 Pair<顶点，起点到该顶点的步数>，该解法中的 BFS 过程不再给每个顶点带上步数信息，而是通过
+     *        BFS 建立一个 steps 数组，每个位置保存起点到每个顶点的最小步数信息，最终获得起点到终点的最小步数。
      * - 实现：
      *     1. 邻接矩阵本质上就是一个 boolean[][]，描述各顶点之间的链接关系。本解法中构建的是无向图的邻接矩阵（更多介绍
      *        SEE: Play-with-algorithms/GraphBasics/_Introduction.txt）。其实用邻接表也可以（SEE: L126 解法1）。
-     *     2. ∵ 邻接表是基于顶点的 index 构建的 ∴ 在进行 BFS 时，队列中存储的也应是顶点的 index，统一操作方式。
+     *     2. ∵ 邻接矩阵是基于顶点的 index 构建的 ∴ 在进行 BFS 时，队列中存储的也应是顶点的 index，统一操作方式。
      *     3. 关于 steps 数组：
      *        a). steps[i] = n 表示 beginWord 到 wordList[i] 的最小步数为 n。
      *        b). BFS 过程中，每个顶点 i 都可能被当做其他顶点的相邻顶点而被多次访问，但只有第一次访问时才能给 steps[i] 赋值，
@@ -254,24 +254,24 @@ public class L127_WordLadder {
 
     private static boolean[][] buildAdjacencyMatrix(List<String> wordList) {
         int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];  // 基于 wordList 的 index 创建邻接矩阵
+        boolean[][] graph = new boolean[n][n];  // 基于 wordList 创建邻接矩阵
 
         for (int i = 0; i < n; i++)             // ∵ 矩阵中要存的是两两 word 是否相邻 ∴ 要遍历所有所有 word 的两两组合
             for (int j = i + 1; j < n; j++)     // j 从 i+1 开始，不重复的遍历 wordList 中所有的两两组合
                 if (isSimilar(wordList.get(i), wordList.get(j)))
-                    graph[i][j] = graph[j][i] = true;
+                    graph[i][j] = graph[j][i] = true;  // ∵ 要构建无向图的邻接矩阵 ∴ 数据分布沿对角线对称
 
         return graph;
     }
 
     private static int bfs(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
-        Queue<Integer> q = new LinkedList<>();   // 队列中存储的是也是各顶点的 index
-        int[] steps = new int[wordList.size()];  // steps[i] 上存储的是 beginWord 到 wordList[i] 的最短步数
+        Queue<Integer> q = new LinkedList<>();   // ∵ 邻接矩阵中的顶点使用 index 访问 ∴ BFS 遍历时队列中存储的也是顶点的 index
+        int[] steps = new int[wordList.size()];  // steps[i] 表示 beginWord 到 wordList 中的第 i 个单词的最短步数
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
 
         q.offer(beginIndex);
-        steps[beginIndex] = 1;                   // ∵ beginWord 也算一步 ∴ 初始化为1
+        steps[beginIndex] = 1;  // ∵ beginWord 也算一步 ∴ 初始化为1
 
         while (!q.isEmpty()) {
             int i = q.poll();
@@ -279,7 +279,7 @@ public class L127_WordLadder {
                 if (graph[i][j] && steps[j] == 0) {      // 若相邻且还未被访问过（第一次访问时的步数就是最小步数 ∴ 不能覆盖）
                     if (j == endIndex) return steps[i] + 1;
                     steps[j] = steps[i] + 1;
-                    q.offer(j);                          // 将该相邻顶点的 index 放入 q 中
+                    q.offer(j);  // 将该相邻顶点的 index 放入 q 中
                 }
             }
         }
@@ -302,6 +302,7 @@ public class L127_WordLadder {
 
         int n = wordList.size();
         boolean[][] graph = new boolean[n][n];
+
         for (int i = 0; i < n; i++)
             for (int j = 0; j < i; j++)
                 graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));
@@ -321,7 +322,7 @@ public class L127_WordLadder {
         int[] beginSteps = new int[n], endSteps = new int[n];  // 为正、反向 BFS 各设置一个 steps 数组，这样会不互相干扰
         beginSteps[beginIndex] = endSteps[endIndex] = 1;
 
-        while (!beginQ.isEmpty() && !endQ.isEmpty()) {         // 若其中一个方向的查找完成时还没有从起点到终点的路径出现则说明无解，程序结束
+        while (!beginQ.isEmpty() && !endQ.isEmpty()) {  // 若其中一个方向的查找完成时还没有从起点到终点的路径出现则说明无解，程序结束
             int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();  // 正、反向队列分别出队一个顶点的 index
 
             for (int i = 0; i < n; i++) {                              // 从所有顶点的 index 中...
