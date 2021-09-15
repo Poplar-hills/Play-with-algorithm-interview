@@ -128,17 +128,10 @@ public class L279_PerfectSquares {
         return dp[n];
     }
 
-
-
-
-
-
-
-
     public static void main(String[] args) {
-        log(numSquares0(5));   // expects 2. (5 = 4 + 1)
-        log(numSquares0(6));   // expects 3. (6 = 4 + 1 + 1)
-        log(numSquares0(12));  // expects 3. (12 = 4 + 4 + 4)
-        log(numSquares0(13));  // expects 2. (13 = 4 + 9)
+        log(numSquares2(5));   // expects 2. (5 = 4 + 1)
+        log(numSquares2(6));   // expects 3. (6 = 4 + 1 + 1)
+        log(numSquares2(12));  // expects 3. (12 = 4 + 4 + 4)
+        log(numSquares2(13));  // expects 2. (13 = 4 + 9)
     }
 }
