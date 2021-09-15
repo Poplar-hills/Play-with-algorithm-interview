@@ -37,12 +37,12 @@ public class L127_WordLadder {
         while (!q.isEmpty()) {
             Pair<String, Integer> pair = q.poll();
             String word = pair.getKey();
-            int step = pair.getValue();
+            int stepCount = pair.getValue();
 
             for (String w : wordList) {
                 if (isSimilar(w, word)) {
-                    if (w.equals(endWord)) return step + 1;
-                    q.offer(new Pair<>(w, step + 1));
+                    if (w.equals(endWord)) return stepCount + 1;
+                    q.offer(new Pair<>(w, stepCount + 1));
                 }
             }
         }
@@ -78,14 +78,14 @@ public class L127_WordLadder {
         while (!q.isEmpty()) {                           // 最差情况下遍历了所有顶点才到达 endWord ∴ 时间复杂度 O(n)
             Pair<String, Integer> pair = q.poll();
             String word = pair.getKey();
-            int step = pair.getValue();
+            int stepCount = pair.getValue();
 
             Iterator<String> it = unvisited.iterator();  // 遍历 unvisited 而非 wordList，时间复杂度 O(n)
             while (it.hasNext()) {
                 String w = it.next();
                 if (isSimilar(w, word)) {                // 寻找可替换单词，时间复杂度 O(len(word))
-                    if (w.equals(endWord)) return step + 1;
-                    q.offer(new Pair<>(w, step + 1));    // 将相邻顶点入队待访问
+                    if (w.equals(endWord)) return stepCount + 1;
+                    q.offer(new Pair<>(w, stepCount + 1));
                     it.remove();                         // 从 unvisited 中删除（动态删除 unvisited 中的元素）
                 }
             }
@@ -97,10 +97,11 @@ public class L127_WordLadder {
     /*
      * 解法2：解法1的性能优化版
      * - 思路：与解法1一致。
-     * - 实现：性能优化点在于寻找相邻顶点的过程：不同于解法1中的 isSimilar，该解法尝试对 word 中的每个字母用 a-z 进行替换，
-     *   若替换后的 tWord 存在于 unvisitied 中，则说明 tWord 与 word 相邻。∵ 只有26个字母 ∴ 该方法复杂度为 len(word) * 26；
-     *   而解法1中 isSimilar 的复杂度为 wordList.size() * len(word)，若 wordList 中元素个数 >26 时，性能会差于本解法。
-     * - 时间复杂度 O(26 * n * l^2)，空间复杂度 O(n)。
+     * - 实现：性能优化点在于寻找相邻顶点的过程：不同于解法1中的 isSimilar，该解法尝试对 word 中的每个字母用 a-z 进行替换，若替换
+     *   后的 tWord 存在于 wordList 中且未被访问过，则说明 tWord 与 word 相邻。∵ 只有26个字母 ∴ 用该方法搜索单个节点的相邻节点的
+     *   复杂度为 len(word) * 26；而解法1中 isSimilar 的复杂度为 n * len(word)。∵ 实际当中字典一般都满足 n >> 26 ∴ 该解法的
+     *   性能会由于解法1。
+     * - 时间复杂度 O(26 * n * l^2)，其中 l 为单词长度；空间复杂度 O(n)。
      * */
     public static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
@@ -111,17 +112,17 @@ public class L127_WordLadder {
         while (!q.isEmpty()) {
             Pair<String, Integer> p = q.poll();
             String word = p.getKey();
-            int step = p.getValue();
+            int stepCount = p.getValue();
 
-            for (int i = 0; i < word.length(); i++) {  // 为 word 中的每个字母进行替换匹配
+            for (int i = 0; i < word.length(); i++) {  // 为 word 中的每个字母进行替换匹配，O(len(word) * 26)
                 StringBuilder wordSb = new StringBuilder(word);
                 for (char c = 'a'; c <= 'z'; c++) {
                     if (c == word.charAt(i)) continue;
                     wordSb.setCharAt(i, c);            // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
                     String tWord = wordSb.toString();
-                    if (unvisited.contains(tWord)) {   // 若 unvisitied 中有 tWord，则说明找到了一个相邻顶点
-                        if (tWord.equals(endWord)) return step + 1;
-                        q.offer(new Pair<>(tWord, step + 1));
+                    if (unvisited.contains(tWord)) {   // unvisitied 中有 tWord，说明找到了一个相邻顶点（在 Set 中匹配字符串的复杂度为 O(len(word))）
+                        if (tWord.equals(endWord)) return stepCount + 1;
+                        q.offer(new Pair<>(tWord, stepCount + 1));
                         unvisited.remove(tWord);
                     }
                 }
