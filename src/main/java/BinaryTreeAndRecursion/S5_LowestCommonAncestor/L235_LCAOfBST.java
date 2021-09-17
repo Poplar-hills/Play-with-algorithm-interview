@@ -37,6 +37,7 @@ public class L235_LCAOfBST {
 
     /*
      * 解法2：DFS (Iteration，解法1的非递归版)
+     * - 实现：将 Stack 改为 Queue 就是 BFS 实现。
      * - 时间复杂度 O(h)，空间复杂度 O(1)。
      * */
     public static TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
@@ -63,8 +64,9 @@ public class L235_LCAOfBST {
     /*
      * 解法3：Iteration (DFS) (解法2的空间优化版)
      * - 思路：与解法2一致。
-     * - 实现：该题本质上就是对 BST 的二分查找，而非树的遍历，即不需要在树上上下折返，只要一路往下走就能得到结果 ∴ 并不需要使用
-     *   栈来记录前面的节点，只需一个指针指向当前节点即可 ∴ 可以去除对 Stack 的依赖。
+     * - 实现：该题本质上就是对 BST 的二分查找，而非树的遍历，即对于一个节点来说，只需一次性判断是走左子树 or 右子树，而不需要
+     *   左右子树都走遍 ∴ 无需使用栈或队列来存储所有子节点，只需一个指针指向当前节点即可。
+     * - 👉 总结：不要被 BFS/DFS 的定式限制住，要看到题目的本质。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
