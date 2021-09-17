@@ -49,7 +49,7 @@ public class L230_KthSmallestElementInBST {
      * - 思路：与解法1一致。
      * - 实现：
      *   1. 解法1中序遍历所有节点，而该解法则是在遍历到第 k 大的节点时就返回，不再继续遍历 ∴ 性能优于解法1；
-     *   2. count 要实现为类成员变量。若实现为用 Integer 包装 count，并在函数中传递并不能达到传引用的效果 ∵ Integer 源码
+     *   2. count 声明为类成员变量。若实现为用 Integer 包装 count，并直接在函数中传递并不能达到传引用的效果 ∵ Integer 源码
      *      中 value 是 final 的，即一旦 Integer 对象创建之后其值就不能被修改 ∴ count++ 时只会创建一个新对象。
      * - 时间复杂度 O(h+k)，其中 h 是树高 ∵ 中序遍历在访问到第一个节点之前要先走到最左边的节点，该过程最大是 h 的时间，再加上
      *   访问找到第 k 大节点 ∴ 整体是 O(h+k)，对于平衡树是 O(logn+k)，对于完全不平衡树则是 O(n+k)。
@@ -76,7 +76,7 @@ public class L230_KthSmallestElementInBST {
      * - 实现：
      *   - 解法2中用 count 记录遍历过的节点个数，递归函数返回找到的解；
      *   - 而该解法中用 res 记录找到的解，而递归函数返回最新的 k 值。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(h+k)，空间复杂度 O(h)。
      * */
     private static int res;
 
@@ -103,7 +103,7 @@ public class L230_KthSmallestElementInBST {
         TreeNode curr = root;
 
         while (curr != null || !stack.isEmpty()) {
-            while (curr != null) {
+            while (curr != null) {  // 一路向左走到底，一路上入栈节点
                 stack.push(curr);
                 curr = curr.left;
             }
@@ -119,12 +119,13 @@ public class L230_KthSmallestElementInBST {
      * 解法5：BFS + Max heap
      * - 思路：类似解法 L215_KthLargestElementInArray 解法2，开辟 k+1 大小的最小堆，然后在遍历 BST 的过程中将所有大于第
      *    k 个节点的节点从堆中移出，最后留在堆顶的即是第 k 小的节点。
-     * - 时间复杂度 O(nlogk)，空间复杂度 O(n)。
+     * - 时间复杂度 O(nlogk) ∵ 要遍历所有节点 ∴ 性能不如解法2-4。
+     * - 空间复杂度 O(n)。
      * */
     public static int kthSmallest5(TreeNode root, int k) {
-        PriorityQueue<TreeNode> pq = new PriorityQueue<>(k + 1, (a, b) -> b.val - a.val);  // max heap
+        PriorityQueue<TreeNode> pq = new PriorityQueue<>(k + 1, (a, b) -> b.val - a.val);  // 最大堆用于排序
         pq.offer(root);
-        Queue<TreeNode> q = new LinkedList<>();
+        Queue<TreeNode> q = new LinkedList<>();  // 队列用于 BST 遍历
         q.offer(root);
 
         while (!q.isEmpty()) {
