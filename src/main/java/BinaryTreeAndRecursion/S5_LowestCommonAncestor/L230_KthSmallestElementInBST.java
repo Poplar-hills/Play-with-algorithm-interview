@@ -22,7 +22,7 @@ import Utils.Helpers.TreeNode;
  *
  * - Follow up: What if the BST is modified (insert/delete operations) often and you need to find the kth
  *   smallest frequently? How would you optimize the kthSmallest routine?
- *   👉 Very good Analysis SEE: https://leetcode.com/problems/kth-smallest-element-in-a-bst/solution/
+ *   💎 Very good analysis SEE: https://leetcode.com/problems/kth-smallest-element-in-a-bst/solution/
  * */
 
 public class L230_KthSmallestElementInBST {
