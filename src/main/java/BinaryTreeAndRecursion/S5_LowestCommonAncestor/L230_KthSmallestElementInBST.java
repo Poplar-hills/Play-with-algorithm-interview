@@ -59,23 +59,46 @@ public class L230_KthSmallestElementInBST {
 
     public static int kthSmallest2(TreeNode root, int k) {
         count = 0;
-        return inorder2(root, k);
+        return dfs2(root, k);
     }
 
-    private static Integer inorder2(TreeNode node, int k) {
+    private static Integer dfs2(TreeNode node, int k) {
         if (node == null) return null;
-        Integer res = inorder2(node.left, k);
-        if (res != null) return res;           // 若在左子树中找到了结果，则直接返回（不再往下执行）
-        if (++count == k) return node.val;     // 若在该节点就是第 k 大的元素，则返回它
-        return inorder2(node.right, k);        // 若左子树中没有找到，同时也不是该节点，则一定在右子树中
+        Integer res = dfs2(node.left, k);
+        if (res != null) return res;         // 若在左子树中找到了结果，则直接返回（不再往下执行）
+        if (++count == k) return node.val;  // 若在该节点就是第 k 大的元素，则返回它
+        return dfs2(node.right, k);      // 若左子树中没有找到，同时也不是该节点，则一定在右子树中
     }
 
     /*
-     * 解法3：DFS (In-order traversal, Iteration) (解法2的非递归实现)
+     * 解法3：DFS (In-order traversal) (解法2的可读性改进版)
+     * - 思路：与解法2类似。
+     * - 实现：
+     *   - 解法2中用 count 记录遍历过的节点个数，递归函数返回找到的解；
+     *   - 而该解法中用 res 记录找到的解，而递归函数返回最新的 k 值。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    private static int res;
+
+    public static int kthSmallest3(TreeNode root, int k) {
+        dfs3(root, k);
+        return res;
+    }
+
+    private static int dfs3(TreeNode root, int k) {
+        if (root == null) return k;
+        k = dfs3(root.left, k);
+        if (k == 1) res = root.val;
+        k = dfs3(root.right, k - 1);
+        return k;
+    }
+
+    /*
+     * 解法4：DFS (In-order traversal, Iteration) (解法2的非递归实现)
      * - 时间复杂度 O(h+k)，解释同解法2；
      * - 空间复杂度 O(h+k) ∵ stack 中最多有 h+k 个节点。
      * */
-    public static int kthSmallest3(TreeNode root, int k) {
+    public static int kthSmallest4(TreeNode root, int k) {
         Stack<TreeNode> stack = new Stack<>();
         TreeNode curr = root;
 
@@ -93,12 +116,12 @@ public class L230_KthSmallestElementInBST {
     }
 
     /*
-     * 解法4：BFS + Max heap
+     * 解法5：BFS + Max heap
      * - 思路：类似解法 L215_KthLargestElementInArray 解法2，开辟 k+1 大小的最小堆，然后在遍历 BST 的过程中将所有大于第
      *    k 个节点的节点从堆中移出，最后留在堆顶的即是第 k 小的节点。
      * - 时间复杂度 O(nlogk)，空间复杂度 O(n)。
      * */
-    public static int kthSmallest4(TreeNode root, int k) {
+    public static int kthSmallest5(TreeNode root, int k) {
         PriorityQueue<TreeNode> pq = new PriorityQueue<>(k + 1, (a, b) -> b.val - a.val);  // max heap
         pq.offer(root);
         Queue<TreeNode> q = new LinkedList<>();
@@ -132,15 +155,15 @@ public class L230_KthSmallestElementInBST {
          *       2
          * */
 
-        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, null, 1});
-        log(kthSmallest3(t2, 3));
+        TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 7, 2, 4, 6, 8, 1});
+        log(kthSmallest3(t2, 6));
         /*
-         * expects 3.
-         *          5
-         *         / \
-         *        3   6
-         *       / \
-         *      2   4
+         * expects 6.
+         *           5
+         *         /   \
+         *        3     7
+         *       / \   / \
+         *      2   4 6   8
          *     /
          *    1
          * */
