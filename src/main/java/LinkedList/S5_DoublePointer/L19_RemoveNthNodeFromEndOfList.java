@@ -17,11 +17,10 @@ public class L19_RemoveNthNodeFromEndOfList {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode removeNthFromEnd(ListNode head, int n) {
-        if (head == null || n < 1) return null;
-        int len = getLength(head);
+        int l = getLength(head);
 
-        if (len < n) return head;
-        int m = len - n;   // 从头开始第 m 个元素即是待删除元素（m 从 0 开始）
+        if (l < n) return head;
+        int m = l - n;   // 从头开始第 m 个元素即是待删除元素（m 从 0 开始）
 
         ListNode dummyHead = new ListNode();  // ∵ 待删除的可能是第一个节点 ∴ 需要 dummyHead
         dummyHead.next = head;
@@ -49,7 +48,7 @@ public class L19_RemoveNthNodeFromEndOfList {
      *   1. 待删除的节点4 ∴ 只要获得节点3即可完成删除；
      *   2. 虽然不知道链表长度，但能知道节点3与 null 的差距是 n+1 ∴ 可以利用这个差距，设置两个初始差距为 n+1 的指针，然后
      *      让他们同时移动，当右指针到达 null 时，左指针即指向节点3；
-     * - 💎技巧：👆这个利用节点与 null 之间的距离差移动指针，来找到待删除节点的前一节点，这个技巧很妙。
+     * - 💎 技巧：👆这个利用节点与 null 之间的距离差移动指针，来找到待删除节点的前一节点，这个技巧很妙。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode removeNthFromEnd2(ListNode head, int n) {
@@ -73,17 +72,42 @@ public class L19_RemoveNthNodeFromEndOfList {
         return dummnyHead.next;
     }
 
+    /*
+     * 解法3：递归
+     * - 思路：先递归到底，在递归回程上的第 n 个节点就是链表的倒数第 n 个节点。
+     * - 实现：为了在回程时数出第 n 个节点，每层递归函数一个 Pair<新链表的头结点, 该头结点是倒数第几个节点>。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static ListNode removeNthFromEnd3(ListNode head, int n) {
+        Pair<ListNode, Integer> p = helper3(head, n);
+        return p.getKey();
+    }
+
+    private static Pair<ListNode, Integer> helper3(ListNode head, int n) {
+        if (head == null || head.next == null)
+            return new Pair<>(n == 1 ? null : head, 1);  // 若 n=1，则跳过最后一个节点返回 null
+
+        Pair<ListNode, Integer> p = helper3(head.next, n);
+        ListNode tail = p.getKey();
+        int count = p.getValue();
+
+        if (count + 1 == n)  // 若当前节点就是倒数第 n 个节点，则跳过当前节点返回 tail
+            return new Pair<>(tail, count + 1);
+        head.next = tail;    // 若不是，则需手动链接上层递归返回的节点（∵ 有可能上层递归中已找到并跳过了头结点）
+        return new Pair<>(head, count + 1);
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(removeNthFromEnd2(l1, 2));  // expects 1->2->3->5->NULL
+        printLinkedList(removeNthFromEnd3(l1, 2));  // expects 1->2->3->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3});
-        printLinkedList(removeNthFromEnd2(l2, 3));  // expects 2->3->NULL
+        printLinkedList(removeNthFromEnd3(l2, 3));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1});
-        printLinkedList(removeNthFromEnd2(l3, 2));  // expects 1->NULL (n 越界的 case)
+        printLinkedList(removeNthFromEnd3(l3, 2));  // expects 1->NULL (n 越界的 case)
 
         ListNode l4 = createLinkedList(new int[]{});
-        printLinkedList(removeNthFromEnd2(l4, 2));  // expects NULL
+        printLinkedList(removeNthFromEnd3(l4, 2));  // expects NULL
     }
 }
