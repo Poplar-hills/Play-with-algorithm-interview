@@ -5,7 +5,7 @@
   - L11_ContainerWithMostWater
   - L3_LongestSubstringWithoutRepeatingCharacters
 
-- LinkedList (10/22): L2, L83, L86, L92, L206, L21, L82, L24, L25, L237
+- LinkedList (11/22): L2, L83, L86, L92, L206, L21, L82, L24, L25, L237, L19
   - L92_ReverseLinkedListII
   - L82_RemoveDuplicatesFromSortedListII
   - L25_ReverseNodesInKGroup

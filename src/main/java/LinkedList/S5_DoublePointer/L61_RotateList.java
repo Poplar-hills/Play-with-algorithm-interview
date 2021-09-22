@@ -22,11 +22,11 @@ public class L61_RotateList {
     public static ListNode rotateRight(ListNode head, int k) {
         if (head == null || k == 0) return head;  // 若只有1个节点则直接返回
 
-        int len = getLength(head);
-        int numToRotate = k % len;          // 去掉套圈后需要移动的节点个数
+        int l = getLength(head);
+        int numToRotate = k % l;            // 去掉套圈后需要移动的节点个数
         if (numToRotate == 0) return head;  // 若去掉套圈后没有需要移动的节点则直接返回
 
-        int numToStay = len - numToRotate;  // 不需移动的节点个数
+        int numToStay = l - numToRotate;    // 不需移动的节点个数
         ListNode prev = head;
 
         while (numToStay != 1) {            // 找到待截断链表的前一个节点
@@ -46,20 +46,21 @@ public class L61_RotateList {
 
     private static int getLength(ListNode head) {
         int len = 0;
-        for ( ; head != null; head = head.next) len++;
+        for (; head != null; head = head.next) len++;
         return len;
     }
 
     /*
      * 解法2：截断移动（双指针版本）
      * - 思路：与解法1一致。
-     * - 实现：“找到待截断链表的上一节点”的另一个思路是使用双指针技巧，例如已知待截取的节点个数为2：
+     * - 实现：采用 L19_RemoveNthNodeFromEndOfList 解法2的思路，使用双指针技巧实现“找到待截断链表的上一节点”。例如已知待截取
+     *   的节点个数为2：
      *       1 -> 2 -> 3 -> 4 -> 5
-     *       l         r              - 设置两个指针 l,r，让 r 向右移动2步
+     *       l         r              - 设置两个指针 l,r，先让 r 向右移动2步，使得 r - l = 2
      *       1 -> 2 -> 3 -> 4 -> 5
-     *                 l         r    - 让 l,r 保持同时移动，当 r 到达尾节点时 l 一定停在截断点的上一节点。
+     *                 l         r    - 让 l,r 同步移动，当 r 到达尾节点时，l 一定停在截断点的上一节点。
      *       1 -> 2    3 -> 4 -> 5
-     *       ↑___________________|    - 让 r.next = head；h = l.next；l.next = null 从而得到新链表 h。
+     *       ↑___________________|    - 让 r.next = head；h = l.next；l.next = null，从而得到新链表 h。
      *                 l    h    r
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
@@ -71,12 +72,12 @@ public class L61_RotateList {
         for (int i = 0; i < k; i++)  // 让 l, r 相距 k 步
             r = r.next;
 
-        while (r.next != null) {     // 同时移动双指针，直到 r 抵达尾节点（而非像 L19 中抵达 null）
+        while (r.next != null) {     // 同步移动双指针，直到 r 抵达尾节点（而非像 L19 中抵达 null）
             r = r.next;
             l = l.next;
         }
 
-        r.next = head;               // 此时 l 一定停在截断点的上一节点，此时进行截断
+        r.next = head;               // 此时 l 一定停在截断点的上一节点，此时可进行截断
         head = l.next;
         l.next = null;
         return head;
