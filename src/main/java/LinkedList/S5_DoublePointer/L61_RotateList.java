@@ -102,7 +102,7 @@ public class L61_RotateList {
      *      - 当前链表的头结点：可通过递归返回值获得。
      * */
 
-    private static int numToRotate;
+    private static int numToRotate;     // 声明在外部
 
     public static ListNode rotateRight3(ListNode head, int k) {
         if (head == null || k == 0) return head;
@@ -111,14 +111,14 @@ public class L61_RotateList {
     }
 
     private static ListNode helper(ListNode head, ListNode curr, ListNode prev) {
-        if (curr == null) return head;           // 递归到底时返回原链表
+        if (curr == null) return head;  // 递归到底时返回原链表
 
-        ListNode currHead = helper(head, curr.next, curr);
-        if (--numToRotate < 0) return currHead;  // 只要 numToRotate >= 0 就将尾节点移到链表头部
+        ListNode currHead = helper(head, curr.next, curr);  // 原链表的头节点通过递归一直传递下去（这样才能在需要的时候返回）
+        if (--numToRotate < 0) return currHead;  // 只要 numToRotate 还 >= 0，就将尾节点移到链表头部
 
-        prev.next = null;                        // 断开最后一个节点与前一个节点的链接
-        curr.next = currHead;                    // 移动到链表头部
-        return curr;                             // 返回新链表
+        prev.next = null;               // 断开上一个节点与当前节点的链接
+        curr.next = currHead;           // 将当前节点移动到链表头部
+        return curr;                    // 返回新链表
     }
 
     public static void main(String[] args) {
