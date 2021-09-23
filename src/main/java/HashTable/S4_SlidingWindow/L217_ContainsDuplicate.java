@@ -29,6 +29,7 @@ public class L217_ContainsDuplicate {
      * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
      * */
     public static boolean containsDuplicate2(int[] nums) {
+        if (nums == null || nums.length < 2) return false;
         Arrays.sort(nums);
         for (int i = 1; i < nums.length; i++)
             if (nums[i] == nums[i - 1])
