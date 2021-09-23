@@ -27,25 +27,22 @@ public class L61_RotateList {
         if (numToRotate == 0) return head;  // 若去掉套圈后没有需要移动的节点则直接返回
 
         int numToStay = l - numToRotate;    // 不需移动的节点个数
-        ListNode prev = head;
-
-        while (numToStay != 1) {            // 找到待截断链表的前一个节点
+        ListNode prev = head;               // ∵ 要截断链表 ∴ 要找到截断处的上一个节点
+        for (int i = 1; i < numToStay; i++)
             prev = prev.next;
-            numToStay--;
-        }
 
-        ListNode rest = prev.next, conn = rest;
+        ListNode newHead = prev.next, conn = newHead;
         prev.next = null;                   // 截断
 
         while (conn.next != null)           // 获取待截断链表的最后一个节点
             conn = conn.next;
         conn.next = head;                   // 链接成新链表
 
-        return rest;
+        return newHead;
     }
 
     private static int getLength(ListNode head) {
-        int len = 0;
+        int len = 0;       // 注意 ∵ head 可能为 null ∴ len 不能从1开始 ∴ 下面循环的退出条件也得是 head != null
         for (; head != null; head = head.next) len++;
         return len;
     }
@@ -56,28 +53,28 @@ public class L61_RotateList {
      * - 实现：采用 L19_RemoveNthNodeFromEndOfList 解法2的思路，使用双指针技巧实现“找到待截断链表的上一节点”。例如已知待截取
      *   的节点个数为2：
      *       1 -> 2 -> 3 -> 4 -> 5
-     *       l         r              - 设置两个指针 l,r，先让 r 向右移动2步，使得 r - l = 2
+     *       l         r              - 设置两个指针 l,r，并先让 r 向右移动2步，使得 r - l = 2
      *       1 -> 2 -> 3 -> 4 -> 5
      *                 l         r    - 让 l,r 同步移动，当 r 到达尾节点时，l 一定停在截断点的上一节点。
-     *       1 -> 2    3 -> 4 -> 5
-     *       ↑___________________|    - 让 r.next = head；h = l.next；l.next = null，从而得到新链表 h。
-     *                 l    h    r
+     *       1 -> 2 -> 3    4 -> 5
+     *       ↑___________________|    - 让 r.next = head；n = l.next；l.next = null，从而得到新链表 n。
+     *                 l    n    r
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode rotateRight2(ListNode head, int k) {
         if (head == null || k == 0) return null;
-        k %= getLength(head);
+        int numToRotate = k % getLength(head);
 
         ListNode l = head, r = head;
-        for (int i = 0; i < k; i++)  // 让 l, r 相距 k 步
+        for (int i = 0; i < numToRotate; i++)  // 让 l, r 相距 numToRotate 步
             r = r.next;
 
-        while (r.next != null) {     // 同步移动双指针，直到 r 抵达尾节点（而非像 L19 中抵达 null）
+        while (r.next != null) {  // 同步移动双指针，直到 r 抵达尾节点（而非像 L19 中抵达 null）
             r = r.next;
             l = l.next;
         }
 
-        r.next = head;               // 此时 l 一定停在截断点的上一节点，此时可进行截断
+        r.next = head;            // 此时 l 一定停在截断点的上一节点，此时可进行截断
         head = l.next;
         l.next = null;
         return head;
@@ -126,18 +123,18 @@ public class L61_RotateList {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight3(l1, 2));   // expects 4->5->1->2->3->NULL
+        printLinkedList(rotateRight(l1, 2));   // expects 4->5->1->2->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight3(l2, 7));   // expects 4->5->1->2->3->NULL
+        printLinkedList(rotateRight(l2, 7));   // expects 4->5->1->2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight3(l3, 0));   // expects 1->2->3->4->5->NULL
+        printLinkedList(rotateRight(l3, 0));   // expects 1->2->3->4->5->NULL
 
         ListNode l4 = createLinkedList(new int[]{1});
-        printLinkedList(rotateRight3(l4, 1));   // expects 1->NULL
+        printLinkedList(rotateRight(l4, 1));   // expects 1->NULL
 
         ListNode l5 = createLinkedList(new int[]{1});
-        printLinkedList(rotateRight3(l5, 99));  // expects 1->NULL
+        printLinkedList(rotateRight(l5, 99));  // expects 1->NULL
     }
 }
