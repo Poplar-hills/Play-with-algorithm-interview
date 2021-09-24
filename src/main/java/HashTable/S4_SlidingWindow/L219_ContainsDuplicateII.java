@@ -15,31 +15,25 @@ import static Utils.Helpers.log;
 
 public class L219_ContainsDuplicateII {
     /*
-     * 解法1：查找表 Map + 滑动窗口
+     * 解法1：数组滑动窗口 + Map
      * - 思路：题中说"i 和 j 之差不超过 k"，可理解为有一个长度为 k 的窗口在数组上滑动，若窗口内存在重复元素即可返回 true。
      * - 实现：窗口采用双指针实现，“是否存在重复元素”的问题由 Map 来回答。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean containsNearbyDuplicate(int[] nums, int k) {
-        if (nums == null || nums.length < 2 || k <= 0)
-            return false;
+        if (nums == null || nums.length < 2 || k == 0) return false;
+        Set<Integer> window = new HashSet<>();
+        int l = 0, r = 0;                              // 窗口大小 [l,r)，r 指向待进入窗口的下一个元素
 
-        Map<Integer, Integer> freq = new HashMap<>();
-        int l = 0, r = 0;
+        for (; r < nums.length && r < k; r++) {        // 先将窗口长度扩展到 k（注意 nums.length < k 的情况）
+            if (window.contains(nums[r])) return true; // 该过程中若发现重复，则直接返回 true
+            window.add(nums[r]);
+        }
 
-        while (r < nums.length && r - l <= k)      // 先将窗口长度扩展到 k
-            freq.merge(nums[r++], 1, Integer::sum);
-
-        for (int f : freq.values())                // 查看此时窗口内是否有重复元素
-            if (f > 1)
-                return true;
-
-        while (r < nums.length) {                  // 开始让窗口以固定长度滑动
-            int left = nums[l], right = nums[r];
-            freq.merge(left, -1, Integer::sum);    // 将左边界的元素排除
-            freq.merge(right, 1, Integer::sum);    // 将右边界的元素纳入
-            if (freq.get(right) > 1) return true;  // 只需检查刚进入窗口的元素是否为重复即可
-            l++; r++;
+        while (r < nums.length) {                      // 开始让窗口以固定长度滑动
+            if (window.contains(nums[r])) return true;
+            window.add(nums[r++]);                     // 将左边界的元素排除
+            window.remove(nums[l++]);                  // 将右边界的元素纳入
         }
 
         return false;
