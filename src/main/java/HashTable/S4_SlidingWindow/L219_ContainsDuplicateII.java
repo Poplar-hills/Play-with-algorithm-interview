@@ -15,9 +15,9 @@ import static Utils.Helpers.log;
 
 public class L219_ContainsDuplicateII {
     /*
-     * 解法1：数组滑动窗口 + Map
+     * 解法1：数组滑动窗口 + Set
      * - 思路：题中说"i 和 j 之差不超过 k"，可理解为有一个长度为 k 的窗口在数组上滑动，若窗口内存在重复元素即可返回 true。
-     * - 实现：窗口采用双指针实现，“是否存在重复元素”的问题由 Map 来回答。
+     * - 实现：窗口采用双指针实现，“是否存在重复元素”的问题由 Set 来回答。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean containsNearbyDuplicate(int[] nums, int k) {
@@ -41,10 +41,9 @@ public class L219_ContainsDuplicateII {
 
     /*
      * 解法2：查找表 Set + 滑动窗口
-     * - 思路：与解法1一致。
-     * - 实现：要实现窗口其实不需要双指针，查找表本身就可以当做窗口，本解法中使用 Set：
-     *     1. 作为滑动窗口：Set 中只保存 k 个元素，即索引在 [i-k+1, i] 范围内的元素；
-     *     2. 来回答"有没有"的问题：检查当前元素是否存在于 Set 中。
+     * - 思路：与解法1略有不同，不再是窗口在 nums 上滑动，而是遍历 nums，将元素放到 Set 中尝试（即没有 l,r 指针滑动操作）。
+     *   1. Set 中最多只保存 k 个元素，即索引在 [i-k+1, i] 范围内的元素；
+     *   2. 通过将各元素放入 Set 中来回答"有没有"的问题：。
      * - 时间复杂度 O(n)，空间复杂度 O(k)。
      * */
     public static boolean containsNearbyDuplicate2(int[] nums, int k) {
@@ -53,7 +52,7 @@ public class L219_ContainsDuplicateII {
         for (int i = 0; i < nums.length; i++) {
             if (set.contains(nums[i])) return true;
             set.add(nums[i]);
-            if (set.size() == k + 1)         // Set 中元素个数达到 k+1 之前只添加不删除
+            if (set.size() == k + 1)         // Set 中元素个数达到 k+1 之前只添加不删除（巧妙之处）
                 set.remove(nums[i - k]);
         }
 
