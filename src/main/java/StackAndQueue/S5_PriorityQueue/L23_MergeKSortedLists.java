@@ -17,13 +17,13 @@ public class L23_MergeKSortedLists {
      *   1. 借助 PriorityQueue 进行堆排序；
      *   2. 借助 TreeSet 进行 BST 排序（但不适用该题 ∵ BST 不允许重复节点，且无法像 L347 解法3那样在 value 相同的情况下可再按 key 排序）；
      *   3. Merge sort（SEE：解法2、3、4）。
-     * - 实现：该解法采用方案1，使用 PriorityQueue 进行堆排序。
+     *   该解法采用方案1，使用 PriorityQueue 对所有节点进行堆排序。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。其中 n 为所有节点数。
      * */
     public static ListNode mergeKLists(ListNode[] lists) {
         PriorityQueue<ListNode> pq = new PriorityQueue<>((a, b) -> a.val - b.val);  // 基于 val 的最小堆
-        for (ListNode l : lists)            // 将所有链表的所有节点添加到 pq 中，O(nlogn) 操作
-            for (ListNode curr = l; curr != null; curr = curr.next)
+        for (ListNode head : lists)  // 将所有链表的所有节点添加到 pq 中，O(nlogn) 操作
+            for (ListNode curr = head; curr != null; curr = curr.next)
                 pq.offer(curr);
 
         ListNode dummyHead = new ListNode(), curr = dummyHead;
@@ -47,7 +47,7 @@ public class L23_MergeKSortedLists {
      * */
     public static ListNode mergeKLists2(ListNode[] lists) {
         if (lists.length == 0) return null;
-        for (int i = 1; i < lists.length; i++)           // 将 lists 中的所有链表 reduce 成一个链表
+        for (int i = 1; i < lists.length; i++)  // 将 lists 中的所有链表 reduce 成一个链表
             lists[0] = merge2Lists(lists[0], lists[i]);
         return lists[0];
     }
@@ -147,20 +147,25 @@ public class L23_MergeKSortedLists {
      * 解法5：使用 PriorityQueue 模拟 merge sort
      * - 思路：与解法1不同，该解法不一次性将所有节点放入 PriorityQueue 中排序，而是先将 k 个链表的头节点放入比较，之后不断将
      *   堆中最小的节点出队，再将其下一个节点入队，以此方式模拟 merge sort 过程。
+     * - 实现：与解法1不同，该解法不需要在最后让 curr.next = null ∵ 该解法不是一次性将整个链表的所有节点都放入 pq 中排序，
+     *   而是每次只放入下一个节点 ∴ 不会出现把同一个链表后面的节点放到前面的情况（例如解法1运行 test case 2 则会将得到：
+     *   -2 -----> -1 -----> -1 -----> -1，导致如果不让 curr.next = null，则第二个-1还连着最后一个-1导致成环）。
+     *              |         |         |
+     *          最后一个-1  第一个-1   第二个-1
      * - 时间复杂度 O(nlogk)，空间复杂度 O(k)。其中 k 为链表个数，n 为所有节点数。
      * */
     public static ListNode mergeKLists5(ListNode[] lists) {
         PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));  // 相当于 (a, b) -> a.val - b.val
-        for (ListNode l : lists)        // 把 k 个链表装入最小堆中，因此堆操作的复杂度为 O(logk)
-            if (l != null)              // 跳过空链表
-                pq.offer(l);            // 链表头节点进入堆中后会进行排序
+        for (ListNode head : lists)   // 把 k 个链表装入最小堆中，因此堆操作的复杂度为 O(logk)
+            if (head != null)         // 跳过空链表
+                pq.offer(head);       // 链表头节点进入堆中后会进行排序
 
         ListNode dummyHead = new ListNode(), curr = dummyHead;
-        while (!pq.isEmpty()) {         // 该循环会遍历所有节点，且每次会有出队、入队操作 ∴ 是 O(nlogk)
+        while (!pq.isEmpty()) {       // 该循环会遍历所有节点，且每次会有出队、入队操作 ∴ 是 O(nlogk)
             ListNode node = pq.poll();
             curr.next = node;
-            curr = curr.next;
             if (node.next != null) pq.offer(node.next);
+            curr = curr.next;
         }
 
         return dummyHead.next;
