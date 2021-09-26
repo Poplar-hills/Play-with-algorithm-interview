@@ -5,11 +5,12 @@
   - L11_ContainerWithMostWater
   - L3_LongestSubstringWithoutRepeatingCharacters
 
-- LinkedList (12/22): L2, L83, L86, L92, L206, L21, L82, L24, L25, L237, L19, L61
+- LinkedList (12/22): L2, L83, L86, L92, L206, L21, L82, L24, L25, L237, L19, L61, L23
   - L92_ReverseLinkedListII
   - L82_RemoveDuplicatesFromSortedListII
   - L25_ReverseNodesInKGroup
   - L61_RotateList
+  - L23_MergeKSortedLists
 
 - HashTable (13/20): L202, L205, L242, L290, L1, L15, S5, L49, L149, S4
   - L205_IsomorphicStrings
