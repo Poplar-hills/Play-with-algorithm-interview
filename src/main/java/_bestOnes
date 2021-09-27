@@ -19,13 +19,14 @@
   - L146_LRUCache
   - L460_LFUCache
 
-- StackAndQueue (13/18): S1, S2, L102, L103, L107, L127, L279, L23
+- StackAndQueue (14/18): S1, S2, L102, L103, L107, L127, L279, L23, L347
   - L341_FlattenNestedListIterator
   - L103_BinaryTreeZigzagLevelOrderTraversal
   - L107_BinaryTreeLevelOrderTraversalII
   - L127_WordLadder
   - L279_PerfectSquares
   - L23_MergeKSortedLists
+  - L347_TopKFrequentElements
 
 - BinaryTreeAndRecursion (12/19): L100, L101, L104, L110, S2, L113, L129, L113, L98, L230， L235
   - L101_SymmetricTree
