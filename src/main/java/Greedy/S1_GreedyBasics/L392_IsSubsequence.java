@@ -46,8 +46,8 @@ public class L392_IsSubsequence {
      * */
     public static boolean isSubsequence2(String s, String t) {
         int fromIdx = 0;
-        for (char c : s.toCharArray()) {
-            int i = t.indexOf(c, fromIdx);
+        for (char sChar : s.toCharArray()) {
+            int i = t.indexOf(sChar, fromIdx);
             if (i == -1) return false;
             fromIdx = i + 1;
         }
@@ -108,7 +108,7 @@ public class L392_IsSubsequence {
      *   - 对于条件1：为 t 构建一个字符字典，看 s 中的字符是否在字典中；
      *   - 对于条件2：在遍历 s 的过程中，查找并记录当前字符在 t 中的索引，若索引值单调增大则说明条件2满足。
      * - 实现：要同时实现以上这两点，可以：
-     *   1. 先为 t 构建一个 map: {字符 -> 索引列表}（∵ 是投建过程是顺序遍历 t ∴ 索引列表是有序的）；
+     *   1. 先为 t 构建一个 Map<字符, List<索引>>（∵ 是投建过程是顺序遍历 t ∴ 索引列表是有序的）；
      *   2. 设置索引指针 i，遍历 s：
      *      - 对于 s[0]，若其在 map 中，则获取对应索引列表中的第0个索引+1后赋给 i（后面搜索出的索引都得 > i 才能说明单调递增）；
      *      - 对于 s[1..]，同样先检查是否在 map 中，若在则在其对应的索引列表中二分搜索 i，若得到的插入点在索引列表右边，说明在
@@ -123,13 +123,13 @@ public class L392_IsSubsequence {
             map.put(t.charAt(i), list);
         }
 
-        int i = -1;                                 // 用于记录 s 中的字符在 t 中的索引，初始化为-1
-        for (char c : s.toCharArray()) {            // 遍历 s 中的字符
-            if (!map.containsKey(c)) return false;  // 检查条件1
-            List<Integer> list = map.get(c);        // 若满足则拿到 c 对应的索引列表
-            int j = binarySearch(list, i);          // 在索引列表中搜索以检查条件2（∵ 索引列表有序 ∴ 可二分搜索）
-            if (j < 0) j = -(j + 1);                // 若没找到则将 j 转换成插入点（insertion point）
-            if (j == list.size()) return false;     // 若插入点在最右边，说明 i > list 中的最大值，即 s 中该字符的个数多于 t 中该字符的个数
+        int i = -1;                                     // 用于记录 s 中的字符在 t 中的索引，初始化为-1
+        for (char sChar : s.toCharArray()) {            // 遍历 s 中的字符
+            if (!map.containsKey(sChar)) return false;  // 检查条件1
+            List<Integer> list = map.get(sChar);        // 若满足则拿到 sChar 对应的索引列表
+            int j = binarySearch(list, i);              // 在索引列表中搜索以检查条件2（∵ 索引列表有序 ∴ 可二分搜索）
+            if (j < 0) j = -(j + 1);                    // 若没找到则将 j 转换成插入点（insertion point）
+            if (j == list.size()) return false;         // 若插入点在最右边，说明 i > list 中的最大值，即 s 中该字符的个数多于 t 中该字符的个数
             i = list.get(j) + 1;
         }
 
