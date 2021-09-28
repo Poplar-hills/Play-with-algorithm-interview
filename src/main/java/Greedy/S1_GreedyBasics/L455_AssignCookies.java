@@ -81,22 +81,23 @@ public class L455_AssignCookies {
      * - 思路：要让最多的小朋友开心，只需为每个小朋友从饼干中找到 ≥ 且最接近其贪心指数的饼干（即 >= g[i] 的最小 s[j]），这可以
      *   联想到 BST 上的 ceil 操作（在树上查找大于某个值的最小节点），进而可知有这种操作的数据结构就是 TreeMap。∴ 采用 TreeMap
      *   作为该解法的辅助数据结构，并使用其上的 ceilingKey() 方法。
+     * - 语法：TreeMap 上的是 .ceilingKey() 方法；TreeSet 上的是 .ceiling() 方法（SEE: L220_ContainsDuplicateIII）。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(m)，其中 n = len(g), m = len(s)。
      * */
     public static int findContentChildren3(int[] g, int[] s) {
-        TreeMap<Integer, Integer> tree = new TreeMap<>();  // ∵ 要用到 ceilingKey() 方法 ∴ 接口和实现都得是 TreeMap
+        TreeMap<Integer, Integer> freqTree = new TreeMap<>();  // ∵ 要用到 .ceilingKey() 方法 ∴ 接口和实现都得是 TreeMap
         int count = 0;
 
-        for (int size : s)                           // 将所有饼干添加进 tree 并累计个数，O(mlogm)
-            tree.put(size, tree.getOrDefault(size, 0) + 1);
+        for (int size : s)     // 为饼干数组用 TreeMap 构建 frequency map，O(mlogm)
+            freqTree.put(size, freqTree.getOrDefault(size, 0) + 1);
 
-        for (int greed : g) {                        // O(nlogn)
-            Integer gSize = tree.ceilingKey(greed);  // 从 tree 上找 ≥ greed 的所有 size 中最小的那个，O(logn)
-            if (gSize != null) {
+        for (int greed : g) {  // O(nlogn)
+            Integer sCeilCount = freqTree.ceilingKey(greed);  // 从 freqTree 上找 ≥ greed 的所有 size 中最小的那个，O(logn)
+            if (sCeilCount != null) {                         // 注意 .ceilingKey() 返回类型是 Integer ∵ 可能为 null
                 count++;
-                tree.put(gSize, tree.get(gSize) - 1);
-                if (tree.get(gSize) == 0)
-                    tree.remove(gSize);
+                freqTree.put(sCeilCount, freqTree.get(sCeilCount) - 1);
+                if (freqTree.get(sCeilCount) == 0)
+                    freqTree.remove(sCeilCount);
             }
         }
 
