@@ -34,6 +34,7 @@ public class L509_FibonacciNumber {
 
     /*
      * 解法1：Recursion + Memoization（记忆化搜索）
+     * - 思路：自上而下，层层递归分解，并在过程中缓存每个子问题的解。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int fib1(int n) {
@@ -64,7 +65,7 @@ public class L509_FibonacciNumber {
 
     /*
      * 解法3：DP
-     * - 思路：先解决最基本问题，再从最基本问题层层递推出 n 为更大值时的解。
+     * - 思路：自下而上，先解决最基本问题，再从最基本问题层层递推出 n 为更大值时的解。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。相比解法1、2，该解法在时间、空间效率上的统计效率都更高，因为：
      *   1. 没有递归，所以没有系统栈空间的消耗；
      *   2. 自下而上求解，使得 cache 中的每一项都只被访问1次（解法1、2中会计算一次但被访问多次）。
@@ -83,12 +84,12 @@ public class L509_FibonacciNumber {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int fib4(int n) {
-        Map<Integer, Integer> cache = new HashMap<>();
-        cache.put(0, 0);
-        cache.put(1, 1);
-        for (int i = 2; i <= n; i++)  // cache 中放入 fib(0), fib(1) 后再从小到大逐个计算更大的 n 值
-            cache.put(i, cache.get(i - 1) + cache.get(i - 2));
-        return cache.get(n);
+        Map<Integer, Integer> dpMap = new HashMap<>();
+        dpMap.put(0, 0);
+        dpMap.put(1, 1);
+        for (int i = 2; i <= n; i++)  // dpMap 中放入 fib(0), fib(1) 后再从小到大逐个计算更大的 n 值
+            dpMap.put(i, dpMap.get(i - 1) + dpMap.get(i - 2));
+        return dpMap.get(n);
     }
 
     /*
@@ -100,15 +101,15 @@ public class L509_FibonacciNumber {
      * */
     public static int fib5(int n) {
         if (n <= 1) return n;
-        int prev = 0, curr = 1;  // prev、curr 分别初始化为 f(0)、f(1) 的解
+        int prev2 = 0, prev1 = 1;  // prev2、prev1 分别初始化为 f(0)、f(1) 的解
 
         for (int i = 2; i <= n; i++) {
-            int sum = curr + prev;
-            prev = curr;
-            curr = sum;
+            int curr = prev1 + prev2;
+            prev2 = prev1;
+            prev1 = curr;
         }
 
-        return curr;
+        return prev1;
     }
 
     public static void main(String[] args) {
