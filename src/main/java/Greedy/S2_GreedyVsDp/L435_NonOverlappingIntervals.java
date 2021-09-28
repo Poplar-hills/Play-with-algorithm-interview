@@ -95,30 +95,17 @@ public class L435_NonOverlappingIntervals {
     }
 
     public static void main(String[] args) {
-        log(eraseOverlapIntervals2(new int[][]{
-            new int[]{2, 3},
-            new int[]{1, 2},
-            new int[]{3, 4},
-            new int[]{1, 3}
-        }));  // expects 1. Remove [1,3]
+        log(eraseOverlapIntervals2(new int[][]{{2, 3}, {1, 2}, {3, 4}, {1, 3}}));
+        // expects 1. Remove [1,3]
 
-        log(eraseOverlapIntervals2(new int[][]{
-            new int[]{2, 3},
-            new int[]{0, 2},
-            new int[]{0, 1},
-            new int[]{0, 3}
-        }));  // expects 2. Remove [0,2],[0,3] or [0,1],[0,3]
+        log(eraseOverlapIntervals2(new int[][]{{2, 3}, {0, 2}, {0, 1}, {0, 3}}));
+        // expects 2. Remove [0,2],[0,3] or [0,1],[0,3]
 
-        log(eraseOverlapIntervals2(new int[][]{
-            new int[]{1, 2},
-            new int[]{1, 2},
-            new int[]{1, 2}
-        }));  // expects 2. Remove two [1,2]
+        log(eraseOverlapIntervals2(new int[][]{{1, 2}, {1, 2}, {1, 2}}));
+        // expects 2. Remove two [1,2]
 
-        log(eraseOverlapIntervals2(new int[][]{
-            new int[]{1, 2},
-            new int[]{2, 3}
-        }));  // expects 0
+        log(eraseOverlapIntervals2(new int[][]{{1, 2}, {2, 3}}));
+        // expects 0
     }
 }
 
