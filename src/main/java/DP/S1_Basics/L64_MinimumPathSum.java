@@ -122,30 +122,25 @@ public class L64_MinimumPathSum {
 
         int[][] cache = new int[grid.length][grid[0].length];  // cache[r][c] 记录节点 [r,c] 到达右下角的 min path sum
         for (int[] row : cache)
-            Arrays.fill(row, Integer.MAX_VALUE);
+            Arrays.fill(row, -1);
 
-        return minPathSumFrom2(grid, 0, 0, cache);
+        return dfs2(grid, 0, 0, cache);
     }
 
-    private static int minPathSumFrom2(int[][] grid, int r, int c, int[][] cache) {
-        int w = grid.length;
-        int l = grid[0].length;
+    private static int dfs2(int[][] grid, int r, int c, int[][] cache) {
+        int m = grid.length;
+        int n = grid[0].length;
         int sum = grid[r][c];
 
-        if (r == w - 1 && c == l - 1)
-            return sum;
+        if (r == m - 1 && c == n - 1) return sum;
+        if (cache[r][c] != -1) return cache[r][c];
 
-        if (cache[r][c] != Integer.MAX_VALUE)
-            return cache[r][c];
+        if (r == m - 1)
+            return cache[r][c] = sum + dfs2(grid, r, c + 1, cache);
+        if (c == n - 1)
+            return cache[r][c] = sum + dfs2(grid, r + 1, c, cache);
 
-        if (r == w - 1)
-            return cache[r][c] = sum + minPathSumFrom2(grid, r, c + 1, cache);
-        if (c == l - 1)
-            return cache[r][c] = sum + minPathSumFrom2(grid, r + 1, c, cache);
-
-        return cache[r][c] = sum + Math.min(
-            minPathSumFrom2(grid, r + 1, c, cache),
-            minPathSumFrom2(grid, r, c + 1, cache));
+        return cache[r][c] = sum + Math.min(dfs2(grid, r + 1, c, cache), dfs2(grid, r, c + 1, cache));
     }
 
     /*
