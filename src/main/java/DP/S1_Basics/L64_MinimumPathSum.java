@@ -42,7 +42,7 @@ public class L64_MinimumPathSum {
 
     public static int minPathSum_1(int[][] grid) {
         int minSum = Integer.MAX_VALUE;
-        int w = grid.length, l = grid[0].length;
+        int m = grid.length, n = grid[0].length;
 
         Queue<Path> q = new LinkedList<>();
         q.offer(new Path(0, 0, grid[0][0]));
@@ -51,14 +51,14 @@ public class L64_MinimumPathSum {
             Path path = q.poll();
             int r = path.r, c = path.c, sum = path.sum;
 
-            if (r == w - 1 && c == l - 1) {      // 若已抵达右下角
+            if (r == m - 1 && c == n - 1) {      // 若已抵达右下角
                 minSum = Math.min(minSum, sum);  // 求最小的节点值之和
                 continue;
             }
 
-            if (c < l - 1)       // 若还没到最右一列，则入队右侧节点
+            if (c < n - 1)       // 若还没到最右一列，则入队右侧节点
                 q.offer(new Path(r, c + 1, sum + grid[r][c + 1]));
-            if (r < w - 1)       // 若还没到最后一行，则入队下方节点
+            if (r < m - 1)       // 若还没到最后一行，则入队下方节点
                 q.offer(new Path(r + 1, c, sum + grid[r + 1][c]));
         }
 
@@ -88,34 +88,32 @@ public class L64_MinimumPathSum {
      *     - ∵ f(2,2) 是右下角终点，再没有路可走 ∴ f(2,2) = 1；
      *     - ∵ 类似 f(2,0)、f(0,2) 的边缘节点只有一个方向可以走 ∴ f(2,0) = f(2,1); f(0,2) = f(1,2)；
      *     - f(1,0)、f(0,1) 都可以走到 f(1,1) ∴ 出现了重叠子问题，本解法中并未进行优化。
-     * - 时间复杂度 O(2^(l*w))，空间复杂度 O(l*w)。
+     * - 时间复杂度 O(2^(m*n))，空间复杂度 O(m*n)。
      * */
     public static int minPathSum_2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
-        return minPathSumFrom(grid, 0, 0);
+        return dfs(grid, 0, 0);
     }
 
-    private static int minPathSumFrom(int[][] grid, int r, int c) {
-        int w = grid.length;
-        int l = grid[0].length;
+    private static int dfs(int[][] grid, int r, int c) {
+        int m = grid.length;
+        int n = grid[0].length;
         int sum = grid[r][c];
 
-        if (r == w - 1 && c == l - 1)
+        if (r == m - 1 && c == n - 1)
             return sum;
-        if (r == w - 1)
-            return sum + minPathSumFrom(grid, r, c + 1);
-        if (c == l - 1)
-            return sum + minPathSumFrom(grid, r + 1, c);
+        if (r == m - 1)
+            return sum + dfs(grid, r, c + 1);
+        if (c == n - 1)
+            return sum + dfs(grid, r + 1, c);
 
-        return sum + Math.min(
-            minPathSumFrom(grid, r + 1, c),
-            minPathSumFrom(grid, r, c + 1));
+        return sum + Math.min(dfs(grid, r + 1, c), dfs(grid, r, c + 1));
     }
 
     /*
      * 解法2：DFS + Recursion + Memoization
      * - 思路：在超时解2的基础上加入 Memoization 进行优化，以避免重复计算重叠子问题。
-     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int minPathSum2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -151,25 +149,25 @@ public class L64_MinimumPathSum {
      *   出 f(w-2, l-2)…… 如此往复直到递推出 f(0, 0) 为止。
      * - 优化：该解法还可以再进行空间优化 —— ∵ 每一行的计算都只依赖于当前行右侧和下一行中的值 ∴ 可以采用类似 _ZeroOneKnapsack
      *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
-     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int minPathSum3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
-        int w = grid.length;
-        int l = grid[0].length;
+        int m = grid.length;
+        int n = grid[0].length;
 
-        int[][] dp = new int[w][l];
+        int[][] dp = new int[m][n];
         for (int[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
 
-        dp[w - 1][l - 1] = grid[w - 1][l - 1];  // 设置递推的起始值
+        dp[m - 1][n - 1] = grid[m - 1][n - 1];  // 设置递推的起始值
 
-        for (int r = w - 1; r >= 0; r--) {
-            for (int c = l - 1; c >= 0; c--) {  // 从终点 [w-1,l-1] 开始遍历，往左、往上进行递推
-                if (r != w - 1)
+        for (int r = m - 1; r >= 0; r--) {
+            for (int c = n - 1; c >= 0; c--) {  // 从终点 [m-1,n-1] 开始遍历，往左、往上进行递推
+                if (r != m - 1)
                     dp[r][c] = Math.min(dp[r][c], grid[r][c] + dp[r + 1][c]);
-                if (c != l - 1)
+                if (c != n - 1)
                     dp[r][c] = Math.min(dp[r][c], grid[r][c] + dp[r][c + 1]);
             }
         }
@@ -189,16 +187,16 @@ public class L64_MinimumPathSum {
      *          4  2  1                           2 → 7 → 6         2 → 7 → 6
      *                                                              ↓   ↓   ↓
      *                                                              6 → 8 → 7
-     * - 时间复杂度 O(l*w)，空间复杂度 O(1)。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
      * */
     public static int minPathSum4(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
-        int w = grid.length;
-        int l = grid[0].length;
+        int m = grid.length;
+        int n = grid[0].length;
 
-        for (int r = 0; r < w; r++) {
-            for (int c = 0; c < l; c++) {
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
                 if (r == 0 && c == 0) continue;
                 if (r == 0)
                     grid[0][c] += grid[0][c - 1];
@@ -209,7 +207,7 @@ public class L64_MinimumPathSum {
             }
         }
 
-        return grid[w - 1][l - 1];
+        return grid[m - 1][n - 1];
     }
 
     /*
@@ -222,23 +220,23 @@ public class L64_MinimumPathSum {
      *       1   5   1   -------->   1   5   1   -------->   2   5   1   --------->   2 → 7 → 6
      *                    1st row                 1st col    ↓            the rest    ↓   ↓   ↓
      *       4   2   1               4   2   1               6   2   1                6 → 8 → 7
-     * - 时间复杂度 O(l*w)，空间复杂度 O(1)。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
      * */
     public static int minPathSum5(int[][] grid) {
-        int w = grid.length;
-        int l = grid[0].length;
+        int m = grid.length;
+        int n = grid[0].length;
 
-        for (int r = 1; r < w; r++)        // Add up 1st row
+        for (int r = 1; r < m; r++)        // Add up 1st row
             grid[r][0] += grid[r - 1][0];
 
-        for (int c = 1; c < l; c++)        // Add up 1st column
+        for (int c = 1; c < n; c++)        // Add up 1st column
             grid[0][c] += grid[0][c - 1];
 
-        for (int r = 1; r < w; r++)        // Handle the rest
-            for (int c = 1; c < l; c++)
+        for (int r = 1; r < m; r++)        // Handle the rest
+            for (int c = 1; c < n; c++)
                 grid[r][c] += Math.min(grid[r - 1][c], grid[r][c - 1]);
 
-        return grid[w - 1][l - 1];
+        return grid[m - 1][n - 1];
     }
 
     public static void main(String[] args) {
