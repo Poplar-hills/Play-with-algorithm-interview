@@ -199,9 +199,9 @@ public class L64_MinimumPathSum {
             for (int c = 0; c < n; c++) {
                 if (r == 0 && c == 0) continue;
                 if (r == 0)
-                    grid[0][c] += grid[0][c - 1];
+                    grid[r][c] += grid[r][c - 1];
                 else if (c == 0)
-                    grid[r][0] += grid[r - 1][c];
+                    grid[r][c] += grid[r - 1][c];
                 else
                     grid[r][c] += Math.min(grid[r - 1][c], grid[r][c - 1]);
             }
