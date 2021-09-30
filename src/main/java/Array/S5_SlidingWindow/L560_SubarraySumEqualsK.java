@@ -97,7 +97,7 @@ public class L560_SubarraySumEqualsK {
      * - 思路：类似 L209_MinimumSizeSubarraySum。解法1中通过双指针遍历所有 subarray 的过程若用区间和的方式来表达：
      *   nums[l..r] 之和 = nums[0..r] 之和 - nums[0..l) 之和。即通过区间和相减的方式即可得到所有的 subarray 的元素之和
      *   （即 nums[l..r] 之和）。而要快速得到任意 nums[l..r] 之和，则要使用 Prefix Sum，用 preSums[i] 来表示 nums[0..i] 之和。
-     * - 💎 经验：Prefix Sum 本质是记录每个位置的累加和（cummulative sums），是求解“数组区间求和”（或叫“子串求和”）问题的常用技巧。
+     * - 💎 经验：Prefix Sum 本质是记录每个位置的累加和（cumulative sums），是求解“数组区间求和”（或叫“子串求和”）问题的常用技巧。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int subarraySum2(int[] nums, int k) {
@@ -133,17 +133,17 @@ public class L560_SubarraySumEqualsK {
      *         -----------------        sum=5, complement=0,  hit, count=3,  {0:1, 4:1, 6:1, 5:2, 10:1}
      *         ---------------------    sum=10, complement=5, hit, count=5,  {0:1, 4:1, 6:1, 5:2, 10:2}
      *
-     * - 💎 语义：查找表中键值对的语义是 {complement: frequency}，即能让当前 sum - complement = k 成立的 complement 个数
-     *   （即让 preSums[0,r] - preSums[0,l) = k 成立的 preSums[0,l) 个数），例如👆最后一行中，sum=10，complement=5，此时
-     *   complement 在 Map 中的值为2的含义就是"让 preSums[0,5] - preSums[0,l) = 5 成立的 preSums[0,l) 个数为2" ∴ 要把这
-     *   个个数加到结果 count 上（而不让 count++）。
+     * - 💎 语义：查找表中键值对的语义是 Map<complement, frequency>，即能让当前 sum - complement = k 成立的 complement
+     *   个数（即让 preSums[0,r] - preSums[0,l) = k 成立的 preSums[0,l) 个数），例如👆最后一行中，sum=10，complement=5，
+     *   此时 complement 在 Map 中的值为2的含义就是"让 preSums[0,5] - preSums[0,l) = 5 成立的 preSums[0,l) 个数为2"
+     *   ∴ 要把这个个数加到结果 count 上（而不让 count++）。
      * - 👉 总结：该题与 L437_PathSumIII 都是 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum3(int[] nums, int k) {
         int count = 0, sum = 0;
-        Map<Integer, Integer> map = new HashMap<>();  // 存储 {complement: frequency}
-        map.put(0, 1);                                // 先插入 {0:1}，用于 sum == k 的情况（例如👆sum=10 的情况）
+        Map<Integer, Integer> map = new HashMap<>();  // Map<complement, frequency>
+        map.put(0, 1);                                // 用于 sum == k 的情况（例如👆sum=10 的情况）
 
         for (int n : nums) {
             sum += n;
@@ -167,8 +167,8 @@ public class L560_SubarraySumEqualsK {
 
         for (int n : nums) {
             sum += n;
-            count += map.getOrDefault(sum - k, 0);  // 技巧：map.containsKey + map.get = map.getOrDefault
-            map.merge(sum, 1, Integer::sum);        // 技巧：相当于 map.put(sum, map.getOrDefault(sum,0) + 1)
+            count += map.getOrDefault(sum - k, 0);  // 技巧：.containsKey() + .get() = .getOrDefault()
+            map.merge(sum, 1, Integer::sum);  // 技巧：相当于 .put(sum, map.getOrDefault(sum,0) + 1)
         }
 
         return count;
