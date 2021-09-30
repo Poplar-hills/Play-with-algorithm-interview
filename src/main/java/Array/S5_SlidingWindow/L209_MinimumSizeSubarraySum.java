@@ -10,6 +10,7 @@ import static Utils.Helpers.log;
  *
  * - 题中要求找到元素之和 ≥ s 的最短子串，即对于子串 nums[l...r] 来说，需要在 sum(l...r) ≥ s 的基础上找到最小的 r-l+1。
  *   可见本题需要通过改变 l 和 r 来找到符合要求的子串。
+ * - 💎 注意：题中说 nums 中的元素都是 positive integers ∴ 不会有 L560 错误解中的问题，即可以考虑使用滑动窗口求解。
  * */
 
 public class L209_MinimumSizeSubarraySum {
