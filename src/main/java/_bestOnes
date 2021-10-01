@@ -29,7 +29,7 @@
   - L23_MergeKSortedLists
   - L347_TopKFrequentElements
 
-- BinaryTreeAndRecursion (12/19): L100, L101, L104, L110, S2, L113, L129, L113, L98, L230， L235
+- BinaryTreeAndRecursion (12/19): L100, L101, L104, L110, S2, L113, L129, L113, L98, L230, L235, L450
   - L101_SymmetricTree
   - L104_MaximumDepthOfBinaryTree
   - L110_BalancedBinaryTree
@@ -37,6 +37,7 @@
   - L129_SumRootToLeafNumbers
   - L113_PathSumIII
   - L98_ValidateBinarySearchTree
+  - L450_DeleteNodeInBST
 
 - RecursionAndBackTracking (10/19): L17, L93, L46, L47, L39, L40, L78, L90, L79, L130
   - L46_Permutations
