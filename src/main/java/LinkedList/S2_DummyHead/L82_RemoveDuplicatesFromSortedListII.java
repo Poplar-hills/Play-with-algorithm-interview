@@ -173,17 +173,33 @@ public class L82_RemoveDuplicatesFromSortedListII {
         }
     }
 
+    /*
+     * 解法6：递归 + Map 计数
+     * - 思路：在递归去程的路上使用 Map 统计节点值的频率，在回程时根据 Map 判断，若频率 > 1 则跳过。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static ListNode deleteDuplicates6(ListNode head) {
+        return helper6(head, new HashMap<>());
+    }
+
+    private static ListNode helper6(ListNode head, Map<Integer, Integer> freq) {
+        if (head == null) return null;
+        freq.merge(head.val, 1, Integer::sum);
+        head.next = helper6(head.next, freq);
+        return freq.get(head.val) > 1 ? head.next : head;
+    }
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 3, 3, 4, 4, 5});
-        printLinkedList(deleteDuplicates4(l1));  // expects 1->2->5->NULL
+        printLinkedList(deleteDuplicates6(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 1, 1, 2, 3});
-        printLinkedList(deleteDuplicates4(l2));  // expects 2->3->NULL
+        printLinkedList(deleteDuplicates6(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 1});
-        printLinkedList(deleteDuplicates4(l3));  // expects NULL
+        printLinkedList(deleteDuplicates6(l3));  // expects NULL
 
         ListNode l4 = createLinkedList(new int[]{});
-        printLinkedList(deleteDuplicates4(l4));  // expects NULL
+        printLinkedList(deleteDuplicates6(l4));  // expects NULL
     }
 }

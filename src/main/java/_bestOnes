@@ -14,6 +14,7 @@
 
 - HashTable (13/20): L202, L205, L242, L290, L1, L15, S5, L49, L149, S4
   - L205_IsomorphicStrings
+  - L1_2Sum
   - L15_3Sum
   - L49_GroupAnagrams
   - L220_ContainsDuplicateIII
