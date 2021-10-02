@@ -33,7 +33,7 @@ public class L15_3Sum {
         for (int i = 0; i < n; i++) {          // 固定元素 nums[i]
             for (int j = i + 1; j < n; j++) {  // 内部是标准的 2Sum（与 L1_TwoSum 解法5一致）；注意 j ∈ (i,..]
                 int complement = 0 - nums[i] - nums[j];
-                if (set.contains(complement))  // 内部的 set 是用来查找 complement 的，而非用来去重
+                if (set.contains(complement))  // 内部的 set 是用来查找 complement 的（即 L1 解法5中的 map）
                     resSet.add(Arrays.asList(nums[i], nums[j], complement));
                 set.add(nums[j]);
             }
@@ -46,8 +46,11 @@ public class L15_3Sum {
     /*
      * 解法2：3Sum -> 2Sum（指针对撞 + Set 去重）
      * - 思路：与解法1一致。
-     * - 实现：在“将 3Sum 转化为 2Sum 问题”的思路下可以采用 L1_TwoSum 中的任何一种实现来解决 2Sum 问题。本解法采用 L1 中
-     *   解法2的指针对撞实现。而 ∵ 指针对撞的前提也是数组有序 ∴ 同样需要先对 nums 排序。
+     * - 实现：
+     *   1. 在“将 3Sum 转化为 2Sum 问题”的思路下可以采用 L1_TwoSum 中的任何一种实现来解决 2Sum 问题。本解法采用 L1 中
+     *   解法2的指针对撞实现。
+     *   2. ∵ 指针对撞的前提也是数组有序 ∴ 同样需要先对 nums 排序。
+     *   3. ∵ 该题求的是具体三元组，而非 L1 中的索引数组 ∴ 无需像 L1 解法2中那样创建 indexedNums 数组。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> threeSum2(int[] nums) {
