@@ -135,7 +135,7 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法6：双查找表 + 匹配上次出现位置（最优解）
+     * 解法6：双查找表 + 匹配上次出现位置（🥇最优解）
      * - 思路：不对 s、t 中的字符进行互相映射，而是比较 s、t 中每个字符上次出现的位置是否相等。该思路比解法1-5都更简单，实现更简洁。
      * - 实现：利用 Java 中 map.put(...) 返回值的特性实现。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -157,8 +157,8 @@ public class L205_IsomorphicStrings {
     public static void main(String[] args) {
         log(isIsomorphic5("egg", "add"));      // expects true
         log(isIsomorphic5("paper", "title"));  // expects true
-        log(isIsomorphic5("foo", "bar"));      // expects false
-        log(isIsomorphic5("ab", "aa"));        // expects false
-        log(isIsomorphic5("aba", "baa"));      // expects false
+        log(isIsomorphic5("foo", "bar"));      // expects false（左边1个映射到右边2个的情况，o -> a、r）
+        log(isIsomorphic5("ab", "aa"));        // expects false（左边2个映射到右边1个的情况）
+        log(isIsomorphic5("aba", "baa"));      // expects false（左边1个映射到右边2个的情况）
     }
 }

@@ -130,16 +130,16 @@ public class L92_ReverseLinkedListII {
         }
 
         ListNode[] reversed = reverseBeforeN(curr, m, n);  // 将 [m,n] 内的链接反向
-        ListNode rHead = reversed[0];  // reverse 后的新头节点
-        ListNode rest = reversed[1];   // 第 n+1 个节点（即后面不需要反向的第一个节点）
-        prev.next = rHead;             // 第 m-1 个节点 -> reverse 后的新头节点
-        curr.next = rest;              // reverse 后的第 n 个节点 -> 第 n+1 个节点
+        ListNode newHead = reversed[0];  // reverse 后的新头节点
+        ListNode rest = reversed[1];     // 第 n+1 个节点（即后面不需要反向的第一个节点）
+        prev.next = newHead;             // 第 m-1 个节点 -> reverse 后的新头节点
+        curr.next = rest;                // reverse 后 curr 指向反转后的最后一个节点 ∴ 将 rest 链到其上
 
         return dummyHead.next;
     }
 
     private static ListNode[] reverseBeforeN(ListNode head, int i, int n) {
-        if (i == n) return new ListNode[]{head, head.next};  // 走到第 n 个节点时递归到底，返回第 n 个、第 n+1 个节点
+        if (i == n) return new ListNode[]{head, head.next};  // 走到第 n 个节点时递归到底，返回第 n、n+1 个节点
         ListNode[] reversed = reverseBeforeN(head.next, ++i, n);
         head.next.next = head;  // 将 A -> B -> C 改为 A <-> B   C
         head.next = null;       // 将 A <-> B   C 改为 A <- B   C

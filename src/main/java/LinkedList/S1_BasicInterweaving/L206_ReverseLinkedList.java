@@ -34,7 +34,7 @@ public class L206_ReverseLinkedList {
     }
 
     /*
-     * 解法2：遍历
+     * 解法2：遍历（🥇效率最优解）
      * - 思路：在遍历过程中不断反向两个节点间的链接。
      * - 时间复杂度 O(n)，空间复杂度 O(1)
      * */
@@ -52,7 +52,7 @@ public class L206_ReverseLinkedList {
     }
 
     /*
-     * 解法3：递归
+     * 解法3：递归（🥇最优雅解）
      * - 思路：当使用递归反向链表时，我们期望的过程是：
      *           0 -> 1 -> 2 -> 3 -> 4
      *                             ← 4
@@ -77,7 +77,7 @@ public class L206_ReverseLinkedList {
         ListNode newHead = reverseList2(head.next);
         head.next.next = head;
         head.next = null;
-        return newHead;
+        return newHead;    // 将上面递归返回的 newHead 直接返回
     }
 
     /*
@@ -98,7 +98,7 @@ public class L206_ReverseLinkedList {
             prev.next = stack.pop();
             prev = prev.next;
         }
-        prev.next = null;  // 注意要把最后一个节点的 next 置空（否则会与前一个节点形成双向链接）
+        prev.next = null;  // 👉 注意：要把最后一个节点的 next 置空（否则会与前一个节点形成双向链接）
 
         return dummyHead.next;
     }
