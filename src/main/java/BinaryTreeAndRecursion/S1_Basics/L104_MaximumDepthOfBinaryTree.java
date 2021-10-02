@@ -29,7 +29,7 @@ public class L104_MaximumDepthOfBinaryTree {
 
     public static int maxDepth(TreeNode root) {
         if (root == null) return 0;
-        maxDepth = Integer.MIN_VALUE;
+        maxDepth = 0;
         helper(root, 1);
         return maxDepth;
     }
@@ -106,7 +106,8 @@ public class L104_MaximumDepthOfBinaryTree {
     /*
      * 解法5：BFS（解法4的简化版）
      * - 思路：与解法4一致。
-     * - 实现：一次性将 q 中同一层的节点都消费完后让 maxDepth++。
+     * - 实现：一次性将 q 中同一层的节点都消费完后让 maxDepth++。这样做的好处是无需在 q 中存储层级深度信息，只要一层遍历完成
+     *   就可以 maxDepth++。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth5(TreeNode root) {
