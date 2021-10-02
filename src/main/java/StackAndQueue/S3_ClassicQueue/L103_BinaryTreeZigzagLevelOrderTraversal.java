@@ -23,18 +23,18 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
     public static List<List<Integer>> zigzagLevelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
-        helper(root, res, 0);
+        dfs(root, res, 0);
         reverseOddLists(res);
         return res;
     }
 
-    private static void helper(TreeNode node, List<List<Integer>> res, int level) {
+    private static void dfs(TreeNode node, List<List<Integer>> res, int level) {
         if (node == null) return;
         if (level == res.size())
             res.add(new ArrayList<>());
         res.get(level).add(node.val);
-        helper(node.left, res, level + 1);
-        helper(node.right, res, level + 1);
+        dfs(node.left, res, level + 1);
+        dfs(node.right, res, level + 1);
     }
 
     private static void reverseOddLists(List<List<Integer>> res) {
@@ -88,11 +88,11 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
     public static List<List<Integer>> zigzagLevelOrder3(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         if (root == null) return res;
-        helper3(root, 0, res);
+        dfs3(root, 0, res);
         return res;
     }
 
-    private static void helper3(TreeNode node, int level, List<List<Integer>> res) {
+    private static void dfs3(TreeNode node, int level, List<List<Integer>> res) {
         if (node == null) return;
         if (level == res.size())
             res.add(new ArrayList<>());
@@ -100,8 +100,8 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
             res.get(level).add(node.val);
         else
             res.get(level).add(0, node.val);
-        helper3(node.left, level + 1, res);
-        helper3(node.right, level + 1, res);
+        dfs3(node.left, level + 1, res);
+        dfs3(node.right, level + 1, res);
     }
 
     /*
