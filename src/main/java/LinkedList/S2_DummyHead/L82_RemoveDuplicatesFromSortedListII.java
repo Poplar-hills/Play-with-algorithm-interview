@@ -97,11 +97,11 @@ public class L82_RemoveDuplicatesFromSortedListII {
      * - 实现：先递归到底，在回程时决定返回、跳过哪个节点。∵ 在返回上一层时需要让上一层知道是否已经出现了重复节点，从而删除其中
      *   一个（不能两个都删掉，否则再碰到一个重复节点就无法删除了）∴ 需要在返回上一层时加入标志位：若标志位为 true 则删除上层
      *   返回的头节点：
-     *        D -> 2 -> 3 -> 3 -> 4                      D -> 1 -> 1 -> 1 -> 2
+     *            2 -> 3 -> 3 -> 4                           1 -> 1 -> 1 -> 2
      *                         ← (4, false)                               ← (2, false)
      *                    ← (3->4, false)                            ← (1->2, false)
      *               ← (3->4，true)                             ← (1->2, true)
-     *          ← (2->4，false)                            ← (1->2, true)
+     *          ← (2->4，false)                            ← (1->2, true)    - 最后如果还是 true 则再跳过一个节点，只返回2
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode deleteDuplicates3(ListNode head) {
@@ -118,8 +118,8 @@ public class L82_RemoveDuplicatesFromSortedListII {
         ListNode next = pair.getKey();
         boolean foundDuplicate = pair.getValue();
 
-        if (head.val == next.val)  // 若发现重复节点，则跳过当前 head 节点，并标志位置为 true
-            return new Pair<>(next, true);
+        if (head.val == next.val)           // 若发现重复节点
+            return new Pair<>(next, true);  // 则跳过当前 head 节点，并标志位置为 true
         head.next = foundDuplicate ? next.next : next;  // 若未发现重复节点，则看标志位（可能真的没有重复节点，也可能
         return new Pair<>(head, false);                 // 当前节点为最后一个重复节点）
     }
@@ -157,14 +157,14 @@ public class L82_RemoveDuplicatesFromSortedListII {
      * 解法5：递归 + 迭代
      * - 思路：采用递归 + 迭代的方式，在递归去程路上检查是否与下一个节点重复，若是则通过 while 走到最后一个重复节点上，并从对
      *   其后面的节点继续递归（相当于跳过了所有重复节点）；若否的话则正常递归下去。
-     * - 💎 技巧：这种递归 + 迭代的实现其实非常 straightforward。
+     * - 👉 技巧：这种递归 + 迭代的实现其实非常 straightforward。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode deleteDuplicates5(ListNode head) {
         if (head == null || head.next == null) return head;
 
         if (head.val == head.next.val) {
-            while (head.next != null && head.next.val == head.val)  // 通过 while 循环跳过 val 相同的节点
+            while (head.next != null && head.val == head.next.val)  // 通过 while 循环跳过 val 相同的节点
                 head = head.next;
             return deleteDuplicates5(head.next);
         } else {
