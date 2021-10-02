@@ -124,14 +124,14 @@ public class L1_TwoSum {
      *   则在遍历 i 之后的元素时一定会遇到该 complement ∴ 无需像解法3中那样一次性将 nums 的所有元素放入 map，再去挨个检查
      *   map 中是否有 nums[i] 的 complement，只需在一遍遍历过程中一边检查 complement 一边插入元素即可：
      *       例如：nums=[4, -1, -3, 7]，target=6：
-     *                  ↑               - complement=2，map 中没有 ∴ 插入 map（{4:0}）
-     *                      ↑           - complement=7，map 中没有 ∴ 插入 map（{4:0, -1:1}）
-     *                          ↑       - complement=9，map 中没有 ∴ 插入 map（{4:0, -1:1, -3:2}）
+     *                  ↑               - complement=2，map 中没有 ∴ 插入 map, map={4:0}
+     *                      ↑           - complement=7，map 中没有 ∴ 插入 map, map={4:0, -1:1}
+     *                          ↑       - complement=9，map 中没有 ∴ 插入 map, map={4:0, -1:1, -3:2}
      *                             ↑    - complement=-1，map 中有 ∴ 返回找到的解
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int[] twoSum5(int[] nums, int target) {
-        Map<Integer, Integer> map = new HashMap<>();  // 存储 {元素: 索引}
+        Map<Integer, Integer> map = new HashMap<>();  // Map<元素, 索引>
 
         for (int i = 0; i < nums.length; i++) {
             int complement = target - nums[i];
