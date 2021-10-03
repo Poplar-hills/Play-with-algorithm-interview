@@ -104,6 +104,7 @@ public class L25_ReverseNodesInKGroup {
      * 解法4：迭代 + Stack
      * - 思路：与解法1、2、3类似，都是先检查本组节点数是否够 k 个，再决定是否反向本组。
      * - 实现：该解法通过将一组的节点入栈、检查 stack.size() 来确定一组节点是否够数、是否需要反向，具体反向操作通过 Stack 完成。
+     * - 💎 总结：提到"反向"先想 Stack，采用 Stack 反向通常是最简单的实现方式。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode reverseKGroup4(ListNode head, int k) {

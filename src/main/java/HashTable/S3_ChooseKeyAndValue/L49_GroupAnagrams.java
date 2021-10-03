@@ -26,7 +26,7 @@ public class L49_GroupAnagrams {
      * - 空间复杂度 O(nk)，即查找表的大小（字符集是常数级的因此没考虑在内g）。
      * */
     public static List<List<String>> groupAnagrams(String[] strs) {
-        Map<String, List<String>> map = new HashMap<>();  // 定义查找表结构
+        Map<String, List<String>> map = new HashMap<>();  // Map<pattern, List<matched>>
         int[] freq = new int[26];
 
         for (String s : strs) {
@@ -64,10 +64,10 @@ public class L49_GroupAnagrams {
 
         for (String s : strs) {
             char[] chars = s.toCharArray();
-            Arrays.sort(chars);  // O(klogk)
-            String sortedStr = String.valueOf(chars);
+            Arrays.sort(chars);                         // O(klogk)
+            String sortedStr = String.valueOf(chars);   // 用 char[] 构建 String 的方法
             if (!map.containsKey(sortedStr))
-                map.put(sortedStr, new ArrayList<>());
+                map.put(sortedStr, new ArrayList<>());  // 可简写为：map.putIfAbsent(sortedStr, new ArrayList<>());
             map.get(sortedStr).add(s);
         }
 
@@ -75,13 +75,13 @@ public class L49_GroupAnagrams {
     }
 
     public static void main(String[] args) {
-        log(groupAnagrams(new String[]{"eat", "tea", "tan", "ate", "nat", "bat"}));
+        log(groupAnagrams2(new String[]{"eat", "tea", "tan", "ate", "nat", "bat"}));
         // expects [["ate","eat","tea"], ["nat","tan"], ["bat"]]
 
-        log(groupAnagrams(new String[]{"sstt", "xyz", "tsst", "xYz"}));
+        log(groupAnagrams2(new String[]{"sstt", "xyz", "tsst", "xYz"}));
         // expects [["sstt","tsst"], ["xyz"], ["xYz"]]
 
-        log(groupAnagrams(new String[]{}));
+        log(groupAnagrams2(new String[]{}));
         // expects []
     }
 }

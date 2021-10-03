@@ -9,17 +9,20 @@ import static Utils.Helpers.*;
  *
  * - Given a binary tree, return the bottom-up level order traversal of its nodes' values.
  *   (ie, from left to right, level by level from leaf to root).
+ *
+ * - 👉 前中后序遍历都是 DFS，层序遍历是 BFS。
  * */
 
 public class L107_BinaryTreeLevelOrderTraversalII {
     /*
      * 基础1：自底向上的层序遍历
-     * - 思路：观察结果可知，自底向上的层序遍历 = reverse(先访问右子树再访问左子树的自顶向下的层序遍历) ∴ 需要可以在自顶向下的
+     * - 思路：观察结果可知，自底向上的层序遍历 = reverse(先访问右子树再访问左子树的自顶向下的 BFS) ∴ 需要可以在自顶向下的
      *   层序遍历基础上改造，满足：
      *     1. 先访问右子树再访问左子树；
      *     2. 对遍历结果进行 reverse。
-     * - 实现：用 Queue 进行广度优先遍历，另外再用一个 Stack 对结果进行 reverse。另一种方法，也可以不使用 Stack，直接放入 res
-     *   在最后 return 之前先 Collections.reverse(res); 即可。
+     * - 实现：
+     *     1. 用 Queue 进行 BFS，另外再用一个 Stack 对结果进行 reverse（👉 提起 reverse 就要想起 Stack）。
+     *     2. 也可以不使用 Stack，直接放入 res，而在最后 Collections.reverse(res) 即可。
      * - 时间复杂度 O(2n)，空间复杂度 O(n)。
      * */
     public static List<Integer> basicLevelOrderBottom(TreeNode root) {
@@ -68,8 +71,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
     }
 
     /*
-     * 解法1：迭代
-     * - 思路：在基础1、2的思路上对每层内的节点进行分组（类似 L102 解法1的分组逻辑）。
+     * 解法1：迭代 + Stack
+     * - 思路：在基础1 Stack 的思路上对每层内的节点进行分组（类似 L102 解法1的分组逻辑）。
      * - 实现：
      *   - Queue 用于 BFS，但 ∵ 需要分组 ∴ Queue 中的每个节点要带上 level 信息；
      *   - Stack 只用于对结果进行 reverse ∴ 在 reverse 之前 Stack 中存储的应是分好组的节点，即 Stack 中的数据类型是 List<Integer>。
@@ -103,7 +106,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
     /*
      * 解法2：迭代2
-     * - 思路：在广度优先遍历树上节点时，让每个节点带上层级信息以 Pair 的形式存在 List 中。同时根据层级信息先往结果集中插入 h
+     * - 思路：在 BFS 树上节点时，让每个节点带上层级信息以 Pair 的形式存在 List 中。同时根据层级信息先往结果集中插入 h
      *   个空列表，当遍历完所有节点后即可得到树的高度 h，这样就能为每个 Pair 中的节点计算出应该放到结果集中的哪个列表里了。
      * - 时间复杂度 O(2n)，空间复杂度 O(n)。
      * */
@@ -166,7 +169,8 @@ public class L107_BinaryTreeLevelOrderTraversalII {
      * 解法4：迭代4
      * - 思路：在正常 BFS 遍历基础上做两个修改：
      *   1. 创建新列表时，总是插入 res 头部；
-     *   2. 访问节点时，通过索引计算，将节点值放入对应列表中。
+     *   2. 访问节点时，通过索引计算（res.size() - 1 - level），将节点值放入对应列表中（若 level=0，则放入最后一个列表，若
+     *      level=1，则放入倒数第二个列表）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> levelOrderBottom4(TreeNode root) {
@@ -193,11 +197,11 @@ public class L107_BinaryTreeLevelOrderTraversalII {
 
     /*
      * 解法5：解法4的 DFS 递归版
-     * - 思路：类似 L102 的解法2，同样采用 DFS 来实现 BFS 的效果 ∵ 在递归中传递了 level 信息 ∴ 在遍历到节点时可直接 add 到第
-     *   level 个列表中，与是 BFS 还是 DFS 遍历无关。
+     * - 💎 思路：类似 L102 的解法2，同样采用 DFS 来实现 BFS 的效果 ∵ 在递归中传递了 level 信息 ∴ 在访问节点时可直接将其 add
+     *   到第 level 个列表中，与是 BFS 还是 DFS 遍历无关。
      * - 实现：
-     *   1. 本实现采用前序遍历（先访问父节点，后访问左右子节点），但实际上 ∵ 只要在访问节点时找到对应的列表插入 ∴ 遍历顺序无关紧要，
-     *      使用后续遍历（在两个 helper(...) 之后再访问节点）同样可行；
+     *   1. 💎 本实现采用前序遍历（先访问父节点，后访问左右子节点），但实际上 ∵ 只要在访问节点时找到对应的列表插入 ∴ 遍历顺序
+     *      无关紧要，使用后续遍历（在两个 helper(...) 之后再访问节点）同样可行；
      *   2. 注意在往 res 中插入空列表时要插入到 res 的头部，否则 test case 2 的右倾的二叉树会出错（当左侧递归已完成时，右侧递归
      *      的最底层节点需要插入到 res 的头部才行）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
@@ -213,7 +217,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         if (node == null) return;
         if (level == res.size())
             res.add(0, new ArrayList<>());  // 在递归去程时向 res 中插入空列表（注意要插入在 res 的头部）
-        res.get(res.size() - 1 - level).add(node.val);  // 将节点值推入 res 中的对应列表里
+        res.get(res.size() - 1 - level).add(node.val);  // 并将节点值推入 res 中的对应列表里
         helper4(node.left, level + 1, res);
         helper4(node.right, level + 1, res);
     }
