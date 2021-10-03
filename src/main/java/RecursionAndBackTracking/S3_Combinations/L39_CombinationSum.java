@@ -17,6 +17,7 @@ import java.util.*;
  *
  * - L39_CombinationSum：nums 中的所有元素都是唯一的，且可以使用无限多次，但结果集中不能有重复解；
  * - L40_CombinationSumII：nums 中的元素可能重复，且都只能使用一次，但结果集中不能有重复解。
+ * - 两者解法分析见 L40_CombinationSumII 解法1。
  * */
 
 public class L39_CombinationSum {
@@ -64,7 +65,7 @@ public class L39_CombinationSum {
      * 解法2：Recursion + Backtracking
      * - 思路：与解法1一致。
      * - 实现：解法1是在找到解之后再去重，而更优的做法是根本不产生重复解，即对树进行更进一步的剪枝以避免进入产生重复解的分支。
-     *   具体做法是让每个节点在遍历 nums 时不回头，只遍历 >= 当前节点的 nums ∴ 解法1中的树会被剪成这样：
+     *   具体做法是让每个节点在遍历 nums 时不回头，只遍历索引 >= 当前节点的 nums ∴ 解法1中的树会被剪成这样：
      *                            8
      *               2/          3|          5\
      *               6            5           3     - 5节点不再考虑分支2，只考虑 >= 3 的分支；3节点不再考虑分支2、3，且5的分支无效 ∴ 无解
