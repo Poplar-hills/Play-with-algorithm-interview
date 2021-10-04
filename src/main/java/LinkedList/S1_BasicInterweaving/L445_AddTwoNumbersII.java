@@ -48,13 +48,13 @@ public class L445_AddTwoNumbersII {
         int sum = l1Val + l2Val + carry;
 
         carry = sum / 10;
-        ListNode s = new ListNode(sum % 10);  // 空间复杂度（即最终新生成的链表长度）为 O(max(m,n))
+        ListNode head = new ListNode(sum % 10);  // 空间复杂度（即最终新生成的链表长度）为 O(max(m,n))
 
         ListNode l1Next = l1 == null ? null : l1.next;
         ListNode l2Next = l2 == null ? null : l2.next;
-        s.next = addTwoNumbers(l1Next, l2Next, carry);  // 空间复杂度（即递归深度）为 O(max(m,n))
+        head.next = addTwoNumbers(l1Next, l2Next, carry);  // 空间复杂度为 O(max(m,n))（即递归深度）
 
-        return s;
+        return head;
     }
 
     /*
@@ -62,13 +62,13 @@ public class L445_AddTwoNumbersII {
      * - 思路：该题的难点在于如何解决数位对齐问题，本解法与解法1一致，也是通过反向链表来对其数位。
      * - 实现：解法1是通过反向节点间的链接来反向链表，从而对齐数位。而本解法使用 Stack（如 L2 解法3）结构来反向链表，从而对齐数位。
      *   使用 Stack 的好处是不会修改原链表 l1、l2。
-     * - 👉技巧：本解法中的一个技巧是逆序生成链表 —— 从尾部的 null 开始，每次都将新生成的节点插入到链表头部，从而免去了解法1中
+     * - 👉 技巧：本解法中的一个技巧是逆序生成链表 —— 从尾部的 null 开始，每次都将新生成的节点插入到链表头部，从而免去了解法1中
      *   最后得再 reverse 一次的麻烦。
      * - 时间复杂度 O(max(m,n))，空间复杂度 O(m+n)。
      * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
-        Stack<Integer> s1 = toStack(l1);
-        Stack<Integer> s2 = toStack(l2);
+        Stack<Integer> s1 = toStack(l1);  // 注意要生成的是两个独立的 Stack，而不能是一个 stack<Pair<Integer, Integer>>
+        Stack<Integer> s2 = toStack(l2);  // 也可以在一个循环中同时生成两个 Stack
 
         int carry = 0;
         ListNode head = null;  // 结果链表
