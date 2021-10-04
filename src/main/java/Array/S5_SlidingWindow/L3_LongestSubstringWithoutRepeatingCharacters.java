@@ -83,7 +83,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         Set<Character> window = new HashSet<>();  // 以 Set 为窗口
 
         for (int l = 0, r = 0; r < chars.length; ) {
-            if (!window.contains(chars[r])) {  // 若判断窗口中无 r 处字符，再将其加入到窗口内
+            if (!window.contains(chars[r])) {  // 若判断窗口中无 r 处字符，再将其纳入窗口，并取最大长度
                 window.add(chars[r++]);
                 maxLen = Math.max(maxLen, window.size());
             } else {
@@ -116,7 +116,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
                 set.add(chars[++r]);                       // r 要先++ 才指向下一个待进入窗口的字符
             else
                 set.remove(chars[l++]);
-            maxLen = Math.max(maxLen, r - l + 1);          // 窗口长度发生变化时比较并记录最大长度
+            maxLen = Math.max(maxLen, r - l + 1);          // 窗口长度发生变化时取最大长度
         }
 
         return maxLen;
@@ -161,7 +161,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         while (r < n) {
             while (r < n && !window.contains(chars[r]))  // 扩展窗口直到重复元素进入窗口（并停在重复元素上）
                 window.add(chars[r++]);
-            maxLen = Math.max(maxLen, window.size());    // 每当窗口长度增长后，计算窗口最大长度
+            maxLen = Math.max(maxLen, window.size());    // 每当窗口长度增长后，取窗口最大长度
             if (r < n)                                   // 若 r 已到达末尾则不用再移动 l
                 while (l < r && window.contains(chars[r]))  // 收缩窗口内没有重复元素（l 最后与 r 重合）
                     window.remove(chars[l++]);
@@ -212,7 +212,10 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
      *             l           r    - map(p:0, w:2, k:3, e:4), found arr[r], l jumps to map.get(w)+1, update map.put(w,r)
      *                 l       r    - map(p:0, w:5, k:3, e:4), r==arr.length-1, loop ends
      *   注意：该解法中，Map 只会不断 put，而不会 remove（与解法1-6中的 Set 不同的地方）。
-     * - 👉 实现：利用了 map.put(k,v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，否则返回 null）来简化对 l 的更新。
+     * - 👉 实现：
+     *   1. 利用了 map.put(k,v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，否则返回 null）来简化对 l 的更新。
+     *   2. ∵ l 是跳跃向前移动的 ∴ indexMap 中的元素只能增不能删。若碰到 test case 4 的"abba"，在 r 移动到第2个 a 上时，l 指向
+     *      第2个 b，此时在 indexMap 中能找到 a 的 prevIndex，但由于不能让 l 后退 ∴ 需要取 Math.max。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring7(String s) {
@@ -222,9 +225,9 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         Map<Character, Integer> indexMap = new HashMap<>();  // 记录 <字符, 该字符最新的索引>
 
         for (int l = 0, r = 0; r < chars.length; r++) {
-            Integer prevIndex = indexMap.put(chars[r], r);
-            if (prevIndex != null)               // 判断字符是否已存在于窗口中
-                l = Math.max(l, prevIndex + 1);  // 取 Math.max 是为了确保 test case 4（"abba"）
+            Integer prevIndex = indexMap.put(chars[r], r);   // 让 r 处的字符进入窗口
+            if (prevIndex != null)                   // 判断字符是否已存在于窗口中
+                l = Math.max(l, prevIndex + 1);      // 取 Math.max，确保 l 不会后退
             maxLen = Math.max(maxLen, r - l + 1);
         }
 
@@ -247,7 +250,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
             Integer prevIndex = indexMap.put(chars[++r], r);
             if (prevIndex != null && prevIndex >= l)  // ∵ prevIndex 可能是 < l ∴ 这里要加上 prevIndex >= l 的条件
                 l = prevIndex + 1;
-            else
+            else                          // 只有在 r 右移之后窗口中仍无重复元素的时候才需要取最大长度
                 maxLen = Math.max(maxLen, r - l + 1);
         }
 
