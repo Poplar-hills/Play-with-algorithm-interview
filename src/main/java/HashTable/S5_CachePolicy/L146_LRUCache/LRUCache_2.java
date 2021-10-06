@@ -7,10 +7,14 @@ import static Utils.Helpers.log;
 
 /*
  * 解法2：LinkedHashMap
- * - 思路：直接使用 java 内置的 LinkedHashMap。
+ * - 思路：与解法1一致。
+ * - 实现：
+ *   - 直接继承并扩展 java 内置的 LinkedHashMap。
+ *   - 这样实现非常简单，但封装性不是很好，LinkedHashMap 的所有方法直接暴露在该类中。更好一点的做法是组合而非继承 —— 在该类内部
+ *     维护一个 LinkedHashMap 实例，通过调用其接口完成所需操作。
  * */
 
-public class LRUCache_2 extends LinkedHashMap<Integer, Integer> {  // 直接扩展 LinkedHashMap（但这样做封装性不是很好）
+public class LRUCache_2 extends LinkedHashMap<Integer, Integer> {  // 直接继承 LinkedHashMap
 
     private final int capacity;
 
