@@ -39,7 +39,7 @@ public class L200_NumberOfIslands {
 
     private static int l, w;
     private static boolean[][] filled;
-    private static int[][] directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
+    private static final int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};  // 顺序：上右下左
 
     public static int numIslands(char[][] grid) {
         if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;

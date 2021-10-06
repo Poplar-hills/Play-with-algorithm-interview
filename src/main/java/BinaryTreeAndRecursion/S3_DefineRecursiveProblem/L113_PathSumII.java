@@ -41,7 +41,7 @@ public class L113_PathSumII {
             res.add(path);
             return;
         }
-        helper(root.left, sum - root.val, new ArrayList<>(path), res);
+        helper(root.left, sum - root.val, new ArrayList<>(path), res);  // 每次在分支的时候要 copy path
         helper(root.right, sum - root.val, new ArrayList<>(path), res);
 	}
 
@@ -65,13 +65,13 @@ public class L113_PathSumII {
         path.add(root.val);
 
         if (root.left == null && root.right == null && root.val == sum) {
-            res.add(new ArrayList<>(path));      // 若是符合要求的 path，则复制进 res 里
+            res.add(new ArrayList<>(path));      // 若找到解，则复制进 res 里
             path.remove(path.size() - 1);  // 返回上层递归之前将添加的元素移除，让 path 恢复原状，这样回到上层后才能继续复用 path
             return;
         }
         helper2(root.left, sum - root.val, path, res);  // 则继续递归并复用 path
         helper2(root.right, sum - root.val, path, res);
-        path.remove(path.size() - 1);      // 同样在返回上层递归之前要将 path 恢复原状（移除本层 add 进来的节点值）
+        path.remove(path.size() - 1);      // 同样，在返回上层递归之前要将 path 恢复原状（移除本层 add 进来的节点值）
     }
 
     /*
@@ -93,14 +93,14 @@ public class L113_PathSumII {
         List<List<Integer>> res = new ArrayList<>();  // 每递归一层都新建一个列表
         if (root == null) return res;
 
-        if (root.left == null && root.right == null && sum == root.val) {  // 若为符合条件的叶子节点则创建 path 并塞入 res
+        if (root.left == null && root.right == null && sum == root.val) {  // 若找到解，则创建 path 并塞入 res
             List<Integer> path = new ArrayList<>();
             path.add(root.val);
             res.add(path);
             return res;
         }
 
-        List<List<Integer>> leftPaths = pathSum3(root.left, sum - root.val);  // 若非叶子节点，则分别递归左右子树
+        List<List<Integer>> leftPaths = pathSum3(root.left, sum - root.val);  // 否则继续递归左右子树
         List<List<Integer>> rightPaths = pathSum3(root.right, sum - root.val);
 
         return Stream.of(leftPaths, rightPaths)

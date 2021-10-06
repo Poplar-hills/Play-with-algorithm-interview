@@ -31,7 +31,7 @@ public class L79_WordSearch {
 
     private static int m, n;
     private static boolean[][] visited;
-    private static final int[][] directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};  // 顺序：上右下左
+    private static final int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};  // 顺序：上右下左
 
     public static boolean exist(char[][] board, String word) {
         if (word == null || word.isEmpty() || board == null || board.length == 0)

@@ -116,7 +116,7 @@ public class L127_WordLadder {
 
             for (int i = 0; i < word.length(); i++) {  // 为 word 中的每个字母进行替换匹配，O(len(word) * 26)
                 StringBuilder wordSb = new StringBuilder(word);
-                for (char c = 'a'; c <= 'z'; c++) {
+                for (char c = 'a'; c <= 'z'; c++) {    // 👉 for 可以直接遍历 ASCII 字符
                     if (c == word.charAt(i)) continue;
                     wordSb.setCharAt(i, c);            // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
                     String tWord = wordSb.toString();
@@ -169,8 +169,7 @@ public class L127_WordLadder {
             Set<String> neighbours = new HashSet<>();  // 多个顶点有可能有相同的相邻顶点 ∴ 使用 Set 去重
             for (String word : beginSet) {             // 遍历 beginSet，为每一个单词寻找相邻单词（neighbouring words）
                 for (String w : wordList) {
-                    if (visited.contains(w)) continue;
-                    if (isSimilar(word, w)) {
+                    if (!visited.contains(w) && isSimilar(word, w)) {
                         if (endSet.contains(w)) return stepCount;  // 若本侧的相邻顶点出现在另一边 BFS 的最外层顶点中，
                         neighbours.add(w);                         // 说明正反向查找相遇，找到了最短路径
                     }
@@ -249,7 +248,7 @@ public class L127_WordLadder {
         if (!wordList.contains(endWord)) return 0;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 需要把 beginWord 加入 wordList 才能开始建立图
         boolean[][] graph = buildAdjacencyMatrix(wordList);
-        return bfs(graph, wordList, beginWord, endWord);  // 借助邻接矩阵进行 BFS
+        return bfs5(graph, wordList, beginWord, endWord);  // 借助邻接矩阵进行 BFS
     }
 
     private static boolean[][] buildAdjacencyMatrix(List<String> wordList) {
@@ -264,7 +263,7 @@ public class L127_WordLadder {
         return graph;
     }
 
-    private static int bfs(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
+    private static int bfs5(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
         Queue<Integer> q = new LinkedList<>();   // ∵ 邻接矩阵中的顶点使用 index 访问 ∴ BFS 遍历时队列中存储的也是顶点的 index
         int[] steps = new int[wordList.size()];  // steps[i] 表示 beginWord 到 wordList 中的第 i 个单词的最短步数
         int beginIndex = wordList.indexOf(beginWord);
