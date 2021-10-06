@@ -96,7 +96,7 @@ public class L61_RotateList {
      *            ← 4->5->1->2->3                 - 直接返回
      *       ← 4->5->1->2->3                      - 直接返回
      *   可见：
-     *   1. 只要 numToRotate >= 0 就持续将尾节点移到链表头部；
+     *   1. 在递归回程上递减 numToRotate，直到 numToRotate >= 0 就持续将尾节点移到链表头部；
      *   2. 在移动时，需要获取：
      *      - 待移动节点的上一个节点：可通过递归返回到上层时获得；
      *      - 当前链表的头结点：可通过递归返回值获得。
@@ -107,13 +107,13 @@ public class L61_RotateList {
     public static ListNode rotateRight3(ListNode head, int k) {
         if (head == null || k == 0) return head;
         numToRotate = k % getLength(head);
-        return helper(head, head, null);
+        return helper3(head, head, null);
     }
 
-    private static ListNode helper(ListNode head, ListNode curr, ListNode prev) {
+    private static ListNode helper3(ListNode head, ListNode curr, ListNode prev) {
         if (curr == null) return head;  // 递归到底时返回原链表
 
-        ListNode currHead = helper(head, curr.next, curr);  // 原链表的头节点通过递归一直传递下去（这样才能在需要的时候返回）
+        ListNode currHead = helper3(head, curr.next, curr);  // 原链表的头节点通过递归一直传递下去（这样才能在需要的时候返回）
         if (--numToRotate < 0) return currHead;  // 只要 numToRotate 还 >= 0，就将尾节点移到链表头部
 
         prev.next = null;               // 断开上一个节点与当前节点的链接
@@ -123,18 +123,18 @@ public class L61_RotateList {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight(l1, 2));   // expects 4->5->1->2->3->NULL
+        printLinkedList(rotateRight3(l1, 2));   // expects 4->5->1->2->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight(l2, 7));   // expects 4->5->1->2->3->NULL
+        printLinkedList(rotateRight3(l2, 7));   // expects 4->5->1->2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight(l3, 0));   // expects 1->2->3->4->5->NULL
+        printLinkedList(rotateRight3(l3, 0));   // expects 1->2->3->4->5->NULL
 
         ListNode l4 = createLinkedList(new int[]{1});
-        printLinkedList(rotateRight(l4, 1));   // expects 1->NULL
+        printLinkedList(rotateRight3(l4, 1));   // expects 1->NULL
 
         ListNode l5 = createLinkedList(new int[]{1});
-        printLinkedList(rotateRight(l5, 99));  // expects 1->NULL
+        printLinkedList(rotateRight3(l5, 99));  // expects 1->NULL
     }
 }
