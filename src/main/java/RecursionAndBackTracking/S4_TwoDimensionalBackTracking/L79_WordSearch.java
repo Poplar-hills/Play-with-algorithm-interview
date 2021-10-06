@@ -59,7 +59,7 @@ public class L79_WordSearch {
         visited[r][c] = true;
         for (int[] d : directions) {
             int newR = r + d[0], newC = c + d[1];
-            if (validPos(newR, newC) && !visited[newR][newC])
+            if (!visited[newR][newC] && validPos(newR, newC))
                 if (searchForWord(board, newR, newC, word, i + 1))  // 若没有有效的相邻坐标，则不会进入下层递归
                     return true;
         }
