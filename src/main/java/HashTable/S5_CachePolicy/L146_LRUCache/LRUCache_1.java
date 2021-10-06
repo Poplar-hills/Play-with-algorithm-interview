@@ -21,7 +21,12 @@ import static Utils.Helpers.log;
 
 /*
  * 解法1：Doubly linked list (DLL) + Map
- * - 思路：使用 Map 以 O(1) 速度访问数据（访问数据时也重新插入到头部）；使用双向链表记录数据的访问时间，以 O(1) 的速度从尾部淘汰数据；
+ * - 思路：对于 get() 操作可使用 Map 以 O(1) 速度访问数据（访问数据时也重新插入到头部）；而对于容量已满时的 put() 操作需要能快速
+ *   定位到 the least recently used 的数据 ∴ 使用队列结构记录数据的访问时间，在每次访问数据（get/put）时，将被访问的数据移动到
+ *   队首，而让 the least recently used 的数据逐渐归到队尾，从而在缓存已满时能以 O(1) 的速度从队尾淘汰。
+ * - 实现：
+ *   1. ∵ 既要能让数据移动到队首，又要能快速获取队尾数据 ∴ 需要 dummyHead、dummyTail 两个指针；
+ *   2. 若是从单向链表尾部删除节点需要先拿到上一个节点 ∴ 要从头遍历过去才能拿到，无法满足 O(1) 的要求 ∴ 不如直接使用双向链表方便。
  *               k1     k2     k3     k4            - Map 的 keys
  *                ↓      ↓      ↓      ↓
  *      head <-> n1 <-> n2 <-> n3 <-> n4 <-> tail   - Map 的 values，同时也是双向链表
@@ -38,7 +43,7 @@ public class LRUCache_1 {
         }
     }
 
-    private final Map<Integer, Node> map;  // 注意 map 存储的是数据的 key -> 该数据在链表上对应 node 的映射
+    private final Map<Integer, Node> map;  // 👉 关键点：Map<数据的 key, 该数据的 value 在链表上对应的 Node>
     private final Node dummyHead, dummyTail;
     private final int capacity;
 
@@ -47,7 +52,7 @@ public class LRUCache_1 {
         map = new HashMap<>();
         dummyHead = new Node(0,0);
         dummyTail = new Node(0,0);
-        join(dummyHead, dummyTail);  // 初始化头尾两个节点，并互相连接
+        join(dummyHead, dummyTail);  // 👉 初始化头尾两个节点，并互相连接（即初始链表为空）
     }
 
     private void join(Node node1, Node node2) {
@@ -58,12 +63,12 @@ public class LRUCache_1 {
     public int get(int key) {
         if (!map.containsKey(key)) return -1;
         Node node = map.get(key);
-        remove(node);      // 将该节点从 DLL 上移除
-        moveToHead(node);  // 并移动到链表头部
+        remove(node);      // 先将该节点从 DLL 上移除
+        moveToHead(node);  // 再将其移动到链表头部
         return node.val;
     }
 
-    private void remove(Node node) {  // remove a node from the DLL
+    private void remove(Node node) {  // 移除操作就是 join 该节点的上一节点和下一节点
         join(node.prev, node.next);
     }
 
@@ -80,8 +85,7 @@ public class LRUCache_1 {
             remove(node);
             moveToHead(node);
         } else {
-            if (map.size() == capacity)  // 若缓存已达最大容量
-                evict();
+            if (map.size() == capacity) evict();  // 若缓存已达最大容量则淘汰 LRU entry
             Node node = new Node(key, value);  // 创建新节点
             map.put(key, node);
             moveToHead(node);
@@ -89,7 +93,7 @@ public class LRUCache_1 {
     }
 
     private void evict() {  // 清理掉最长时间没使用到的数据项（即 DLL 上的 dummyTail.prev）
-        if (dummyHead.next != dummyTail) {  // 或者判断 !map.isEmpty() 也可以
+        if (dummyHead.next != dummyTail) {   // 或 if (!map.isEmpty())
             map.remove(dummyTail.prev.key);  // 注意这两句不能颠倒顺序，若先 remove 掉节点，dummyTail.prev 已不再指向同一个节点
             remove(dummyTail.prev);
         }
