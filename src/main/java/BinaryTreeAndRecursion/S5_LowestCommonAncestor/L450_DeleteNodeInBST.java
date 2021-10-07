@@ -34,9 +34,9 @@ public class L450_DeleteNodeInBST {
     public static TreeNode deleteNode(TreeNode root, int key) {
         if (root == null) return null;
         if (key < root.val)
-            root.left = deleteNode(root.left, key);
+            root.left = deleteNode(root.left, key);  // 若 key 在左子树上，更新左子树
         else if (key > root.val)
-            root.right = deleteNode(root.right, key);
+            root.right = deleteNode(root.right, key);  // 若 key 在右子树上，则更新右子树
         else
             root = deleteRoot(root);
         return root;
