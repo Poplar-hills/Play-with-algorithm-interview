@@ -20,9 +20,14 @@ public class L450_DeleteNodeInBST {
     /*
      * 解法1：Hibbard Deletion (Recursion)
      * - 思路：与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致，总的来说是：
-     *   1. 先找到 val == key 的节点 node；
+     *   1. 先借助 BST 的二分性质找到 val == key 的目标节点 node；
      *   2. 从以 node 为根的 BST 的右子树中找到最小节点 successor；
-     *   3. 为 successor 的左右子树赋值；
+     *      - 若 node 左子树为空，则右子树就是 successor；
+     *      - 若 node 右子树为空，则左子树就是 successor；
+     *      - 若 node 左右子树都不为空，则右子树中的最小节点就是 successor；
+     *   3. 将 node 的左右子树移植到 successor 上：
+     *      - 将 node 右子树去掉 successor 节点后的部分移植到 successor 的右子树上；
+     *      - 将 node 左子树移植到 successor 的左子树上；
      *   4. 让 successor 接替 node 并放回到原 BST 的相应位置上。
      * - 时间复杂度 O(logn)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -37,11 +42,11 @@ public class L450_DeleteNodeInBST {
         return root;
     }
 
-    private static TreeNode deleteRoot(TreeNode root) {  // 从以 root 为根的二叉树中删除根节点，并返回以 succssor 为根的二叉树
-        if (root.left == null) return root.right;
-        if (root.right == null) return root.left;
-        TreeNode successor = getMin(root.right);
-        successor.right = removeMin(root.right);  // 注意要先给右子树赋值（SEE: https://coding.imooc.com/learn/questiondetail/84029.html）
+    private static TreeNode deleteRoot(TreeNode root) {  // 从以 root 为根的 BST 中删除根节点，并返回以 successor 为根的 BST
+        if (root.left == null) return root.right;  // 若左子树为空，则右子树就是 successor
+        if (root.right == null) return root.left;  // 若右子树为空，则左子树就是 successor
+        TreeNode successor = getMin(root.right);   // 若都不为空，则右子树中的最小节点就是 successor
+        successor.right = removeMin(root.right);   // 注意要先给右子树赋值（SEE: https://coding.imooc.com/learn/questiondetail/84029.html）
         successor.left = root.left;
         return successor;
     }
@@ -51,7 +56,7 @@ public class L450_DeleteNodeInBST {
     }
 
     private static TreeNode removeMin(TreeNode node) {
-        if (node.left == null) return node.right;
+        if (node.left == null) return node.right;  // 找到最小节点，并用其右子节点代替（即使右子节点是 null）
         node.left = removeMin(node.left);
         return node;
     }

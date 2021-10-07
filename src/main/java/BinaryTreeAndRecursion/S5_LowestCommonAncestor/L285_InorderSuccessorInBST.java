@@ -1,4 +1,4 @@
-package BinaryTreeAndRecursion.S6_Others;
+package BinaryTreeAndRecursion.S5_LowestCommonAncestor;
 
 import Utils.Helpers.TreeNode;
 
@@ -19,6 +19,9 @@ import static Utils.Helpers.*;
 public class L285_InorderSuccessorInBST {
 
     private static TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        // solution:
+        // if p is a node with right subtree, then its successor is the left-most node in the right subtree
+        // if p is a node without right subtree, then its successor is
         return null;
     }
 
@@ -35,7 +38,7 @@ public class L285_InorderSuccessorInBST {
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 6, 2, 4, null, null, 1});
         TreeNode successor2 = inorderSuccessor(t2, t2.get(6));
-        log(successor2.getVal());
+        log(successor2);
         /*
          * expects null. (There no in-order successor of the node 6)
          *           5
