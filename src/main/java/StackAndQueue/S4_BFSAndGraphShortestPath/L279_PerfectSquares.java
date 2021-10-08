@@ -100,15 +100,15 @@ public class L279_PerfectSquares {
         Arrays.fill(minSteps, -1);
         minSteps[0] = 0;
         minSteps[1] = 1;
-        return helper2(n, minSteps);
+        return dfs2(n, minSteps);
     }
 
-    private static int helper2(int n, int[] minSteps) {
+    private static int dfs2(int n, int[] minSteps) {
         if (minSteps[n] != -1) return minSteps[n];  // cache hit
 
         int minStep = Integer.MAX_VALUE;
         for (int i = 1; i * i <= n; i++)
-            minStep = Math.min(minStep, helper2(n - i * i, minSteps) + 1);
+            minStep = Math.min(minStep, dfs2(n - i * i, minSteps) + 1);
 
         return minSteps[n] = minStep;  // 赋值语句的返回值为所赋的值
     }
