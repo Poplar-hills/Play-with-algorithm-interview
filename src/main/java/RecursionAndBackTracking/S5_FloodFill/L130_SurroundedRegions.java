@@ -171,7 +171,7 @@ public class L130_SurroundedRegions {
         board[r][c] = '*';
         for (int[] d : directions) {
             int newR = r + d[0], newC = c + d[1];
-            if (isValidPos(newR, newC) && board[newR][newC] == 'O')
+            if (isValidPos(newR, newC) && board[newR][newC] == 'O')  // 若是 'O' 说明没有访问过（访问过的都置为 '*' 了）
                 floodFill3(board, newR, newC);
         }
     }
