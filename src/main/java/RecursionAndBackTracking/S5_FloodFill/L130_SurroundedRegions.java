@@ -208,7 +208,7 @@ public class L130_SurroundedRegions {
             int pRoot = find(p), qRoot = find(q);
             if (pRoot == qRoot) return;
 
-            if (ranks[pRoot] < ranks[qRoot])  // rank-based 优化，每次将 rank 小的 root 连接到 rank 大的 root 上
+            if (ranks[pRoot] < ranks[qRoot])  // rank-based（基于树高）优化，每次将 rank 小的 root 连接到 rank 大的 root 上
                 parents[pRoot] = qRoot;
             else if (ranks[pRoot] > ranks[qRoot])
                 parents[qRoot] = pRoot;

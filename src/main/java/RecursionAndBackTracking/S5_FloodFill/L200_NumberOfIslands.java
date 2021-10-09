@@ -135,29 +135,29 @@ public class L200_NumberOfIslands {
      * */
     private static class UnionFind {
         private int[] parents;
-        private int count;                     // 并查集中维护 island 的个数
+        private int count;                     // 并查集中维护联通区域（即 island）的个数
 
         UnionFind(char[][] grid) {
-            int w = grid.length, l = grid[0].length;
-            parents = new int[l * w];          // parents 的大小即 grid 的大小
+            int m = grid.length, n = grid[0].length;
+            parents = new int[m * n];          // parents 的大小即 grid 的大小
 
-            for (int r = 0; r < w; r++) {
-                for (int c = 0; c < l; c++) {
+            for (int r = 0; r < m; r++) {
+                for (int c = 0; c < n; c++) {
                     if (grid[r][c] == '1') {   // 初始化时给每个 land 格子一个唯一的 id
-                        int id = r * l + c;    // 将二维坐标映射到一维
+                        int id = r * n + c;    // 将二维坐标映射到一维
                         parents[id] = id;
-                        count++;               // 初始化时每个 land 格子都是一个 island（之后再把相邻的 land 不断 union 起来）
+                        count++;               // 初始化时每个 land 格子都是一个 island（之后再把相邻的 land 不断 unify 起来）
                     }
                 }
             }
         }
 
-        public void union(int p, int q) {
+        public void unify(int p, int q) {  // 该 Union Find 没有做 rank 和路径压缩优化（优化版 SEE: L130_SurroundedRegions）
             int pRoot = find(p);
             int qRoot = find(q);
             if (pRoot == qRoot) return;
             parents[pRoot] = qRoot;
-            count--;                 // 若成功 union 两块 land 之后，island 的个数要 -1
+            count--;                 // 若成功 unify 两块 land 之后，island 的个数要 -1
         }
 
         private int find(int p) {
@@ -184,7 +184,7 @@ public class L200_NumberOfIslands {
         for (int[] d : directions) {                   // 将每个 land 格子与其相邻的 land 格子进行 union
             int newR = r + d[0], newC = c + d[1];
             if (isValidPos(newR, newC) && grid[newR][newC] == '1')
-                uf.union(r * l + c, newR * l + newC);  // 将 [r,c]、[newR,newC] 进行一维化编码
+                uf.unify(r * l + c, newR * l + newC);  // 将 [r,c]、[newR,newC] 进行一维化编码
         }
     }
 
