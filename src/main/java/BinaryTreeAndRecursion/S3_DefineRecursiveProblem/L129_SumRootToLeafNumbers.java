@@ -3,13 +3,11 @@ package BinaryTreeAndRecursion.S3_DefineRecursiveProblem;
 import static Utils.Helpers.createBinaryTreeBreadthFirst;
 import static Utils.Helpers.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import Utils.Helpers;
 import Utils.Helpers.TreeNode;
 
 /*
@@ -29,14 +27,16 @@ public class L129_SumRootToLeafNumbers {
      *         9   0    -->   ['95','91']    ['0']
      *        / \               /    \
      *       5   1          ['5']   ['1']
+     * - 👉 实现：列表中之所以存的是 String 而非 Integer 是 ∵ 若存 Integer 则每层递归都需要根据下层返回的结果对列表中的数字
+     *   乘以 10、100、1000... 而在 java 中获取一个 Integer 位数的最简单方式就是转化为字符串：String.valueOf(int).length，
+     *   ∴ 不如一开始就直接存 String。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * - 注：最后在用 stream 求字符串之和时会遍历列表 ∵ 列表最大长度 = 完美二叉树分支数 = 完美二叉树最底层节点数 = 节点数/2
      *   ∴ 遍历列表的时间复杂度为 O(n/2)。
      * */
     public static int sumNumbers(TreeNode root) {
         if (root == null) return 0;
-        List<String> res = helper(root);
-        return res.stream()              // 用 stream 求字符串之和
+        return helper(root).stream()     // 用 stream 求字符串之和
                 .map(Integer::parseInt)  // 另一种写法：.mapToInt(Integer::parseInt).sum();
                 .reduce(0, Integer::sum);
     }
@@ -45,13 +45,12 @@ public class L129_SumRootToLeafNumbers {
         if (root.left == null && root.right == null)
             return List.of(String.valueOf(root.val));
 
-        List<String> leftRes = new ArrayList<>(), rightRes = new ArrayList<>();
-        if (root.left != null) leftRes = helper(root.left);
-        if (root.right != null) rightRes = helper(root.right);
+        List<String> nums = new ArrayList<>();
+        if (root.left != null) nums.addAll(helper(root.left));
+        if (root.right != null) nums.addAll(helper(root.right));
 
-        return Stream.of(leftRes, rightRes)  // 拼接两个字符串列表
-                .flatMap(Collection::stream)
-                .map(s -> root.val + s)      // 给每个字符串前面拼接当前节点值
+        return nums.stream()             // 拼接两个字符串列表
+                .map(s -> root.val + s)  // 给每个字符串前面拼接当前节点值
                 .collect(Collectors.toList());
     }
 
