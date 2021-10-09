@@ -195,8 +195,8 @@ public class L130_SurroundedRegions {
         private final int [] parents;
         private final int [] ranks;
 
-        public UnionFind(int size) {  // 对比 L200 中的并查集，该并查集的构造方法无需传入整个 board，只使用其 size 即可
-            parents = new int[size];
+        public UnionFind(int size) {  // 对比 L200 中的并查集，该并查集的构造方法无需传入整个 board，只使用其 size 即可（∵ unify
+            parents = new int[size];  // 的时候会将节点坐标编码后传入 ∴ 就无需在并查集内编码了）
             ranks = new int[size];
             for (int i = 0; i < size; i++) {
                 parents[i] = i;
