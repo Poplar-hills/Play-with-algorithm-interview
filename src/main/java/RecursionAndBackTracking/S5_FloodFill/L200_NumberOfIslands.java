@@ -30,27 +30,27 @@ public class L200_NumberOfIslands {
      *
      * - 👉 Flood Fill 本质上是 DFS，而它是否是回溯法则见仁见智（可以算也可以不算），不用太纠结。
      *
-     * - 时间复杂度 O(l*w)：可以用3个极端情况来估算：
-     *     1. 所有格子都是'1'：此时外层循环 l*w 次，floodFill 方法执行1次，耗时 l*w ∴ 总时间复杂度 O(2*l*w)，即 O(l*w)；
-     *     2. 所有格子都是'0'：此时只有外层遍历耗时 l*w ∴ 总时间复杂度 O(l*w)；
-     *     3. 整个 grid 由'1'和'0'相间：与情况1相同，也是 O(l*w)。
-     * - 空间复杂度 O(l*w)。
+     * - 时间复杂度 O(m*n)：可以用3个极端情况来估算：
+     *     1. 所有格子都是'1'：此时外层循环 m*n 次，floodFill 方法执行1次，耗时 m*n ∴ 总时间复杂度 O(2*m*n)，即 O(m*n)；
+     *     2. 所有格子都是'0'：此时只有外层遍历耗时 m*n ∴ 总时间复杂度 O(m*n)；
+     *     3. 整个 grid 由'1'和'0'相间：与情况1相同，也是 O(m*n)。
+     * - 空间复杂度 O(m*n)。
      * */
 
-    private static int l, w;
+    private static int m, n;
     private static boolean[][] filled;
     private static final int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};  // 顺序：上右下左
 
     public static int numIslands(char[][] grid) {
         if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;
 
-        w = grid.length;
-        l = grid[0].length;
-        filled = new boolean[w][l];  // 用于记录哪些格子已经填充过
+        m = grid.length;
+        n = grid[0].length;
+        filled = new boolean[m][n];  // 用于记录哪些格子已经填充过
         int count = 0;
 
-        for (int r = 0; r < w; r++) {
-            for (int c = 0; c < l; c++) {
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
                 if (grid[r][c] == '1' && !filled[r][c]) {  // 找到下一个还未填充过的 island
                     count++;
                     floodFill(grid, r, c);
@@ -71,7 +71,7 @@ public class L200_NumberOfIslands {
     }
 
     private static boolean isValidPos(int r, int c) {
-        return r >= 0 && r < w && c >= 0 && c < l;
+        return r >= 0 && r < m && c >= 0 && c < n;
     }
 
     /*
@@ -81,17 +81,17 @@ public class L200_NumberOfIslands {
      *   1. 采用基于 BFS 实现 Flood Fill；
      *   2. 解法1中单独创建了 boolean[][] 用于记录哪些格子已被填充，而该解法中采用 in-place modification，即每到达一个
      *      格子，就在 grid 中将这个格子标记为'0'，从而也能达到不重复填充的目的。
-     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int numIslands2(char[][] grid) {
         if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;
 
-        w = grid.length;
-        l = grid[0].length;
+        m = grid.length;
+        n = grid[0].length;
         int count = 0;
 
-        for (int r = 0; r < w; r++) {
-            for (int c = 0; c < l; c++) {
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
                 if (grid[r][c] == '1') {
                     count++;
                     floodFill2(grid, r, c);
@@ -130,11 +130,11 @@ public class L200_NumberOfIslands {
      *        则在并查集中共享同一个集合编号；
      *     2. 并查集维护 island 的个数。初始化时 island 个数为 '1' 的个数；之后 Flood Filled 中每次将相邻的 island 在
      *        并查集中连通时都让 island 个数 -1；
-     * - 改进：UnionFind 有很多优化策略：基于树大小、基于树高、基于路径压缩等方式，具体 SEE: Play-with-data-structure/UnionFind
-     * - 时间复杂度 O(l*w)，空间复杂度 O(l*w)。
+     * - 👉 改进：UnionFind 有很多优化策略：基于树大小、基于树高、基于路径压缩等方式，具体 SEE: Play-with-data-structure/UnionFind
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     private static class UnionFind {
-        private int[] parents;
+        private final int[] parents;
         private int count;                     // 并查集中维护联通区域（即 island）的个数
 
         UnionFind(char[][] grid) {
@@ -152,7 +152,7 @@ public class L200_NumberOfIslands {
             }
         }
 
-        public void unify(int p, int q) {  // 该 Union Find 没有做 rank 和路径压缩优化（优化版 SEE: L130_SurroundedRegions）
+        public void unify(int p, int q) {  // 无 rank 和路径压缩优化的并查集实现（优化版 SEE: L130_SurroundedRegions）
             int pRoot = find(p);
             int qRoot = find(q);
             if (pRoot == qRoot) return;
@@ -168,12 +168,12 @@ public class L200_NumberOfIslands {
     public static int numIslands3(char[][] grid) {
         if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;
 
-        w = grid.length;
-        l = grid[0].length;
+        m = grid.length;
+        n = grid[0].length;
         UnionFind uf = new UnionFind(grid);  // 初始化并查集
 
-        for (int r = 0; r < w; r++)
-            for (int c = 0; c < l; c++)
+        for (int r = 0; r < m; r++)
+            for (int c = 0; c < n; c++)
                 if (grid[r][c] == '1')
                     floodFill3(grid, r, c, uf);
 
@@ -184,7 +184,7 @@ public class L200_NumberOfIslands {
         for (int[] d : directions) {                   // 将每个 land 格子与其相邻的 land 格子进行 union
             int newR = r + d[0], newC = c + d[1];
             if (isValidPos(newR, newC) && grid[newR][newC] == '1')
-                uf.unify(r * l + c, newR * l + newC);  // 将 [r,c]、[newR,newC] 进行一维化编码
+                uf.unify(r * n + c, newR * n + newC);  // 将 [r,c]、[newR,newC] 进行一维化编码
         }
     }
 
