@@ -67,7 +67,7 @@ public class L1_TwoSum {
     /*
      * 解法3：Sort + Binary Search
      * - 思路：在遍历过程中为每个 nums[i] 在 nums(i..] 区间内搜索一个 complement，使得 nums[i] + complement = target。
-     *   搜索过程使用二分查找 ∴ 需要先对 nums 排序，而又因为解法2的分析，若对 nums 排序会丢失原有索引 ∴ 需要构建一个保持了
+     *   搜索过程使用二分查找 ∴ 需要先对 nums 排序，而又 ∵ 解法2的分析，若对 nums 排序会丢失原有索引 ∴ 需要构建一个保持了
      *   索引和元素的数组 indexedNums，再对 indexedNums 进行排序、遍历、搜索。
      * - 实现：本解法中不再使用 Pair，直接使用数组 [i, num] 记录每个索引元素对。
      * - 时间复杂度 O(n + nlogn + nlogn)，最终为 O(nlogn)，但实际上是 3-pass；空间复杂度 O(n)。
@@ -98,7 +98,7 @@ public class L1_TwoSum {
 
     /*
      * 解法4：查找表 (two-pass)
-     * - 思路：另一类思路是用 Map 来查找每个元素的 complement —— 先构建一个索引 Map（{元素: 索引}），然后在遍历 nums 的过程
+     * - 思路：另一类思路是用 Map 来查找每个元素的 complement —— 先构建一个索引 Map<元素, 索引>，然后在遍历 nums 的过程
      *   中查找 nums[i] 的 complement 是否存在于 Map 中，若存在则返回其对应索引。
      * - 注意：∵ test case 3 中存在 target - nums[0] = nums[0] 的情况，而本题要找的是“两个不同元素” ∴ 需要在查找
      *   complement 时判断并排除这种情况。

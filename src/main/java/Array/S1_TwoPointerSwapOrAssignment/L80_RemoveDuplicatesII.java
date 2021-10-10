@@ -61,11 +61,11 @@ public class L80_RemoveDuplicatesII {
     }
 
     public static void main(String[] args) {
-        int[] arr1 = new int[] {1, 1, 1, 2, 2, 3};
+        int[] arr1 = new int[]{1, 1, 1, 2, 2, 3};
         log(removeDuplicates(arr1));  // expects 5
         log(arr1);                    // expects [1, 1, 2, 2, 3, ..] (It doesn't matter what you leave beyond the returned length.)
 
-        int[] arr2 = new int[] {2, 2, 3, 3};
+        int[] arr2 = new int[]{2, 2, 3, 3};
         log(removeDuplicates(arr2));  // expects 4
         log(arr2);                    // expects [2, 2, 3, 3]
     }

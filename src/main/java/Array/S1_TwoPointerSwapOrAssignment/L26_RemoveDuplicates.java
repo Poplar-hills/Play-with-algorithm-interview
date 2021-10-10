@@ -5,7 +5,8 @@ import static Utils.Helpers.log;
 /*
  * Remove Duplicates
  *
- * - Given a sorted array, remove the duplicates in-place such that each element appear only once and return the new length.
+ * - Given a sorted array, remove the duplicates in-place such that each element appear only once and return the
+ *   new length.
  *
  * - 限制条件：
  *   1. Do not allocate extra space.
