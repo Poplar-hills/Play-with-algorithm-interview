@@ -28,7 +28,7 @@ public class L101_SymmetricTree {
         q.offer(root);
 
         while (!q.isEmpty()) {
-            for (int i = 0, size = q.size(); i < size; i++) {
+            for (int i = 0, size = q.size(); i < size; i++) {  // 层序遍历
                 TreeNode node = q.poll();
                 if (node != null) {
                     q.offer(node.left);

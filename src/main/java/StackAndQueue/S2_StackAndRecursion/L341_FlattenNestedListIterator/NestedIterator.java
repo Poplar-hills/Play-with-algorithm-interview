@@ -19,8 +19,8 @@ import java.util.*;
 /*
  * 解法1：Eager style + Recursion
  * - 思路：根据题意中的调用方式，解法类中要实现一个有 hasNext、next 方法的 iterator。而 iterator 有两种基本形式：
- *     1. Eager: 先将所有元素计算都预先计算出来，然后在调用方法时输出；
- *     2. Lazy: 在每次调用方法时现进行计算并输出。
+ *     1. Eager: 先将所有元素都预先计算出来并放入 Queue，然后在调用方法时逐个输出；
+ *     2. Lazy: 先将所有元素都倒序加载到调用栈 callstack 里，然后在每次调用方法时现进行计算并输出。
  *   本解法中采用 eager iterator 的思路 —— 预先将整个 NestedList 解析成 Integer list。该过程中：
  *     1. 💎 ∵ iterator 中元素的输出顺序应该与输入数据的元素顺序一致 ∴ iterator 的基本数据结构应该是 queue；
  *     2. 输入数据中可能有无限层级的嵌套，这是个典型的可以递归的场景。
