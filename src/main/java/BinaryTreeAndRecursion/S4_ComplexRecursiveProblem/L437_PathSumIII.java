@@ -53,7 +53,7 @@ public class L437_PathSumIII {
     private static int pathSumWithNode(TreeNode node, int sum) {  // 返回以 node 为根的二叉树中有几条从 node 到任意节点，且节点和为 sum 的 path
         if (node == null) return 0;
         int count = 0;
-        if (node.val == sum) count++;  // 找到一条目标路径，但不能就此 return ∵ 后面的路径上可能有正、负数节点值，加在一起又等于 sum
+        if (node.val == sum) count++;  // 找到一个解，但不能就此返回 ∵ 后面的路径上可能有正、负数节点值，加在一起又等于 sum
         count += pathSumWithNode(node.left, sum - node.val);
         count += pathSumWithNode(node.right, sum - node.val);
         return count;
@@ -64,19 +64,19 @@ public class L437_PathSumIII {
      * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，即二叉树上的区间求和问题 ∴ 同样可采用 Prefix Sum 技巧来
      *   优化性能，例如 test case 1 中 pathSum(3->3) = pathSum(10->5->3->3) - pathSum(10->5)。
      * - 推演：路径 10 -> 5 -> 3 -> -10 的 path 的推演过程如下：
-     *            10         - map(0:1), preSum=10, count = map.get(10-8) = 0
+     *            10         - map(0:1), preSum=10, map.get(10-8)=0 ∴ count=0
      *           /  \
-     *          5   -3       - map(0:1,10:1), preSum=15, count = map.get(15-8) = 0
+     *          5   -3       - map(0:1,10:1), preSum=15, map.get(15-8)=0 ∴ count=0
      *         / \    \
-     *        3   2   11     - map(0:1,10:1,15:1), preSum=18, count = map.get(18-8) = 1
+     *        3   2   11     - map(0:1,10:1,15:1), preSum=18, map.get(18-8)=1 ∴ count=1
      *       / \   \
-     *      3 -10   1        - map(0:1,10:1,15:1), preSum=8, count = map.get(8-8) = 1
+     *      3 -10   1        - map(0:1,10:1,15:1), preSum=8, map.get(8-8)=1 ∴ count=2
      *
-     * - 👉 总结：该题与 L560 都是 Prefix Sum 和 Two Sum 思想的经典应用。
+     * - 👉 总结：该题与 L560_SubarraySumEqualsK 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int pathSum2(TreeNode root, int sum) {
-        Map<Integer, Integer> map = new HashMap<>();  // 存储 <prefixSum, count>
+        Map<Integer, Integer> map = new HashMap<>();  // Map<prefixSum, count>
         map.put(0, 1);
         return helper2(root, sum, 0, map);
     }
@@ -88,7 +88,7 @@ public class L437_PathSumIII {
         int count = map.getOrDefault(preSum - sum, 0);  // 检查 Map 中 complement 的个数（即查找该路径上有几个子路径和能让 preSum - 子路径和 == sum）
         map.merge(preSum, 1, Integer::sum);       // 在 Map 中插入或更新 prefix sum 的频率，相当于 map.put(preSum, map.getOrDefault(preSum, 0) + 1);
 
-        count += helper2(root.left, sum, preSum, map);  // 递归处理左右子树
+        count += helper2(root.left, sum, preSum, map);  // 递归处理左右子树，并将结果累积在 count 上
         count += helper2(root.right, sum, preSum, map);
 
         map.merge(preSum, -1, Integer::sum);      // 注意在回溯到上一层之前将 prefix sum 的频率-1以恢复原状，相当于 map.put(preSum, map.get(preSum) - 1);
