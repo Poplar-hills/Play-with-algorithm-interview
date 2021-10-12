@@ -18,8 +18,8 @@ import Utils.Helpers.TreeNode;
 public class L110_BalancedBinaryTree {
     /*
      * 解法1：DFS (Recursion)
-     * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树的高度差 <= 1” ∴ 按照该定义设计程序，自下而上为每个节点
-     *   计算其左右子树的高度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
+     * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树的高度差 <= 1” ∴ 按照该定义设计程序，只要任意子树不平衡，
+     *   则整棵树都不平衡 ∴ 自下而上为每个节点计算其左右子树的高度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
      * - 实现：每层递归返回结构为 Pair<ifBalanced, currDepth>：
      *   - ifBalanced 表示以当前节点为根的二叉树是否平衡值；
      *   - currDepth 表示以当前节点为根的二叉树的最大高度；
@@ -50,16 +50,16 @@ public class L110_BalancedBinaryTree {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced2(TreeNode root) {
-        return getBalanceInfo2(root) != -1;
+        return maxDepthDiff(root) != -1;
     }
 
-    private static int getBalanceInfo2(TreeNode root) {
+    private static int maxDepthDiff(TreeNode root) {
         if (root == null) return 0;
-        int lInfo = getBalanceInfo2(root.left);
-        if (lInfo == -1) return -1;  // 不同于解法1，若一边子树已经不是平衡的，则没有必要再对另一子树执行 getBalanceInfo
-        int rInfo = getBalanceInfo2(root.right);
-        if (rInfo == -1) return -1;
-        return Math.abs(lInfo - rInfo) <= 1 ? Math.max(lInfo, rInfo) + 1 : -1;
+        int lDiff = maxDepthDiff(root.left);
+        if (lDiff == -1) return -1;  // 不同于解法1，若一边子树已经不是平衡的，则没有必要再对另一子树执行 getBalanceInfo
+        int rDiff = maxDepthDiff(root.right);
+        if (rDiff == -1) return -1;
+        return Math.abs(lDiff - rDiff) <= 1 ? Math.max(lDiff, rDiff) + 1 : -1;
     }
 
     /*
