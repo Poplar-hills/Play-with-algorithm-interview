@@ -84,7 +84,7 @@ public class L25_ReverseNodesInKGroup {
             curr = curr.next;
         }
 
-        ListNode[] reversed = reverseKNodes(head, k);  // 反向本组中的节点
+        ListNode[] reversed = reverseKNodes(head, k);  // 反向本组中的节点，返回 [本组最后一个节点, 下一组的第一个节点]
         ListNode newHead = reversed[0];
         ListNode rest = reversed[1];
 
@@ -93,7 +93,7 @@ public class L25_ReverseNodesInKGroup {
     }
 
     private static ListNode[] reverseKNodes(ListNode head, int k) {
-        if (k == 1) return new ListNode[]{head, head.next};  // 递归到底后返回 [最后一个节点, 最后一个节点的下一个节点]
+        if (k == 1) return new ListNode[]{head, head.next};  // 递归到底后返回 [本组最后一个节点, 下一组的第一个节点]
         ListNode[] reversed = reverseKNodes(head.next, --k);
         head.next.next = head;  // 将 A -> B -> C 改为 A <-> B   C
         head.next = null;       // 将 A <-> B   C 改为 A <- B   C
@@ -118,7 +118,7 @@ public class L25_ReverseNodesInKGroup {
                 stack.push(curr);
                 curr = curr.next;
             }                         // 入栈 k 个节点后，curr 停在 k+1 节点处 ∴ 当本组反向完成后，可以直接继续入栈下一组
-            if (stack.size() == k) {  // 若够了 k 个则开始反向
+            if (stack.size() == k) {  // 若够了 k 个则开始反向，若不够则 curr 一定走到了 null 上 ∴ 可以直接退出，不够一组的节点就留在 Stack 里
                 while (!stack.isEmpty()) {
                     prev.next = stack.pop();  // 通过 Stack 反向输出链表节点
                     prev = prev.next;
