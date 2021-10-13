@@ -76,7 +76,7 @@ public class L39_CombinationSum {
      *      2|
      *       0                                      - 找到解 [2,2,2,2]
      *
-     * - 注意：∵ 题中说了 nums 中的元素可以被使用无限多次 ∴ 👆说"5节点不再考虑分支2，只考虑 >= 3 的分支"时是要包含3的分支的。
+     * - 👉 注意：∵ 题中说了 nums 中的元素可以被使用无限多次 ∴ 👆说"5节点不再考虑分支2，只考虑 >= 3 的分支"时是要包含3的分支的。
      *   ∴ 在向下递归时要传的是 j，而非 j+1（这是与 L40 的不同点）。
      * - 时间复杂度 << O(n^n)，空间复杂度 O(target)。
      * */
@@ -116,7 +116,7 @@ public class L39_CombinationSum {
     public static List<List<Integer>> combinationSum3(int[] nums, int target) {
         List<List<Integer>> res = new ArrayList<>();
         if (nums == null || nums.length == 0) return res;
-        Arrays.sort(nums);  // 先对 nums 排序
+        Arrays.sort(nums);  // 先对 nums 排序（若不先排序，那下面就不能把 nums[j]<=target 的条件放在 for 中，只能放在 for 内部）
         backtrack3(nums, target, 0, new ArrayList<>(), res);
         return res;
     }
