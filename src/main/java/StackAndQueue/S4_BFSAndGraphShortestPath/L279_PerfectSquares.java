@@ -27,17 +27,18 @@ public class L279_PerfectSquares {
      *                                + ← ← 4 → → 3            + ← ← 4 → →  4
      *        n=4 时最短路径为1       n=5 时最短路径为2          n=6 时最短路径为3
      * - 💎 要点：
-     *   1. 求无权图中两点的最短路径可使用 BFS（若是带权图的最短路径问题则可使用 Dijkstra）；
+     *   1. 求无权图中两点的最短路径可使用 BFS/DFS（若是带权图的最短路径问题则可使用 Dijkstra，若是带权图里还存在负权边则应
+     *      使用 Bellman-Ford）；
      *   2. 无权图上进行的 BFS 时，第一次访问某个顶点时的路径一定是从起点到该顶点的最短路径（当然可能存在多个最短路径，
      *      如👆n=6 的例子中 6 → 5 → 1 → 0 和 6 → 2 → 1 → 0 都是最短路径）。
-     *   3. 注意避免重复访问顶点，如 6 → 5 → 1 和 6 → 2 → 1，若没有 visited 数组，则顶点1会被入队、处理两遍。
+     *   3. 注意避免重复访问顶点，如 6 → 5 → 1 和 6 → 2 → 1，若没有 visited 数组，则顶点1会被入队、访问2遍。
      * - 时间复杂度 O(n * sqrt(n))，空间复杂度 O(n)。
      * */
     public static int numSquares(int n) {
         if (n <= 0) return 0;
 
-        Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点的步数>
-        q.offer(new Pair<>(n, 0));                             // 顶点 n 作为 BFS 的起点
+        Queue<Pair<Integer, Integer>> q = new LinkedList<>();  // Pair<顶点, 从起点到该顶点的最小步数>
+        q.offer(new Pair<>(n, 0));                             // 顶点 n 作为 BFS 的起点，n 到 n 的最小步数为0
         boolean[] visited = new boolean[n + 1];                // ∵ 顶点取值范围是 [0,n] ∴ 要开 n+1 的空间
         visited[n] = true;
 
@@ -93,7 +94,7 @@ public class L279_PerfectSquares {
     /*
      * 解法2：Recursion + Memoization（DFS with cache）
      * - 思路：👆超时解的问题在于大量子问题会被重复计算 ∴ 加入 Memoization 机制来优化重叠子问题。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n * sqrt(n))，空间复杂度 O(n)。
      * */
     public static int numSquares2(int n) {
         int[] minSteps = new int[n + 1];  // minSteps[i] 保存顶点 i 到0的最少步数（∵ 顶点取值范围是 [0,n] ∴ 要开 n+1 的空间）
@@ -128,7 +129,7 @@ public class L279_PerfectSquares {
      *                ⓪                    - dp[0] = 0
      * - 💎 DP vs. Memoization：DP 是 bottom-up 的，从子问题开始求解，而解法2的 DFS + Memorization 是 top-down，
      *   即先从高层次问题入手，递归到最基本问题后再开始往上逐层解决（SEE: https://zhuanlan.zhihu.com/p/68059061）。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n * sqrt(n))，空间复杂度 O(n)。
      * */
     public static int numSquares3(int n) {
         int[] dp = new int[n + 1];
