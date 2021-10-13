@@ -27,8 +27,8 @@ public class L40_CombinationSumII {
      * - 思路：将组合问题转化为树形问题，采用回溯搜索求解。
      * - 💎 实现：L39_CombinationSum 中的限制是不能产生重复解，而该题中除了该限制之外还多了不能重复使用 num 的限制。因此：
      *   a). 为了不重复使用元素，有2种方法：
-     *     1. 对于排列来说，可使用 boolean[] used 来排除使用过的元素（L46_Permutations 解法2、L47_PermutationsII 解法4、5）；
-     *     2. 对于组合来说，可在分支时不回头，让下层递归在遍历 nums 时的起始位置+1（本题本解法）；
+     *     1. 使用 boolean[] used 来排除使用过的元素（L46_Permutations 解法2、L47_PermutationsII 解法4、5）；
+     *     2. 在每层分支时不回头，让下层递归在遍历 nums 时的起始位置+1（本题本解法）；
      *   b). 为了不产生重复解，有2种方法：
      *     1. 在最后用 Set 对解去重（复杂度高）；
      *     2. 使用 inner Set 在遍历元素进行分支时跳过相同的元素（L47_PermutationsII 解法4）。
