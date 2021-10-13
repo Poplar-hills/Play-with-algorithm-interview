@@ -10,7 +10,7 @@ import static Utils.Helpers.log;
 /*
  * Contains Duplicate II
  *
- * - 对于整型数组 nums 和整数 k，是否存在索引 i 和 j，使得 nums[i] == nums[j]，且 i 和 j 之差不超过 k。
+ * - 对于整型数组 nums 和整数 k，是否存在索引 i 和 j，使得 nums[i] == nums[j]，且 abs(i - j) <= k。
  * */
 
 public class L219_ContainsDuplicateII {
@@ -47,13 +47,13 @@ public class L219_ContainsDuplicateII {
      * - 时间复杂度 O(n)，空间复杂度 O(k)。
      * */
     public static boolean containsNearbyDuplicate2(int[] nums, int k) {
-        Set<Integer> set = new HashSet<>();  // 用查找表作为窗口（最多存 k 个元素）
+        Set<Integer> window = new HashSet<>();  // 用查找表作为窗口（最多存 k 个元素）
 
         for (int i = 0; i < nums.length; i++) {
-            if (set.contains(nums[i])) return true;
-            set.add(nums[i]);
-            if (set.size() == k + 1)         // Set 中元素个数达到 k+1 之前只添加不删除（巧妙之处）
-                set.remove(nums[i - k]);
+            if (window.contains(nums[i])) return true;
+            window.add(nums[i]);
+            if (window.size() == k + 1)         // Set 中元素个数达到 k+1 之前只添加不删除（巧妙之处）
+                window.remove(nums[i - k]);
         }
 
         return false;
@@ -61,14 +61,14 @@ public class L219_ContainsDuplicateII {
 
     /*
      * 解法3：查找表 Map
-     * - 思路：∵ 要找的是索引差在 k 之内的重复元素 ∴ 可以利用 Map.put() 方法，在插入元素时，若已存在则返回其之前的索引，
+     * - 思路：∵ 要找的是索引差在 k 之内的重复元素 ∴ 可以利用 map.put() 方法，在插入元素时，若已存在则返回其之前的索引，
      *   并判断与当前的索引之差是否小于 k。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean containsNearbyDuplicate3(int[] nums, int k) {
-        Map<Integer, Integer> map = new HashMap<>();
+        Map<Integer, Integer> indexMap = new HashMap<>();
         for (int i = 0; i < nums.length; i++) {
-            Integer index = map.put(nums[i], i);  // 若 map 中之前已有 key 为 nums[i] 的 entry 则会返回其 value，否则返回 null
+            Integer index = indexMap.put(nums[i], i);  // 若 nums[i] 在 indexMap 中已存在则返回其之前的 index，否则返回 null
             if (index != null && i - index <= k)
                 return true;
         }
