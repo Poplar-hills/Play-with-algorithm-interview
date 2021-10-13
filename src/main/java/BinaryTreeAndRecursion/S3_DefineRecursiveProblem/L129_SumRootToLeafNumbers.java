@@ -56,7 +56,7 @@ public class L129_SumRootToLeafNumbers {
 
     /*
      * 解法2：DFS (Recursion)
-     * - 思路：从根节点开始从上到下逐层累积当前 path 的 pathNum，当到达叶子节点时加到外部的 sum 上去。
+     * - 思路：从根节点开始从上到下逐层累积当前 path 的 prefixNum，当到达叶子节点时加到外部的 sum 上去。
      *            4                   f(4,0)
      *           / \                  ↙    ↘
      *          9   0    --->     f(9,4)  f(0,4)    - sum += 40
@@ -73,20 +73,20 @@ public class L129_SumRootToLeafNumbers {
         return sum;
     }
 
-    private static void helper2(TreeNode root, int pathNum) {
+    private static void helper2(TreeNode root, int prefixNum) {
         if (root == null) return;
-        pathNum = pathNum * 10 + root.val;
+        prefixNum = prefixNum * 10 + root.val;
         if (root.left == null && root.right == null) {
-            sum += pathNum;
+            sum += prefixNum;
             return;
         }
-        helper2(root.left, pathNum);
-        helper2(root.right, pathNum);
+        helper2(root.left, prefixNum);
+        helper2(root.right, prefixNum);
     }
 
     /*
      * 解法3：DFS (Recursion) (解法2的简化版，最优解)
-     * - 思路：与解法2一致，也是从上到下在每个节点上累积当前 path 的 pathNum。
+     * - 思路：与解法2一致，也是从上到下在每个节点上累积当前 path 的 prefixNum。
      * - 实现：与解法2不同，该解法不使用外部变量记录，而是让每个递归函数 f(n, num) 都返回以 num 为基数、以 n 为根的二叉树的
      *   sum of root to leaf numbers，即每个递归函数是一个完整的子问题，从而最终从下到上递推出原问题的解：
      *            4                  f(4,0)                    1026
@@ -104,16 +104,16 @@ public class L129_SumRootToLeafNumbers {
         return helper3(root, 0);
     }
 
-    private static int helper3(TreeNode root, int pathNum) {  // 返回以 pathNum 为基数、以 root 为根的二叉树的 root-to-leaf numbers 之和
+    private static int helper3(TreeNode root, int prefixNum) {  // 返回以 prefixNum 为基数、以 root 为根的二叉树的 root-to-leaf numbers 之和
         if (root == null) return 0;
-        pathNum = pathNum * 10 + root.val;
-        if (root.left == null && root.right == null) return pathNum;
-        return helper3(root.left, pathNum) + helper3(root.right, pathNum);
+        prefixNum = prefixNum * 10 + root.val;
+        if (root.left == null && root.right == null) return prefixNum;
+        return helper3(root.left, prefixNum) + helper3(root.right, prefixNum);
     }
 
     /*
      * 解法4：DFS (Iteration)
-     * - 思路：与解法2、3一致，都是将当前路径的 pathNum 带在每个节点上，一层层往下传递。
+     * - 思路：与解法2、3一致，都是将当前路径的 prefixNum 带在每个节点上，一层层往下传递。
      * - 实现：只需将 Stack 替换为 Queue 就得到了 BFS 解法。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -126,14 +126,14 @@ public class L129_SumRootToLeafNumbers {
         while (!stack.isEmpty()) {
             Pair<TreeNode, Integer> p = stack.pop();
             TreeNode node = p.getKey();
-            int pathNum = p.getValue() * 10 + node.val;
+            int prefixNum = p.getValue() * 10 + node.val;
 
             if (node.left == null && node.right == null)
-                sum += pathNum;
+                sum += prefixNum;
             if (node.left != null)
-                stack.push(new Pair<>(node.left, pathNum));
+                stack.push(new Pair<>(node.left, prefixNum));
             if (node.right != null)
-                stack.push(new Pair<>(node.right, pathNum));
+                stack.push(new Pair<>(node.right, prefixNum));
         }
 
         return sum;
