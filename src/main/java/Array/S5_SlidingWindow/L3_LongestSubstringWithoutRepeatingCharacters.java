@@ -235,7 +235,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     /*
-     * 解法8：滑动窗口 + Map 记录字符索引（解法7的另一种写法，可读性更好，最优解）
+     * 解法8：滑动窗口 + Map 记录字符索引（解法7的另一种写法，可读性更好，最优解🥇）
      * - 思路：与解法7一致。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -243,7 +243,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         if (s == null || s.isEmpty()) return 0;
         int l = 0, r = 0, maxLen = 1;     // maxLen 从1开始
         char[] chars = s.toCharArray();
-        Map<Character, Integer> indexMap = new HashMap<>();  // 记录 <字符, 该字符最新的索引>
+        Map<Character, Integer> indexMap = new HashMap<>();  // Map<字符, 该字符的最新索引>
         indexMap.put(chars[0], 0);        // 预先放入第0个字符
 
         while (r < chars.length - 1) {    // r 最大只能到最后一个字符，否则下面 ++r 会越界
