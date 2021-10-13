@@ -44,12 +44,12 @@ public class L455_AssignCookies {
         Arrays.sort(s);
 
         int i = 0, j = 0, count = 0;
-        while (i < g.length && j < s.length) {  // 若饼干或小朋友用尽则 return count
+        while (i < g.length && j < s.length) {  // 若饼干或小朋友任一用尽则 return count
             if (s[j] >= g[i]) {  // 若能满足第 i 个小朋友则 count++、i++
                 count++;
                 i++;
             }
-            j++;  // ∵ 小朋友是升序排序，若 s[j] 满足不了该小朋友则一定也无法满足后面的小朋友 ∴ 跳过该饼干
+            j++;  // ∵ 小朋友的贪心指数是升序排列，若 s[j] 满足不了该小朋友则一定也无法满足后面的小朋友 ∴ 跳过该饼干
         }
 
         return count;
@@ -79,8 +79,8 @@ public class L455_AssignCookies {
     /*
      * 解法3：TreeMap
      * - 思路：要让最多的小朋友开心，只需为每个小朋友从饼干中找到 ≥ 且最接近其贪心指数的饼干（即 >= g[i] 的最小 s[j]），这可以
-     *   联想到 BST 上的 ceil 操作（在树上查找大于某个值的最小节点），进而可知有这种操作的数据结构就是 TreeMap。∴ 采用 TreeMap
-     *   作为该解法的辅助数据结构，并使用其上的 ceilingKey() 方法。
+     *   联想到 BST 上的 ceiling 操作（在树上查找大于某个值的最小节点，即 sTree.ceiling(g[i])，而 ∵ 可能有多块 size 相同的
+     *   饼干 ∴ 需要记录不同 size 的饼干的个数 ∴ 需采用 TreeMap 为饼干构建 frequency map。
      * - 语法：TreeMap 上的是 .ceilingKey() 方法；TreeSet 上的是 .ceiling() 方法（SEE: L220_ContainsDuplicateIII）。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(m)，其中 n = len(g), m = len(s)。
      * */
