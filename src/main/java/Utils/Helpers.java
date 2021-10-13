@@ -315,8 +315,8 @@ public class Helpers {
      * Pair 类（copy from javafx.util）
      * */
     public static class Pair<K,V> {
-        private K key;
-        private V value;
+        private final K key;
+        private final V value;
 
         public Pair(K key, V value) {
             this.key = key;

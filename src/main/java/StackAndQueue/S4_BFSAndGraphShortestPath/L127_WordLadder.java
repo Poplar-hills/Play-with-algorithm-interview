@@ -65,8 +65,8 @@ public class L127_WordLadder {
      * - 思路：与解法1一致，使用 BFS。
      * - 实现：解法1的问题在于同一个顶点会被重复访问（例如，顶点 A、B 都与 C 相邻，当分别为 A、B 寻找相邻顶点时，C 会被入队2次）。
      *   ∴ 需要一个 Set 记录哪些顶点还未被访问过，并且在寻找相邻顶点时只在该 Set 中寻找。
-     * - 注意：当需要一边遍历 Set，一边增/删其中元素（动态增删）时，不能使用 for、while、forEach，需要使用 iterator。
-     * - 优化：更简单的做法是使用 Set 记录已经访问过的顶点，这样就不需要入队之后将访问的顶点从 Set 中移除。
+     * - 👉 注意：当需要一边遍历 Set，一边增/删其中元素（动态增删）时，不能使用 for、while、forEach，需要使用 iterator。
+     * - 优化：更简单的做法是使用 Set 记录已经访问过的顶点，这样即不需要复制 wordList 也不需要在入队之后将访问的顶点从 Set 中移除。
      * - 时间复杂度 O(n^2 * l)，其中 l 为单词长度；空间复杂度 O(n)。
      * */
     public static int ladderLength1(String beginWord, String endWord, List<String> wordList) {
