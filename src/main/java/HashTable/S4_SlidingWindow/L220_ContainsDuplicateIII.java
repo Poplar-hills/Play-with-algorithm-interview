@@ -42,8 +42,8 @@ public class L220_ContainsDuplicateIII {
 
         for (int i = 0; i < nums.length; i++) {  // 使用 Set 作为窗口就不用声明 l、r 指针了，直接逐个遍历元素即可
             long num = (long) nums[i], T = (long) t;
-            Long ceiling = window.ceiling(num), floor = window.floor(num);  // 获取 num 在窗口内的 ceiling, floor
-
+            Long ceiling = window.ceiling(num), floor = window.floor(num);  // 获取窗口内 num 的 ceiling、floor；注意要用
+                                                                          // Long 接返回值 ∵ 可能为 null
             if ((ceiling != null && ceiling <= num + T) || (floor != null && floor >= num - T))
                 return true;
 
