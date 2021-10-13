@@ -149,17 +149,17 @@ public class L23_MergeKSortedLists {
     /*
      * 解法5：使用 PriorityQueue 模拟 merge sort
      * - 思路：与解法1不同，该解法不一次性将所有节点放入 PriorityQueue 中排序，而是先将 k 个链表的头节点放入比较，之后不断将
-     *   堆中最小的节点出队，再将其下一个节点入队，以此方式模拟 merge sort 过程。
+     *   堆中最小的节点出队链到结果链表上，之后再将其下一个节点入队，以此方式模拟 merge sort 过程。
      * - 实现：与解法1不同，该解法不需要在最后让 curr.next = null ∵ 该解法不是一次性将整个链表的所有节点都放入 pq 中排序，
      *   而是每次只放入下一个节点 ∴ 不会出现把同一个链表后面的节点放到前面的情况（例如解法1运行 test case 2 则会将得到：
      *   -2 -----> -1 -----> -1 -----> -1，导致如果不让 curr.next = null，则第二个-1还连着最后一个-1导致成环）。
      *              |         |         |
      *          最后一个-1  第一个-1   第二个-1
-     * - 时间复杂度 O(nlogk)，空间复杂度 O(k)。其中 k 为链表个数，n 为所有节点数。
+     * - 时间复杂度 O(klogk + nlogk)，空间复杂度 O(k)。其中 k 为链表个数，n 为所有节点数。
      * */
     public static ListNode mergeKLists5(ListNode[] lists) {
         PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));  // 相当于 (a, b) -> a.val - b.val
-        for (ListNode head : lists)   // 把 k 个链表装入最小堆中，因此堆操作的复杂度为 O(logk)
+        for (ListNode head : lists)   // 把 k 个链表的头节点装入最小堆中，复杂度为 O(klogk)
             if (head != null)         // 跳过空链表
                 pq.offer(head);       // 链表头节点进入堆中后会进行排序
 
