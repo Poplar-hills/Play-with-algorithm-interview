@@ -66,8 +66,7 @@ public class L49_GroupAnagrams {
             char[] chars = s.toCharArray();
             Arrays.sort(chars);                         // O(klogk)
             String sortedStr = String.valueOf(chars);   // 用 char[] 构建 String 的方法
-            if (!map.containsKey(sortedStr))
-                map.put(sortedStr, new ArrayList<>());  // 可简写为：map.putIfAbsent(sortedStr, new ArrayList<>());
+            map.putIfAbsent(sortedStr, new ArrayList<>());  // putIfAbsent = if (!map.containsKey(..)) map.put(..)
             map.get(sortedStr).add(s);
         }
 

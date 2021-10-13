@@ -146,7 +146,7 @@ public class L560_SubarraySumEqualsK {
         map.put(0, 1);                                // 用于 sum == k 的情况（例如👆sum=10 的情况）
 
         for (int n : nums) {                          // 使用 two sum 查找表的话，只需遍历一次（one-pass）
-            sum += n;
+            sum += n;                                 // 累积 preSum
             int complement = sum - k;                 // 得到其 complement（sum - complement == k）
             if (map.containsKey(complement))
                 count += map.get(complement);         // map 中 complement 的频次即是能与 sum 相加 == k 的 subarray 的个数
