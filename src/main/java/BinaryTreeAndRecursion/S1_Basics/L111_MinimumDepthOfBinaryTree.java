@@ -70,17 +70,17 @@ public class L111_MinimumDepthOfBinaryTree {
         q.offer(new Pair<>(root, 1));
 
         while (!q.isEmpty()) {
-            Pair<TreeNode, Integer> pair = q.poll();
-            TreeNode node = pair.getKey();
-            int level = pair.getValue();
+            Pair<TreeNode, Integer> p = q.poll();
+            TreeNode node = p.getKey();
+            int depth = p.getValue();
 
             if (node.left == null && node.right == null)
-                return level;
+                return depth;
 
             if (node.left != null)
-                q.offer(new Pair<>(node.left, level + 1));
+                q.offer(new Pair<>(node.left, depth + 1));
             if (node.right != null)
-                q.offer(new Pair<>(node.right, level + 1));
+                q.offer(new Pair<>(node.right, depth + 1));
         }
 
         throw new IllegalArgumentException("No solution");
@@ -114,7 +114,7 @@ public class L111_MinimumDepthOfBinaryTree {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
-        log(minDepth(t1));
+        log(minDepth2(t1));
         /*
          * expects 2.
          *      3
@@ -125,7 +125,7 @@ public class L111_MinimumDepthOfBinaryTree {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2});
-        log(minDepth(t2));
+        log(minDepth2(t2));
         /*
          * expects 2. (左右子树只有一边的情况)
          *      1
