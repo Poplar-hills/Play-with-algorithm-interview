@@ -131,11 +131,11 @@ public class L2_AddTwoNumbers {
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{2, 4, 3});
         ListNode l2 = createLinkedList(new int[]{5, 6, 4, 1});
-        printLinkedList(addTwoNumbers0(l1, l2));   // expects 7->0->8->1->NULL
+        log(addTwoNumbers(l1, l2));   // expects 7->0->8->1->NULL
 
         ListNode l3 = createLinkedList(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
         ListNode l4 = createLinkedList(new int[]{7});
-        printLinkedList(addTwoNumbers0(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
+        log(addTwoNumbers(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
     }
 }
 

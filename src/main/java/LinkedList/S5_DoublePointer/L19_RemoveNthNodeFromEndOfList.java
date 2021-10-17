@@ -98,15 +98,15 @@ public class L19_RemoveNthNodeFromEndOfList {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(removeNthFromEnd(l1, 2));  // expects 1->2->3->5->NULL
+        log(removeNthFromEnd(l1, 2));  // expects 1->2->3->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3});
-        printLinkedList(removeNthFromEnd(l2, 3));  // expects 2->3->NULL
+        log(removeNthFromEnd(l2, 3));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1});
-        printLinkedList(removeNthFromEnd(l3, 2));  // expects 1->NULL (n 越界的 case)
+        log(removeNthFromEnd(l3, 2));  // expects 1->NULL (n 越界的 case)
 
         ListNode l4 = createLinkedList(new int[]{});
-        printLinkedList(removeNthFromEnd(l4, 2));  // expects NULL
+        log(removeNthFromEnd(l4, 2));  // expects NULL
     }
 }

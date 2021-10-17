@@ -60,9 +60,9 @@ public class L83_RemoveDuplicatesFromSortedList {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 1, 2});
-        printLinkedList(deleteDuplicates2(l1));  // expects 1->2->NULL
+        log(deleteDuplicates2(l1));  // expects 1->2->NULL
 
         ListNode l2 = createLinkedList(new int[]{0, 1, 1, 1, 2, 3, 3});
-        printLinkedList(deleteDuplicates2(l2));  // expects 0->1->2->3->NULL
+        log(deleteDuplicates2(l2));  // expects 0->1->2->3->NULL
     }
 }

@@ -25,6 +25,8 @@ public class Helpers {
         System.out.println(sb.toString());
     }
 
+    public static void log(ListNode head) { System.out.println(head); }
+
     public static void log(TreeNode node) { System.out.println(node == null ? null : node.getVal()); }
 
     public static <E> void swap(E[] arr, int i, int j) {  // generic swap 方法（但不支持原始类型）
@@ -136,6 +138,20 @@ public class Helpers {
                 curr = curr.next;
             return curr;
         }
+
+        @Override
+        public String toString() {  // 打印链表
+            StringBuilder s = new StringBuilder();
+            ListNode curr = this;
+            while (curr != null) {
+                s.append(curr.val);
+                s.append("->");
+                curr = curr.next;
+            }
+            s.append("NULL");
+            return s.toString();
+        }
+
     }
 
     /*
@@ -149,20 +165,6 @@ public class Helpers {
             curr = curr.next;
         }
         return dummyHead.next;
-    }
-
-    /*
-     * 打印链表
-     * */
-    public static void printLinkedList(ListNode head) {
-        StringBuilder s = new StringBuilder();
-        while (head != null) {
-            s.append(head.val);
-            s.append("->");
-            head = head.next;
-        }
-        s.append("NULL");
-        log(s.toString());
     }
 
     /*

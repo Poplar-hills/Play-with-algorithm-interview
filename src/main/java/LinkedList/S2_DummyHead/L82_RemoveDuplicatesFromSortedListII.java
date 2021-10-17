@@ -191,15 +191,15 @@ public class L82_RemoveDuplicatesFromSortedListII {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 3, 3, 4, 4, 5});
-        printLinkedList(deleteDuplicates6(l1));  // expects 1->2->5->NULL
+        log(deleteDuplicates6(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 1, 1, 2, 3});
-        printLinkedList(deleteDuplicates6(l2));  // expects 2->3->NULL
+        log(deleteDuplicates6(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 1});
-        printLinkedList(deleteDuplicates6(l3));  // expects NULL
+        log(deleteDuplicates6(l3));  // expects NULL
 
         ListNode l4 = createLinkedList(new int[]{});
-        printLinkedList(deleteDuplicates6(l4));  // expects NULL
+        log(deleteDuplicates6(l4));  // expects NULL
     }
 }

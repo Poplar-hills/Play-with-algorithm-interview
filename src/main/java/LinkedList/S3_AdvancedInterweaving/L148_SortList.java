@@ -175,12 +175,12 @@ public class L148_SortList {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{5, 1, 6, 4, 2, 7, 3});
-        printLinkedList(sortList3(l1));  // expects 1->2->3->4->5->6->7->NULL
+        log(sortList3(l1));  // expects 1->2->3->4->5->6->7->NULL
 
         ListNode l2 = createLinkedList(new int[]{4, 2, 1, 3});
-        printLinkedList(sortList3(l2));  // expects 1->2->3->4->NULL
+        log(sortList3(l2));  // expects 1->2->3->4->NULL
 
         ListNode l3 = createLinkedList(new int[]{-1, 5, 3, 4, 0});
-        printLinkedList(sortList3(l3));  // expects -1->0->3->4->5->NULL
+        log(sortList3(l3));  // expects -1->0->3->4->5->NULL
     }
 }

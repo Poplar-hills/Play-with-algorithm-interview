@@ -165,15 +165,15 @@ public class L25_ReverseNodesInKGroup {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-        printLinkedList(reverseKGroup3(l1, 2));  // expects 2->1->4->3->NULL
+        log(reverseKGroup3(l1, 2));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4});
-        printLinkedList(reverseKGroup3(l2, 3));  // expects 3->2->1->4->NULL
+        log(reverseKGroup3(l2, 3));  // expects 3->2->1->4->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7, 8});
-        printLinkedList(reverseKGroup3(l3, 3));  // expects 3->2->1->6->5->4->7->8->NULL. (最后一组不够3个 ∴ 应该保持不变)
+        log(reverseKGroup3(l3, 3));  // expects 3->2->1->6->5->4->7->8->NULL. (最后一组不够3个 ∴ 应该保持不变)
 
         ListNode l4 = createLinkedList(new int[]{1, 2, 3});
-        printLinkedList(reverseKGroup3(l4, 1));  // expects 1->2->3->NULL
+        log(reverseKGroup3(l4, 1));  // expects 1->2->3->NULL
     }
 }

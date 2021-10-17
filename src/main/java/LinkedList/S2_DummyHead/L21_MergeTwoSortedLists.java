@@ -107,10 +107,10 @@ public class L21_MergeTwoSortedLists {
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 4});
         ListNode l2 = createLinkedList(new int[]{3, 4, 5});
-        printLinkedList(mergeTwoLists(l1, l2));  // expects 1->2->3->4->4->5->NULL
+        log(mergeTwoLists(l1, l2));  // expects 1->2->3->4->4->5->NULL
 
         ListNode l3 = createLinkedList(new int[]{5});
         ListNode l4 = createLinkedList(new int[]{1, 2, 4});
-        printLinkedList(mergeTwoLists(l3, l4));  // expects 1->2->4->5->NULL
+        log(mergeTwoLists(l3, l4));  // expects 1->2->4->5->NULL
     }
 }

@@ -99,10 +99,10 @@ public class L445_AddTwoNumbersII {
     public static void main(String[] args) {
         ListNode l3 = createLinkedList(new int[]{2, 4, 3});
         ListNode l4 = createLinkedList(new int[]{1, 5, 6, 4});
-        printLinkedList(addTwoNumbers2(l3, l4));   // expects 1->8->0->7->NULL
+        log(addTwoNumbers2(l3, l4));   // expects 1->8->0->7->NULL
 
         ListNode l5 = createLinkedList(new int[]{5});
         ListNode l6 = createLinkedList(new int[]{5});
-        printLinkedList(addTwoNumbers2(l5, l6));   // expects 1->0->NULL
+        log(addTwoNumbers2(l5, l6));   // expects 1->0->NULL
     }
 }

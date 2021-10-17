@@ -123,18 +123,18 @@ public class L61_RotateList {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight3(l1, 2));   // expects 4->5->1->2->3->NULL
+        log(rotateRight3(l1, 2));   // expects 4->5->1->2->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight3(l2, 7));   // expects 4->5->1->2->3->NULL
+        log(rotateRight3(l2, 7));   // expects 4->5->1->2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        printLinkedList(rotateRight3(l3, 0));   // expects 1->2->3->4->5->NULL
+        log(rotateRight3(l3, 0));   // expects 1->2->3->4->5->NULL
 
         ListNode l4 = createLinkedList(new int[]{1});
-        printLinkedList(rotateRight3(l4, 1));   // expects 1->NULL
+        log(rotateRight3(l4, 1));   // expects 1->NULL
 
         ListNode l5 = createLinkedList(new int[]{1});
-        printLinkedList(rotateRight3(l5, 99));  // expects 1->NULL
+        log(rotateRight3(l5, 99));  // expects 1->NULL
     }
 }

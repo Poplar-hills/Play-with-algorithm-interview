@@ -117,14 +117,14 @@ public class L143_ReorderList {
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
         reorderList3(l1);
-        printLinkedList(l1);  // expects 1->5->2->4->3->NULL
+        log(l1);  // expects 1->5->2->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4});
         reorderList3(l2);
-        printLinkedList(l2);  // expects 1->4->2->3->NULL
+        log(l2);  // expects 1->4->2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3});
         reorderList3(l3);
-        printLinkedList(l3);  // expects 1->3->1->1->1->1->2->3->1->NULL
+        log(l3);  // expects 1->3->1->1->1->1->2->3->1->NULL
     }
 }

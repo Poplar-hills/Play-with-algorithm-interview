@@ -179,16 +179,16 @@ public class L23_MergeKSortedLists {
         ListNode l2 = createLinkedList(new int[]{1, 3, 4});
         ListNode l3 = createLinkedList(new int[]{2, 6});
         ListNode res = mergeKLists2(new ListNode[]{l1, l2, l3});
-        printLinkedList(res);   // expects 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
+        log(res);   // expects 1->1->2->3->4->4->5->6->NULL
 
         ListNode l4 = createLinkedList(new int[]{-2, -1, -1, -1});
         ListNode l5 = createLinkedList(new int[]{});
         ListNode res2 = mergeKLists2(new ListNode[]{l4, l5});
-        printLinkedList(res2);  // expects -2 -> -1 -> -1 -> -1
+        log(res2);  // expects -2 -> -1 -> -1 -> -1 -> NULL
 
         ListNode l6 = createLinkedList(new int[]{});
         ListNode l7 = createLinkedList(new int[]{});
         ListNode res3 = mergeKLists2(new ListNode[]{l6, l7});
-        printLinkedList(res3);  // expects null
+        log(res3);  // expects null
     }
 }

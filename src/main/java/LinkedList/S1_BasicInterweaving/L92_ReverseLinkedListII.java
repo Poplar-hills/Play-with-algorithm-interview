@@ -220,12 +220,12 @@ public class L92_ReverseLinkedListII {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7});
-        printLinkedList(reverseBetween(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
+        log(reverseBetween(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
 
         ListNode l2 = createLinkedList(new int[]{3, 5});
-        printLinkedList(reverseBetween(l2, 1, 2));  // expects 5->3->NULL
+        log(reverseBetween(l2, 1, 2));  // expects 5->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{5});
-        printLinkedList(reverseBetween(l3, 1, 1));  // expects 5->NULL
+        log(reverseBetween(l3, 1, 1));  // expects 5->NULL
     }
 }
