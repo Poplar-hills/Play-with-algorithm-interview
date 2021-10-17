@@ -219,9 +219,11 @@ public class L130_SurroundedRegions {
         }
 
         public int find(int p) {
-            while (parents[p] != p)
+            while (parents[p] != p) {
                 parents[p] = parents[parents[p]];  // path compression 优化，不断将 p 连接到祖父节点上（与父节点同层）
-            return parents[p];
+                p = parents[p];                    // 跳过 p 原本的父节点，直接从爷爷节点继续遍历
+            }
+            return p;
         }
 
         public boolean isConnected(int p, int q) {

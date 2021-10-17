@@ -19,7 +19,7 @@ public class Helpers {
         StringBuilder sb = new StringBuilder();
         for (char[] arr : twoDArr) {
             for (char c : arr)
-                sb.append(c + " ");
+                sb.append(c).append(" ");
             sb.append("\n");
         }
         System.out.println(sb.toString());
