@@ -59,9 +59,8 @@ public class L142_LinkedListCycleII {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-//        l1.get(3).next = l1.get(1);
-        log(l1);  // expects 2
-//        log(detectCycle(l1).val);  // expects 2
+        l1.get(3).next = l1.get(1);
+        log(detectCycle(l1).val);  // expects 2
         /*
          *   1 → 2 → 3 → 4
          *       ↑       |

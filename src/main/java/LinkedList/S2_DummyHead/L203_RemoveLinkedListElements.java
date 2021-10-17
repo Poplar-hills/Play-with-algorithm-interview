@@ -20,9 +20,10 @@ public class L203_RemoveLinkedListElements {
         ListNode prev = dummyHead, curr = head;
 
         while (curr != null) {
-            if (curr.val == val) continue;
-            prev.next = new ListNode(curr.val);  // 创建新节点
-            prev = prev.next;
+            if (curr.val != val) {
+                prev.next = new ListNode(curr.val);  // 创建新节点
+                prev = prev.next;
+            }
             curr = curr.next;
         }
 
@@ -75,7 +76,7 @@ public class L203_RemoveLinkedListElements {
 
     public static void main(String[] args) {
         ListNode l = createLinkedList(new int[]{1, 2, 6, 3, 4, 5, 6});
-        log(removeElements(l, 6));  // expects 1->2->3->4->5->NULL  //TODO 无限循环
+        log(removeElements(l, 6));  // expects 1->2->3->4->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{6, 6});
         log(removeElements(l2, 6));  // expects NULL
