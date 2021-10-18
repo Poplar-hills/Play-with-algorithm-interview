@@ -32,10 +32,9 @@ public class L199_BinaryTreeRightSideView {
         q.offer(root);
 
         while (!q.isEmpty()) {
-            int size = q.size();
-            for (int i = 0; i < size; i++) {
+            for (int i = 0, s = q.size(); i < s; i++) {
                 TreeNode node = q.poll();
-                if (i == size - 1) res.add(node.val);  // 将该层的最后一个节点放入 res 中
+                if (i == s - 1) res.add(node.val);  // 将该层的最后一个节点放入 res 中
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
@@ -46,8 +45,10 @@ public class L199_BinaryTreeRightSideView {
 
     /*
      * 解法2：递归
-     * - 思路：∵ 树的每一层要拿出一个节点放到 res 中的对应位置上（如第0层的节点放到 res[0] 上、第1层出一个节点放到 res[1] 上）。
-     *   ∴ 在向 res 添加元素时，若对应位置上已有元素则用 List.set 进行替换，若没有则用 List.add 添加。
+     * - 思路：∵ 从右看到的所有节点在树的每层上各有一个，相当于每层要拿出一个节点放到结果列表 res 中的对应位置上（如第1层的节点
+     *   放到 res[0] 上、第2层出一个节点放到 res[1] 上，即 res[i] 代表第 i+1 层的最右节点）∴ 在使用 DFS 递归遍历树上节点时，
+     *   只需带上节点深度信息，然后在访问每个节点时，要么向 res 添加元素（访问一层最左侧节点时），要么替换 res 中对应位置的节点
+     *   （访问一层除去最左侧节点时），从而最后在 res 中留下来的都是每层的最右侧节点。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
      * */
     public static List<Integer> rightSideView2(TreeNode root) {

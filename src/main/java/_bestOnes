@@ -5,6 +5,7 @@
   - L11_ContainerWithMostWater
   - L3_LongestSubstringWithoutRepeatingCharacters
   - L560_SubarraySumEqualsK
+  - L350_IntersectionOfTwoArraysII
 
 - LinkedList (12/22): L2, L83, L86, L92, L206, L21, L82, L24, L25, S4, L19, L61
   - L92_ReverseLinkedListII
@@ -40,6 +41,7 @@
   - L113_PathSumIII
   - L98_ValidateBinarySearchTree
   - L450_DeleteNodeInBST
+  - L199_BinaryTreeRightSideView
 
 - RecursionAndBackTracking (10/19): L17, L93, L46, L47, L39, L40, L78, L90, L79, L130
   - L46_Permutations
