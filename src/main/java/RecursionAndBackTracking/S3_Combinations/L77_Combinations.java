@@ -9,6 +9,7 @@ import java.util.List;
  * Combinations
  *
  * - Given two integers n and k, return all possible combinations of k numbers out of 1...n.
+ *   （用 1-n 中的 k 个数字能组成多少种组合）
  *
  * - 注：组合不关注顺序，即 [1,2] 和 [2,1] 是同一个组合。
  * */
