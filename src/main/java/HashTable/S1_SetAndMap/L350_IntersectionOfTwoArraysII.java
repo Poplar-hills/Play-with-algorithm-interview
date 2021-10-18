@@ -8,6 +8,7 @@ import static Utils.Helpers.log;
  * Intersection of Two Arrays II
  *
  * - Given two arrays, write a function to compute their intersection.
+ *
  * - 注意：与 L349_IntersectionOfTwoArrays 要求不同的是，返回的数组是不去重的，SEE test case 1。
  * */
 
@@ -17,16 +18,15 @@ public class L350_IntersectionOfTwoArraysII {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int[] intersect(int[] nums1, int[] nums2) {
-        Map<Integer, Integer> map = new HashMap<>();
-        List<Integer> list = new ArrayList<>();
-
+        Map<Integer, Integer> freq = new HashMap<>();
         for (int n : nums1)
-            map.put(n, map.getOrDefault(n, 0) + 1);
+            freq.merge(n, 1, Integer::sum);  // freq.put(n, freq.getOrDefault(n, 0) + 1);
 
-        for (int m : nums2) {
-            if (map.getOrDefault(m, 0) > 0) {
-                list.add(m);
-                map.put(m, map.get(m) - 1);
+        List<Integer> list = new ArrayList<>();
+        for (int n : nums2) {
+            if (freq.getOrDefault(n, 0) > 0) {
+                list.add(n);
+                freq.merge(n, -1, Integer::sum);  // freq.put(n, freq.get(n) - 1);
             }
         }
 
@@ -63,5 +63,8 @@ public class L350_IntersectionOfTwoArraysII {
     public static void main(String[] args) {
         log(intersect(new int[]{1, 2, 2, 1}, new int[]{2, 2}));        // expects [2, 2]. 注意返回的数组是不去重的
         log(intersect(new int[]{4, 9, 5}, new int[]{9, 4, 9, 8, 4}));  // expects [4, 9] or [9, 4]
+        log(intersect(new int[]{1, 2}, new int[]{1, 1}));              // expects [1]
+        log(intersect(new int[]{3, 1, 2}, new int[]{1}));              // expects [1]
+        log(intersect(new int[]{2, 2, 4, 0, 3}, new int[]{3, 6, 1}));  // expects [3]
     }
 }
