@@ -10,13 +10,12 @@ import static Utils.Helpers.log;
  * - Given two arrays, write a function to compute their intersection.
  * - 注意：返回的数组应该是去重过的，SEE test case 1。
  *
- * - set 底层实现可以有3种：
+ * - Set 底层实现可以有3种：
  *            普通数组   顺序数组    平衡二分搜索树   哈希表
  *   - 插入     O(1)      O(n)       O(logn)      O(1)
  *   - 查找     O(n)      O(logn)    O(logn)      O(1)
  *   - 删除     O(n)      O(n)       O(logn)      O(1)
- *
- *   因此 set 各个操作的最低复杂度是 O(1)。
+ *   ∴ Set 各个操作的最低复杂度是 O(1)。
  * */
 
 public class L349_IntersectionOfTwoArrays {
@@ -26,9 +25,9 @@ public class L349_IntersectionOfTwoArrays {
      * */
     public static int[] intersection(int[] nums1, int[] nums2) {
         Set<Integer> set = new HashSet<>();
-        Set<Integer> intersection = new HashSet<>();
-
         for (int n : nums1) set.add(n);
+
+        Set<Integer> intersection = new HashSet<>();
         for (int m : nums2)
             if (set.contains(m))
                 intersection.add(m);
@@ -43,14 +42,14 @@ public class L349_IntersectionOfTwoArrays {
     /*
      * 解法2：set.retainAll()
      * - 思路：与解法1一致。
-     * - 关联：两个 Set 的常用操作：
-     *     1. Union:        set1.addAll(set2);
-     *     2. Intersection: set1.retainAll(set2);
-     *     3. Difference:   set1.removeAll(set2);
+     * - 👉 关联：Java 中两个 Set 的常用操作：
+     *     1. 取并集（Union）:         set1.addAll(set2);
+     *     2. 取交集（Intersection）:  set1.retainAll(set2);
+     *     3. 取差集（Difference）:    set1.removeAll(set2);
      * - 对比：在 JS 中:
-     *     1. Union:        new Set([...set1, ...set2])
-     *     2. Intersection: new Set([...set1].filter(_ => set2.has(_)))
-     *     3. Difference:   new Set([...set1].filter(_ => !set2.has(_)))
+     *     1. 取并集（Union）:         new Set([...set1, ...set2])
+     *     2. 取交集（Intersection）:  new Set([...set1].filter(_ => set2.has(_)))
+     *     3. 取差集（Difference）:    new Set([...set1].filter(_ => !set2.has(_)))
      * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)。
      * */
     public static int[] intersection2(int[] nums1, int[] nums2) {
