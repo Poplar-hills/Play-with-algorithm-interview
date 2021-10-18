@@ -35,9 +35,7 @@ public class L141_LinkedListCycle {
 
     /*
      * 解法2：Faster and slower runner
-     * - 💎 总结：若链表有环，从头节点到入环点的距离是 D，环长是 S，则：
-     *   1. 当 fast、slow 首次相遇时循环一定刚好执行了 S 次；
-     *   2. fast、slow 的相遇点跟 D、S 都相关，不总在固定的地方相遇。
+     * - 💎 总结：若链表有环，从头节点到入环点的距离是 D，环长是 S，则 fast、slow 的相遇点跟 D、S 都相关，不总在固定的地方相遇。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static boolean hasCycle2(ListNode head) {

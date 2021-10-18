@@ -52,11 +52,6 @@ public class L142_LinkedListCycleII {
         return null;
     }
 
-
-    public static ListNode detectCycle0(ListNode head) {
-        return null;
-    }
-
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
         l1.get(3).next = l1.get(1);
