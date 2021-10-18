@@ -7,9 +7,9 @@ import static Utils.Helpers.log;
 /*
  * Word Ladder II
  *
- * - 题目与 L127 一致，区别在于要返回所有的最短路径。
+ * - 题目与 L127_WordLadder 一致，区别在于要返回所有的最短路径。
  *
- * - 👉该题是非常有助于理解 BFS、DFS 的各自优势和局限性，以及在如何各尽所能相互配合。
+ * - 👉 该题是非常有助于理解 BFS、DFS 的各自优势和局限性，以及在如何各尽所能相互配合。
  * */
 
 public class L126_WordLadderII {
