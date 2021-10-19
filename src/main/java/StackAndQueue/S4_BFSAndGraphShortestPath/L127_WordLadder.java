@@ -72,8 +72,8 @@ public class L127_WordLadder {
     public static int ladderLength1(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Set<String> unvisited = new HashSet<>(wordList);
-        Queue<Pair<String, Integer>> q = new LinkedList<>();
-        q.offer(new Pair<>(beginWord, 1));
+        Queue<Pair<String, Integer>> q = new LinkedList<>();  // Queue<Pair<word, stepCount>>
+        q.offer(new Pair<>(beginWord, 1));  // 注意 ∵ 题目要求 A -> B -> C 算3步而非2步 ∴ beginWord 的 stepCount 为1
 
         while (!q.isEmpty()) {                           // 最差情况下遍历了所有顶点才到达 endWord ∴ 时间复杂度 O(n)
             Pair<String, Integer> pair = q.poll();
@@ -265,12 +265,12 @@ public class L127_WordLadder {
 
     private static int bfs5(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
         Queue<Integer> q = new LinkedList<>();   // ∵ 邻接矩阵中的顶点使用 index 访问 ∴ BFS 遍历时队列中存储的也是顶点的 index
-        int[] steps = new int[wordList.size()];  // steps[i] 表示 beginWord 到 wordList 中的第 i 个单词的最短步数
+        int[] steps = new int[wordList.size()];  // steps[i] 表示从 beginWord 到 wordList 中第 i 个单词的最短步数
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
 
-        q.offer(beginIndex);
         steps[beginIndex] = 1;  // ∵ beginWord 也算一步 ∴ 初始化为1
+        q.offer(beginIndex);
 
         while (!q.isEmpty()) {
             int i = q.poll();
