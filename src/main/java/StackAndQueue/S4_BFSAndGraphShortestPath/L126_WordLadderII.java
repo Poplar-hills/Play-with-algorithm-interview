@@ -22,21 +22,21 @@ public class L126_WordLadderII {
      *   即通过 BFS 遍历从 beginWord 到 endWord 之间的所有路径 ∵ 第一次找到的路径一定是最短的 ∴ 在找到第一个路径之后再找到
      *   的路径要么不是最短，要么跟第一条一样长 ∴ 只需根据每条路径的长度进行判断，若长度超过最短路径长度，则直接抛弃即可，这样
      *   最后拿到的所有路径就都是最短路径。
-     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
     public static List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
         if (!wordList.contains(endWord)) return res;
 
         Set<String> visited = new HashSet<>();
-        Queue<List<String>> q = new LinkedList<>();    // Queue 中保存的是一条路径
+        Queue<List<String>> q = new LinkedList<>();  // Queue 中保存的是一条路径
         List<String> initialPath = new ArrayList<>();
 
         initialPath.add(beginWord);
         q.offer(initialPath);
         Integer minStep = null;  // 记录最短路径的长度，用于识别超过该长度的路径
 
-        while (!q.isEmpty()) {
+        while (!q.isEmpty()) {   // 遍历所有路径（若 branching factor 为 n，即每个节点有 n 个分支，则复杂度为 O(n^n)）
             List<String> path = q.poll();
             if (minStep != null && path.size() == minStep) continue;  // 若 q 中拿出来的 path 长度已经等于 minStep 则抛弃掉
             String lastWord = path.get(path.size() - 1);  // 从 path 中拿出最后一个 word，寻找其相邻顶点
@@ -65,16 +65,24 @@ public class L126_WordLadderII {
 
     /*
      * 解法2：构建邻接表 + BFS + DFS
-     * - 思路：BFS 在求解“单条最短路径步数”问题时非常好用，但对于“求所有最短路径”问题则会产生超高复杂度（👆超时解）。改进方法是
-     *   通过扩散性的 BFS 生成一个对 DFS 友好的辅助数据结构（即 L127_WordLadderII 解法5中的 steps 数组），记录从起点到达每个
-     *   顶点的最小步数，再基于该结构使用纵深性的 DFS 快速找到所有最短路径（即需要配合使用 BFS、DFS）。
+     * - 💎 思路：解法1的思路是使用 BFS 遍历两点间的所有路径，并在过程中比较长度，从而获得所有最短路径，但这种方式在
+     *   branching factor 较大时性能会显著下降。而另一种效率更高的思路是结合 BFS 和 DFS —— 先借助 BFS 的扩散性，快速
+     *   找到从起点到每个顶点的最小步数，再借助 DFS 的纵深性，沿着最小步数形成的最短路径以回溯法将所有最短路径输出出来。
      * - 实现：
      *   1. 在 BFS 之前要生成 graph，本解法中采用无向邻接表（Adjacency List），若用邻接矩阵则会超时。
-     *   2. 为了便于查找，本解法中的 steps 使用 Map 实现。
-     *   3. DFS 过程：从 beginWord 出发，借助 steps 中的信息查找哪个（或哪几个）相邻 word 是最短路径上的下一个顶点，如此重复
-     *      直到到达 endWord，并记录下沿途的顶点即可获得最短路径。
-     * - 👉 注意：DFS 的实现是基于回溯法的（SEE: https://mp.weixin.qq.com/s/sAutzAzhaGArkl2Ban5guA）。一般说起“回溯”，
-     *   指的也就是 DFS，这两个词是 interchangable 的。
+     *   2. 通过 BFS 生成的从起点到各顶点的最小步需要一个数据结构来承载，可以是类似 L127_WordLadderII 解法5中的 steps
+     *      数组，也可以是 Map。本解法中使用 Map 以便于检索。
+     *   3. DFS 过程：从 beginWord 出发，借助 stepMap 查找哪个或哪几个相邻 word 是最短路径上的下一个顶点，如此重复直到
+     *      到达 endWord，并记录下沿途的顶点即可获得最短路径。
+     * - 💎 总结：
+     *   1. 两点之间的最短路径，同时也是从起点到该路径上各顶点的最短路径，证明：
+     *            0 --- 1 --- 2 --- 3     起点: 4，终点: 3            0  1  2  3  4  5  6  7
+     *            |   /______/    / |     顶点4到其他各顶点的最短步数：[2, 2, 2, 3, 1, 2, 3, 4]
+     *            | /           /   |     可见，从4到3的最短路径：
+     *            4 --- 5 --- 6 --- 7       - 4->2->3：同时也是从4到2的最短路径
+     *            |___________|             - 4->6->3：同时也是从4到6的最短路径
+     *      这是本题的关键点，只有这点成立，"实现"中的第3点才能成立。
+     *   2. 所有 DFS 的实现都是基于回溯法的，而说起"回溯"，指的也就是 DFS，这两个词是 interchangeable 的。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * - 👉 注意：一般来说 DFS、BFS 的时间复杂度都是 O(V+E)，但具体要看数据结构，对于邻接矩阵是 O(V^2)，对于邻接表是 O(V+E)。
      * */
@@ -83,10 +91,10 @@ public class L126_WordLadderII {
         if (!wordList.contains(endWord)) return res;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
-        // Step 1: 构建无向邻接表
+        // Step 1: 构建无向邻接表，O(n^2)
         List<List<Integer>> graph = buildGraph(wordList);
 
-        // Step 2: 通过 BFS 生成 stepMap
+        // Step 2: 通过 BFS 生成 stepMap，O(n)
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
         Map<Integer, Integer> stepMap = bfs(graph, beginIndex, wordList);
@@ -126,7 +134,7 @@ public class L126_WordLadderII {
 
         while (!q.isEmpty()) {
             int i = q.poll();
-            for (int adj : graph.get(i)) {      // 基于 graph 遍历所有相邻顶点的 index
+            for (int adj : graph.get(i)) {  // 基于 graph 遍历所有相邻顶点的 index
                 if (!stepMap.containsKey(adj)) {  // 若 stepMap 中已有 adj，说明之前已找到了更短的路径 ∴ 不能再覆盖
                     stepMap.put(adj, stepMap.get(i) + 1);
                     q.offer(adj);
@@ -137,17 +145,17 @@ public class L126_WordLadderII {
         return stepMap;
     }
 
-    private static void dfs(List<List<Integer>> graph, int i, int endIndex, List<String> wordList,  // 每层递归找到最短路径上的一个顶点，放入 path
+    private static void dfs(List<List<Integer>> graph, int i, int endIndex, List<String> wordList,
                             Map<Integer, Integer> stepMap, List<Integer> path, List<List<String>> res) {
-        if (!path.isEmpty() && path.get(path.size() - 1) == endIndex) {  // 到达 endWord 时递归到底
-            res.add(getWords(path, wordList));  // 到达 endWord 时最短路径 path 被填充完整 ∴ 要为其中的每个 index 找到对应的 word，形成一个解
+        if (!path.isEmpty() && path.get(path.size() - 1) == endIndex) {  // 到达 endWord 时最短路径 path 被填充完整
+            res.add(getWords(path, wordList));             // 根据 path 中的 indexes 找到对应 words
             return;
         }
-        for (int adj : graph.get(i)) {                     // 遍历所有相邻顶点的 index
-            if (stepMap.get(adj) == stepMap.get(i) + 1) {  // 检查索引为 adj 的顶点是否是最短路径上的下一个顶点（保证 path 是最短路径；可能有多个最短路径）
+        for (int adj : graph.get(i)) {                     // 遍历所有相邻顶点的 index，找到最短路径上的下一个顶点，放入 path
+            if (stepMap.get(adj) == stepMap.get(i) + 1) {  // 关键点，检查索引为 adj 的顶点是否是最短路径上的下一个顶点
                 path.add(adj);
-                dfs(graph, adj, endIndex, wordList, stepMap, path, res);  // 从 adj 开始继续往深处搜索
-                path.remove(path.size() - 1);       // 返回上层递归之前将 adj 移除，恢复原来的状态（回溯的标志性操作）
+                dfs(graph, adj, endIndex, wordList, stepMap, path, res);
+                path.remove(path.size() - 1);       // 返回上层前先恢复状态，以继续寻找其他最短路径
             }
         }
     }
@@ -177,7 +185,7 @@ public class L126_WordLadderII {
      * - 💎 总结：
      *     1. BFS 的最大特点是从起点扩散性的向外逐层访问顶点 ∴ 最先到达终点的一定是最短路径，若存在多条最短路径，则它们都会在
      *        同一轮遍历（对最外圈顶点的遍历）中到达终点。
-     *     2. 该解法中的辅助数据结构使用 Map 表达树 —— 是一个很经典且常用的技巧。
+     *     3. 该解法中的辅助数据结构使用 Map 表达树 —— 是一个很经典且常用的技巧。
      * - 扩展：若该题目只求任意一条最短路径，则可以对 biDirBfs、dfs 方法进行改造，在找到第一条最短路径后就停止即可。
      * */
     public static List<List<String>> findLadders3(String beginWord, String endWord, List<String> wordList) {
@@ -189,12 +197,12 @@ public class L126_WordLadderII {
         Set<String> endSet = new HashSet<>();
         beginSet.add(beginWord);
         endSet.add(endWord);
-        HashMap<String, List<String>> adjMap = new HashMap<>();  // 用 Map 表达的树，记录 { 顶点: [所有相邻顶点] }
-        biDirBfs(beginSet, endSet, unvisited, adjMap, true);     // 通过双向 BFS 搜索各个顶点的相邻顶点，并放入 adjMap
+        HashMap<String, List<String>> adjMap = new HashMap<>();  // 用 Map 表达的树，记录 Map<顶点, List<所有相邻顶点>>
+        biDirBfs(beginSet, endSet, unvisited, adjMap, true);  // 通过双向 BFS 搜索各个顶点的相邻顶点，并放入 adjMap
 
-        List<String> path = new ArrayList<>();                   // 回溯中待填充的路径
+        List<String> path = new ArrayList<>();       // 回溯中待填充的路径
         path.add(beginWord);
-        dfs(beginWord, endWord, adjMap, path, res);              // 基于 adjMap 进行回溯搜索，生成最短路径，并放入 res
+        dfs(beginWord, endWord, adjMap, path, res);  // 基于 adjMap 进行回溯搜索，生成最短路径，并放入 res
 
         return res;
     }
