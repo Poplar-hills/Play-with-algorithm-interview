@@ -1,6 +1,7 @@
 package StackAndQueue.S4_BFSAndGraphShortestPath;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static Utils.Helpers.log;
 
@@ -60,41 +61,45 @@ public class L126_WordLadderII {
     /*
      * 解法1：构建邻接表 + BFS + DFS
      * - 思路：BFS 在求解“单条最短路径步数”问题时非常好用，但对于“求所有最短路径”问题则会产生超高复杂度（👆超时解）。改进方法是
-     *   通过扩散性的 BFS 生成一个对 DFS 友好的辅助数据结构（即 L127 解法5中的 steps 数组），记录从起点到达每个顶点的最小步数，
-     *   再基于该结构使用纵深性的 DFS 快速找到所有最短路径（即需要配合使用 BFS、DFS）。
+     *   通过扩散性的 BFS 生成一个对 DFS 友好的辅助数据结构（即 L127_WordLadderII 解法5中的 steps 数组），记录从起点到达每个
+     *   顶点的最小步数，再基于该结构使用纵深性的 DFS 快速找到所有最短路径（即需要配合使用 BFS、DFS）。
      * - 实现：
-     *   1. 在 BFS 之前要生成 graph，而本解法中构建的 graph 是无向邻接表（Adjacency List），若用邻接矩阵则会超时。
+     *   1. 在 BFS 之前要生成 graph，本解法中采用无向邻接表（Adjacency List），若用邻接矩阵则会超时。
      *   2. 为了便于查找，本解法中的 steps 使用 Map 实现。
      *   3. DFS 过程：从 beginWord 出发，借助 steps 中的信息查找哪个（或哪几个）相邻 word 是最短路径上的下一个顶点，如此重复
      *      直到到达 endWord，并记录下沿途的顶点即可获得最短路径。
-     * - 👉注意：DFS 的实现是基于回溯法的（SEE: https://mp.weixin.qq.com/s/sAutzAzhaGArkl2Ban5guA）。一般说起“回溯”，
+     * - 👉 注意：DFS 的实现是基于回溯法的（SEE: https://mp.weixin.qq.com/s/sAutzAzhaGArkl2Ban5guA）。一般说起“回溯”，
      *   指的也就是 DFS，这两个词是 interchangable 的。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
-     * - 👉注意：一般来说 DFS、BFS 的时间复杂度都是 O(V+E)，但具体要看数据结构，对于邻接矩阵是 O(V^2)，对于邻接表是 O(V+E)。
+     * - 👉 注意：一般来说 DFS、BFS 的时间复杂度都是 O(V+E)，但具体要看数据结构，对于邻接矩阵是 O(V^2)，对于邻接表是 O(V+E)。
      * */
     public static List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
         if (!wordList.contains(endWord)) return res;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
+        
+        // Step 1: 先构建无向邻接表
+        List<List<Integer>> graph = buildGraph(wordList);
 
-        List<List<Integer>> graph = buildGraph(wordList);                // 先构建无向邻接表
-
+        // Step 2: 通过 BFS 来填充 steps Map
         int beginIndex = wordList.indexOf(beginWord);
         int endIndex = wordList.indexOf(endWord);
-        Map<Integer, Integer> steps = bfs(graph, beginIndex, wordList);  // 通过 BFS 来填充 steps map
+        Map<Integer, Integer> steps = bfs(graph, beginIndex, wordList);
 
-        List<Integer> path = new ArrayList<>(beginIndex);                // 回溯中待填充的路径（存储最短路径上每个顶点的 index）
-        dfs(graph, beginIndex, endIndex, wordList, steps, path, res);    // 通过 DFS 搜索填充 path，再转换成 word path 后放入 res
+        // Step 3: 通过 DFS 搜索填充 path，再转换成 word path 后放入 res
+        List<Integer> path = new ArrayList<>();  // 回溯中待填充的路径（存储最短路径上每个顶点的 index）
+        path.add(beginIndex);
+        dfs(graph, beginIndex, endIndex, wordList, steps, path, res);
 
         return res;
     }
 
-    private static List<List<Integer>> buildGraph(List<String> worList) {
+    private static List<List<Integer>> buildGraph(List<String> worList) {  // 邻接表的结构是个 List<List<Integer>>
         int n = worList.size();
         List<List<Integer>> graph = new ArrayList<>(n);
 
         for (int i = 0; i < n; i++)
-            graph.add(new ArrayList<>());   // 先为 graph 填充 n 个 list（这样后面就可以一次给两个 list 赋值，不需要遍历 n × n 次）
+            graph.add(new ArrayList<>());  // 先为 graph 填充 n 个 list（这样后面就可以一次给两个 list 赋值，不需要遍历 n × n 次）
 
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {  // j 从 i+1 开始，不重复的遍历 wordList 中所有的两两组合
@@ -130,7 +135,7 @@ public class L126_WordLadderII {
     private static void dfs(List<List<Integer>> graph, int i, int endIndex, List<String> wordList,  // 每层递归找到最短路径上的一个顶点，放入 path
                             Map<Integer, Integer> steps, List<Integer> path, List<List<String>> res) {
         if (!path.isEmpty() && path.get(path.size() - 1) == endIndex) {  // 到达 endWord 时递归到底
-            res.add(getWords(path, wordList));         // 到达 endWord 时最短路径 path 被填充完整 ∴ 要为其中的每个 index 找到对应的 word，形成一个解
+            res.add(getWords(path, wordList));  // 到达 endWord 时最短路径 path 被填充完整 ∴ 要为其中的每个 index 找到对应的 word，形成一个解
             return;
         }
         for (int adj : graph.get(i)) {                 // 遍历所有相邻顶点的 index
@@ -143,10 +148,7 @@ public class L126_WordLadderII {
     }
 
     private static List<String> getWords(List<Integer> path, List<String> wordList) {
-        List<String> wordPath = new ArrayList<>();
-        for (int i : path)
-            wordPath.add(wordList.get(i));
-        return wordPath;
+        return path.stream().map(wordList::get).collect(Collectors.toList());
     }
 
     private static boolean isSimilar(String w1, String w2) {
