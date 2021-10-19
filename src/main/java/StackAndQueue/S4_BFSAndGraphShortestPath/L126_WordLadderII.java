@@ -22,17 +22,16 @@ public class L126_WordLadderII {
      *   即通过 BFS 遍历从 beginWord 到 endWord 之间的所有路径 ∵ 第一次找到的路径一定是最短的 ∴ 在找到第一个路径之后再找到
      *   的路径要么不是最短，要么跟第一条一样长 ∴ 只需根据每条路径的长度进行判断，若长度超过最短路径长度，则直接抛弃即可，这样
      *   最后拿到的所有路径就都是最短路径。
-     * - 时间复杂度 O(n^n)：∵ 要遍历两点之间的所有路径，虽然有进行优化，但复杂度量级没变 —— 每找到一个相邻顶点都可能多出 n
-     *   种可能 ∴ 是 O(n^n)。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
         if (!wordList.contains(endWord)) return res;
 
         Set<String> visited = new HashSet<>();
-
         Queue<List<String>> q = new LinkedList<>();    // Queue 中保存的是一条路径
         List<String> initialPath = new ArrayList<>();
+
         initialPath.add(beginWord);
         q.offer(initialPath);
         Integer minStep = null;  // 记录最短路径的长度，用于识别超过该长度的路径
