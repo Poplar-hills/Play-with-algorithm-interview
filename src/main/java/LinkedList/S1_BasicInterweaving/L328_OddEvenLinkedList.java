@@ -63,24 +63,24 @@ public class L328_OddEvenLinkedList {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode oddEvenList2(ListNode head) {
-        ListNode odd = new ListNode(), oddHead = odd;
-        ListNode even = new ListNode(), evenHead = even;
-        ListNode curr = head;
+        if (head == null) return null;
+        ListNode oddDummyHead = new ListNode(), currOdd = oddDummyHead;
+        ListNode evenDummyHead = new ListNode(), currEven = evenDummyHead;
 
-        for (int i = 1; curr != null; i++) {
-            if (i % 2 == 0) {
-                even.next = curr;
-                even = even.next;
+        int i = 1;
+        for (ListNode curr = head; curr != null; curr = curr.next) {
+            if (i % 2 != 0) {
+                currOdd.next = curr;
+                currOdd = currOdd.next;
             } else {
-                odd.next = curr;
-                odd = odd.next;
+                currEven.next = curr;
+                currEven = currEven.next;
             }
-            curr = curr.next;
+            i++;
         }
-
-        even.next = null;
-        odd.next = evenHead.next;
-        return oddHead.next;
+        currOdd.next = evenDummyHead.next;
+        currEven.next = null;
+        return oddDummyHead.next;
     }
 
     public static void main(String[] args) {
