@@ -1,20 +1,19 @@
 
-- Array (11/17): S1, S2, S3, L11, L125, L3, L560
+- Array (13/17): S1, S2, S3 | L11, L125, L344, L345 | L3, L560
   - L80_RemoveDuplicatesII
   - L75_SortColors
   - L11_ContainerWithMostWater
   - L3_LongestSubstringWithoutRepeatingCharacters
   - L560_SubarraySumEqualsK
-  - L350_IntersectionOfTwoArraysII
 
-- LinkedList (12/22): L2, L83, L86, L92, L206, L21, L82, L24, L25, S4, L19, L61
+- LinkedList (15/22): L2, L83, L86, L92, L206, L445 | L21, L82 | L24, L25 | S4 | L19, L61 | L141, L142
   - L92_ReverseLinkedListII
   - L445_AddTwoNumbersII
   - L82_RemoveDuplicatesFromSortedListII
   - L25_ReverseNodesInKGroup
   - L61_RotateList
 
-- HashTable (13/20): L202, L205, L242, L290, L1, L15, S5, L49, L149, S4
+- HashTable (15/20): L202, L205, L242, L290, L349, L350 | L1, L15 | L49, L149 | S4 | S5
   - L205_IsomorphicStrings
   - L1_TwoSum
   - L15_3Sum
@@ -22,8 +21,9 @@
   - L220_ContainsDuplicateIII
   - L146_LRUCache
   - L460_LFUCache
+  - L350_IntersectionOfTwoArraysII
 
-- StackAndQueue (14/18): S1, S2, L102, L103, L107, L127, L279, L23, L347
+- StackAndQueue (16/18): S1, S2, S3, L126, L127, L279 | L23, L347
   - L341_FlattenNestedListIterator
   - L103_BinaryTreeZigzagLevelOrderTraversal
   - L107_BinaryTreeLevelOrderTraversalII
@@ -33,7 +33,7 @@
   - L347_TopKFrequentElements
   - L126_WordLadderII
 
-- BinaryTreeAndRecursion (12/19): L100, L101, L104, L110, S2, L113, L129, L113, L98, L230, L235, L450
+- BinaryTreeAndRecursion (15/19): L100, L101, L104, L110, L111, L222 | S2 | L113, L129 | S4 | L98, L230, L235, L450
   - L101_SymmetricTree
   - L104_MaximumDepthOfBinaryTree
   - L110_BalancedBinaryTree
@@ -44,7 +44,7 @@
   - L450_DeleteNodeInBST
   - L199_BinaryTreeRightSideView
 
-- RecursionAndBackTracking (10/19): L17, L93, L46, L47, L39, L40, L78, L90, L79, L130
+- RecursionAndBackTracking (12/19): L17, L93 | S2 | L39, L40, L77, L78, L90, L216 | S4 | L130
   - L46_Permutations
   - L47_PermutationsII
   - L39_CombinationSum
