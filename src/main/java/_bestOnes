@@ -23,6 +23,7 @@
   - L146_LRUCache
   - L460_LFUCache
   - L350_IntersectionOfTwoArraysII
+  - L451_SortCharactersByFrequency
 
 - StackAndQueue (16/18): S1, S2, S3, L126, L127, L279 | L23, L347
   - L341_FlattenNestedListIterator
