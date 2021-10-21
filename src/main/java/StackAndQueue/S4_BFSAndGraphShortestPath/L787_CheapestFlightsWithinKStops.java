@@ -22,14 +22,13 @@ public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法1：BFS
      * - 思路：非常 straightforward，从起点开始对由城市和航线组成的图进行完整的 BFS（遍历所有顶点，而不是到达了终点就提前结束），
-     *   并找到所有到达终点的路径里的最小 price。
-     * - 实现：
-     *     1. 要进行 BFS，需要先构建 graph，而 ∵ graph 的作用是在 BFS 时能够快速找到从任一 city 出发的所有航线（找相邻顶点），
-     *        即能按 city 进行查找 ∴ 其结构应该是 {city: List<flight>}；
-     *     2. 在 BFS 过程中，将路径的 price 和 stop 个数带在每个顶点上。
-     *     3. 在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 cheapestPrice，则需要进行剪枝，这是最关键的
-     *        性能优化点，否则会超时。
-     *     4. BFS 过程中不能对顶点使用类似 L127 中 visited/unvisited 的重复访问检查 ∵ 要找的是 price 最小的路径 ∴ 要
+     *   找到所有到达终点的路径，并返回其中最小的 price。
+     * - 实现：本解法采用先构建 graph，再在 graph 上进行 BFS 的方式实现：
+     *     1. ∵ graph 是用来在 BFS 时能根据任一 city 找到所有有航线连结的 cities（即找到所有相邻顶点）∴ graph 的结构应该
+     *        是 Map<city, List<flight>>。
+     *     2. ∵ 最终要求的是 price，且 stop 个数是限制条件 ∴ 在 BFS 过程中要将路径的 price 和 stop 个数带在每个顶点上。
+     *     3. 在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 cheapestPrice，则需要进行剪枝（否则会超时）。
+     *     4. ∵ 要求的是不同路径的最小 price ∴ BFS 过程中不能对顶点使用 visited/unvisited 的重复访问检查。
      * - 时间复杂度：O(V+E)，即 O(n+m)，其中 m 为航线条数（flights.length）：
      *     1. 构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)，即 O(m)；
      *     2. ∵ graph 更类似邻接表 ∴ 在 graph 上进行 BFS 是 O(V+E)，即 O(n+m)。
