@@ -34,7 +34,7 @@ public class L787_CheapestFlightsWithinKStops {
      *        对顶点使用 visited/unvisited 的重复访问检查。
      * - 💎 总结：本题与 L127_WordLadder 对照可发现：
      *   - 若是求无权图上的最短路径，则只需用 BFS 找到第一条到达终点的路径即可，分支时要对顶点做 vistied/unvisited 判断。
-     *   - 若是求带权图上的最小权路径，若要使用 BFS，则需遍历所有到达终点的路径，且分支时不能做 vistied/unvisited 判断。
+     *   - 若是求带权图上的最小权路径，若要使用 BFS/DFS，则需遍历所有到达终点的路径，且分支时不能做 vistied/unvisited 判断。
      * - 时间复杂度：O(V+E)，即 O(n+m)，其中 m 为航线条数（flights.length）：
      *     1. 构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)，即 O(m)；
      *     2. ∵ graph 更类似邻接表 ∴ 在 graph 上进行 BFS 是 O(V+E)，即 O(n+m)。
@@ -167,15 +167,15 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法5：Dijkstra
-     * - 思路：本题是个典型的带权图，而 Dijkstra 算法正适用于计算带权图的单元最短路径树（即从一个起点到每个顶点的最短路径）。
-     * - 实现：∵ 本题中需要的只是从起点到终点的最短路径，无需求出起点到每个顶点的最短路径 ∴ 无需对每个顶点进行 relaxation 操作
-     *   （∴ 该解法是不标准的 Dijkstra），只要按边的权值（price）从小到大的顺序访问每个顶点的相邻顶点，则第一条到达终点的路径
-     *    即是最短（cheapest price）路径。
-     * - 💎 Dijkstra vs. BFS：
-     *   1. 本题中的 Dijkstra 实现其实就是采用了 PriorityQueue 的 BFS；
-     *   2. Dijkstra 算法依赖于图的一个特性 —— 图上从 s → t 的最短路径同时也是从 s 到达该路径上任意一个顶点的最短路径。例如
-     *      test case 2 中，从 0 → 4 的最短路径同时也是 0 → 1、0 → 2 的最短路径 ∴ 反过来利用该特性，从 s 开始通过 BFS
-     *      一层层的查找每个顶点的最短邻边，就可以最快地找到 s → t 的最短路径；
+     * - 思路：本题是个典型的带权图，而 Dijkstra 算法正适用于计算带权图的单元最短路径树（即从一个起点到每个顶点的最小权路径）。
+     *   ∵ 本题中需要的只是从起点到终点的最短路径，无需求出起点到每个顶点的最短路径（最小权路径）∴ 无需对每个顶点进行
+     *   relaxation 操作（∴ 该解法是不标准的 Dijkstra），只要按边的权值（price）从小到大的顺序访问每个顶点的相邻顶点，
+     *   则第一条到达终点的路径即是最短（cheapest price）路径。
+     * - 💎 实现：
+     *   1. 该解法中的 Dijkstra 实现本质上是采用了 PriorityQueue 的 BFS；
+     *   2. 与 L126_WordLadderII 解法2一样，Dijkstra 算法也依赖于图的一个特性 —— 图上两点之间的最短路径，同时也是从起点
+     *      到该路径上各顶点的最短路径。若反过来利用该特性，从起点开始通过 BFS 一层层的查找每个顶点的最短邻边（最小权边），
+     *      就可以最快地找到两点之间的最短路径；
      *   3. 从另一个角度看，当图上所有边的权值都为1时，Dijkstra 算法就退化成了 BFS。
      * - 时间复杂度：标准的 Dijkstra 实现是 O(ElogV)，但该解法中：
      *   1. 构建 graph 需要遍历所有航线，即 O(m)，其中 m = flights.length；
@@ -187,18 +187,19 @@ public class L787_CheapestFlightsWithinKStops {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
             .collect(Collectors.groupingBy(f -> f[0]));
 
-        PriorityQueue<int[]> pq = new PriorityQueue<>((c1, c2) -> c1[1] - c2[1]);  // 基于 price 的最小堆
-        pq.offer(new int[]{src, 0, 0});     // 堆中存储 [city, price, numOfStop]
+        PriorityQueue<int[]> pq = new PriorityQueue<>((f1, f2) -> f1[1] - f2[1]);  // 基于 price 的最小堆
+        pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, totalPrice, stopCount]>
 
         while (!pq.isEmpty()) {
-            int[] curr = pq.poll();         // ∵ pq 是基于 price 的最小堆 ∴ 每次 poll 到的都是 price 最小的相邻 city
-            int city = curr[0], price = curr[1], numOfStop = curr[2];
+            int[] pathInfo = pq.poll();  // ∵ pq 是基于 totalPrice 的最小堆 ∴ 每次 poll 到的都是 totalPrice 最小的相邻 city
+            int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (city == dst) return price;  // 第一个到达终点的路径的 price 即是 cheapest price
-            if (!graph.containsKey(city) || numOfStop > K) continue;
+            if (city == dst) return totalPrice;  // 第一个到达终点的路径的 totalPrice 即是最低的 price
+            if (!graph.containsKey(city)) continue;
 
-            for (int[] f : graph.get(city))
-                pq.offer(new int[]{f[1], price + f[2], numOfStop + 1});
+            for (int[] flight : graph.get(city))
+                if (stopCount + 1 <= K)
+                    pq.offer(new int[]{flight[1], totalPrice + flight[2], stopCount + 1});
         }
 
         return -1;
@@ -282,8 +283,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice4(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice4(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice5(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice5(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = new int[][]{
             {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -299,9 +300,9 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice4(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice4(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice4(5, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice4(5, flights2, 2, 0, 4));   // expects -1
+        log(findCheapestPrice5(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice5(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice5(5, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice5(5, flights2, 2, 0, 4));   // expects -1
     }
 }
