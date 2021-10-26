@@ -109,33 +109,36 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法3：DFS
-     * - 思路：非常 straightforward，从起点开始对由城市和航线组成的图进行完整的 DFS，并找到所有到达终点的路径里的最小 price。
-     * - 实现：与解法1的唯一区别就是用 Stack 代替 Queue 实现 DFS。另外注意仍然要剪枝，否则会超时。
+     * - 思路：即解法1、2的 DFS 版，从 src 开始对图进行完整的 DFS，找到所有到达 dst 的路径里的最小 price。
+     * - 实现：与解法1的唯一区别就是用 Stack 代替 Queue 来实现 DFS 遍历。
      * - 时间复杂度：在邻接表上进行 DFS 是 O(V+E)，即 O(n+m)；空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
     public static int findCheapestPrice3(int n, int[][] flights, int src, int dst, int K) {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
             .collect(Collectors.groupingBy(f -> f[0]));
 
-        Stack<int[]> stack = new Stack<>();
-        stack.push(new int[]{src, 0, 0});
-        int cheapestPrice = Integer.MAX_VALUE;
+        Stack<int[]> stack = new Stack<>();  // Stack<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
+        stack.push(new int[]{src, 0, -1});   // 注意 stopCount 要从-1开始 ∵ K 表示的是不包含 src、dst 的步数
+        int minPrice = Integer.MAX_VALUE;
 
         while (!stack.isEmpty()) {
-            int[] curr = stack.pop();
-            int city = curr[0], price = curr[1], numOfStop = curr[2];
+            int[] pathInfo = stack.pop();
+            int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (!graph.containsKey(city) || numOfStop > K) continue;
+            if (city == dst)
+                minPrice = Math.min(minPrice, totalPrice);
 
-            for (int[] f : graph.get(city)) {
-                if (price + f[2] >= cheapestPrice) continue;      // 剪枝（Pruning）
-                if (f[1] == dst)
-                    cheapestPrice = Math.min(cheapestPrice, price + f[2]);
-                stack.push(new int[]{f[1], price + f[2], numOfStop + 1});
+            if (!graph.containsKey(city)) continue;
+
+            for (int[] flight : graph.get(city)) {
+                int newPrice = totalPrice + flight[2];
+                int newStopCount = stopCount + 1;
+                if (newPrice < minPrice && newStopCount <= K)
+                    stack.push(new int[]{flight[1], newPrice, newStopCount});
             }
         }
 
-        return cheapestPrice == Integer.MAX_VALUE ? -1 : cheapestPrice;
+        return minPrice == Integer.MAX_VALUE ? -1 : minPrice;
     }
 
     /*
@@ -283,8 +286,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice2(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice2(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice3(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice3(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = new int[][]{
             {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -300,9 +303,9 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice2(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice2(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice2(5, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice2(5, flights2, 2, 0, 4));   // expects -1
+        log(findCheapestPrice3(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice3(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice3(5, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice3(5, flights2, 2, 0, 4));   // expects -1
     }
 }
