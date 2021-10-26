@@ -30,7 +30,8 @@ public class L787_CheapestFlightsWithinKStops {
      *        b). 哈希表（Map<city, List<flight>>）：使用城市名称查询（如本解法中的情况）。
      *     2. ∵ 最终要求的是 price，且 stop 个数是限制条件 ∴ 在 BFS 过程中要将路径的 price 和 stop 个数带在每个顶点上。
      *        在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 minPrice，则进行剪枝。
-     *     3. ∵ 要求的是不同路径的最小 price ∴ BFS 过程中不能对顶点使用 visited/unvisited 的重复访问检查。
+     *     3. ∵ 要求的是不同路径的最小 price，而不同路径可能会经过相同的顶点（联想 Dijkstra 的松弛操作）∴ BFS 过程中不能
+     *        对顶点使用 visited/unvisited 的重复访问检查。
      * - 时间复杂度：O(V+E)，即 O(n+m)，其中 m 为航线条数（flights.length）：
      *     1. 构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)，即 O(m)；
      *     2. ∵ graph 更类似邻接表 ∴ 在 graph 上进行 BFS 是 O(V+E)，即 O(n+m)。
@@ -49,10 +50,8 @@ public class L787_CheapestFlightsWithinKStops {
             int[] pathInfo = q.poll();
             int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (city == dst)  // ∵ 要找到所有 src->dst 的路径 ∴ 当到一条通路之后不能 return
-                minPrice = Math.min(minPrice, totalPrice);
-
-            if (!graph.containsKey(city)) continue;  // 若没有从该 city 出发的航线则丢弃该路径（即无法到达 dst 的路径）
+            if (city == dst) minPrice = totalPrice;  // ∵ 要找到所有 src->dst 的路径 ∴ 当到一条通路之后不能 return
+            if (!graph.containsKey(city)) continue;  // 每次找到通路就直接赋值，下面的剪枝保证了这里取到的一定是最小 price
 
             for (int[] flight : graph.get(city)) {  // 遍历从 city 出发的所有航线
                 int newPrice = totalPrice + flight[2];
@@ -92,9 +91,7 @@ public class L787_CheapestFlightsWithinKStops {
                 int[] pathInfo = q.poll();
                 int city = pathInfo[0], totalPrice = pathInfo[1];
 
-                if (city == dst)
-                    minPrice = Math.min(minPrice, totalPrice);
-
+                if (city == dst) minPrice = totalPrice;
                 if (!graph.containsKey(city)) continue;
 
                 for (int[] flight : graph.get(city))
@@ -125,9 +122,7 @@ public class L787_CheapestFlightsWithinKStops {
             int[] pathInfo = stack.pop();
             int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (city == dst)
-                minPrice = Math.min(minPrice, totalPrice);
-
+            if (city == dst) minPrice = totalPrice;
             if (!graph.containsKey(city)) continue;
 
             for (int[] flight : graph.get(city)) {
@@ -146,27 +141,25 @@ public class L787_CheapestFlightsWithinKStops {
      * - 思路：与解法3一致。
      * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
-    private static int cheapestPrice;
+    private static int minPrice;
 
     public static int findCheapestPrice4(int n, int[][] flights, int src, int dst, int K) {
-        cheapestPrice = Integer.MAX_VALUE;     // 不在上面赋值是为了不让 test case 之间互相影响
+        minPrice = Integer.MAX_VALUE;     // 不在上面赋值是为了不让 test case 之间互相影响
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
             .collect(Collectors.groupingBy(f -> f[0]));
-        helper(graph, src, dst, K + 1, 0);
-        return cheapestPrice == Integer.MAX_VALUE ? -1 : cheapestPrice;
+        dfs4(graph, src, dst, 0, K + 1);
+        return minPrice == Integer.MAX_VALUE ? -1 : minPrice;
     }
 
-    private static void helper(Map<Integer, List<int[]>> graph, int city, int dst, int K, int currPrice) {
-        if (K < 0) return;
+    private static void dfs4(Map<Integer, List<int[]>> graph, int city, int dst, int totalPrice, int k) {
         if (city == dst) {
-            cheapestPrice = currPrice;  // 每次找到到达终点的路径就直接赋值，下面的剪枝保证了这里最后取到的是最小 price
+            minPrice = totalPrice;  // 每次找到到达终点的路径就直接赋值，下面的剪枝保证了这里最后取到的是最小 price
             return;
         }
         if (!graph.containsKey(city)) return;
-        for (int[] f : graph.get(city)) {
-            if (currPrice + f[2] >= cheapestPrice) continue;  // 剪枝（Pruning）
-            helper(graph, f[1], dst, K - 1, currPrice + f[2]);
-        }
+        for (int[] flight : graph.get(city))
+            if (totalPrice + flight[2] < minPrice && k > 0)
+                dfs4(graph, flight[1], dst, totalPrice + flight[2], k - 1);
     }
 
     /*
@@ -286,8 +279,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice3(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice3(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice4(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice4(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = new int[][]{
             {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -303,9 +296,9 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice3(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice3(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice3(5, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice3(5, flights2, 2, 0, 4));   // expects -1
+        log(findCheapestPrice4(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice4(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice4(5, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice4(5, flights2, 2, 0, 4));   // expects -1
     }
 }
