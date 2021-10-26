@@ -32,6 +32,9 @@ public class L787_CheapestFlightsWithinKStops {
      *        在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 minPrice，则进行剪枝。
      *     3. ∵ 要求的是不同路径的最小 price，而不同路径可能会经过相同的顶点（联想 Dijkstra 的松弛操作）∴ BFS 过程中不能
      *        对顶点使用 visited/unvisited 的重复访问检查。
+     * - 💎 总结：本题与 L127_WordLadder 对照可发现：
+     *   - 若是求无权图上的最短路径，则只需用 BFS 找到第一条到达终点的路径即可，分支时要对顶点做 vistied/unvisited 判断。
+     *   - 若是求带权图上的最小权路径，若要使用 BFS，则需遍历所有到达终点的路径，且分支时不能做 vistied/unvisited 判断。
      * - 时间复杂度：O(V+E)，即 O(n+m)，其中 m 为航线条数（flights.length）：
      *     1. 构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)，即 O(m)；
      *     2. ∵ graph 更类似邻接表 ∴ 在 graph 上进行 BFS 是 O(V+E)，即 O(n+m)。
