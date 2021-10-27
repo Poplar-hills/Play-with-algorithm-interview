@@ -215,6 +215,49 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     /*
+     * 解法6：Dijkstra
+     * */
+    public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
+        int[][] matrix = new int[n][n];   // adjacency matrix
+        for (int[] f : flights)
+            matrix[f[0]][f[1]] = f[2];    // matrix[src][dst] = price
+
+        int[] minPrices = new int[n];     // min prices from src to each city
+        int[] minStops = new int[n];      // min num of stops from src to each city
+        Arrays.fill(minPrices, Integer.MAX_VALUE);
+        Arrays.fill(minStops, Integer.MAX_VALUE);
+        minPrices[src] = 0;
+        minStops[src] = 0;
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((p1, p2) -> p1[1] - p2[1]);
+        pq.offer(new int[]{src, 0, 0});   // PriorityQueue<[city, totalPrice, stopCount]>
+
+        while (!pq.isEmpty()) {
+            int[] pathInfo = pq.poll();
+            int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
+
+            if (city == dst) return totalPrice;
+            if (stopCount == K + 1) continue;
+
+            // Examine and relax all neighboring edges if possible
+            for (int nei = 0; nei < n; nei++) {
+                if (matrix[city][nei] > 0) {  // price != 0 表示有从该 city 出发的航线
+                    int newPrice = totalPrice + matrix[city][nei];
+                    if (newPrice < minPrices[nei]) {
+                        pq.offer(new int[]{nei, newPrice, stopCount + 1});
+                        minPrices[nei] = newPrice;
+                    } else if (stopCount < minStops[nei]) {
+                        pq.offer(new int[]{nei, newPrice, stopCount + 1});
+                    }
+                    minStops[nei] = stopCount;
+                }
+            }
+        }
+
+        return minPrices[dst] == Integer.MAX_VALUE ? -1 : minPrices[dst];
+    }
+
+    /*
      * 解法7：Bellman-Ford
      * - 思路：虽然题中说了不会有负权边，但可以使用 Dijkstra 的场景就一定可以使用 Bellman-Ford（虽然算法复杂度大很多）。
      * - 原理：假设图中可能存在负权边，则经过更多顶点的路径可能总距离反而更短。这时 Dijkstra 的贪心策略就会失效，不再能保证
