@@ -53,15 +53,14 @@ public class L787_CheapestFlightsWithinKStops {
             int[] pathInfo = q.poll();
             int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (city == dst) minPrice = totalPrice;  // ∵ 要找到所有 src->dst 的路径 ∴ 当到一条通路之后不能 return
-            if (!graph.containsKey(city)) continue;  // 每次找到通路就直接赋值，下面的剪枝保证了这里取到的一定是最小 price
+            if (city == dst)
+                minPrice = Math.min(minPrice, totalPrice);   // ∵ 要找到所有 src->dst 的路径 ∴ 当到一条通路之后不能 return
+            if (!graph.containsKey(city) || stopCount == K)  // 剪枝（Pruning）
+                continue;
 
-            for (int[] flight : graph.get(city)) {  // 遍历从 city 出发的所有航线
-                int newPrice = totalPrice + flight[2];
-                int newStopCount = stopCount + 1;
-                if (newPrice < minPrice && newStopCount <= K)  // 剪枝（Pruning）
-                    q.offer(new int[]{flight[1], newPrice, newStopCount});
-            }
+            for (int[] flight : graph.get(city))        // 遍历从 city 出发的所有航线
+                if (totalPrice + flight[2] < minPrice)  // 剪枝
+                    q.offer(new int[]{flight[1], totalPrice + flight[2], stopCount + 1});
         }
 
         return minPrice == Integer.MAX_VALUE ? -1 : minPrice;
@@ -94,8 +93,10 @@ public class L787_CheapestFlightsWithinKStops {
                 int[] pathInfo = q.poll();
                 int city = pathInfo[0], totalPrice = pathInfo[1];
 
-                if (city == dst) minPrice = totalPrice;
-                if (!graph.containsKey(city)) continue;
+                if (city == dst)
+                    minPrice = Math.min(minPrice, totalPrice);
+                if (!graph.containsKey(city))
+                    continue;
 
                 for (int[] flight : graph.get(city))
                     if (totalPrice + flight[1] < minPrice)  // 剪枝（Pruning）
@@ -125,15 +126,14 @@ public class L787_CheapestFlightsWithinKStops {
             int[] pathInfo = stack.pop();
             int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (city == dst) minPrice = totalPrice;
-            if (!graph.containsKey(city)) continue;
+            if (city == dst)
+                minPrice = Math.min(minPrice, totalPrice);
+            if (!graph.containsKey(city) || stopCount == K)
+                continue;
 
-            for (int[] flight : graph.get(city)) {
-                int newPrice = totalPrice + flight[2];
-                int newStopCount = stopCount + 1;
-                if (newPrice < minPrice && newStopCount <= K)
-                    stack.push(new int[]{flight[1], newPrice, newStopCount});
-            }
+            for (int[] flight : graph.get(city))
+                if (totalPrice + flight[2] < minPrice)
+                    stack.push(new int[]{flight[1], totalPrice + flight[2], stopCount + 1});
         }
 
         return minPrice == Integer.MAX_VALUE ? -1 : minPrice;
@@ -176,13 +176,17 @@ public class L787_CheapestFlightsWithinKStops {
      *   1. 该解法中的 Dijkstra 实现本质上是采用了 PriorityQueue 的 BFS；
      *   2. 与 L126_WordLadderII 解法2一样，Dijkstra 算法也依赖于图的一个特性 —— 图上两点之间的最短路径，同时也是从起点
      *      到该路径上各顶点的最短路径。若反过来利用该特性，从起点开始通过 BFS 一层层的查找每个顶点的最短邻边（最小权边），
-     *      就可以最快地找到两点之间的最短路径：
-     *             + → → 5 → → ② → → 1 → → +
-     *             ↑          1 ↑           ↓    - 从 ① 到 ⑤ 的最短路径：每次都找最小权边，于是有 ①->③->②->⑤
-     *             ① → → 2 → → ③ → → 5 → →⑤    - 从 ① 到 ④ 的最短路径：每次都找最小权边 ①->③->②->⑤，但无法到达 ④
-     *             ↓          3 ↓           ↑      ∴ 在 ② 处选择权值倒数第二小的边 ①->③->②->④
-     *             + → → 6 → → ④ → → 2 → → +
-     *   3. 从另一个角度看，当图上所有边的权值都为1时，Dijkstra 算法就退化成了 BFS。
+     *      这样找到的第一条到达终点的路径即是两点之间的最短路径。演算过程：
+     *                    ①
+     *                 ↗  ↑  ↘          - 求从 ⓪ 到 ④ 的最短路径，K=2：每次都找最小权边，于是有 ⓪->②->①->④。
+     *            50↗   10↑     ↘10     - 求从 ⓪ 到 ④ 的最短路径，K=1：
+     *           ↗        ↑        ↘      1. 先沿着找最小权边走 ⓪->②->①，发现无法在 K 个中间点之内到达 ④ ∴ 回到
+     *         ⓪ →  →  → ② →  →  → ④       上一顶点 ②；
+     *           ↘   20   ↓   50   ↗      2. 从 ② 沿着权值倒数第二小的边走 ⓪->②->③，仍然无法在 K 个中间点之内到
+     *            60↘   30↓     ↗20          达 ④ ∴ 回到上一顶点 ②；
+     *                 ↘  ↓  ↗            3. 从 ② 沿着权值倒数第三小的边走 ⓪->②->④，可到达 ④ ∴ 得到最低价格60。
+     *                    ③
+     *   3. 从另一个角度看，当图上所有边的权值都相等时，Dijkstra 算法就退化成了 BFS。
      * - 时间复杂度：标准的 Dijkstra 实现是 O(ElogV)，但该解法中：
      *   1. 构建 graph 需要遍历所有航线，即 O(m)，其中 m = flights.length；
      *   2. 堆中存放的元素数 = 航线数 ∴ 其 offer、poll 操作为 O(logm)，一共进行 m 次 ∴ 是 O(mlogm)；
@@ -193,41 +197,40 @@ public class L787_CheapestFlightsWithinKStops {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
             .collect(Collectors.groupingBy(f -> f[0]));
 
-        PriorityQueue<int[]> pq = new PriorityQueue<>((f1, f2) -> f1[1] - f2[1]);  // 基于 totalPrice 的最小堆
-        pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, totalPrice, stopCount]>
+        PriorityQueue<int[]> pq = new PriorityQueue<>((p1, p2) -> p1[1] - p2[1]);  // 基于 totalPrice 的最小堆
+        pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
 
         while (!pq.isEmpty()) {
-            int[] pathInfo = pq.poll();  // ∵ pq 是基于 totalPrice 的最小堆 ∴ 每次 poll 到的都是 totalPrice 最小的相邻 city
+            int[] pathInfo = pq.poll();  // ∵ 每次 poll 出来的都是 pq 里从 src 出发 totalPrice 最小的路径
             int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
             if (city == dst) return totalPrice;  // 第一个到达终点的路径的 totalPrice 即是最低的 price
-            if (!graph.containsKey(city)) continue;
+            if (!graph.containsKey(city) || stopCount == K) continue;
 
             for (int[] flight : graph.get(city))
-                if (stopCount + 1 <= K)
-                    pq.offer(new int[]{flight[1], totalPrice + flight[2], stopCount + 1});
+                pq.offer(new int[]{flight[1], totalPrice + flight[2], stopCount + 1});
         }
 
         return -1;
     }
 
     /*
-     * 解法6：Bellman-Ford
+     * 解法7：Bellman-Ford
      * - 思路：虽然题中说了不会有负权边，但可以使用 Dijkstra 的场景就一定可以使用 Bellman-Ford（虽然算法复杂度大很多）。
      * - 原理：假设图中可能存在负权边，则经过更多顶点的路径可能总距离反而更短。这时 Dijkstra 的贪心策略就会失效，不再能保证
      *   第一条到达终点的路径就是最短的。此时的解决办法就是反复对所有边进行松弛操作，使得起点到每个顶点的距离逐步逼近其最短距离。
      *   过程演示 SEE：https://www.youtube.com/watch?v=obWXjtg0L64&vl=en（0'35''）。
      * - 实现：
-     *   1. 标准的 Bellman-Ford 算法会迭代 V-1 次，而本题中 ∵ V 与 K 的关系是 V = K+2 ∴ 应迭代 K+1 次；
-     *   2. ∵ 只迭代 K+1 次 ∴ 最终得到的 prices 会是一个中间状态，不会包含起点到所有顶点的最短路径 ∴ 需要做到每次迭代之间互不
-     *      影响 ∴ 需要在迭代开始之前先 copy 一份 prices，让迭代中的更新都发生在这份 copy 里，迭代结束之后再将其赋给 prices
-     *      （若是标准实现，迭代 V-1 次，则不需要这种处理，这一点通过 test case 1、2 可更好的理解）。
+     *   1. 标准的 Bellman-Ford 算法最多会迭代 V-1 次，而本题中 ∵ V 与 K 的关系是 V = K+2 ∴ 应迭代 K+1 次；
+     *   2. ∵ 只迭代 K+1 次 ∴ 最终得到的 prices 会是一个中间状态，不会包含起点到所有顶点的最短路径 ∴ 需要做到每次迭代之间
+     *      互不影响 ∴ 需要在迭代开始之前先 copy 一份 prices，让迭代中的更新都发生在这份 copy 里，迭代结束之后再将其赋给
+     *      prices（若是标准实现，迭代 V-1 次，则不需要这种处理，这一点通过 test case 1、2 可更好的理解）。
      * - 💎 Bellman-Ford vs. Dijkstra：
      *   1. 若图中存在负权边，则应使用 Bellman-Ford，否则使用 Dijkstra 效率更优；
-     *   2. Dijkstra 的实现是基于 BFS，而 Bellman-Ford 采用的是 DP 的思想，在多次迭代中趋近最优解。
+     *   2. Dijkstra 的实现是基于 BFS，而 Bellman-Ford 采用的是 DP 思想，在多次迭代中趋近最优解。
      * - 时间复杂度为 O(EV)，即 O(mn)，空间复杂度 O(V)，即 O(n)。
      * */
-    public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
+    public static int findCheapestPrice7(int n, int[][] flights, int src, int dst, int K) {
         int[] prices = new int[n];                       // Bellman-Ford 的基本形式是填充路径数组（标准的 Dijkstra 也是）
         Arrays.fill(prices, Integer.MAX_VALUE);
         prices[src] = 0;
@@ -247,7 +250,7 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     /*
-     * 解法7：DP
+     * 解法8：DP
      * - 思路：// TODO 补充状态转移方程
      *   - 子问题定义：f(k, c) 表示“在 k-1 个 stop 之内从起点 src 到达城市 c 的最小 price”；
      *         k\c |  0   1   2   3   4
@@ -262,7 +265,7 @@ public class L787_CheapestFlightsWithinKStops {
      *      ∴ 基于 ∞ 去更新目标顶点的最短路径仍会是 ∞。
      * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n^2)。
      * */
-    public static int findCheapestPrice7(int n, int[][] flights, int src, int dst, int K) {
+    public static int findCheapestPrice8(int n, int[][] flights, int src, int dst, int K) {
         long[][] dp = new long[K + 2][n];    // dp[k][c] 表示在 k-1 个 stop 内从 src 到达城市 c 的最小 price
         for (long[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
@@ -280,7 +283,7 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     public static void main(String[] args) {
-        int[][] flights1 = new int[][]{{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
+        int[][] flights1 = {{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
         /*
          *               ⓪
          *             ↙   ↘
@@ -292,9 +295,10 @@ public class L787_CheapestFlightsWithinKStops {
         log(findCheapestPrice5(3, flights1, 0, 2, 1));  // expects 200
         log(findCheapestPrice5(3, flights1, 0, 2, 0));  // expects 500
 
-        int[][] flights2 = new int[][]{
-            {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
-            {2, 1, 10}, {2, 4, 50}, {2, 3, 30}, {3, 4, 20}};
+        int[][] flights2 = {
+                {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
+                {2, 1, 10}, {2, 4, 50}, {2, 3, 30}, {3, 4, 20}
+        };
         /*
          *                 ①
          *              ↗  ↑  ↘
@@ -310,5 +314,12 @@ public class L787_CheapestFlightsWithinKStops {
         log(findCheapestPrice5(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
         log(findCheapestPrice5(5, flights2, 0, 4, 0));   // expects -1
         log(findCheapestPrice5(5, flights2, 2, 0, 4));   // expects -1
+
+        int[][] flights3 = {
+                {7, 5, 20}, {7, 6, 59}, {3, 1, 95}, {7, 0, 85}, {4, 7, 84}, {0, 7, 90},
+                {1, 0, 19}, {2, 5, 74}, {2, 3, 81}, {2, 0, 56}, {5, 1, 25}, {4, 0, 89},
+                {3, 6, 18}, {5, 2, 1},  {7, 1, 43}, {3, 2, 66}, {7, 3, 4}
+        };
+        log(findCheapestPrice5(8, flights3, 0, 6, 6));   // expects 112
     }
 }
