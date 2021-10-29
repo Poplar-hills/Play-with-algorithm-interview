@@ -292,15 +292,15 @@ public class L787_CheapestFlightsWithinKStops {
         Arrays.fill(minPrices, Integer.MAX_VALUE);
         minPrices[src] = 0;
 
-        for (int i = 0; i <= K; i++) {  // 迭代 K+1 次
+        for (int i = 0; i <= K; i++) {                 // 迭代 K+1 次
             int[] copy = Arrays.copyOf(minPrices, n);  // 先拷贝一份，保证下面 minPrices[from] 读到的值不是被 copy[to] 覆盖过的
-            for (int[] flight : flights) {               // 无需提前构建 graph，只需在每次迭代中遍历所有邻边，对每条边进行松弛
-                int from = flight[0], to = flight[1], price = flight[2];
+            for (int[] f : flights) {                   // 无需提前构建 graph，只需在每次迭代中遍历所有邻边，对每条边进行松弛
+                int from = f[0], to = f[1], price = f[2];
                 if (minPrices[from] == Integer.MAX_VALUE)  // 若该边的起点还没被访问过，则跳过（∵ 无法进行松弛操作）
                     continue;
                 copy[to] = Math.min(copy[to], minPrices[from] + price);  // 松弛
             }
-            minPrices = copy;  // 迭代结束时更新 minPrices
+            minPrices = copy;                          // 迭代结束时更新 minPrices
         }
 
         return minPrices[dst] == Integer.MAX_VALUE ? -1 : minPrices[dst];  // 通过 minPrices[dst] 取得最短路径
@@ -313,8 +313,8 @@ public class L787_CheapestFlightsWithinKStops {
      *         k\c |  0   1   2   3   4
      *        -----+---------------------
      *          0  |  0   ∞   ∞   ∞   ∞
-     *          1  |  0   50  20  60  ∞       - 在0个 stop 之内从 src → c 的最小 price
-     *          2  |  0   30  20  50  60      - f(2,1) 会被更新两次：∞→50→30；f(2,3) 也会被更新两次：∞→60→50
+     *          1  |  0   50  20  60  ∞     - 在0个 stop 之内从 src → c 的最小 price
+     *          2  |  0   30  20  50  60    - f(2,1) 会被更新两次：∞→50→30；f(2,3) 也会被更新两次：∞→60→50
      *          3  |  0   30  20  50  40
      * - 实现：
      *   1. ∵ 在 Math.min 时可能发生 Integer.MAX_VALUE + price，超过 int 的上限 ∴ dp 需要声明为 long[][]；
@@ -323,14 +323,14 @@ public class L787_CheapestFlightsWithinKStops {
      * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n^2)。
      * */
     public static int findCheapestPrice8(int n, int[][] flights, int src, int dst, int K) {
-        long[][] dp = new long[K + 2][n];    // dp[k][c] 表示在 k-1 个 stop 内从 src 到达城市 c 的最小 price
+        long[][] dp = new long[K + 2][n];  // dp[k][c] 表示在 k-1 个 stop 内从 src 到达城市 c 的最小 price
         for (long[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
         dp[0][src] = 0;
 
-        for (int k = 1; k < K + 2; k++) {    // 迭代 K+1 次
+        for (int k = 1; k < K + 2; k++) {  // 迭代 K+1 次
             dp[k][src] = 0;
-            for (int[] f : flights) {        // 每次迭代都遍历所有邻边
+            for (int[] f : flights) {       // 每次迭代都遍历所有邻边
                 int sCity = f[0], tCity = f[1], price = f[2];
                 dp[k][tCity] = Math.min(dp[k][tCity], dp[k - 1][sCity] + price);  // f(k,tCity) 取决于 f(k-1,sCity) + sCity→tCity 的 price
             }
