@@ -271,10 +271,10 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法7：Bellman-Ford
+     * - 前提：先理解 Bellman-Ford 的过程演示：https://www.youtube.com/watch?v=obWXjtg0L64&vl=en（0'35''）。
      * - 思路：虽然题中说了不会有负权边，但可以使用 Dijkstra 的场景就一定可以使用 Bellman-Ford（虽然算法复杂度大很多）。
      * - 原理：假设图中可能存在负权边，则经过更多顶点的路径可能总距离反而更短。这时 Dijkstra 的贪心策略就会失效，不再能保证
-     *   第一条到达终点的路径就是最短的。此时的解决办法就是反复对所有边进行松弛操作，使得起点到每个顶点的距离逐步逼近其最短距离。
-     *   过程演示 SEE：https://www.youtube.com/watch?v=obWXjtg0L64&vl=en（0'35''）。
+     *   第一条到达终点的路径就是最短的。解决方案是反复对所有边进行松弛操作，使得起点到每个顶点的距离逐步逼近其最短距离。
      * - 实现：
      *   1. 标准的 Bellman-Ford 算法最多会迭代 V-1 次，而本题中 ∵ V 与 K 的关系是 V = K+2 ∴ 应迭代 K+1 次；
      *   2. ∵ 只迭代 K+1 次 ∴ 最终得到的 prices 会是一个中间状态，不会包含起点到所有顶点的最短路径 ∴ 需要做到每次迭代之间
@@ -282,26 +282,28 @@ public class L787_CheapestFlightsWithinKStops {
      *      prices（若是标准实现，迭代 V-1 次，则不需要这种处理，这一点通过 test case 1、2 可更好的理解）。
      * - 💎 Bellman-Ford vs. Dijkstra：
      *   1. 若图中存在负权边，则应使用 Bellman-Ford，否则使用 Dijkstra 效率更优；
-     *   2. Dijkstra 的实现是基于 BFS，而 Bellman-Ford 采用的是 DP 思想，在多次迭代中趋近最优解。
+     *   2. 在思想上，Dijkstra 是基于 BFS；而 Bellman-Ford 是基于 DP，在多次迭代中趋近最优解。
+     *   3. 在实现上，Dijkstra 需先构建 graph，并用 PriorityQueue 找到最短路径；而 Bellman-Ford 无需构建 graph，
+     *      而是在 V-1 次迭代中对所有已达到的顶点的邻边进行松弛。
      * - 时间复杂度为 O(EV)，即 O(mn)，空间复杂度 O(V)，即 O(n)。
      * */
     public static int findCheapestPrice7(int n, int[][] flights, int src, int dst, int K) {
-        int[] prices = new int[n];                       // Bellman-Ford 的基本形式是填充路径数组（标准的 Dijkstra 也是）
-        Arrays.fill(prices, Integer.MAX_VALUE);
-        prices[src] = 0;
+        int[] minPrices = new int[n];   // Bellman-Ford 的基本形式是填充最短路径树数组（同标准版的 Dijkstra）
+        Arrays.fill(minPrices, Integer.MAX_VALUE);
+        minPrices[src] = 0;
 
-        for (int i = 0; i <= K; i++) {                   // 迭代 K+1 次
-            int[] temp = Arrays.copyOf(prices, n);       // 复制 prices，使得各迭代之间不互相影响
-            for (int[] f : flights) {                    // 每次迭代都遍历所有邻边，对每条边进行松弛操作
-                int sCity = f[0], tCity = f[1], price = f[2];
-                if (prices[sCity] == Integer.MAX_VALUE)  // 若该边的源顶点还没被访问过则直接跳过（∵ 无法进行松弛操作）
+        for (int i = 0; i <= K; i++) {  // 迭代 K+1 次
+            int[] copy = Arrays.copyOf(minPrices, n);  // 先拷贝一份，保证下面 minPrices[from] 读到的值不是被 copy[to] 覆盖过的
+            for (int[] flight : flights) {               // 无需提前构建 graph，只需在每次迭代中遍历所有邻边，对每条边进行松弛
+                int from = flight[0], to = flight[1], price = flight[2];
+                if (minPrices[from] == Integer.MAX_VALUE)  // 若该边的起点还没被访问过，则跳过（∵ 无法进行松弛操作）
                     continue;
-                temp[tCity] = Math.min(temp[tCity], prices[sCity] + price);  // 松弛操作
+                copy[to] = Math.min(copy[to], minPrices[from] + price);  // 松弛
             }
-            prices = temp;                               // 迭代结束时更新 prices
+            minPrices = copy;  // 迭代结束时更新 minPrices
         }
 
-        return prices[dst] == Integer.MAX_VALUE ? -1 : prices[dst];  // 最终取 prices[dst] 即使最短路径
+        return minPrices[dst] == Integer.MAX_VALUE ? -1 : minPrices[dst];  // 通过 minPrices[dst] 取得最短路径
     }
 
     /*
