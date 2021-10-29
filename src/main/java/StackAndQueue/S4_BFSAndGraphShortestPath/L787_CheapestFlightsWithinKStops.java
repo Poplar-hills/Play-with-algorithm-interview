@@ -156,17 +156,17 @@ public class L787_CheapestFlightsWithinKStops {
 
     private static void dfs4(Map<Integer, List<int[]>> graph, int city, int dst, int totalPrice, int k) {
         if (city == dst) {
-            minPrice = totalPrice;  // 每次找到到达终点的路径就直接赋值，下面的剪枝保证了这里最后取到的是最小 price
-            return;
+            minPrice = totalPrice;  // 每次找到通路后就直接赋值，下面的剪枝保证了这里最后取到的是最小 price（注意上
+            return;                 // 面解法1-3不能这么写，TODO: why???）
         }
-        if (!graph.containsKey(city)) return;
+        if (!graph.containsKey(city) || k == 0) return;
         for (int[] flight : graph.get(city))
-            if (totalPrice + flight[2] < minPrice && k > 0)
+            if (totalPrice + flight[2] < minPrice)
                 dfs4(graph, flight[1], dst, totalPrice + flight[2], k - 1);
     }
 
     /*
-     * 解法5：Dijkstra
+     * 解法5：简化版的 Dijkstra（性能优于解法1-3）
      * - 👉 前提：先看完 play-with-algorithms/ShortestPath/Dijkstra.java 中的介绍。
      * - 思路：本题是个典型的带权图，而 Dijkstra 算法正适用于计算带权图的单元最短路径树（即从一个起点到每个顶点的最小权路径）。
      *   ∵ 本题中需要的只是从起点到终点的最短路径，无需求出起点到每个顶点的最短路径（最小权路径）∴ 无需对每个顶点进行
@@ -215,12 +215,25 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     /*
-     * 解法6：Dijkstra
+     * 解法6：完整版的 Dijkstra
+     * - 思路：Dijkstra 算法用于为一副带权图生成最短路径树（即从起点到图中所有其他顶点的最短路径数组）。解法5中的 Dijkstra
+     *   是化简后的版本，而本解法中采用的是完整的 Dijkstra 过程，基于 graph 生成 minPrices、minStops 数组：minPrices[i]
+     *   表示从 src 到顶点 i 的最低费用；minStops[i] 表示从 src 到顶点 i 的最少中转站数量），最后返回 minPrices[dst] 即可。
+     * - 实现：
+     *   1. ∵ 航线图通常非常密集 ∴ 本解法的 graph 采用邻接矩阵（Adjacency Matrix）；
+     *   2. 邻接矩阵是通过索引查询，该解法中假设了城市名就是城市索引（这点题中没有明确说明，但 test case 中就是这样）。
+     *   3. Dijkstra 的过程：
+     *      - 与解法5相同点：同样是使用优先队列，每次 poll 出最短路径；
+     *      - 与解法5不同点：增加了松弛操作 —— 为每次 poll 出的路径中的顶点的邻边进行松弛，若松弛过程中找到了 price 更低
+     *        或 stopCount 更少的路径，则将该顶点重新入队，再次进行松弛。
+     * - 时间复杂度：即标准的 Dijkstra 的时间复杂度 O(ElogV)，也就是 O(mlogn)。实际在 Leetcode 上，该解法快于97%的解法
+     *   （也是解法1-7中唯一不超时的解法）。
+     * - 空间复杂度：O(n+m)。
      * */
     public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
-        int[][] matrix = new int[n][n];   // adjacency matrix
+        int[][] graph = new int[n][n];   // adjacency graph
         for (int[] f : flights)
-            matrix[f[0]][f[1]] = f[2];    // matrix[src][dst] = price
+            graph[f[0]][f[1]] = f[2];    // graph[src][dst] = price
 
         int[] minPrices = new int[n];     // min prices from src to each city
         int[] minStops = new int[n];      // min num of stops from src to each city
@@ -230,26 +243,25 @@ public class L787_CheapestFlightsWithinKStops {
         minStops[src] = 0;
 
         PriorityQueue<int[]> pq = new PriorityQueue<>((p1, p2) -> p1[1] - p2[1]);
-        pq.offer(new int[]{src, 0, 0});   // PriorityQueue<[city, totalPrice, stopCount]>
+        pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
 
         while (!pq.isEmpty()) {
             int[] pathInfo = pq.poll();
             int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (city == dst) return totalPrice;
-            if (stopCount == K + 1) continue;
+            if (city == dst) return totalPrice;       // 找到的第一条通路就是最短路径 ∴ 直接 return
+            if (stopCount == K) continue;             // 剪枝
 
-            // Examine and relax all neighboring edges if possible
-            for (int nei = 0; nei < n; nei++) {
-                if (matrix[city][nei] > 0) {  // price != 0 表示有从该 city 出发的航线
-                    int newPrice = totalPrice + matrix[city][nei];
-                    if (newPrice < minPrices[nei]) {
-                        pq.offer(new int[]{nei, newPrice, stopCount + 1});
-                        minPrices[nei] = newPrice;
-                    } else if (stopCount < minStops[nei]) {
-                        pq.offer(new int[]{nei, newPrice, stopCount + 1});
-                    }
-                    minStops[nei] = stopCount;
+            for (int nei = 0; nei < n; nei++) {       // 松弛所有邻边（relax all neighboring edges）
+                if (graph[city][nei] > 0) {           // price > 0 表示有从 city -> nei 的航线
+                    int newPrice = totalPrice + graph[city][nei];
+                    int newStopCount = stopCount + 1;
+
+                    if (newPrice < minPrices[nei] || newStopCount < minStops[nei])  // 若松弛操作得到的 newPrice/newStopCount < 之前记录的 totalPrice/stopCount 则：
+                        pq.offer(new int[]{nei, newPrice, newStopCount});  // 再次入队 nei 顶点，对其所有邻边重新进行松弛
+
+                    minPrices[nei] = Math.min(minPrices[nei], newPrice);   // 更新记录
+                    minStops[nei] = newStopCount;
                 }
             }
         }
@@ -335,8 +347,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice5(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice5(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice6(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice6(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = {
                 {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -353,16 +365,28 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice5(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice5(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice5(5, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice5(5, flights2, 2, 0, 4));   // expects -1
+        log(findCheapestPrice6(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice6(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice6(5, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice6(5, flights2, 2, 0, 4));   // expects -1
 
-        int[][] flights3 = {
+        int[][] flights3 = {{0, 1, 5}, {1, 2, 5}, {0, 3, 2}, {3, 1, 2}, {1, 4, 1}, {4, 2, 1}};
+        log(findCheapestPrice6(5, flights3, 0, 2, 2));   // expects 7
+        log(findCheapestPrice6(5, flights3, 0, 2, 3));   // expects 6
+        /*
+         *      ⓪ → → → 5 → → → ① → → → 1 → → → ④
+         *        ↘            ↗  ↘             ↙
+         *          ↘ 2    2 ↗      ↘ 5     1 ↙
+         *            ↘    ↗          ↘     ↙
+         *              ③               ②
+         * */
+
+        int[][] flights4 = {
                 {7, 5, 20}, {7, 6, 59}, {3, 1, 95}, {7, 0, 85}, {4, 7, 84}, {0, 7, 90},
                 {1, 0, 19}, {2, 5, 74}, {2, 3, 81}, {2, 0, 56}, {5, 1, 25}, {4, 0, 89},
                 {3, 6, 18}, {5, 2, 1},  {7, 1, 43}, {3, 2, 66}, {7, 3, 4}
         };
-        log(findCheapestPrice5(8, flights3, 0, 6, 6));   // expects 112
+        log(findCheapestPrice6(8, flights4, 0, 6, 6));   // expects 112
+
     }
 }
