@@ -154,11 +154,27 @@ public class L205_IsomorphicStrings {
         return true;
     }
 
+    /*
+     * 解法7：双查找表 + 匹配上次出现位置（解法6的地规范，🥇最优解）
+     * - 思路：与解法6一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static boolean isIsomorphic7(String s, String t) {
+        if (s.length() != t.length()) return false;
+        return helper7(s, t, 0, new HashMap<>(), new HashMap<>());
+    }
+
+    private static boolean helper7(String s, String t, int i, Map<Character, Integer> sMap, Map<Character, Integer> tMap) {
+        if (i == s.length()) return true;
+        if (sMap.put(s.charAt(i), i) != tMap.put(t.charAt(i), i)) return false;
+        return helper7(s, t, i + 1, sMap, tMap);
+    }
+
     public static void main(String[] args) {
-        log(isIsomorphic5("egg", "add"));      // expects true
-        log(isIsomorphic5("paper", "title"));  // expects true
-        log(isIsomorphic5("foo", "bar"));      // expects false（左边1个映射到右边2个的情况，o -> a、r）
-        log(isIsomorphic5("ab", "aa"));        // expects false（左边2个映射到右边1个的情况）
-        log(isIsomorphic5("aba", "baa"));      // expects false（左边1个映射到右边2个的情况）
+        log(isIsomorphic7("egg", "add"));      // expects true
+        log(isIsomorphic7("paper", "title"));  // expects true
+        log(isIsomorphic7("foo", "bar"));      // expects false（左边1个映射到右边2个的情况，o -> a、r）
+        log(isIsomorphic7("ab", "aa"));        // expects false（左边2个映射到右边1个的情况）
+        log(isIsomorphic7("aba", "baa"));      // expects false（左边1个映射到右边2个的情况）
     }
 }
