@@ -36,7 +36,7 @@
   - L126_WordLadderII
   - L787_CheapestFlightsWithinKStops
 
-- BinaryTreeAndRecursion (15/19): L100, L101, L104, L110, L111, L222 | S2 | L113, L129 | S4 | L98, L230, L235, L450
+- BinaryTreeAndRecursion (15/20): L100, L101, L104, L110, L111, L222 | S2 | L113, L129 | S4 | L98, L230, L235, L450
   - L101_SymmetricTree
   - L104_MaximumDepthOfBinaryTree
   - L110_BalancedBinaryTree
