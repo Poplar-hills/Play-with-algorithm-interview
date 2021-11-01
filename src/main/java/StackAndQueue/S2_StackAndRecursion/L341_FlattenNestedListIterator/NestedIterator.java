@@ -89,10 +89,10 @@ class NestedIterator2 implements Iterator<Integer> {
  * - 💎 思路：解法1、2中的 eager style 的最大缺点就是，对于大数据集存在性能问题 —— we are pre-computing and
  *   pre-loading everything into memory, which can be a big waste of resource。要解决这个问题可使用 lazy style：
  *   Lazy 与 eager 的区别在于：
- *   1. Eager 的数据结构是 Queue；Lazy 的数据结构是 Stack。
+ *   1. Eager 的数据结构是 Queue；Lazy 的数据结构是 Stack（在需要的时候调用栈内的数据）。
  *   2. 实例化时（构造器中）做的事情：
  *      - Eager iterator 在实例化时要完成所有计算和加载工作；
- *      - Lazy iterator 在实例化时只将数据加载到调用栈（将 nestedList 的所有元素入栈，但不解析），而等到真正消费时
+ *      - Lazy iterator 在实例化时只将数据加载到调用栈（将 nestedList 的所有元素逆序入栈，但不解析），而等到真正消费时
  *        （hasNext、next）再去解析（找到下一个可用的 integer）。
  * - 实现：与解法2类似，使用 stack + while 模拟调用栈：
  *   1. 在 constructor 中将数据加载到调用栈中；
