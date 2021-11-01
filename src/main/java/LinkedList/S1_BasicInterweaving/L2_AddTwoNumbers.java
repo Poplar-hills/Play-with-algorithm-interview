@@ -27,7 +27,7 @@ public class L2_AddTwoNumbers {
     private static long linkedListToLong(ListNode l) {  // 将 2->4->3->NULL 转成 342
         StringBuilder s = new StringBuilder();
         while (l != null) {
-            s.insert(0, l.val);     // 将链表上的每个节点添加到字符串的头部（要用 insert 而不是 append）
+            s.insert(0, l.val);  // 将链表上的每个节点添加到字符串的头部（要用 insert 而不是 append）
             l = l.next;
         }
         return Long.parseLong(s.toString());  // "123" 转换为 123 的两种方法：1. Integer.parseInt 2. Integer.valueOf
@@ -82,7 +82,7 @@ public class L2_AddTwoNumbers {
         ListNode curr = dummyHead;
         int carry = 0;
 
-        while (l1 != null || l2 != null) {
+        while (l1 != null || l2 != null) {  // 关键点是这个循环的退出条件（与解法3的递归结束条件对比）
             int v1 = l1 == null ? 0 : l1.val;
             int v2 = l2 == null ? 0 : l2.val;
             int sum = v1 + v2 + carry;
@@ -102,16 +102,16 @@ public class L2_AddTwoNumbers {
     }
 
     /*
-     * 解法3：模拟加法运算（递归实现）
+     * 解法3：模拟加法运算（解法2的递归版）
      * - 思路：递归地创建下一个节点，直到两个链表都穷尽。
      * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
      * */
     public static ListNode addTwoNumbers3(ListNode l1, ListNode l2) {
-        return addTwoNumbers3(l1, l2, 0);
+        return helper3(l1, l2, 0);
     }
 
-    private static ListNode addTwoNumbers3(ListNode l1, ListNode l2, int carry) {
-        if (l1 == null && l2 == null && carry == 0)  // 三个条件同时满足才结束递归
+    private static ListNode helper3(ListNode l1, ListNode l2, int carry) {
+        if (l1 == null && l2 == null && carry == 0)  // 关键点：三个条件同时满足才结束递归
             return null;
 
         int v1 = l1 == null ? 0 : l1.val;
@@ -123,7 +123,7 @@ public class L2_AddTwoNumbers {
 
         ListNode next1 = l1 == null ? null : l1.next;
         ListNode next2 = l2 == null ? null : l2.next;
-        head.next = addTwoNumbers3(next1, next2, carry);  // 下层创建的节点链接到该层创建的节点后面
+        head.next = helper3(next1, next2, carry);  // 下层创建的节点链接到该层创建的节点后面
 
         return head;  // 每层递归最后返回该层创建出来的节点
     }
