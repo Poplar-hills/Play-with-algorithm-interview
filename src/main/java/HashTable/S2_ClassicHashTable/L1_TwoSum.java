@@ -21,7 +21,7 @@ import static Utils.Helpers.*;
 public class L1_TwoSum {
     /*
      * 解法1：Brute Force
-     * - 思路：暴力破解的思路就是用 nums 中的每一个元素与 nums 中的所有其他元素逐一配对，看他们的和是否等于 target。
+     * - 思路：暴力破解的思路就是用 nums 中的每一个元素与 nums 中的所有其他元素逐一配对，看他们的和是否等于 target。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static int[] twoSum(int[] nums, int target) {
@@ -46,19 +46,19 @@ public class L1_TwoSum {
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum2(int[] nums, int target) {
-        Pair<Integer, Integer>[] indexedNums = new Pair[nums.length];  // 构建记录 <索引, 元素> 的数组
+        Pair<Integer, Integer>[] indexedNums = new Pair[nums.length];  // Pair<索引, 元素>[]
         for (int i = 0; i < nums.length; i++)
             indexedNums[i] = new Pair<>(i, nums[i]);
 
-        Arrays.sort(indexedNums, Comparator.comparingInt(Pair::getValue));  // 根据元素对 pair 进行排序
+        Arrays.sort(indexedNums, (a, b) -> a.getValue() - b.getValue());  // 根据元素对 pair 进行排序
 
         int l = 0, r = indexedNums.length - 1;
         while (l < r) {                         // 开始指针对撞
-            Pair<Integer, Integer> lNum = indexedNums[l], rNum = indexedNums[r];
-            int sum = lNum.getValue() + rNum.getValue();
+            Pair<Integer, Integer> lPair = indexedNums[l], rPair = indexedNums[r];
+            int sum = lPair.getValue() + rPair.getValue();
             if (sum > target) r--;
             else if (sum < target) l++;
-            else return new int[]{lNum.getKey(), rNum.getKey()};  // 返回两个元素在 nums 中的索引
+            else return new int[]{lPair.getKey(), rPair.getKey()};  // 返回两个元素在 nums 中的索引
         }
 
         throw new IllegalArgumentException("No solution");
