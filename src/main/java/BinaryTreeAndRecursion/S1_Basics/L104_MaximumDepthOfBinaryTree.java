@@ -108,6 +108,7 @@ public class L104_MaximumDepthOfBinaryTree {
      * - 思路：与解法4一致。
      * - 实现：一次性将 q 中同一层的节点都消费完后让 maxDepth++。这样做的好处是无需在 q 中存储层级深度信息，只要一层遍历完成
      *   就可以 maxDepth++。
+     * - 💎 技巧：与 L103_BinaryTreeZigzagLevelOrderTraversal 解法4对比，可见这种技巧所带来的的好处。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth5(TreeNode root) {
