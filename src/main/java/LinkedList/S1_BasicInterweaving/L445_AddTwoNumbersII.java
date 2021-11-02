@@ -71,7 +71,7 @@ public class L445_AddTwoNumbersII {
         Stack<Integer> s2 = toStack(l2);  // 也可以在一个循环中同时生成两个 Stack
 
         int carry = 0;
-        ListNode head = null;  // 结果链表
+        ListNode head = null;  // 结果链表（∵ 后面是往链表头部插入节点 ∴ 不需要使用 dummyHead）
 
         while (!s1.isEmpty() || !s2.isEmpty() || carry != 0) {  // 再模拟加法运算（非递归）。O(max(m,n))
             int v1 = s1.isEmpty() ? 0 : s1.pop();
@@ -80,7 +80,7 @@ public class L445_AddTwoNumbersII {
 
             carry = sum / 10;
             ListNode newHead = new ListNode(sum % 10);
-            newHead.next = head;  // 逆序生成链表（将新生成的节点放到结果链表头部）
+            newHead.next = head;  // 逆序生成链表（将新生成的节点插入到结果链表头部）
             head = newHead;
         }
 
