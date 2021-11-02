@@ -142,16 +142,18 @@ public class L92_ReverseLinkedListII {
 
     /*
      * 不成立解：指针对撞 + 交换节点值
-     * - 思路：采用指针对撞的方式，在对撞过程中不断交换节点值。具体步骤：
+     * - 思路：采用指针对撞的方式，在对撞过程中不断交换节点值（而非移动节点）。具体步骤：
      *     1. 先让两个指针 l, r 分别走到 m、n 节点上；
-     *     2. 开始对撞 & 交换节点值。
+     *     2. 开始对撞 & 交换节点值，直到 l 与 r 撞上时结束。
      * - 演示：
      *     Example 1:                           Example 2:
      *               m         n                     m              n
      *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7      1 -> 2 -> 3 -> 4 -> 5 -> 6
      *               l         r                     l              r
-     *     1 -> 2 -> 5 -> 4 -> 3 -> 6 -> 7      1 -> 2 -> 3 -> 4 -> 5 -> 6
+     *     1 -> 2 -> 5 -> 4 -> 3 -> 6 -> 7      1 -> 5 -> 3 -> 4 -> 2 -> 6
      *                    lr                              r    l
+     *                                          1 -> 5 -> 4 -> 3 -> 2 -> 6
+     *                                                    r    l
      * - 问题：大体思路对，但是因为单向链表没有从后一个节点指向前一个节点的指针，所以该解法最终不成立。
      * - 虽然错误，但有助于理解解法1。
      * */
@@ -192,19 +194,19 @@ public class L92_ReverseLinkedListII {
 
     public static ListNode reverseBetween4(ListNode head, int m, int n) {
         l = head;
-        stop = false;
+        stop = false;          // 要先 init 静态成员变量，否则 test case 之间会互相影响
         recurseAndReverse(head, m, n);
         return head;
     }
 
-    private static void recurseAndReverse(ListNode head, int m, int n) {
+    private static void recurseAndReverse(ListNode head, int m, int n) {  // head 即是右指针 r
         if (n == 0) return;    // 此时右指针抵达 n+1，递归到底，开始返回上层
-        if (m == 1) l = head;  // 去程中将 m 节点标记为 left
+        if (m == 1) l = head;  // 去程中路过 m 节点时将 l 指向 m 节点
 
         recurseAndReverse(head.next, m - 1, n - 1);
 
-        if (l == head || l == head.next)  // 判断两个指针是否已撞上
-            stop = true;                  // 撞上则设置信号量
+        if (l == head || l == head.next)  // 判断两个指针是否已撞上（若 [m,n] 内有奇数个节点则撞上时 l == head，若有偶数
+            stop = true;                  // 个则撞上时 l == head.next）。撞上时设置 stop 信号量
 
         if (!stop) {           // 若没有撞上且处于要交换节点值的范围内，则交换节点值，并让两个指针互相接近一步
             int temp = l.val;
