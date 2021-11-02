@@ -21,13 +21,12 @@ public class L92_ReverseLinkedListII {
      *     1. 先将 [m, n] 范围内的节点链接反向；
      *     2. 再 fix 反向后的第 m、m-1、n、n+1 号节点间的链接。
      * - 实现：要进行上面第2步 fix 的话需先获得这4个节点的引用 ∴ 在遍历和反向的过程中要能记录到这4个节点。
-     * - 演示：
      *         m-1   m         n   n+1
      *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
      *        prev  curr                     - 遍历到 m-1、m 号节点时用 conn、rTail 记录索引
-     *     1 -> 2 -> 3 <- 4 <- 5    6 -> 7
-     *        conn rTail     prev  curr      - 将 [m,n] 之间的链接反向
-     *     1 -> 2 -> 5 -> 4 -> 3 -> 6 -> 7
+     *     1 -> 2 <- 3 <- 4 <- 5    6 -> 7
+     *        conn rTail     prev  curr      - 反向 [m,n] 之间的链接（实际上反向的是 [m-1,n] 之间的链接，但没关系，
+     *     1 -> 2 -> 5 -> 4 -> 3 -> 6 -> 7     m-1 与 m 之间的链接最后还会被重置）
      *        conn rTail     prev  curr      - 将5链到2上、将6链到3上。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
@@ -41,10 +40,10 @@ public class L92_ReverseLinkedListII {
                 conn = prev;
                 rTail = curr;
             }
-            if (i <= m) {               // 注意 i == m 时也要移动 prev、curr
+            if (i < m) {                // 此处也可以是 i <= m，即只反向 [m,n] 内的链接反向
                 prev = curr;
                 curr = curr.next;
-            } else {                    // 将 (m,n] 内的链接反向（注意左边是开区间，要让 prev 进入区间后再开始反向）
+            } else {                    // 反向 [m-1,n] 内的链接
                 ListNode next = curr.next;
                 curr.next = prev;       // 反向节点间的链接
                 prev = curr;
@@ -60,17 +59,7 @@ public class L92_ReverseLinkedListII {
     /*
      * 解法2：反向节点间的链接
      * - 思路：与解法1一致。
-     * - 实现：与解法1不同之处在于：
-     *     1. 采用两个 while 实现；
-     *     2. 反向的是 [m-1,n] 之间的链接。
-     * - 演示：
-     *         m-1   m         n   n+1
-     *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
-     *        prev  curr                     - 先让 prev、curr 分别移动到 m-1、m 上
-     *     1 -> 2 <- 3 <- 4 <- 5    6 -> 7
-     *        conn rTail     prev  curr      - 将 [m-1,n] 之间的链接反向
-     *     1 -> 2 -> 5 -> 4 -> 3 -> 6 -> 7
-     *        conn rTail     prev  curr      - 再将5链到2上、将6链到3上
+     * - 实现：与解法1不同之处在于采用两个 while 实现。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode reverseBetween2(ListNode head, int m, int n) {
