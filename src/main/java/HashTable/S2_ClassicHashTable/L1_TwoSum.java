@@ -73,9 +73,9 @@ public class L1_TwoSum {
      * - 时间复杂度 O(n + nlogn + nlogn)，最终为 O(nlogn)，但实际上是 3-pass；空间复杂度 O(n)。
      * */
     public static int[] twoSum3(int[] nums, int target) {
-        int[][] indexedNums = new int[nums.length][];
+        int[][] indexedNums = new int[nums.length][];  // [[索引0, 元素0], [索引1, 元素1], ...]
         for (int i = 0; i < nums.length; i++)
-            indexedNums[i] = new int[]{i, nums[i]};  // 二维数组记录索引与元素的对应关系：[[索引0, 元素0], [索引1, 元素1], ...]
+            indexedNums[i] = new int[]{i, nums[i]};
 
         Arrays.sort(indexedNums, (a, b) -> a[1] - b[1]);  // 另一种写法：Comparator.comparingInt(x -> x[1])
 
@@ -93,7 +93,7 @@ public class L1_TwoSum {
         int mid = (r - l) / 2 + l;  // 不直接 (r + l) / 2 是为了避免整型溢出
         if (target < nums[mid][1]) return binarySearch(nums, l, mid - 1, target);
         if (target > nums[mid][1]) return binarySearch(nums, mid + 1, r, target);
-        return mid;
+        return mid;                 // 该二分搜索最后返回的是元素索引
     }
 
     /*
