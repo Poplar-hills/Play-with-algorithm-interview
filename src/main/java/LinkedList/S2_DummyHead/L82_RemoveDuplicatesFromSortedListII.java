@@ -115,14 +115,14 @@ public class L82_RemoveDuplicatesFromSortedListII {
     private static Pair<ListNode, Boolean> helper3(ListNode head) {
         if (head.next == null) return new Pair<>(head, false);
 
-        Pair<ListNode, Boolean> pair = helper3(head.next);
+        Pair<ListNode, Boolean> pair = helper3(head.next);  // 先一路递归下去，去程上不做任何事
         ListNode next = pair.getKey();
         boolean duplicated = pair.getValue();
 
-        if (head.val == next.val)           // 若发现重复节点
-            return new Pair<>(next, true);  // 则跳过当前 head 节点，并标志位置为 true
-        head.next = duplicated ? next.next : next;  // 若未发现重复节点，则看标志位（可能真的没有重复节点，也可能
-        return new Pair<>(head, false);             // 当前节点为最后一个重复节点）
+        if (head.val == next.val)                   // 若发现重复节点
+            return new Pair<>(next, true);          // 则跳过当前 head 节点，并将标志位置为 true
+        head.next = duplicated ? next.next : next;  // 若未发现重复节点，则看标志位（看当前节点是否是最后一个重复节点）
+        return new Pair<>(head, false);
     }
 
     /*
