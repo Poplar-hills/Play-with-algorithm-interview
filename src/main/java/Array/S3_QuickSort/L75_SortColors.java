@@ -68,7 +68,7 @@ public class L75_SortColors {
     }
 
     private static void merge(int[] arr, int l, int mid, int r) {
-        int[] copy = Arrays.copyOfRange(arr, l, r + 1);  // ∵ 要原地排序 ∴ 先要将 arr[l,r] 中的元素复制出来用于比较
+        int[] copy = Arrays.copyOfRange(arr, l, r + 1);  // ∵ 要原地排序 ∴ 要 copy = arr[l,r]，即读 copy，写 arr[l,r]，让写不影响读
         int i = l, j = mid + 1;           // 将 i、j 置于两个待归并数组的起点
         for (int k = l; k <= r; k++) {    // 遍历 arr[l,r]
             if (i > mid)                  // 先讨论越界情况（左半部分已处理完）
