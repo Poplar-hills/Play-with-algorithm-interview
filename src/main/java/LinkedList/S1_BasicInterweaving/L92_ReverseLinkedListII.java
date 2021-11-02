@@ -96,9 +96,8 @@ public class L92_ReverseLinkedListII {
      *   3. 最终链接相应节点（prev -> rHead、curr -> rest）即可。
      * - 实现：
      *   1. 采用递归反向节点间的链接；
-     *   2. 反向的是 [m,n] 之间的链接（这里与解法1相同，与解法2不同）；
+     *   2. 反向的是 [m,n] 之间的链接（这里与解法1、2不同）；
      *   3. 反向后 m-1 与 m 之间的链接会断开（与解法1、2不同）。
-     * - 演示：
      *         m-1   m         n   n+1
      *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
      *        prev  curr                     - 先让 prev、curr 分别移动到 m-1、m 上
@@ -106,21 +105,27 @@ public class L92_ReverseLinkedListII {
      *        prev  curr     rHead rest      - 递归地将 [m,n] 之间的链接反向
      *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
      *        prev  curr     rHead rest      - 再将5链到2上、将6链到3上
+     *
+     * - 👉 对比：相比解法1、2，该解法更加声明式（declarative）∴ 可读性更强。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode reverseBetween3(ListNode head, int m, int n) {
         ListNode dummyHead = new ListNode();
         dummyHead.next = head;
 
+        // 1. 先走到 m 号节点上
         ListNode prev = dummyHead, curr = head;
-        for (int i = 1; i < m; i++) {  // 先让 prev、curr 分别移动到 m-1、m 号节点上
+        for (int i = 1; i < m; i++) {    // 先让 prev、curr 分别移动到 m-1、m 号节点上
             prev = curr;
             curr = curr.next;
         }
 
-        ListNode[] reversed = reverseBeforeN(curr, m, n);  // 将 [m,n] 内的链接反向
+        // 2. 反向 [m,n] 间的链接
+        ListNode[] reversed = reverseBeforeN(curr, m, n);  // 递归反向 [m,n] 内的链接
+
+        // 3. Fix 与原链表的链接点
         ListNode newHead = reversed[0];  // reverse 后的新头节点
-        ListNode rest = reversed[1];     // 第 n+1 个节点（即后面不需要反向的第一个节点）
+        ListNode rest = reversed[1];     // 不需要反向的第一个节点（即第 n+1 个节点）
         prev.next = newHead;             // 第 m-1 个节点 -> reverse 后的新头节点
         curr.next = rest;                // reverse 后 curr 指向反转后的最后一个节点 ∴ 将 rest 链到其上
 
