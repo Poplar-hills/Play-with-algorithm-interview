@@ -20,14 +20,13 @@ public class L110_BalancedBinaryTree {
      * 解法1：DFS (Recursion)
      * - 思路：∵ 题中对 height-balanced 的定义是“任意节点的左右子树的高度差 <= 1” ∴ 按照该定义设计程序，只要任意子树不平衡，
      *   则整棵树都不平衡 ∴ 自下而上为每个节点计算其左右子树的高度差，即判断以每个节点为根的二叉树是否是 height-balanced 的。
-     * - 实现：每层递归返回结构为 Pair<ifBalanced, currDepth>：
+     * - 实现：每层递归返回结构为 Pair<ifBalanced, maxDepth>：
      *   - ifBalanced 表示以当前节点为根的二叉树是否平衡值；
-     *   - currDepth 表示以当前节点为根的二叉树的最大高度；
+     *   - maxDepth 表示以当前节点为根的二叉树的最大高度；
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced(TreeNode root) {
-        Pair<Boolean, Integer> res = getBalanceInfo(root);
-        return res.getKey();
+        return getBalanceInfo(root).getKey();
     }
 
     private static Pair<Boolean, Integer> getBalanceInfo(TreeNode root) {
@@ -38,28 +37,28 @@ public class L110_BalancedBinaryTree {
         if (!lInfo.getKey() || !rInfo.getKey())  // 若左右子树任一不是 height-balanced 的，则整棵树就不是
             return new Pair<>(false, null);
 
-        boolean isCurrBalanced = Math.abs(lInfo.getValue() - rInfo.getValue()) <= 1;  // 最后再看当前节点上是否平衡
-        int currDepth = Math.max(lInfo.getValue(), rInfo.getValue()) + 1;
-        return new Pair<>(isCurrBalanced, currDepth);
+        int depthDiff = Math.abs(lInfo.getValue() - rInfo.getValue());
+        int maxDepth = Math.max(lInfo.getValue(), rInfo.getValue());
+        return new Pair<>(depthDiff <= 1, maxDepth + 1);
     }
 
     /*
      * 解法2：DFS (Recursion)
      * - 思路：思路与解法1一致。
-     * - 实现：简化解法1中每层递归的返回结构，用 -1 表示不平衡，用自然数表示高度差，从而统一返回值类型，简化代码。
+     * - 实现：简化解法1中每层递归的返回结构，用 -1 表示不平衡，用自然数表示当前节点的 maxDepth，从而统一返回值类型，简化代码。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced2(TreeNode root) {
-        return maxDepthDiff(root) != -1;
+        return maxDepth(root) != -1;
     }
 
-    private static int maxDepthDiff(TreeNode root) {
+    private static int maxDepth(TreeNode root) {
         if (root == null) return 0;
-        int lDiff = maxDepthDiff(root.left);
-        if (lDiff == -1) return -1;  // 不同于解法1，若一边子树已经不是平衡的，则没有必要再对另一子树执行 getBalanceInfo
-        int rDiff = maxDepthDiff(root.right);
-        if (rDiff == -1) return -1;
-        return Math.abs(lDiff - rDiff) <= 1 ? Math.max(lDiff, rDiff) + 1 : -1;
+        int lDepth = maxDepth(root.left);
+        if (lDepth == -1) return -1;  // 不同于解法1，若一边子树已经不是平衡的，则没有必要再对另一子树执行 getBalanceInfo
+        int rDepth = maxDepth(root.right);
+        if (rDepth == -1) return -1;
+        return Math.abs(lDepth - rDepth) <= 1 ? Math.max(lDepth, rDepth) + 1 : -1;
     }
 
     /*
