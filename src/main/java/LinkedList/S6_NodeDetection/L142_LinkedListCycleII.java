@@ -27,7 +27,7 @@ import static Utils.Helpers.*;
 public class L142_LinkedListCycleII {
     /*
      * 解法1：Faster and slower runner
-     * - 思路：先使用 fast/slow 方法判断链表是否有环，若有环则（fast == slow）。若此时让第三个指针 slow2 再从头结点出发，
+     * - 思路：先使用 fast/slow 方法判断链表是否有环，若有环则（fast == slow）。若此时让第三个指针 slow2 再从头结点出发，
      *   slow 与 slow2 都一步一步移动，则他们相遇的地方一定就是入环点。数学证明 SEE:
      *   https://leetcode.com/problems/linked-list-cycle-ii/discuss/258948/%2B-python
      * - 时间复杂度 O(n)，空间复杂度 O(1)。

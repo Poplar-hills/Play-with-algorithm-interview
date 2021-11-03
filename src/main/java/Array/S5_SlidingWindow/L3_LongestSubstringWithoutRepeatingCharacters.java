@@ -226,16 +226,16 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
 
         for (int l = 0, r = 0; r < chars.length; r++) {
             Integer prevIndex = indexMap.put(chars[r], r);   // 让 r 处的字符进入窗口
-            if (prevIndex != null)                   // 判断字符是否已存在于窗口中
-                l = Math.max(l, prevIndex + 1);      // 取 Math.max，确保 l 不会后退
-            maxLen = Math.max(maxLen, r - l + 1);
-        }
-
+            if (prevIndex != null)                 // 判断字符是否已存在于窗口中
+                l = Math.max(l, prevIndex + 1);    // 取 Math.max，确保 l 不会后退
+            maxLen = Math.max(maxLen, r - l + 1);  // 注意即使 prevIndex != null 也要比较一遍 maxLen（例如在 test case 1
+        }                                          // 中，当遍历到的第二个 a 时，prevIndex=0，但 ∵ 此时 l 已经 > 0 ∴ 可以
+                                                   // 重新计算 maxLen）
         return maxLen;
     }
 
     /*
-     * 解法8：滑动窗口 + Map 记录字符索引（解法7的另一种写法，可读性更好，最优解🥇）
+     * 解法8：滑动窗口 + Map 记录字符索引（解法7的另一种写法）
      * - 思路：与解法7一致。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -281,12 +281,12 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     public static void main(String[] args) {
-        log(lengthOfLongestSubstring5("abbcaccb"));  // expects 3 ("bca")
-        log(lengthOfLongestSubstring5("pwwkew"));    // expects 3 ("wke")
-        log(lengthOfLongestSubstring5("cdd"));       // expects 2 ("cd")
-        log(lengthOfLongestSubstring5("abba"));      // expects 2 ("ab" or "ba")
-        log(lengthOfLongestSubstring5("bbbbba"));    // expects 2 ("ba")
-        log(lengthOfLongestSubstring5("bbbbb"));     // expects 1 ("b")
-        log(lengthOfLongestSubstring5(""));          // expects 0
+        log(lengthOfLongestSubstring("abbcaccb"));  // expects 3 ("bca")
+        log(lengthOfLongestSubstring("pwwkew"));    // expects 3 ("wke")
+        log(lengthOfLongestSubstring("cdd"));       // expects 2 ("cd")
+        log(lengthOfLongestSubstring("abba"));      // expects 2 ("ab" or "ba")
+        log(lengthOfLongestSubstring("bbbbba"));    // expects 2 ("ba")
+        log(lengthOfLongestSubstring("bbbbb"));     // expects 1 ("b")
+        log(lengthOfLongestSubstring(""));          // expects 0
     }
 }
