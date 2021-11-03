@@ -99,7 +99,7 @@ public class L107_BinaryTreeLevelOrderTraversalII {
         }
 
         while (!stack.isEmpty())
-            res.add(stack.pop());  // 或先 Collections.reverse(stack); 再 res.addAll(stack);
+            res.add(stack.pop());  // 或先 Collections.reverse(stack) + res.addAll(stack);（当然这样就无需使用 Stack 了）
 
         return res;
     }

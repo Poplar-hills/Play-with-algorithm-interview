@@ -188,7 +188,7 @@ public class L110_BalancedBinaryTree {
         TreeNode t5 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 2, 3, 3, null, null, 4, 4});
         log(isBalanced(t5));
         /*
-         * expects false. (节点1的左、右子树都是平衡树，但两个平衡树的高度差 > 1 ∴ 整体不平衡)
+         * expects false. (节点1的左、右子树各自都是平衡树，但他们的高度差 > 1 ∴ 整体不平衡)
          *           1
          *          / \
          *         2   2
