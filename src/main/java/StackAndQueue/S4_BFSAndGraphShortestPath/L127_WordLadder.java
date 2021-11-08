@@ -2,7 +2,6 @@ package StackAndQueue.S4_BFSAndGraphShortestPath;
 
 import Utils.Helpers.Pair;
 
-import java.security.InvalidParameterException;
 import java.util.*;
 
 import static Utils.Helpers.log;
@@ -25,40 +24,6 @@ import static Utils.Helpers.log;
  * */
 
 public class L127_WordLadder {
-
-    public static int ladderLength0(String beginWord, String endWord, List<String> wordList) {
-        // 1. build adjacency matrix
-        // 2. bfs on the graph
-        // 3.
-
-        if (!wordList.contains(endWord)) return 0;
-        Set<String> unvisited = new HashSet<>(wordList);
-        Queue<Pair<String, Integer>> q = new LinkedList<>();
-        q.offer(new Pair<>(beginWord, 1));
-
-        while (!q.isEmpty()) {
-            Pair<String, Integer> p = q.poll();
-            String word = p.getKey();
-            int stepCount = p.getValue();
-            if (word.equals(endWord)) return stepCount;
-
-            for (int i = 0; i < word.length(); i++) {
-                StringBuilder sb = new StringBuilder(word);
-                for (char c = 'a'; c < 'z'; c++) {
-                    if (c == sb.charAt(i)) continue;
-                    sb.setCharAt(i, c);
-                    String w = sb.toString();
-                    if (unvisited.contains(w)) {
-                        q.offer(new Pair<>(w, stepCount + 1));
-                        unvisited.remove(w);
-                    }
-                }
-            }
-        }
-
-        throw new InvalidParameterException();
-    }
-
     /*
      * 超时解（但结果正确）：BFS
      * - 思路：该题是个典型求最短路径的题，而求图上两点的最短路径可采用 BFS。
@@ -264,43 +229,80 @@ public class L127_WordLadder {
     }
 
     /*
-     * 解法5：先构建 Graph + BFS 生成 steps 数组
-     * - 思路：
-     *     1. 不同于解法1-4中遍历到某个顶点时再现去搜索相邻顶点，该解法先构建无向图的邻接矩阵（Adjacency Matrix），一次性梳理出
-     *        所有节点间的链接关系，从而让后面的 BFS 可以直接使用邻接矩阵找到任意顶点的所有相邻顶点；
-     *     2. 不同于解法2在 Queue 中存储 Pair<顶点，起点到该顶点的步数>，该解法中的 BFS 过程不再给每个顶点带上步数信息，而是通过
-     *        BFS 建立一个 steps 数组，每个位置保存起点到每个顶点的最小步数信息，最终获得起点到终点的最小步数。
+     * 解法5：先构建 Graph + BFS
+     * - 思路：不同于解法1-4中遍历到某个顶点时再现去搜索相邻顶点，该解法先构建无向图的邻接矩阵（Adjacency Matrix），一次性梳理出
+     *   所有节点间的链接关系，从而让后面的 BFS 可以直接使用邻接矩阵找到任意顶点的所有相邻顶点；
      * - 实现：
      *     1. 邻接矩阵本质上就是一个 boolean[][]，描述各顶点之间的链接关系。本解法中构建的是无向图的邻接矩阵（更多介绍
      *        SEE: Play-with-algorithms/GraphBasics/_Introduction.txt）。其实用邻接表也可以（SEE: L126 解法1）。
      *     2. ∵ 邻接矩阵是基于顶点的 index 构建的 ∴ 在进行 BFS 时，队列中存储的也应是顶点的 index，统一操作方式。
-     *     3. 关于 steps 数组：
-     *        a). steps[i] = n 表示 beginWord 到 wordList[i] 的最小步数为 n。
-     *        b). BFS 过程中，每个顶点 i 都可能被当做其他顶点的相邻顶点而被多次访问，但只有第一次访问时才能给 steps[i] 赋值，
-     *            ∵ BFS 的最大特点就是从起点扩散性的向外逐层访问顶点 ∴ 第一次访问到某个顶点时走过的路径就是从起点到该顶点的最短路径。
-     *        c). ∵ 不会重复给 steps 中的元素赋值 ∴ steps 实际上起到了解法1-4中 visited/unvisited 的作用。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int ladderLength5(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
-        if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 需要把 beginWord 加入 wordList 才能开始建立图
-        boolean[][] graph = buildAdjacencyMatrix(wordList);
-        return bfs5(graph, wordList, beginWord, endWord);  // 借助邻接矩阵进行 BFS
-    }
+        if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 需先把 beginWord 加入 wordList 才能开始建立图
 
-    private static boolean[][] buildAdjacencyMatrix(List<String> wordList) {
         int n = wordList.size();
         boolean[][] graph = new boolean[n][n];  // 基于 wordList 创建邻接矩阵
-
-        for (int i = 0; i < n; i++)             // ∵ 矩阵中要存的是两两 word 是否相邻 ∴ 要遍历所有所有 word 的两两组合
+        for (int i = 0; i < n; i++)
             for (int j = i + 1; j < n; j++)     // j 从 i+1 开始，不重复的遍历 wordList 中所有的两两组合
                 if (isSimilar(wordList.get(i), wordList.get(j)))
                     graph[i][j] = graph[j][i] = true;  // ∵ 要构建无向图的邻接矩阵 ∴ 数据分布沿对角线对称
 
+        Queue<Pair<Integer, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(wordList.indexOf(beginWord), 1));
+        int endIndex = wordList.indexOf(endWord);
+        Set<Integer> visited = new HashSet<>();
+
+        while (!q.isEmpty()) {                  // 开始基于 graph 进行 BFS
+            Pair<Integer, Integer> p = q.poll();
+            int i = p.getKey();
+            int stepCount = p.getValue();
+
+            if (i == endIndex) return stepCount;
+
+            for (int j = 0; j < graph[i].length; j++) {  // 在 graph 上查找所有与索引为 i 的 word 相邻的单词
+                if (graph[i][j] && !visited.contains(j)) {
+                    q.offer(new Pair<>(j, stepCount + 1));
+                    visited.add(j);
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /*
+     * 解法6：先构建 Graph + BFS 生成 steps 数组
+     * - 思路：在解法5的基础上，不在 BFS 过程中给每个顶点带上步数信息（即不在 Queue 中存储 Pair<顶点，起点到该顶点的步数>），
+     *   而是通过 BFS 建立一个 steps 数组，每个位置保存起点到每个顶点的最小步数信息，最终获得起点到终点的最小步数。
+     * - 实现：
+     *   1. steps[i] = n 表示从 beginWord 到 wordList[i] 的最小步数为 n。
+     *   2. BFS 过程中，每个顶点 i 都可能被当做其他顶点的相邻顶点而被多次访问，但只有第一次访问时才能给 steps[i] 赋值，
+     *      ∵ BFS 的最大特点就是从起点扩散性的向外逐层访问顶点 ∴ 第一次访问到某个顶点时走过的路径就是从起点到该顶点的最短路径。
+     *   3. ∵ 不会重复给 steps 中的元素赋值 ∴ steps 实际上起到了解法1-5中 visited/unvisited Set 的作用。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
+     * */
+    public static int ladderLength6(String beginWord, String endWord, List<String> wordList) {
+        if (!wordList.contains(endWord)) return 0;
+        if (!wordList.contains(beginWord)) wordList.add(beginWord);
+        boolean[][] graph = buildAdjacencyMatrix(wordList);
+        return bfs6(graph, wordList, beginWord, endWord);
+    }
+
+    private static boolean[][] buildAdjacencyMatrix(List<String> wordList) {
+        int n = wordList.size();
+        boolean[][] graph = new boolean[n][n];
+
+        for (int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
+                if (isSimilar(wordList.get(i), wordList.get(j)))
+                    graph[i][j] = graph[j][i] = true;
+
         return graph;
     }
 
-    private static int bfs5(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
+    private static int bfs6(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
         Queue<Integer> q = new LinkedList<>();   // ∵ 邻接矩阵中的顶点使用 index 访问 ∴ BFS 遍历时队列中存储的也是顶点的 index
         int[] steps = new int[wordList.size()];  // steps[i] 表示从 beginWord 到 wordList 中第 i 个单词的最短步数
         int beginIndex = wordList.indexOf(beginWord);
@@ -324,7 +326,7 @@ public class L127_WordLadder {
     }
 
     /*
-     * 解法6：先构建 Graph + Bi-directional BFS
+     * 解法7：先构建 Graph + Bi-directional BFS
      * - 思路：在解法5的邻接矩阵的基础上使用 Bi-directional BFS。
      * - 实现：不同于解法3、4中两个方向交替进行查找的方式，该解法中：
      *     1. 同时从起点和终点开始进行 BFS。
@@ -332,7 +334,7 @@ public class L127_WordLadder {
      *     3. 每一步 BFS 完之后都检测 beginSteps、endSteps 中是否存在共同的顶点，并从所有公共顶点中找出到达起、终点最短的路径长度来。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static int ladderLength6(String beginWord, String endWord, List<String> wordList) {
+    public static int ladderLength7(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         if (!wordList.contains(beginWord)) wordList.add(beginWord);
 
