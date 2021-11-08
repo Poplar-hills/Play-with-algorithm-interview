@@ -2,6 +2,7 @@ package StackAndQueue.S4_BFSAndGraphShortestPath;
 
 import Utils.Helpers.Pair;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 
 import static Utils.Helpers.log;
@@ -24,6 +25,40 @@ import static Utils.Helpers.log;
  * */
 
 public class L127_WordLadder {
+
+    public static int ladderLength0(String beginWord, String endWord, List<String> wordList) {
+        // 1. build adjacency matrix
+        // 2. bfs on the graph
+        // 3.
+
+        if (!wordList.contains(endWord)) return 0;
+        Set<String> unvisited = new HashSet<>(wordList);
+        Queue<Pair<String, Integer>> q = new LinkedList<>();
+        q.offer(new Pair<>(beginWord, 1));
+
+        while (!q.isEmpty()) {
+            Pair<String, Integer> p = q.poll();
+            String word = p.getKey();
+            int stepCount = p.getValue();
+            if (word.equals(endWord)) return stepCount;
+
+            for (int i = 0; i < word.length(); i++) {
+                StringBuilder sb = new StringBuilder(word);
+                for (char c = 'a'; c < 'z'; c++) {
+                    if (c == sb.charAt(i)) continue;
+                    sb.setCharAt(i, c);
+                    String w = sb.toString();
+                    if (unvisited.contains(w)) {
+                        q.offer(new Pair<>(w, stepCount + 1));
+                        unvisited.remove(w);
+                    }
+                }
+            }
+        }
+
+        throw new InvalidParameterException();
+    }
+
     /*
      * 超时解（但结果正确）：BFS
      * - 思路：该题是个典型求最短路径的题，而求图上两点的最短路径可采用 BFS。
@@ -75,16 +110,17 @@ public class L127_WordLadder {
         Queue<Pair<String, Integer>> q = new LinkedList<>();  // Queue<Pair<word, stepCount>>
         q.offer(new Pair<>(beginWord, 1));  // 注意 ∵ 题目要求 A -> B -> C 算3步而非2步 ∴ beginWord 的 stepCount 为1
 
-        while (!q.isEmpty()) {                           // 最差情况下遍历了所有顶点才到达 endWord ∴ 时间复杂度 O(n)
+        while (!q.isEmpty()) {              // 最差情况下遍历了所有顶点才到达 endWord ∴ 时间复杂度 O(n)
             Pair<String, Integer> pair = q.poll();
             String word = pair.getKey();
             int stepCount = pair.getValue();
+
+            if (word.equals(endWord)) return stepCount;
 
             Iterator<String> it = unvisited.iterator();  // 遍历 unvisited 而非 wordList，时间复杂度 O(n)
             while (it.hasNext()) {
                 String w = it.next();
                 if (isSimilar(w, word)) {                // 寻找可替换单词，时间复杂度 O(len(word))
-                    if (w.equals(endWord)) return stepCount + 1;
                     q.offer(new Pair<>(w, stepCount + 1));
                     it.remove();                         // 从 unvisited 中删除（动态删除 unvisited 中的元素）
                 }
@@ -114,14 +150,15 @@ public class L127_WordLadder {
             String word = p.getKey();
             int stepCount = p.getValue();
 
+            if (word.equals(endWord)) return stepCount;
+
             for (int i = 0; i < word.length(); i++) {  // 为 word 中的每个字母进行替换匹配，O(len(word) * 26)
-                StringBuilder wordSb = new StringBuilder(word);
+                StringBuilder sb = new StringBuilder(word);
                 for (char c = 'a'; c <= 'z'; c++) {    // 👉 for 可以直接遍历 ASCII 字符
                     if (c == word.charAt(i)) continue;
-                    wordSb.setCharAt(i, c);            // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
-                    String tWord = wordSb.toString();
+                    sb.setCharAt(i, c);                // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
+                    String tWord = sb.toString();
                     if (unvisited.contains(tWord)) {   // unvisitied 中有 tWord，说明找到了一个相邻顶点（在 Set 中匹配字符串的复杂度为 O(len(word))）
-                        if (tWord.equals(endWord)) return stepCount + 1;
                         q.offer(new Pair<>(tWord, stepCount + 1));
                         unvisited.remove(tWord);
                     }
