@@ -296,8 +296,7 @@ public class L127_WordLadder {
 
         for (int i = 0; i < n; i++)
             for (int j = i + 1; j < n; j++)
-                if (isSimilar(wordList.get(i), wordList.get(j)))
-                    graph[i][j] = graph[j][i] = true;
+                graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));
 
         return graph;
     }
@@ -313,11 +312,11 @@ public class L127_WordLadder {
 
         while (!q.isEmpty()) {
             int i = q.poll();
+            if (i == endIndex) return steps[i];
             for (int j = 0; j < graph[i].length; j++) {  // 遍历邻接矩阵中的第 i 行，检查每个 wordList[j] 是否与 wordList[i] 相邻
                 if (graph[i][j] && steps[j] == 0) {      // 若相邻且还未被访问过（第一次访问时的步数就是最小步数 ∴ 不能覆盖）
-                    if (j == endIndex) return steps[i] + 1;
                     steps[j] = steps[i] + 1;
-                    q.offer(j);  // 将该相邻顶点的 index 放入 q 中
+                    q.offer(j);                          // 将该相邻顶点的 index 放入 q 中
                 }
             }
         }
