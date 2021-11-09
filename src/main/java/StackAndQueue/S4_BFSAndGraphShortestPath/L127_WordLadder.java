@@ -224,8 +224,8 @@ public class L127_WordLadder {
         }
 
         return endSet.size() < neighbours.size()  // 选择元素少的一边进行下一轮 BFS
-            ? helper4(endSet, neighbours, unvisited, stepCount + 1)
-            : helper4(neighbours, endSet, unvisited, stepCount + 1);
+                ? helper4(endSet, neighbours, unvisited, stepCount + 1)
+                : helper4(neighbours, endSet, unvisited, stepCount + 1);
     }
 
     /*

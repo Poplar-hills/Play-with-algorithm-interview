@@ -80,9 +80,9 @@ public class L112_PathSum {
         q.offer(new Pair<>(root, sum));
 
         while (!q.isEmpty()) {
-            Pair<TreeNode, Integer> pair = q.poll();
-            TreeNode node = pair.getKey();
-            int rest = pair.getValue();
+            Pair<TreeNode, Integer> p = q.poll();
+            TreeNode node = p.getKey();
+            int rest = p.getValue();
 
             if (node.left == null && node.right == null && rest == node.val)
                 return true;
@@ -112,9 +112,9 @@ public class L112_PathSum {
     private static boolean helper4(Queue<Pair<TreeNode, Integer>> q) {  // 这个递归只是代替了解法3中的 while 循环而已
         if (q.isEmpty()) return false;  // 若 q 中节点已经耗尽则说明无解
 
-        Pair<TreeNode, Integer> pair = q.poll();
-        TreeNode node = pair.getKey();
-        int rest = pair.getValue();
+        Pair<TreeNode, Integer> p = q.poll();
+        TreeNode node = p.getKey();
+        int rest = p.getValue();
 
         if (node.left == null && node.right == null && rest == node.val)
             return true;
