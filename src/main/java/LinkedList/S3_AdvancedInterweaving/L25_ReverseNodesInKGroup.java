@@ -94,7 +94,7 @@ public class L25_ReverseNodesInKGroup {
 
     private static ListNode[] reverseKNodes(ListNode head, int k) {
         if (k == 1) return new ListNode[]{head, head.next};  // 递归到底后返回 [本组最后一个节点, 下一组的第一个节点]
-        ListNode[] reversed = reverseKNodes(head.next, --k);
+        ListNode[] reversed = reverseKNodes(head.next, k - 1);
         head.next.next = head;  // 将 A -> B -> C 改为 A <-> B   C
         head.next = null;       // 将 A <-> B   C 改为 A <- B   C
         return reversed;        // 返回的总是递归到底后返回的节点
