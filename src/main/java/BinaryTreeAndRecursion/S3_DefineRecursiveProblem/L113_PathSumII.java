@@ -43,7 +43,7 @@ public class L113_PathSumII {
         }
         helper(root.left, sum - root.val, new ArrayList<>(path), res);  // 每次在分支的时候要 copy path
         helper(root.right, sum - root.val, new ArrayList<>(path), res);
-	}
+    }
 
     /*
      * 解法2：DFS + Backtracking (Pre-order traversal) (解法1的性能优化版)
@@ -104,12 +104,12 @@ public class L113_PathSumII {
         List<List<Integer>> rightPaths = pathSum3(root.right, sum - root.val);
 
         return Stream.of(leftPaths, rightPaths)
-            .flatMap(Collection::stream)  // 合并左右子树返回的结果（或者 leftPaths.addAll(rightPaths) 也可以）
-            .peek(path -> path.add(0, root.val))  // 向连接后的 res 中的每个 path 头部添加当前节点值
-            .collect(Collectors.toList());
+                .flatMap(paths -> paths.stream())  // 合并左右子树返回的结果（或者先 leftPaths.addAll(rightPaths) 再处理 leftPaths）
+                .peek(path -> path.add(0, root.val))  // 向连接后的 res 中的每个 path 头部添加当前节点值
+                .collect(Collectors.toList());
     }
 
-	/*
+    /*
      * 解法4：DFS (Iteration) (解法1的迭代版)
      * - 思路：与解法1一致。
      * - 实现：与解法1不同之处在于：
@@ -152,7 +152,7 @@ public class L113_PathSumII {
         return res;
     }
 
-	/*
+    /*
      * 解法5：DFS (Iteration) (解法4的性能优化版)
      * - 思路：与解法4一致。
      * - 实现：与解法4的不同点在于：
@@ -205,7 +205,7 @@ public class L113_PathSumII {
         return res;
     }
 
-	/*
+    /*
      * 解法6：DFS (Iteration, post-order traversal)
      * - 思路：采用后续遍历的思路，在往下遍历的过程中形成 path。
      * - 实现：若到达叶子节点时 sum=0，则该 path 有效，此时将 path 中的最后一个元素去除，恢复 path 在父节点时的状态，转而去
