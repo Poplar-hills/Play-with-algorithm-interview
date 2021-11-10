@@ -62,8 +62,7 @@ public class L24_SwapNodesInPairs {
         if (head == null || head.next == null) return head;
         ListNode first = swap(head);   // 交换 head 和 head.next，并将交换后的 head.next 赋给 first：
         ListNode second = first.next;
-        if (second != null)
-            second.next = swapPairs2(second.next);
+        second.next = swapPairs2(second.next);
         return first;
     }
 
@@ -112,7 +111,8 @@ public class L24_SwapNodesInPairs {
     }
 
     /*
-     * 解法4：递归（最简单、直接的版本）
+     * 解法4：递归（解法2的化简版，🥇最优解）
+     * - 思路：与解法2一致，在去程时交换节点。
      * - 实现：不用想太多，直接写交换逻辑即可 —— 每层递归处理2个节点，例如第一层递归交换节点1和2，将1链到2后面，而1的下一个节点
      *   则是下一层递归（对节点3的递归）结果：
      *        1 -> 2 -> 3 -> 4 -> 5 -> NULL
@@ -133,12 +133,12 @@ public class L24_SwapNodesInPairs {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-        log(swapPairs(l1));  // expects 2->1->4->3->NULL
+        log(swapPairs2(l1));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        log(swapPairs(l2));  // expects 2->1->4->3->5->NULL
+        log(swapPairs2(l2));  // expects 2->1->4->3->5->NULL
 
         ListNode l3 = createLinkedList(new int[]{1});
-        log(swapPairs(l3));  // expects 1->NULL
+        log(swapPairs2(l3));  // expects 1->NULL
     }
 }
