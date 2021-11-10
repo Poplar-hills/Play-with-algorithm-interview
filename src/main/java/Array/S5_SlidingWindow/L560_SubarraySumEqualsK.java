@@ -1,7 +1,9 @@
 package Array.S5_SlidingWindow;
 
 import static Utils.Helpers.log;
+import static Utils.Helpers.timeIt;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,16 +104,16 @@ public class L560_SubarraySumEqualsK {
      * */
     public static int subarraySum2(int[] nums, int k) {
         int count = 0, n = nums.length;
-        int[] preSums = new int[n];     // prefix sum 数组
+        int[] preSums = new int[n];  // prefix sum 数组
         preSums[0] = nums[0];
 
-        for (int i = 1; i < n; i++)     // 单次遍历即可构造 prefix sum 数组（i 的取值要从1开始）
+        for (int i = 1; i < n; i++)  // 单次遍历即可构造 prefix sum 数组（i 的取值要从1开始）
             preSums[i] = preSums[i - 1] + nums[i];
 
-        for (int l = 0; l < n; l++)     // 双重循环遍历所有 subarray 检查是否有符合条件的 subarray
+        for (int l = 0; l < n; l++)  // 双重循环遍历所有 subarray 检查是否有符合条件的 subarray
             for (int r = l; r < n; r++)
                 if (preSums[r] - preSums[l] + nums[l] == k)  // nums[l,r] 的区间和 = preSums[0,r] - preSums[0,l)
-                    count++;            // 找到解之后不能像 L209 那样终止 ∵ 后面可能有负数正数抵消的情况，使得还存在其他解
+                    count++;         // 找到解之后不能像 L209 那样终止 ∵ 后面可能有负数正数抵消的情况，使得还存在其他解
 
         return count;
     }

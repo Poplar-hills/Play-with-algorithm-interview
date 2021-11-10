@@ -3,6 +3,7 @@ package Utils;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Helpers {
     public static void log(Object content) { System.out.println(content); }
@@ -77,6 +78,14 @@ public class Helpers {
     public static void timeIt(Integer num, Function<Integer, Integer> fn) {
         double startTime = System.nanoTime();
         fn.apply(num);
+        double endTime = System.nanoTime();
+        log(String.format("Time consumed: %s", (endTime - startTime) / 1000000000.0));
+    }
+
+    public static <T> void timeIt(Runnable fn, int count) {
+        double startTime = System.nanoTime();
+        for (int i = 0; i < count; i++)
+            fn.run();
         double endTime = System.nanoTime();
         log(String.format("Time consumed: %s", (endTime - startTime) / 1000000000.0));
     }
