@@ -102,8 +102,8 @@ public class L25_ReverseNodesInKGroup {
 
     /*
      * 解法4：迭代 + Stack
-     * - 思路：与解法1、2、3类似，都是先检查本组节点数是否够 k 个，再决定是否反向本组。
-     * - 实现：该解法通过将一组的节点入栈、检查 stack.size() 来确定一组节点是否够数、是否需要反向，具体反向操作通过 Stack 完成。
+     * - 思路：与解法1、2、3类似，都是先检查本组节点数是否够 k 个，再决定是否反向本组。
+     * - 实现：该解法通过将一组的节点入栈、检查 stack.size() 来确定一组节点是否够数、是否需要反向，具体反向操作通过 Stack 完成。
      * - 💎 总结：提到"反向"先想 Stack，采用 Stack 反向通常是最简单的实现方式。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -133,47 +133,87 @@ public class L25_ReverseNodesInKGroup {
     /*
      * 解法5：递归 + Stack
      * - 思路：与解法1、2、3、4一致。
-     * - 实现：结合解法2的递归和解法3的 Stack。
+     * - 实现：结合解法2的递归和解法3的 Stack。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode reverseKGroup5(ListNode head, int k) {
+        // 1. 数出 k 个节点
         Stack<ListNode> stack = new Stack<>();
         ListNode curr = head;
         int count = 0;
 
-        while (curr != null && count < k) {   // 在去程时按组检查节点是否充足，并将节点入栈
+        while (count < k && curr != null) {  // 在去程时按组检查节点是否充足，并将节点入栈
             stack.push(curr);
             curr = curr.next;
             count++;
         }
-        if (stack.size() < k) return head;
+        if (count != k) return head;  // 若本组节点不够 k 个，则不反向
 
+        // 2. 若该组节点充足且下个节点不为空，则继续递归下一组
         ListNode reversedHead = null;
-        if (curr != null)          // 若该组节点充足且下个节点不为空则继续递归下一组
+        if (curr != null)
             reversedHead = reverseKGroup4(curr, k);
 
-        ListNode dummyHead = new ListNode();  // 在回程时反向本组节点
+        // 3. 在回程时反向本组节点，并将下一组结果链到本组反向后的尾部
+        ListNode dummyHead = new ListNode();
         ListNode prev = dummyHead;
+
         while (!stack.isEmpty()) {
             prev.next = stack.pop();
             prev = prev.next;
         }
-        prev.next = reversedHead;  // 将上一组反向的解法链到本组反向后的尾节点上
+        prev.next = reversedHead;  // 将下一组反向的结果链到本组尾节点上
 
-        return dummyHead.next;     // 最后返回本组反向的结果
+        // 4. 最后返回本组反向的结果
+        return dummyHead.next;
+    }
+
+    /*
+     * 解法6：递归 + Stack（解法5的简化版）
+     * - 思路：与解法1、2、3、4、5一致。
+     * - 实现：不同于解法5在回程时反向本组节点，该解法在去程时如果数够了 k 个节点就马上反向，而回程时不做任何操作。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static ListNode reverseKGroup0(ListNode head, int k) {
+        if (head == null) return null;
+
+        // 1. 数出 k 个节点
+        Stack<ListNode> stack = new Stack<>();
+        ListNode curr = head;
+        int count = 0;
+
+        while (count < k && curr != null) {
+            stack.push(curr);
+            curr = curr.next;
+            count++;
+        }
+
+        if (count != k) return head;  // 若本组节点不够 k 个，则不反向
+
+        // 2. 反向本组的这 k 个节点
+        ListNode dummyHead = new ListNode(), prev = dummyHead;
+
+        while (!stack.isEmpty()) {
+            prev.next = stack.pop();
+            prev = prev.next;
+        }
+        prev.next = reverseKGroup0(curr, k);  // 将下一组反向的结果链到本组尾节点上
+
+        // 3. 最后返回本组反向的结果
+        return dummyHead.next;
     }
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-        log(reverseKGroup3(l1, 2));  // expects 2->1->4->3->NULL
+        log(reverseKGroup0(l1, 2));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4});
-        log(reverseKGroup3(l2, 3));  // expects 3->2->1->4->NULL
+        log(reverseKGroup0(l2, 3));  // expects 3->2->1->4->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7, 8});
-        log(reverseKGroup3(l3, 3));  // expects 3->2->1->6->5->4->7->8->NULL. (最后一组不够3个 ∴ 应该保持不变)
+        log(reverseKGroup0(l3, 3));  // expects 3->2->1->6->5->4->7->8->NULL. (最后一组不够3个 ∴ 应该保持不变)
 
         ListNode l4 = createLinkedList(new int[]{1, 2, 3});
-        log(reverseKGroup3(l4, 1));  // expects 1->2->3->NULL
+        log(reverseKGroup0(l4, 1));  // expects 1->2->3->NULL
     }
 }
