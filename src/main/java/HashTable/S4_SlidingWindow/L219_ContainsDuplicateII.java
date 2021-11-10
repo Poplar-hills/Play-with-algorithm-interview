@@ -11,6 +11,8 @@ import static Utils.Helpers.log;
  * Contains Duplicate II
  *
  * - 对于整型数组 nums 和整数 k，是否存在索引 i 和 j，使得 nums[i] == nums[j]，且 abs(i - j) <= k。
+ *
+ * - 注意：abs(i-j) <= k 意味着在 nums=[0,1,2,0], k=3 中，两个0（第1、4个元素）就满足 abs(i-j) <= k。
  * */
 
 public class L219_ContainsDuplicateII {
@@ -42,8 +44,8 @@ public class L219_ContainsDuplicateII {
     /*
      * 解法2：查找表 Set + 滑动窗口
      * - 思路：与解法1略有不同，不再是窗口在 nums 上滑动，而是遍历 nums，将元素放到 Set 中尝试（即没有 l,r 指针滑动操作）。
-     *   1. Set 中最多只保存 k 个元素，即索引在 [i-k+1, i] 范围内的元素；
-     *   2. 通过将各元素放入 Set 中来回答"有没有"的问题：。
+     * - 实现：Set 中最多只保存 k 个元素，通过不断检查第 k+1 个元素是否在 Set 中来回答"有没有"的问题。例如在
+     *   nums=[0,1,2,0], k=3 中，Set 中最多只保存3个元素，检查第4个元素是否在 Set 中。
      * - 时间复杂度 O(n)，空间复杂度 O(k)。
      * */
     public static boolean containsNearbyDuplicate2(int[] nums, int k) {
@@ -53,7 +55,7 @@ public class L219_ContainsDuplicateII {
             if (window.contains(nums[i])) return true;
             window.add(nums[i]);
             if (window.size() == k + 1)         // Set 中元素个数达到 k+1 之前只添加不删除（巧妙之处）
-                window.remove(nums[i - k]);
+                window.remove(nums[i - k]);     // 在 [0,1,2,0] 中，若 i=3，则要从 Set 中删除的就是 i=0 的元素
         }
 
         return false;
