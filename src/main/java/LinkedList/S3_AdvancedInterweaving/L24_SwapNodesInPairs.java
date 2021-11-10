@@ -34,7 +34,7 @@ public class L24_SwapNodesInPairs {
 
         while (curr != null && curr.next != null) {  // 内部不断交换 curr 和 curr.next
             ListNode second = curr.next;
-            ListNode third = second.next;
+            ListNode third = second.next;  // 交换之前先保存 third 节点的指针
             prev.next = second;
             second.next = curr;
             curr.next = third;
@@ -90,6 +90,7 @@ public class L24_SwapNodesInPairs {
      *                  ← 4->3->5->NULL（标志位为 true，交换）
      *             ← 2->4->3->5->NULL（标志位为 false，不交换）
      *        ← 2->1->4->3->5->NULL（标志位为 true，交换）
+     * - 👉 技巧：本解法虽然不是最简洁的，但这种通过传参在去程时打标，回程时根据打标进行相应处理的技巧值得掌握。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode swapPairs3(ListNode head) {
