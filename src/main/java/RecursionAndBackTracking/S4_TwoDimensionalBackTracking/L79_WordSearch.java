@@ -63,7 +63,7 @@ public class L79_WordSearch {
                 if (searchForWord(board, newR, newC, word, i + 1))  // 若没有有效的相邻坐标，则不会进入下层递归
                     return true;
         }
-        visited[r][c] = false;  // 👉 关键点：当在一个分支上没有找到解（死路）时，需退回去 ∴ 该分支上访问过的位置也要恢复
+        visited[r][c] = false;  // 💎 关键点：当在一个分支上没有找到解（死路）时，需退回去 ∴ 该分支上访问过的位置也要恢复
                                 // 为未访问，从而让其他分支能够再次访问（这里体现 backtracking 的特征）
         return false;
     }
