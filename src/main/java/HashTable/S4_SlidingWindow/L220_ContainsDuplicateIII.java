@@ -41,12 +41,15 @@ public class L220_ContainsDuplicateIII {
         TreeSet<Long> window = new TreeSet<>();  // 类型声明必须是 TreeSet 而非 Set ∵ Set 接口上没有 ceiling, floor 方法
 
         for (int i = 0; i < nums.length; i++) {  // 使用 Set 作为窗口就不用声明 l、r 指针了，直接逐个遍历元素即可
+            // 1. 先检查 i 处的元素是否已存在于 window 中
             long num = (long) nums[i], T = (long) t;
             Long ceiling = window.ceiling(num), floor = window.floor(num);  // 获取窗口内 num 的 ceiling、floor；注意要用
                                                                           // Long 接返回值 ∵ 可能为 null
+            // 2. 若存在，则直接返回
             if ((ceiling != null && ceiling <= num + T) || (floor != null && floor >= num - T))
                 return true;
 
+            // 3. 若不存在，则滑动窗口
             window.add(num);
             if (window.size() == k + 1)
                 window.remove((long) nums[i - k]);  // ∵ TreeMap 里存的是 Long 型 ∴ 在增删改查时都要先将元素转成 long
