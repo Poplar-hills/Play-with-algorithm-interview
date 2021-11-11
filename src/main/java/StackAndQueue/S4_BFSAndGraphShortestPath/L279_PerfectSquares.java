@@ -16,10 +16,10 @@ import static Utils.Helpers.log;
 
 public class L279_PerfectSquares {
     /*
-     * 解法1：BFS（借助 Queue 实现）
-     * - 思路："正整数 n 最少能用几个完全平方数组成"，这个问题可以转化为"正整数 n 最少减去几个完全平方数后等于0"。若把 n、0
-     *   看成图上的两个顶点，把"减去一个完全平方数"看做两点间的一条边，则该问题可转化为"求顶点 n 到 0 之间的最短路径"，即将原
-     *   问题转化为了一个在有向无权图上寻找 n → 0 间最短路径的问题。例如：
+     * 解法1：BFS
+     * - 💎 思路："正整数 n 最少能用几个完全平方数组成"，这个问题可以转化为"正整数 n 最少减去几个完全平方数后等于0"。若把
+     *   n、0 看成图上的两个顶点，把"减去一个完全平方数"看做两点间的一条边，则该问题可转化为"求顶点 n 到 0 之间的最短路径"，
+     *   即将原问题转化为了一个在有向无权图上寻找 n → 0 间最短路径的问题。例如：
      *                                0 ← ← 1 ← ← 2            0 ← ← 1 ← ←  2
      *           0 ← 1 ← 2            ↑     ↑     ↑            ↑     ↑    ↗ ↑
      *           ↑       ↑            ↑     5     ↑            ↑     5 ← 6  ↑
@@ -44,12 +44,13 @@ public class L279_PerfectSquares {
 
         while (!q.isEmpty()) {
             Pair<Integer, Integer> p = q.poll();
-            int curr = p.getKey();
+            int node = p.getKey();
             int step = p.getValue();
 
-            for (int i = 1; i * i <= curr; i++) {  // 当前顶点值 - 每一个完全平方数 = 每一个相邻顶点
-                int next = curr - i * i;
-                if (next == 0) return step + 1;    // BFS 中第一条到达终点的路径就是最短路径
+            if (node == 0) return step;            // BFS 中第一条到达终点的路径就是最短路径
+
+            for (int i = 1; i * i <= node; i++) {  // 当前顶点值 - 每一个完全平方数 = 每一个相邻顶点
+                int next = node - i * i;
                 if (!visited[next]) {
                     q.offer(new Pair<>(next, step + 1));
                     visited[next] = true;
@@ -92,7 +93,7 @@ public class L279_PerfectSquares {
     }
 
     /*
-     * 解法2：Recursion + Memoization（DFS with cache）
+     * 解法2：DFS + Memoization（recursion with cache）
      * - 思路：👆超时解的问题在于大量子问题会被重复计算 ∴ 加入 Memoization 机制来优化重叠子问题。
      * - 时间复杂度 O(n * sqrt(n))，空间复杂度 O(n)。
      * */
