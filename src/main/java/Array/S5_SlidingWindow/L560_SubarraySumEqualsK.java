@@ -69,7 +69,7 @@ public class L560_SubarraySumEqualsK {
         for (int l = 0; l < n; l++) {
             for (int r = l; r < n; r++) {
                 int sum = 0;
-                for (int i = l; i <= r; i++)
+                for (int i = l; i <= r; i++)  // 固定 l、r 的位置后，对 [l,r] 累加求和
                     sum += nums[i];
                 if (sum == k) count++;
             }
@@ -80,7 +80,7 @@ public class L560_SubarraySumEqualsK {
 
     /*
      * 解法1：双指针 + 累加
-     * - 思路：超时解中的累加求和过程其实可以与右移 r 的过程同步进行，从而去掉最内从的循环，将时间复杂度降低一个次方。
+     * - 思路：超时解中对 [l,r] 累加求和过程可与右移 r 的过程同步进行，从而去掉最内从的循环，将时间复杂度降低一个次方。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static int subarraySum1(int[] nums, int k) {
