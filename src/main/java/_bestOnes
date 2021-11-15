@@ -5,6 +5,7 @@
   - L11_ContainerWithMostWater
   - L3_LongestSubstringWithoutRepeatingCharacters
   - L560_SubarraySumEqualsK
+  - L76_MinimumWindowSubstring
   - L438_FindAllAnagramsInString
 
 - LinkedList (15/22): L2, L83, L86, L92, L206, L445 | L21, L82 | L24, L25 | S4 | L19, L61 | L141, L142

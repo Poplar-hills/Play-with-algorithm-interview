@@ -7,7 +7,8 @@ import static Utils.Helpers.log;
 /*
  * Find All Anagrams in a String
  *
- * - Given a string s and a non-empty string p, find all the start indices of p's anagrams (由颠倒字母顺序而构成的词) in s.
+ * - Given a string s and a non-empty string p, find all the start indices of p's anagrams (由颠倒字母顺序而
+ *   构成的词) in s.
  *
  * - Note:
  *   - Strings consists of lowercase English letters only.
@@ -17,10 +18,10 @@ import static Utils.Helpers.log;
 public class L438_FindAllAnagramsInString {
     /*
      * 解法1：定长滑动窗口
-     * - 思路：类似 L76_MinimumWindowSubstring 的解法1 ∵ 是找连续子串的问题 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界
-     *   的滑动来找到所需子串。而另一方面 ∵ 要找的是 p 的 anagrams（即找到的解的长度要 = p 的长度，不同于 L76 中的解只需包含
-     *   p 中字符即可）∴ 可以采用定长滑动窗口：让窗口长度固定为 p 的长度，然后在 s 上滑动，在滑动过程中检查窗口中的字符是否刚好
-     *   与 p 中的字符完全匹配。例如对于：s = eecbaebabacd，p = abc
+     * - 💎 思路：类似 L76_MinimumWindowSubstring 的解法1 ∵ 是找连续子串的问题 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右
+     *   边界的滑动来找到所需子串。而另一方面 ∵ 要找的是 p 的 anagrams（即找到的解的长度要 = p 的长度，不同于 L76 中的解只需
+     *   包含 p 中字符即可）∴ 可以采用定长滑动窗口：让窗口长度固定为 p 的长度，然后在 s 上滑动，在滑动过程中检查窗口中的字符是否
+     *   刚好与 p 中的字符完全匹配。例如对于：s="eecbaebabacd"，p="abc"
      *         e e c b a e b a b a c d
      *         -
      *         ---
@@ -31,7 +32,7 @@ public class L438_FindAllAnagramsInString {
      *                         -----     - 找到解2
      *                           -----
      * - 实现：在上面的该过程中，r 一直在右移，而 l 则是在窗口长度达到 p 的长度后才开始右移 —— 这里的"达到"在代码中表现为
-     *   "当窗口长度 > p 的长度后，让 l++ 来收缩窗口"。
+     *   "当窗口长度 > p 的长度后，通过 l++ 来收缩窗口"。
      * - 总结：该解法虽然代码结构上类似 L76 解法1，但滑动过程很不一样 —— 除了最开始连续扩展窗口（使其到达 p.lenght() + 1）
      *   之外，之后每次扩展一步就收缩一步（而非 L76 里连续扩展、连续收缩的过程），这样来模拟定长窗口的滑动过程。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
@@ -50,8 +51,8 @@ public class L438_FindAllAnagramsInString {
         while (r < s.length()) {                   // 当 r 抵达末尾，且 l 完成收缩时遍历结束
             if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0)  // 若 r 处字符在频谱中且频次 >0，则表示匹配上了
                 matchCount++;
-            freq.merge(chars[r++], -1, Integer::sum);  // 让 chars[r] 的频次-1（即使 chars[r] 不在频谱中也将其加入并设置频率为-1）
-
+            freq.merge(chars[r++], -1, Integer::sum);  // 让 chars[r] 的频次-1（注意即使 chars[r] 不在频谱中也
+                                                             // 将其加入并设置频率为-1）
             if (matchCount == p.length()) res.add(l);
 
             if (r - l + 1 > p.length()) {          // 每当窗口长度 > p.length()，就收缩一下 l
@@ -94,7 +95,7 @@ public class L438_FindAllAnagramsInString {
 
     /*
      * 解法3：滑动窗口
-     * - 思路：与 L76 解法1一致。
+     * - 思路：与 L76_MinimumWindowSubstring 解法1一致。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> findAnagrams3(String s, String p) {
@@ -110,8 +111,7 @@ public class L438_FindAllAnagramsInString {
 
         while (r < s.length()) {
             if (freq.containsKey(sChars[r])) {
-                if (freq.get(sChars[r]) > 0)
-                    matchCount++;
+                if (freq.get(sChars[r]) > 0) matchCount++;
                 freq.merge(sChars[r], -1, Integer::sum);
             }
             r++;
@@ -119,8 +119,7 @@ public class L438_FindAllAnagramsInString {
                 if (r - l == p.length())  // ∵ 在判断 matchCount == p.length() 之前 r 已经自增 ∴ 这里不再是 r-l+1
                     res.add(l);
                 if (freq.containsKey(sChars[l])) {
-                    if (freq.get(sChars[l]) == 0)
-                        matchCount--;
+                    if (freq.get(sChars[l]) == 0) matchCount--;
                     freq.merge(sChars[l], 1, Integer::sum);
                 }
                 l++;
@@ -154,10 +153,8 @@ public class L438_FindAllAnagramsInString {
             freq.merge(sChars[r++], -1, Integer::sum);
 
             while (matchCount == p.length()) {
-                if (r - l == p.length())
-                    res.add(l);
-                if (freq.get(sChars[l]) == 0)
-                    matchCount--;
+                if (r - l == p.length()) res.add(l);
+                if (freq.get(sChars[l]) == 0) matchCount--;
                 freq.merge(sChars[l++], 1, Integer::sum);
             }
         }
