@@ -15,16 +15,16 @@ import java.util.*;
 public class L76_MinimumWindowSubstring {
     /*
      * 解法1：
-     * - 思路：∵ 该题是找连续子串的问题 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case 1
+     * - 💎 思路：∵ 是找连续子串的问题 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case 1
      *   可知要求的最小子串需要包含 t 中所有字符，且尽量少的包含重复字符 ∴ 可得到窗口滑动控制方式：先右移 r 扩展窗口，直到 t 中
      *   所有字符进入窗口。之后右移 l 收缩窗口，直到窗口中不再包含 t 中所有字符，此时记录窗口长度，重复该过程直到 r 抵达 s 末尾。
-     *   例：对于 "ABAACBAB" 来说：先右移 r，当到达 C 时发现 t 中的所有字符都已进入窗口，此时再右移 l，直到达第2个 A 时发现
-     *   窗口中已不再包含 t 中的所有字符，则此时的 s[l-1,r] 即 "BAAC" 就是当前找到的最小子串。
-     * - 实现：该过程中需要知道，当任意边界右移一步后：
+     *   例：对于 "ABAACBAB" 来说，先右移 r，当 r 到达 C 时，t 中的所有字符都已进入窗口，此时开始右移 l，直到 l 抵达第2个 A
+     *   时发现窗口中已不再包含 t 中的所有字符，则此时的 s[l-1,r] 即 "BAAC" 就是当前找到的最小子串。
+     * - 实现：该过程中需知道，当 l 或 r 任意一边右移一步后：
      *     1. 边界上的字符是否是 t 中的字符；
      *     2. 此时窗口内是否包含 t 中的所有字符。
      *   这需要两个结构来实现：
-     *     - Map freq 记录在窗口内同时又在 t 中的字符的频次；
+     *     - Map<Character, Integer> freq 记录在窗口内同时又在 t 中的字符的频次；
      *     - int matchCount 记录已经匹配上的 t 中的字符的个数，若 matchCount == t.size() 说明 t 中所有字符已在窗口内。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -39,17 +39,16 @@ public class L76_MinimumWindowSubstring {
 
         while (r < s.length()) {                    // ∵ 每扩展一个字符后都会进行充分收缩 ∴ r 到达最后一个字符，且 l 进行充分收缩后整个滑动过程结束
             if (freq.containsKey(chars[r])) {       // 先扩展窗口（减小 r 处字符在频谱中的频次）
-                if (freq.get(chars[r]) > 0)         // 若频次 >0 表示 r 处字符匹配上了
-                    matchCount++;
+                if (freq.get(chars[r]) > 0) matchCount++;      // 若频次 >0 表示 r 处字符匹配上了
                 freq.merge(chars[r], -1, Integer::sum);  // r 处字符频次-1
             }
             r++;                                    // 扩展窗口
 
-            while (matchCount == t.length()) {      // 当窗口中包含了 t 的所有字符时开始收缩窗口（增大 l 处字符在频谱中的频次）
+            while (matchCount == t.length()) {      // 只要窗口中包含了 t 的所有字符，就持续收缩窗口（增大 l 处字符在频谱中的频次）
                 if (freq.containsKey(chars[l])) {
                     if (freq.get(chars[l]) == 0) {  // l 处字符频次为0说明 t 中所有的该字符已经刚好被匹配完了，此时要记录 minLen
                         matchCount--;               // （若匹配过多则频次会 <0，说明是冗余字符，可以不需记录 minLen 而直接收缩窗口）
-                        if (r - l < minLen) {       // 当所有该字符都已匹配上 & 窗口宽度比之前的更小时，更新 minLen、start
+                        if (r - l < minLen) {       // 当所有该字符都已匹配上，且窗口宽度比之前更小时，更新 minLen、start
                             minLen = r - l;
                             start = l;
                         }
@@ -85,14 +84,14 @@ public class L76_MinimumWindowSubstring {
         while (r < s.length()) {
             if (freq.containsKey(chars[r]) && freq.get(chars[r]) > 0)
                 matchCount++;
-            freq.merge(chars[r++], -1, Integer::sum);  // 非 t 中的字符也会被添加到 freq 中，值为 -1
-
-            while (matchCount == t.length()) {
-                if (freq.get(chars[l]) == 0) {
-                    matchCount--;
-                    if (r - l < minLen) {
-                        minLen = r - l;
-                        start = l;
+            freq.merge(chars[r++], -1, Integer::sum);  // 不同点：非 t 中的字符也会被添加到 freq 中，但值总是 < 0
+                                                             // 只有 t 中的字符才有可能频率 >= 0。
+            while (matchCount == t.length()) {  // 只要窗口中包含了 t 的所有字符，就持续收缩窗口（增加 l 处字符的频次）。
+                if (freq.get(chars[l]) == 0) {  // ∵ 只有 t 中字符才可能频率 >= 0 ∴ 若这里的字符频率为0，就意味着一定是
+                    matchCount--;               // t 中字符，且频次也已匹配上了 ∴ 从窗口移出时需要 matchCount--。
+                    if (r - l < minLen) {       // 当所有该字符都已匹配上，且窗口宽度比之前更小时，更新 minLen、start。
+                        minLen = r - l;         // ∵ r 在上面已经++过了，指向下一个待处理的字符 ∴ 这里窗口长度为 r-l，
+                        start = l;              // 而非 r-l+1。
                     }
                 }
                 freq.merge(chars[l++], 1, Integer::sum);
