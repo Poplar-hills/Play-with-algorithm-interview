@@ -65,7 +65,7 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法2：解法1的 int[256] 版
+     * 解法2：定长滑动窗口（解法1的 int[256] 版）
      * - 思路：与解法1一致。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
@@ -130,7 +130,7 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法4：解法3的简化版
+     * 解法4：滑动窗口（解法3的简化版）
      * - 思路：与解法3一致。
      * - 实现：与 L76_MinimumWindowSubstring 解法2一致。
      * - 总结：比起解法1，该解法通用性更强，还可解决 L76 的"包含"类问题。
