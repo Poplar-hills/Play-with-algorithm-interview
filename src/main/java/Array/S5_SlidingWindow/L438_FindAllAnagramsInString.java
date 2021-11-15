@@ -55,7 +55,7 @@ public class L438_FindAllAnagramsInString {
                                                              // 将其加入并设置频率为-1）
             if (matchCount == p.length()) res.add(l);
 
-            if (r - l + 1 > p.length()) {          // 每当窗口长度 > p.length()，就收缩一下 l
+            if (r - l == p.length()) {  // 每当窗口长度达到 p.length()，就收缩一下 l（∵ r 在上面已经++过了，指向下一个待处理的字符 ∴ 这里窗口长度为 r-l，而非 r-l+1
                 if (freq.get(chars[l]) == 0) matchCount--;
                 freq.merge(chars[l++], 1, Integer::sum);
             }
@@ -84,7 +84,7 @@ public class L438_FindAllAnagramsInString {
 
             if (matchCount == p.length()) res.add(l);
 
-            if (r - l + 1 > p.length()) {
+            if (r - l == p.length()) {
                 if (freq[s.charAt(l)] == 0) matchCount--;
                 freq[s.charAt(l++)]++;
             }
@@ -116,7 +116,7 @@ public class L438_FindAllAnagramsInString {
             }
             r++;
             while (matchCount == p.length()) {
-                if (r - l == p.length())  // ∵ 在判断 matchCount == p.length() 之前 r 已经自增 ∴ 这里不再是 r-l+1
+                if (r - l == p.length())
                     res.add(l);
                 if (freq.containsKey(sChars[l])) {
                     if (freq.get(sChars[l]) == 0) matchCount--;
