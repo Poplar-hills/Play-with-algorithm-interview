@@ -82,7 +82,9 @@ public class L76_MinimumWindowSubstring {
     /*
      * 解法2：滑动窗口（解法1的简化版，🥇最优解）
      * - 思路：与解法1一致。
-     * - 实现：在扩展、收缩窗口时不再需要判断 r、l 处的字符是否在 freq 中（即是否为 t 中字符），即使是非 t 中字符也可以添加进去。
+     * - 实现：与解法1区别在于：
+     *   1. 取 minLen 的时机改到了 while 内部（即每次收缩时取 minLen）∴ 不再需要 shrinked 标志位标识是否收缩过。
+     *   2. 在扩展、收缩窗口时不再需要判断 r、l 处的字符是否在 freq 中（即是否为 t 中字符），即使是非 t 中字符也可以添加进去。
      * - 💎 套路：扩展/收缩滑动窗口类型的题目都可以采用该模式
      *   1. 大 while 循环内 r 每扩展一个字符后都让 l 进行充分收缩（r 用 if 扩展，l 用 while 收缩）；
      *   2. 扩展/收缩时检测 r/l 处的字符在频谱 freq 中的值来增/减 matchCount；
@@ -105,13 +107,12 @@ public class L76_MinimumWindowSubstring {
             freq.merge(chars[r++], -1, Integer::sum);  // 不同点：非 t 中的字符也会被添加到 freq 中，但值总是 < 0
                                                              // 只有 t 中的字符才有可能频率 >= 0。
             while (matchCount == t.length()) {  // 只要窗口中包含了 t 的所有字符，就持续收缩窗口（增加 l 处字符的频次）。
-                if (freq.get(chars[l]) == 0) {  // ∵ 只有 t 中字符才可能频率 >= 0 ∴ 若这里的字符频率为0，就意味着一定是
-                    matchCount--;               // t 中字符，且频次也已匹配上了 ∴ 从窗口移出时需要 matchCount--。
-                    if (r - l < minLen) {       // 当所有该字符都已匹配上，且窗口宽度比之前更小时，更新 minLen、start。
-                        minLen = r - l;         // ∵ r 在上面已经++过了，指向下一个待处理的字符 ∴ 这里窗口长度为 r-l，
-                        start = l;              // 而非 r-l+1。
-                    }
+                if (r - l < minLen) {           // 当所有该字符都已匹配上，且窗口宽度比之前更小时，更新 minLen、start。
+                    minLen = r - l;             // ∵ r 在上面已经++过了，指向下一个待处理的字符 ∴ 这里窗口长度为 r-l，
+                    start = l;                  // 而非 r-l+1。
                 }
+                if (freq.get(chars[l]) == 0)    // ∵ 只有 t 中字符才可能频率 >= 0 ∴ 若这里的字符频率为0，就意味着一定是
+                    matchCount--;               // t 中字符，且频次也已匹配上了 ∴ 从窗口移出时需要 matchCount--。
                 freq.merge(chars[l++], 1, Integer::sum);
             }
         }
