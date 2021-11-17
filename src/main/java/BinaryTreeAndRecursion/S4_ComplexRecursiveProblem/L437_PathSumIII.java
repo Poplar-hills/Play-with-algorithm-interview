@@ -33,7 +33,7 @@ public class L437_PathSumIII {
      *     1. 若 node 在目标路径上，则问题转化为求"以 node 为根的二叉树中有几条从 node 到任意节点，且节点和为 sum 的 path"，
      *        该问题可继续使用 L112、L113 中的方法，检查 sum - node.val 是否为0来确定目标路径；
      *     2. 若 node 不在目标路径上，则继续用同样的方法递归搜索 node 的左右子树。
-     *   用公式表达：f(node, sum) = 包含 node 的目标路径数 + 不包含 node 的目标路径数
+     *   形式化表达：f(node, sum) = 包含 node 的目标路径数 + 不包含 node 的目标路径数
      *                          = f2(node, sum) + f(node.left, sum) + f(node.right, sum)。
      *   其中，"以 node 为根的二叉树中有几条从 node 到任意节点，且节点和为 sum 的 path" 的状态转移方程为：
      *             f2(node, sum) = node.val == sum ? 1 : 0
@@ -60,17 +60,17 @@ public class L437_PathSumIII {
     }
 
     /*
-     * 解法2：DFS + Prefix sum + Backtracking（最优解）
+     * 解法2：DFS + Prefix sum + Backtracking（🥇最优解）
      * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，即二叉树上的区间求和问题 ∴ 同样可采用 Prefix Sum 技巧来
      *   优化性能，例如 test case 1 中 pathSum(3->3) = pathSum(10->5->3->3) - pathSum(10->5)。
      * - 推演：路径 10 -> 5 -> 3 -> -10 的 path 的推演过程如下：
-     *            10         - map(0:1), preSum=10, map.get(10-8)=0 ∴ count=0
+     *            10         - map(0:1), pathSum=10, map.get(10-8)=0 ∴ count=0
      *           /  \
-     *          5   -3       - map(0:1,10:1), preSum=15, map.get(15-8)=0 ∴ count=0
+     *          5   -3       - map(0:1,10:1), pathSum=15, map.get(15-8)=0 ∴ count=0
      *         / \    \
-     *        3   2   11     - map(0:1,10:1,15:1), preSum=18, map.get(18-8)=1 ∴ count=1
+     *        3   2   11     - map(0:1,10:1,15:1), pathSum=18, map.get(18-8)=1 ∴ count=1
      *       / \   \
-     *      3 -10   1        - map(0:1,10:1,15:1), preSum=8, map.get(8-8)=1 ∴ count=2
+     *      3 -10   1        - map(0:1,10:1,15:1), pathSum=8, map.get(8-8)=1 ∴ count=2
      *
      * - 👉 总结：该题与 L560_SubarraySumEqualsK 都是 Prefix Sum 和 Two Sum 思想的经典应用。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -78,26 +78,26 @@ public class L437_PathSumIII {
     public static int pathSum2(TreeNode root, int sum) {
         Map<Integer, Integer> map = new HashMap<>();  // Map<prefixSum, count>
         map.put(0, 1);
-        return helper2(root, sum, 0, map);
+        return backtrack2(root, sum, 0, map);
     }
 
-    private static int helper2(TreeNode root, int sum, int preSum, Map<Integer, Integer> map) {
+    private static int backtrack2(TreeNode root, int sum, int pathSum, Map<Integer, Integer> map) {
         if (root == null) return 0;
 
-        preSum += root.val;                             // 累积 prefix sum
-        int count = map.getOrDefault(preSum - sum, 0);  // 检查 Map 中 complement 的个数（即查找该路径上有几个子路径和能让 preSum - 子路径和 == sum）
-        map.merge(preSum, 1, Integer::sum);       // 在 Map 中插入或更新 prefix sum 的频率，相当于 map.put(preSum, map.getOrDefault(preSum, 0) + 1);
+        pathSum += root.val;                        // 累积 pathSum（也就是 prefix sum）
+        int count = map.getOrDefault(pathSum - sum, 0);  // 检查 Map 中 complement 的个数（即查找该路径上有几个子路径和能让 pathSum - 子路径和 == sum）
+        map.merge(pathSum, 1, Integer::sum);  // 在 Map 中插入或更新 prefix sum 的频率，相当于 map.put(pathSum, map.getOrDefault(pathSum, 0) + 1);
 
-        count += helper2(root.left, sum, preSum, map);  // 递归处理左右子树，并将结果累积在 count 上
-        count += helper2(root.right, sum, preSum, map);
+        count += backtrack2(root.left, sum, pathSum, map);  // 递归处理左右子树，并将结果累积在 count 上
+        count += backtrack2(root.right, sum, pathSum, map);
 
-        map.merge(preSum, -1, Integer::sum);      // 注意在回溯到上一层之前将 prefix sum 的频率-1以恢复原状，相当于 map.put(preSum, map.get(preSum) - 1);
+        map.merge(pathSum, -1, Integer::sum);  // 注意在回溯到上一层之前将 prefix sum 的频率-1以恢复原状，相当于 map.put(pathSum, map.get(pathSum) - 1);
         return count;
     }
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{10, 5, -3, 3, 2, null, 11, 3, -10, null, 1});
-        log(pathSum2(t1, 8));
+        log(pathSum(t1, 8));
         /*
          * expects 4. (5->3, 5->2->1, -3->11, 10->5->3->-10)
          *            10
@@ -110,7 +110,7 @@ public class L437_PathSumIII {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{10, 8, -2, -10});
-        log(pathSum2(t2, 8));
+        log(pathSum(t2, 8));
         /*
          * expects 3. (8, 10->8->-10, 10->-2)
          *         10
@@ -121,13 +121,13 @@ public class L437_PathSumIII {
          * */
 
         TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{1});
-        log(pathSum2(t3, 0));
+        log(pathSum(t3, 0));
         /*
          * expects 0.
          * */
 
         TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{});
-        log(pathSum2(t4, 0));
+        log(pathSum(t4, 0));
         /*
          * expects 0.
          * */
