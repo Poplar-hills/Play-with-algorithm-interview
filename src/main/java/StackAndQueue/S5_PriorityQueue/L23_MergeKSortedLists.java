@@ -107,7 +107,7 @@ public class L23_MergeKSortedLists {
 
     /*
      * 解法4：Merge by pairing up (merge sort)
-     * - 思路：总体思路与解法3一致，也是使用二分的形式将 lists 中的链表两两配对进行 merge。
+     * - 思路：思路与解法3一致，也是使用二分的形式将 lists 中的链表两两配对进行 merge。
      * - 实现：与解法3不同，该解法使用标准归并排序思路，先对 lists 中的链表不断进行二分（partition），最后再两两归并（merge）。
      * - 参考：L75_SortColors 解法2（数组的 merge sort）。
      * - 💎 反思：换一个角度思考，其实链表数组就是在一维的普通数组之上，每个元素延伸出了多个节点形成链表而已：
