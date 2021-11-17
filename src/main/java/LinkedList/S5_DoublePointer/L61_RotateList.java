@@ -27,16 +27,16 @@ public class L61_RotateList {
         if (numToRotate == 0) return head;  // 若去掉套圈后没有需要移动的节点则直接返回
 
         int numToStay = l - numToRotate;    // 不需移动的节点个数
-        ListNode prev = head;               // ∵ 要截断链表 ∴ 要找到截断处的上一个节点
+        ListNode curr = head;               // ∵ 要截断链表 ∴ 要找到截断处的上一个节点
         for (int i = 1; i < numToStay; i++)
-            prev = prev.next;
+            curr = curr.next;
 
-        ListNode newHead = prev.next, conn = newHead;
-        prev.next = null;                   // 截断
+        ListNode newHead = curr.next, tail = newHead;
+        curr.next = null;                   // 截断
 
-        while (conn.next != null)           // 获取待截断链表的最后一个节点
-            conn = conn.next;
-        conn.next = head;                   // 链接成新链表
+        while (tail.next != null)           // 获取待截断链表的最后一个节点
+            tail = tail.next;
+        tail.next = head;                   // 链接成新链表
 
         return newHead;
     }
@@ -48,8 +48,40 @@ public class L61_RotateList {
     }
 
     /*
-     * 解法2：截断移动（双指针版本）
+     * 解法2：截断移动（解法1的另一种写法）
      * - 思路：与解法1一致。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static ListNode rotateRight2(ListNode head, int k) {
+        if (head == null || k == 0) return head;
+        int len = getLength(head);
+        int numToRotate = k % len;
+        if (numToRotate == 0) return head;
+        int numToStay = len - numToRotate;
+
+        ListNode dummyHead = new ListNode();
+        ListNode curr = head, prev = null;
+
+        while (curr != null) {
+            if (numToStay-- == 0) {  // numToStay 为0时 curr 即是 newHead，prev 即是 newTail
+                prev.next = null;
+                ListNode tail = curr;
+                while (tail.next != null)  // 继续走到链表尾部，找到 tail
+                    tail = tail.next;
+                dummyHead.next = curr;
+                tail.next = head;
+            } else {
+                prev = curr;
+                curr = curr.next;
+            }
+        }
+
+        return dummyHead.next;
+    }
+
+    /*
+     * 解法3：截断移动（双指针版本）
+     * - 思路：与解法1、2一致。
      * - 实现：采用 L19_RemoveNthNodeFromEndOfList 解法2的思路，使用双指针技巧实现“找到待截断链表的上一节点”。例如已知待截取
      *   的节点个数为2：
      *       1 -> 2 -> 3 -> 4 -> 5
@@ -61,7 +93,7 @@ public class L61_RotateList {
      *                 l    n    r
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
-    public static ListNode rotateRight2(ListNode head, int k) {
+    public static ListNode rotateRight3(ListNode head, int k) {
         if (head == null || k == 0) return null;
         int numToRotate = k % getLength(head);
 
@@ -81,8 +113,8 @@ public class L61_RotateList {
     }
 
     /*
-     * 解法3：递归
-     * - 思路：与解法1、2一致。
+     * 解法4：递归
+     * - 思路：与解法1、2、3一致。
      * - 实现：∵ 使用递归 ∴ 要换一种思考方式，考虑每次递归应返回什么。例如已知待截取的节点个数为2：
      *     1 -> 2 -> 3 -> 4 -> 5 -> null
      *       →
@@ -104,7 +136,7 @@ public class L61_RotateList {
 
     private static int numToRotate;     // 声明在外部
 
-    public static ListNode rotateRight3(ListNode head, int k) {
+    public static ListNode rotateRight4(ListNode head, int k) {
         if (head == null || k == 0) return head;
         numToRotate = k % getLength(head);
         return helper3(head, head, null);
