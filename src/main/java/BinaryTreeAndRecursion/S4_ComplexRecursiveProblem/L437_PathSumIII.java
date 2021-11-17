@@ -86,12 +86,12 @@ public class L437_PathSumIII {
 
         pathSum += root.val;                        // 累积 pathSum（也就是 prefix sum）
         int count = map.getOrDefault(pathSum - sum, 0);  // 检查 Map 中 complement 的个数（即查找该路径上有几个子路径和能让 pathSum - 子路径和 == sum）
-        map.merge(pathSum, 1, Integer::sum);  // 在 Map 中插入或更新 prefix sum 的频率，相当于 map.put(pathSum, map.getOrDefault(pathSum, 0) + 1);
+        map.merge(pathSum, 1, Integer::sum);  // 在 Map 中插入或更新 prefix sum 的频率
 
         count += backtrack2(root.left, sum, pathSum, map);  // 递归处理左右子树，并将结果累积在 count 上
         count += backtrack2(root.right, sum, pathSum, map);
 
-        map.merge(pathSum, -1, Integer::sum);  // 注意在回溯到上一层之前将 prefix sum 的频率-1以恢复原状，相当于 map.put(pathSum, map.get(pathSum) - 1);
+        map.merge(pathSum, -1, Integer::sum);  // 注意在回溯到上一层之前将 prefix sum 的频率-1以恢复原状
         return count;
     }
 
