@@ -21,10 +21,10 @@ import static Utils.Helpers.log;
 
 /*
  * 解法1：Doubly linked list (DLL) + Map
- * - 思路：对于 get() 操作可使用 Map 以 O(1) 速度访问数据（访问数据时也重新插入到头部）；而对于容量已满时的 put() 操作需要能快速
- *   定位到 the least recently used 的数据 ∴ 使用队列结构记录数据的访问时间，在每次访问数据（get/put）时，将被访问的数据移动到
- *   队首，而让 the least recently used 的数据逐渐归到队尾，从而在缓存已满时能以 O(1) 的速度从队尾淘汰。
- * - 实现：
+ * - 💎 思路：对于 get() 操作可使用 Map 以 O(1) 速度访问数据（访问数据时也重新插入到头部）；而对于容量已满时的 put() 操作需要能
+ *   快速定位到 the least recently used 的数据 ∴ 使用 Queue 结构记录数据的访问时间，在每次访问数据（get/put）时，将被访问的
+ *   数据移动到队首，而让 the least recently used 的数据逐渐归到队尾，从而在缓存已满时能以 O(1) 的速度从队尾淘汰。
+ * - 💎 实现：
  *   1. ∵ 既要能让数据移动到队首，又要能快速获取队尾数据 ∴ 需要 dummyHead、dummyTail 两个指针；
  *   2. 若是从单向链表尾部删除节点需要先拿到上一个节点 ∴ 要从头遍历过去才能拿到，无法满足 O(1) 的要求 ∴ 不如直接使用双向链表方便。
  *               k1     k2     k3     k4            - Map 的 keys
@@ -94,8 +94,9 @@ public class LRUCache_1 {
 
     private void evict() {  // 清理掉最长时间没使用到的数据项（即 DLL 上的 dummyTail.prev）
         if (dummyHead.next != dummyTail) {   // 或 if (!map.isEmpty())
-            map.remove(dummyTail.prev.key);  // 注意这两句不能颠倒顺序，若先 remove 掉节点，dummyTail.prev 已不再指向同一个节点
-            remove(dummyTail.prev);
+            Node LRUNode = dummyTail.prev;
+            remove(LRUNode);
+            map.remove(LRUNode.key);
         }
     }
 
