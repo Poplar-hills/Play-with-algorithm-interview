@@ -59,7 +59,7 @@ public class L130_SurroundedRegions {
 
         for (int r = 0; r < m; r++) {
             for (int c = 0; c < n; c++) {
-                if (board[r][c] == 'O' && !filled[r][c]) {    // 关键：必须即是 'O' 又没 fill 过的格子才能 flood fill
+                if (board[r][c] == 'O' && !filled[r][c]) {    // 关键：必须既是 'O' 又没 fill 过的格子才能 flood fill
                     List<int[]> region = new ArrayList<>();  // 用于暂存当前 region 的所有坐标
                     if (floodFill(board, r, c, region))       // 若该 region 有效，则 flip 该其中的所有 'O'
                         for (int[] p : region)
@@ -148,7 +148,7 @@ public class L130_SurroundedRegions {
      *   所有的 '*' 替换回 'O' 即可。
      * - 实现：相比解法1、2，该解法更加简洁，原因是：
      *     1. 先处理无效的 'O' ∴ 只需使用标准的 Flood Fill 即可，无需任何修改；
-     *     2. 将遍历过的 'O' 替换成了 '*' ∴ 有 '*' 的格子即是被访问过的，无需再单独开辟 boolean[][]；
+     *     2. 将遍历过的 'O' 替换成了 '*' ∴ 有 '*' 的格子即是被访问过的，无需再单独开辟 boolean[][] filled；
      * - 👉 总结：与解法1、2对比，该解法其实是从边界开始向内陆进行 Flood Fill，即 outside-in，而解法1、2是 inside-out。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)，时空复杂度也比解法1、2更优。
      * */
@@ -250,7 +250,7 @@ public class L130_SurroundedRegions {
                 if (board[r][c] != 'O') continue;
                 if (r == 0 || r == m - 1 || c == 0 || c == n - 1)  // 若 'O' 在边界上，则将其与虚拟节点连通
                     uf.unify(node(r, c), DUMMY_NODE);
-                else {  // 将不在边界上的 'O' 与四周相邻的 'O' 连通，从而让有效的跟有效的连通，无效的跟无效的连通
+                else {  // 关键：将不在边界上的 'O' 与其四周相邻的 'O' 连通，从而让有效的跟有效的连通，无效的跟无效的连通
                     for (int[] d : directions) {
                         int newR = r + d[0], newC = c + d[1];
                         if (board[newR][newC] == 'O')
