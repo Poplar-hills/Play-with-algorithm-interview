@@ -7,9 +7,9 @@ import static Utils.Helpers.log;
 /*
  * 解法2：TreeMap + HashMap
  * - 思路：与解法1的区别：
- *   1. 解法1使用 Map<Integer, LinkedHashSet> 记录 count -> keys 的映射，在 count 相同情况下由 LinkedHashSet 保存数据的
- *      最近访问顺序；而本解法中使用 TreeMap<CacheVal, Integer> 记录 value/count -> key 的映射，通过定制 TreeMap 的比较器
- *      来对缓存数据进行排序（先比较 count，count 相同时比较 timestamp）。
+ *   1. 解法1使用 Map<count, LinkedHashSet<key>> 记录 count -> keys 的映射，在 count 相同情况下由 LinkedHashSet 保存
+ *      数据的最近访问顺序；而本解法中使用 TreeMap<CacheInfo<val, count, time>, key>，并通过定制 TreeMap 的比较器来对缓存
+ *      数据进行排序（先比较 count，当 count 相同时比较 timestamp）。
  *   2. 在淘汰数据时，解法1中通过维护的 minCount 来快速找到 LFU、LRU 数据；而本解法中由于 TreeMap 的比较器中已经揉进了对
  *      timestamp 的比较 ∴ 在淘汰数据时直接 remove 比较出来的最"小"数据即可。
  * - 💎 实现：本解法中使用 TreeMap 是因为其自定义比较排序能力 ∴ 也可以使用同样具备该特性的 PriorityQueue 实现。
@@ -22,39 +22,40 @@ import static Utils.Helpers.log;
 
 public class LFUCache_2 {
 
-    private static class CacheVal {
-        int value, count, stamp;
-        public CacheVal(int value, int stamp, int count) {
+    private static class CacheInfo {
+        int value, count, time;
+        public CacheInfo(int value, int time, int count) {
             this.value = value;
-            this.stamp = stamp;
+            this.time = time;
             this.count = count;
         }
     }
 
     private final int capacity;
-    private int stamp;  // 全局 timestamp，每次 get、put 操作都会让其自增，从而为缓存数据提供时间戳作用（用于在 TreeMap 上比较）
-    private final Map<Integer, CacheVal> keyToVal;  // 记录缓存数据（用 key 查 value、count、stamp）
-    private final TreeMap<CacheVal, Integer> treeMap;  // 记录缓存数据到 key 的映射（TreeMap 具有排序能力）
+    private int time;  // 全局 timestamp，每次 get、put 操作都会让其自增，从而为缓存数据提供时间戳作用（用于在 TreeMap 上比较）
+    private final Map<Integer, CacheInfo> keyToVal;  // 记录缓存数据（用 key 查 value、count、time）
+    private final TreeMap<CacheInfo, Integer> treeMap;  // 记录缓存数据到 key 的映射（TreeMap 具有排序能力）
 
     public LFUCache_2(int capacity) {
         this.capacity = capacity;
-        stamp = 0;
+        time = 0;
         keyToVal = new HashMap<>();
         treeMap = new TreeMap<>((c1, c2) -> c1.count == c2.count  // 自定义 TreeMap 的 key-sort function
-                ? c1.stamp - c2.stamp     // 两个缓存数据，当 count 相同时，比较 timestamp（在遍历时，较小的会先被遍历到）
+                ? c1.time - c2.time     // 两个缓存数据，当 count 相同时，比较 timestamp（从小到大）
                 : c1.count - c2.count);
     }
 
     public int get(int key) {
         if (!keyToVal.containsKey(key)) return -1;
-        // update the cache value on the treeMap and keyToVal
-        CacheVal cacheVal = keyToVal.get(key);
-        treeMap.remove(cacheVal);
-        CacheVal newCacheVal = new CacheVal(cacheVal.value, stamp++, cacheVal.count + 1);
-        treeMap.put(newCacheVal, key);
-        keyToVal.put(key, newCacheVal);
-        // return the value
-        return cacheVal.value;
+
+        // update the cache info in treeMap and keyToVal
+        CacheInfo cacheInfo = keyToVal.get(key);
+        treeMap.remove(cacheInfo);   // 更新 treeMap 上的值要先 remove 旧的再 put 新的
+        CacheInfo newCacheInfo = new CacheInfo(cacheInfo.value, time++, cacheInfo.count + 1);
+        treeMap.put(newCacheInfo, key);
+        keyToVal.put(key, newCacheInfo);
+
+        return cacheInfo.value;
     }
 
     public void put(int key, int value) {
@@ -62,20 +63,20 @@ public class LFUCache_2 {
 
         if (keyToVal.containsKey(key)) {
             // if key exists, update the cache
-            CacheVal cacheVal = keyToVal.get(key);
-            treeMap.remove(cacheVal);
-            CacheVal newCacheVal = new CacheVal(value, stamp++, cacheVal.count + 1);
-            treeMap.put(newCacheVal, key);
-            keyToVal.put(key, newCacheVal);
+            CacheInfo cacheInfo = keyToVal.get(key);
+            treeMap.remove(cacheInfo);
+            CacheInfo newCacheInfo = new CacheInfo(value, time++, cacheInfo.count + 1);
+            treeMap.put(newCacheInfo, key);
+            keyToVal.put(key, newCacheInfo);
         } else {
             // if key doesn't exist, create a new one
             if (treeMap.size() == capacity) {
                 int endKey = treeMap.pollFirstEntry().getValue();  // 根据 TreeMap 的 key-sort function 返回第一个 entry（即 TreeMap 的最左叶子节点）
                 keyToVal.remove(endKey);  // evict the LRU
             }
-            CacheVal newCacheVal = new CacheVal(value, stamp++, 1);
-            keyToVal.put(key, newCacheVal);
-            treeMap.put(newCacheVal, key);
+            CacheInfo newCacheInfo = new CacheInfo(value, time++, 1);
+            keyToVal.put(key, newCacheInfo);
+            treeMap.put(newCacheInfo, key);
         }
     }
 
