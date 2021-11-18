@@ -6,7 +6,7 @@ import static Utils.Helpers.log;
 
 /*
  * 解法2：TreeMap + HashMap
- * - 思路：类似解法1"思路"中的第一版：
+ * - 💎 思路：类似解法1"思路"中的第一版：
  *   1. 使用两个相反的数据结构：
  *      - Map<key, CacheInfo<value, count, time>>：实现缓存数据存储；
  *      - TreeMap<CacheInfo<val, count, time>, key>：实现"先按 LFU 逐出，当 count 相同时再按 LRU 逐出"的需求（借助
@@ -16,10 +16,10 @@ import static Utils.Helpers.log;
  * - 实现：本解法中使用 TreeMap 是因为其自定义比较排序能力 ∴ 同样也可以使用 PriorityQueue<> 实现。
  * - 时间复杂度：get、put 方法均为 O(log(capacity)) ∴ 无法满足题目要求。
  *   三种数据结构的时间复杂度比较：
- *                         add      get-min    remove-min   remove-any
- *      TreeMap：        O(logn)     O(logn)     O(logn)     O(logn)
- *      PriorityQueue：  O(logn)      O(1)       O(logn)      O(n)
- *      HashMap：         O(1)        O(1)        O(1)        O(1)
+ *                        add     get-min   remove-min  remove-any
+ *      TreeMap：       O(logn)    O(logn)    O(logn)    O(logn)     - get-min 即获取 tree 的最左节点
+ *      PriorityQueue： O(logn)     O(1)      O(logn)     O(n)       - get-min 即获取堆顶元素
+ *      HashMap：        O(1)       O(n)       O(n)       O(1)       - 在没有辅助数据结构的情况下，需 O(n) 才能找到 min
  * */
 
 public class LFUCache_2 {
@@ -50,7 +50,7 @@ public class LFUCache_2 {
     public int get(int key) {
         if (!keyToVal.containsKey(key)) return -1;
 
-        // update the cache info in treeMap and keyToVal
+        // 更新 treeMap、keyToVal 中的 cacheInfo（先 remove，再 put）
         CacheInfo cacheInfo = keyToVal.get(key);
         treeMap.remove(cacheInfo);   // 更新 treeMap 上的值要先 remove 旧的再 put 新的
         CacheInfo newCacheInfo = new CacheInfo(cacheInfo.value, time++, cacheInfo.count + 1);
@@ -73,8 +73,8 @@ public class LFUCache_2 {
         } else {
             // if key doesn't exist, create a new one
             if (treeMap.size() == capacity) {
-                int endKey = treeMap.pollFirstEntry().getValue();  // 根据 TreeMap 的 key-sort function 返回第一个 entry（即 TreeMap 的最左叶子节点）
-                keyToVal.remove(endKey);  // evict the LRU
+                int LRUKey = treeMap.pollFirstEntry().getValue();  // 根据 TreeMap 的 key-sort function 返回第一个 entry（即 TreeMap 的最左叶子节点）
+                keyToVal.remove(LRUKey);  // evict the LRU
             }
             CacheInfo newCacheInfo = new CacheInfo(value, time++, 1);
             keyToVal.put(key, newCacheInfo);
