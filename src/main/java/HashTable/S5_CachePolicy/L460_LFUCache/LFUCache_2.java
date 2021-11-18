@@ -13,9 +13,10 @@ import static Utils.Helpers.log;
  *        TreeMap 的比较排序能力，先比较 count，当 count 相同时再比较 timestamp）。
  *   2. 在淘汰数据时，解法1中通过维护的 minCount 来快速找到 LFU、LRU 数据；而本解法中由于 TreeMap 的比较器中已经揉进了对
  *      timestamp 的比较 ∴ 在淘汰数据时直接 remove 比较出来的最"小"数据即可。
- * - 实现：本解法中使用 TreeMap 是因为其自定义比较排序能力 ∴ 同样也可以使用 PriorityQueue<> 实现。
- * - 时间复杂度：get、put 方法均为 O(log(capacity)) ∴ 无法满足题目要求。
- *   三种数据结构的时间复杂度比较：
+ * - 💎 实现：
+ *   - 关键点是使用 TreeMap 的排序能力对缓存数据进行多维度排序（先按 count，再按 time 排序）—— 多维排序是很常用的技巧；
+ *   - 同样也可以使用 PriorityQueue 的排序能力来实现。
+ * - 💎 时间复杂度：get、put 方法均为 O(log(capacity)) ∴ 无法满足题目要求。三种数据结构的时间复杂度比较：
  *                        add     get-min   remove-min  remove-any
  *      TreeMap：       O(logn)    O(logn)    O(logn)    O(logn)     - get-min 即获取 tree 的最左节点
  *      PriorityQueue： O(logn)     O(1)      O(logn)     O(n)       - get-min 即获取堆顶元素
