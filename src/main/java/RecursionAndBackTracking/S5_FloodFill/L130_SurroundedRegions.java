@@ -25,7 +25,7 @@ public class L130_SurroundedRegions {
      *      -> ∵ 要先遍历整个 region 后才能知道是否有效 ∴ 需要一个列表来暂存当前 region 中所有坐标，若遍历之后 region
      *         有效则 flip 其中的所有坐标，否则直接丢弃即可。
      *
-     * - 实现：在遍历 region 时，一旦发现某个 'O' 的邻居越界（意味着该 region 无效），此时我们有两种方案：
+     * - 💎 实现：在遍历 region 时，一旦发现某个 'O' 的邻居越界（意味着该 region 无效），此时我们有两种方案：
      *     1. 继续当前 Flood Fill，遍历完该 region，并将其中的所有 'O' 标记为已填充；
      *     2. 立即退出当前 Flood Fill，不再继续遍历该 region，而是在 board 上搜索下一个 region；
      *   若采用方案2，只将该 region 中遍历过的 '0' 标记为已填充，同时留有未遍历的 'O'，则 test case 3 会出错：
@@ -36,6 +36,12 @@ public class L130_SurroundedRegions {
      *        X X X O      X X X O
      *   ∴ 应该采用方案1，一次性遍历完整个 region，即使发现该 region 无效也先不退出，而是等所有 'O' 都被标记为已填充之后再
      *   继续安心的在 board 上搜索下一个 region。
+     *
+     * - 💎 关键点：
+     *   1. 在 board 上搜索 flood fill 起点时，只有当一个格子里既是 'O'，又没有被 fill 过，才是有效的 flood fill 起点。
+     *   2. 在 flood fill 过程中，即使最后发现一个 region 无效（不能 flip），也要将其中所有格子标记为 filled。只有这样在继续
+     *      搜索 flood fill 起点时才能跳过无效 region 的 'O'。
+     *   - ∴ 可见在 flood fill 过程中，boolean[][] filled 是不可逆的。
      *
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
@@ -102,7 +108,7 @@ public class L130_SurroundedRegions {
         for (int r = 0; r < m; r++) {
             for (int c = 0; c < n; c++) {
                 if (board[r][c] == 'O' && !filled[r][c]) {
-                    region.clear();  // 每次使用前先清空
+                    region.clear();  // ∵ region 提前定义 ∴ 每次使用前需先清空
                     if (floodFill2(board, r, c, region))
                         for (int[] p : region)
                             board[p[0]][p[1]] = 'X';
@@ -113,7 +119,7 @@ public class L130_SurroundedRegions {
 
     private static boolean floodFill2(char[][] board, int initR, int initC, List<int[]> region) {
         boolean isValid = true;
-        Queue<int[]> q = new LinkedList<>();  // 用 Queue 实现基于 BFS 的回溯
+        Queue<int[]> q = new LinkedList<>();  // 用 Queue 实现基于 BFS 的 flood fill
         q.offer(new int[]{initR, initC});
 
         while (!q.isEmpty()) {
