@@ -53,9 +53,9 @@ public class L130_SurroundedRegions {
 
         for (int r = 0; r < m; r++) {
             for (int c = 0; c < n; c++) {
-                if (board[r][c] == 'O' && !filled[r][c]) {
+                if (board[r][c] == 'O' && !filled[r][c]) {    // 关键：必须即是 'O' 又没 fill 过的格子才能 flood fill
                     List<int[]> region = new ArrayList<>();  // 用于暂存当前 region 的所有坐标
-                    if (floodFill(board, r, c, region))  // 若该 region 有效，则 flip 该其中的所有 'O'
+                    if (floodFill(board, r, c, region))       // 若该 region 有效，则 flip 该其中的所有 'O'
                         for (int[] p : region)
                             board[p[0]][p[1]] = 'X';
                 }
