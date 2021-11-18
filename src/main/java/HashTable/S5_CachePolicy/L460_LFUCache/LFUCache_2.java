@@ -6,18 +6,20 @@ import static Utils.Helpers.log;
 
 /*
  * 解法2：TreeMap + HashMap
- * - 思路：与解法1的区别：
- *   1. 解法1使用 Map<count, LinkedHashSet<key>> 记录 count -> keys 的映射，在 count 相同情况下由 LinkedHashSet 保存
- *      数据的最近访问顺序；而本解法中使用 TreeMap<CacheInfo<val, count, time>, key>，并通过定制 TreeMap 的比较器来对缓存
- *      数据进行排序（先比较 count，当 count 相同时比较 timestamp）。
+ * - 思路：类似解法1"思路"中的第一版：
+ *   1. 使用两个相反的数据结构：
+ *      - Map<key, CacheInfo<value, count, time>>：实现缓存数据存储；
+ *      - TreeMap<CacheInfo<val, count, time>, key>：实现"先按 LFU 逐出，当 count 相同时再按 LRU 逐出"的需求（借助
+ *        TreeMap 的比较排序能力，先比较 count，当 count 相同时再比较 timestamp）。
  *   2. 在淘汰数据时，解法1中通过维护的 minCount 来快速找到 LFU、LRU 数据；而本解法中由于 TreeMap 的比较器中已经揉进了对
  *      timestamp 的比较 ∴ 在淘汰数据时直接 remove 比较出来的最"小"数据即可。
- * - 💎 实现：本解法中使用 TreeMap 是因为其自定义比较排序能力 ∴ 也可以使用同样具备该特性的 PriorityQueue 实现。
+ * - 实现：本解法中使用 TreeMap 是因为其自定义比较排序能力 ∴ 同样也可以使用 PriorityQueue<> 实现。
+ * - 时间复杂度：get、put 方法均为 O(log(capacity)) ∴ 无法满足题目要求。
+ *   三种数据结构的时间复杂度比较：
  *                         add      get-min    remove-min   remove-any
  *      TreeMap：        O(logn)     O(logn)     O(logn)     O(logn)
  *      PriorityQueue：  O(logn)      O(1)       O(logn)      O(n)
  *      HashMap：         O(1)        O(1)        O(1)        O(1)
- * - 时间复杂度：get、put 方法均为 O(log(capacity))。
  * */
 
 public class LFUCache_2 {
@@ -33,8 +35,8 @@ public class LFUCache_2 {
 
     private final int capacity;
     private int time;  // 全局 timestamp，每次 get、put 操作都会让其自增，从而为缓存数据提供时间戳作用（用于在 TreeMap 上比较）
-    private final Map<Integer, CacheInfo> keyToVal;  // 记录缓存数据（用 key 查 value、count、time）
-    private final TreeMap<CacheInfo, Integer> treeMap;  // 记录缓存数据到 key 的映射（TreeMap 具有排序能力）
+    private final Map<Integer, CacheInfo> keyToVal;  // Map<key, CacheInfo<value, count, time>>
+    private final TreeMap<CacheInfo, Integer> treeMap;  // TreeMap<CacheInfo<value, count, time>, key>
 
     public LFUCache_2(int capacity) {
         this.capacity = capacity;
