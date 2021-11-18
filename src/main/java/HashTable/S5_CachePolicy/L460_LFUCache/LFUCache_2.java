@@ -14,8 +14,8 @@ import static Utils.Helpers.log;
  *      timestamp 的比较 ∴ 在淘汰数据时直接 remove 比较出来的最"小"数据即可。
  * - 💎 实现：本解法中使用 TreeMap 是因为其自定义比较排序能力 ∴ 也可以使用同样具备该特性的 PriorityQueue 实现。
  *                         add      get-min    remove-min   remove-any
- *      PriorityQueue：  O(logn)      O(1)       O(logn)      O(n)
  *      TreeMap：        O(logn)     O(logn)     O(logn)     O(logn)
+ *      PriorityQueue：  O(logn)      O(1)       O(logn)      O(n)
  *      HashMap：         O(1)        O(1)        O(1)        O(1)
  * - 时间复杂度：get、put 方法均为 O(log(capacity))。
  * */
