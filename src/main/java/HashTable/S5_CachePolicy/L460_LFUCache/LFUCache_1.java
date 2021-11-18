@@ -31,6 +31,7 @@ import static Utils.Helpers.log;
  *   1. 用1个 Map 保存缓存数据：用 key 查 value；
  *   2. 用1个 Map 保存缓存数据的访问次数：用 key 查 count；
  *   3. 用1个 Map 保存不同访问次数所对应的缓存数据（查询次数相同的数据用要保存访问先后顺序）：用 count 查 keys。
+ *   - get(key)：
  * - Java 语法：
  *   - LinkedHashSet.remove(1) will take 1 as an object;
  *   - LinkedList.remove(1) will take 1 as index;
@@ -43,25 +44,26 @@ public class LFUCache_1 {
     private final int capacity;
     private final HashMap<Integer, Integer> keyToVal;    // 记录缓存数据
     private final HashMap<Integer, Integer> keyToCount;  // 记录每条缓存数据的访问次数
-    private final HashMap<Integer, LinkedHashSet<Integer>> countToLRUKeys;  // 不同访问次数所对应的缓存数据（查询次数相同的数据用 LinkedHashSet 保存访问的先后顺序）
-
+    private final HashMap<Integer, LinkedHashSet<Integer>> countToKeySets;  // 记录不同访问次数所对应的缓存数据集合（查询次数相同
+                                                                           // 的数据用 LinkedHashSet 保存访问的先后顺序）
     public LFUCache_1(int capacity) {
         this.capacity = capacity;
         minCount = -1;
         keyToVal = new HashMap<>();
         keyToCount = new HashMap<>();
-        countToLRUKeys = new HashMap<>();
+        countToKeySets = new HashMap<>();
     }
 
     public int get(int key) {
         if (!keyToVal.containsKey(key)) return -1;
-
+        
+        // 更新该 key 的 count，及其在 LinkedHashSet 中的顺序
         int count = keyToCount.get(key);
-        countToLRUKeys.get(count).remove(key);  // ∵ 访问数据时要将访问次数+1 ∴ 要将该 count 对应的数据从 countToLRUKeys 中删除
-        if (countToLRUKeys.get(count).isEmpty() && count == minCount)  // 若上一行中从 countToLRUKeys 删除数据后，该 count
-            minCount++;                         // 不再有对应的数据，且该 count == minCount，说明此时 minCount 需要自增
+        countToKeySets.get(count).remove(key);  // ∵ 访问数据时要将访问次数+1 ∴ 要将该 count 对应的数据从 countToLRUKeys 中删除
+        if (countToKeySets.get(count).isEmpty() && count == minCount)  // ∵ 在 get(key) 时需要给 key 的 count +1，若该 count
+            minCount++;    // 正好是 minCount，且该 count 只对应当前这一个 key（即该 count 最小且唯一），则此时需要给 minCount++。
+        putCount(key, count + 1);
 
-        putCount(key, count + 1);  // 更新该数据的 count
         return keyToVal.get(key);
     }
 
@@ -74,8 +76,10 @@ public class LFUCache_1 {
             return;
         }
         // 若超过缓存容量则淘汰 count 最小的数据
-        if (keyToVal.size() >= capacity)
-            evict(countToLRUKeys.get(minCount).iterator().next());  // evict LRU from the min count bucket
+        if (keyToVal.size() == capacity) {
+            int LRUKey = countToKeySets.get(minCount).iterator().next();  // get LRU from the min count bucket
+            evict(LRUKey);
+        }
         // 向缓存中新增数据
         minCount = 1;
         putCount(key, minCount);   // adding new key and count
@@ -83,14 +87,14 @@ public class LFUCache_1 {
     }
 
     private void evict(int key) {
-        countToLRUKeys.get(minCount).remove(key);
+        countToKeySets.get(minCount).remove(key);
         keyToVal.remove(key);
     }
 
     private void putCount(int key, int count) {
         keyToCount.put(key, count);
-        countToLRUKeys.computeIfAbsent(count, ignore -> new LinkedHashSet<>());
-        countToLRUKeys.get(count).add(key);
+        countToKeySets.computeIfAbsent(count, ignore -> new LinkedHashSet<>());  // 👉 对于要 new 的参数应使用 computeIfAbsent 而非 putIfAbsent
+        countToKeySets.get(count).add(key);  // 将 key 加入到 count 对应的 LinkedHashSet 中（保持插入顺序）
     }
 
     public static void main(String[] args) {
