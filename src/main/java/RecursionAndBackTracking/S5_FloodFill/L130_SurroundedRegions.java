@@ -55,7 +55,7 @@ public class L130_SurroundedRegions {
             for (int c = 0; c < n; c++) {
                 if (board[r][c] == 'O' && !filled[r][c]) {
                     List<int[]> region = new ArrayList<>();  // 用于暂存当前 region 的所有坐标
-                    if (isValidRegion(board, r, c, region))  // 若该 region 有效，则 flip 该其中的所有 'O'
+                    if (floodFill(board, r, c, region))  // 若该 region 有效，则 flip 该其中的所有 'O'
                         for (int[] p : region)
                             board[p[0]][p[1]] = 'X';
                 }
@@ -63,7 +63,7 @@ public class L130_SurroundedRegions {
         }
     }
 
-    private static boolean isValidRegion(char[][] board, int r, int c, List<int[]> region) {
+    private static boolean floodFill(char[][] board, int r, int c, List<int[]> region) {
         boolean isValid = true;  // ∵ 要一次性 fill 整个 region，不能中途发现无效就 return ∴ 采用变量记录该 region 是否有效
         filled[r][c] = true;      // 每个格子 fill 之后无需恢复原状
         region.add(new int[]{r, c});
@@ -71,9 +71,9 @@ public class L130_SurroundedRegions {
         for (int[] d : directions) {
             int newR = r + d[0], newC = c + d[1];
             if (!isValidPos(newR, newC))
-                isValid = false;       // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效（注意不能中途 return）
+                isValid = false;    // 若任一邻格越界，则说明该格子在边界上，则整个 region 无效（注意不能中途 return）
             else if (board[newR][newC] == 'O' && !filled[newR][newC])
-                if (!isValidRegion(board, newR, newC, region))
+                if (!floodFill(board, newR, newC, region))
                     isValid = false;
         }
 
@@ -103,7 +103,7 @@ public class L130_SurroundedRegions {
             for (int c = 0; c < n; c++) {
                 if (board[r][c] == 'O' && !filled[r][c]) {
                     region.clear();  // 每次使用前先清空
-                    if (isValidRegion2(board, r, c, region))
+                    if (floodFill2(board, r, c, region))
                         for (int[] p : region)
                             board[p[0]][p[1]] = 'X';
                 }
@@ -111,7 +111,7 @@ public class L130_SurroundedRegions {
         }
     }
 
-    private static boolean isValidRegion2(char[][] board, int initR, int initC, List<int[]> region) {
+    private static boolean floodFill2(char[][] board, int initR, int initC, List<int[]> region) {
         boolean isValid = true;
         Queue<int[]> q = new LinkedList<>();  // 用 Queue 实现基于 BFS 的回溯
         q.offer(new int[]{initR, initC});
