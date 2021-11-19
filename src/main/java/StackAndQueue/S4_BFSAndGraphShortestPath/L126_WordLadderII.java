@@ -8,7 +8,7 @@ import static Utils.Helpers.log;
 /*
  * Word Ladder II
  *
- * - 题目与 L127_WordLadder 一致，区别在于要返回所有的最短路径。
+ * - 题目与 L127_WordLadder 一致，区别在于要返回所有的最短路径，而不只是最短路径的条数。
  *
  * - 👉 该题是非常有助于理解 BFS、DFS 的各自优势和局限性，以及在如何各尽所能相互配合。
  * */
@@ -29,30 +29,29 @@ public class L126_WordLadderII {
         if (!wordList.contains(endWord)) return res;
 
         Set<String> visited = new HashSet<>();
-        Queue<List<String>> q = new LinkedList<>();  // Queue 中保存的是一条路径
+        Queue<List<String>> q = new LinkedList<>();  // Queue<path>
         List<String> initialPath = new ArrayList<>();
 
         initialPath.add(beginWord);
         q.offer(initialPath);
-        Integer minStep = null;  // 记录最短路径的长度，用于识别超过该长度的路径
+        Integer minStep = null;  // 记录最短路径的长度，用于识别超过该长度的路径，并中断迭代
 
         while (!q.isEmpty()) {   // 遍历所有路径（若 branching factor 为 n，即每个节点有 n 个分支，则复杂度为 O(n^n)）
             List<String> path = q.poll();
-            if (minStep != null && path.size() == minStep) continue;  // 若 q 中拿出来的 path 长度已经等于 minStep 则抛弃掉
-            String lastWord = path.get(path.size() - 1);  // 从 path 中拿出最后一个 word，寻找其相邻顶点
-            visited.add(lastWord);
+            String word = path.get(path.size() - 1);  // 拿出最后一个 word，寻找其相邻顶点
+            visited.add(word);
+
+            if (minStep != null && path.size() > minStep)  // 若已找到最短路径，且当前 path 长度又超过 minStep，则丢弃
+                continue;
+
+            if (word.equals(endWord)) {
+                res.add(new ArrayList<>(path));
+                minStep = path.size();  // 第一次找到的路径一定是最短路径 ∴ 若之后再找到的路径的长度 > 该路径长度，则不是最短路径
+                continue;
+            }
 
             for (String w : wordList) {
-                if (!visited.contains(w) && isSimilar(w, lastWord)) {
-                    if (w.equals(endWord)) {
-                        List<String> newPath = new ArrayList<>(path);
-                        newPath.add(w);
-                        res.add(newPath);
-                        minStep = newPath.size();  // 第一次找到的路径一定是最短路径 ∴ 若之后再找到的路径的长度 > 该路径长度，则不是最短路径
-                        continue;
-                    }
-                    if (minStep != null && path.size() + 1 == minStep) continue;  // 若 w 不是 endWord 且 path 长度已经为 minStep-1 则抛弃
-                    if (path.contains(w)) continue;                               // 若 w 已存在于该路径中，则说明已经访问过，不再继续（否则会成环）
+                if (!visited.contains(w) && isSimilar(w, word)) {
                     List<String> newPath = new ArrayList<>(path);
                     newPath.add(w);
                     q.offer(newPath);

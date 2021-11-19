@@ -33,7 +33,7 @@ public class L350_IntersectionOfTwoArraysII {
         int[] res = new int[list.size()];
         for (int i = 0; i < res.length; i++)  // 将 list 转为 array
             res[i] = list.get(i);
-        
+
         return res;
     }
 
