@@ -33,6 +33,7 @@ public class L350_IntersectionOfTwoArraysII {
         int[] res = new int[list.size()];
         for (int i = 0; i < res.length; i++)  // 将 list 转为 array
             res[i] = list.get(i);
+        
         return res;
     }
 
@@ -45,7 +46,8 @@ public class L350_IntersectionOfTwoArraysII {
         Arrays.sort(nums1);
         Arrays.sort(nums2);  // 若 nums1, nums2 本身有序，则整个算法复杂度降为 O(logn)
 
-        for (int i = 0, j = 0; i < nums1.length && j < nums2.length; ) {  // 同步遍历 nums1、nums2，但手动控制 i、j 的自增
+        int i = 0, j = 0;
+        while (i < nums1.length && j < nums2.length) {  // 同步遍历 nums1、nums2
             if (nums1[i] == nums2[j]) {
                 list.add(nums1[i]);
                 i++; j++;
@@ -55,8 +57,9 @@ public class L350_IntersectionOfTwoArraysII {
         }
 
         int[] res = new int[list.size()];
-        for (int i = 0; i < res.length; i++)  // 将 list 转为 array
-            res[i] = list.get(i);
+        for (int k = 0; k < res.length; k++)  // 将 list 转为 array
+            res[k] = list.get(k);
+
         return res;
     }
 
