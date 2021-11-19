@@ -69,13 +69,13 @@ public class L347_TopKFrequentElements {
         for (int n : nums)
             freq.merge(n, 1, Integer::sum);
 
-        TreeSet<Integer> set = new TreeSet<>((a, b) -> freq.get(a) != freq.get(b)  // 看 a，b 的频率是否相等
+        TreeSet<Integer> treeSet = new TreeSet<>((a, b) -> freq.get(a) != freq.get(b)  // 看 a，b 的频率是否相等
                 ? freq.get(b) - freq.get(a)  // 若不等，则降序排列（频率大的在左子树上，这样遍历时会降序输出）
                 : 1);                        // 若相等，则"欺骗"（∵ TreeSet 不允许重复元素，若比较器返回0，则会丢掉一个元素 ∴ 写死1让比较器结果不为0）
-        set.addAll(freq.keySet());           // 向 TreeSet 中插入所有元素，O(nlogn)
+        treeSet.addAll(freq.keySet());       // 向 TreeSet 中插入去重后的所有元素，O(nlogn)
 
         List<Integer> res = new ArrayList<>();
-        for (int key : set) {                // 遍历 TreeSet 时是顺序输出（元素在 TreeSet 内部也是顺序存储的，且只能用 for (:) 遍历）
+        for (int key : treeSet) {            // 遍历 TreeSet 时是顺序输出（元素在 TreeSet 内部也是顺序存储的，且只能用 for (:) 遍历）
             if (res.size() >= k) break;
             res.add(key);
         }
@@ -87,6 +87,8 @@ public class L347_TopKFrequentElements {
      * 解法4：Map + Min heap
      * - 思路：与前三种解法不同，该解法不进行全排序，而是充分利用最小堆的特性 —— 让频率小的 key 不断被 sift up 到堆顶并在
      *   最后被移除出去，从而堆中最后只剩下的就是频率最大的 k 个 key。
+     * - 💎 关键：本题的关键点是先生成 freq map，再将其 keySet 元素添加到 pq 中，而不能是遍历 nums，将元素同时添加到 map
+     *   和 pq 中 ∵ 这样 pq 无法根据元素在 map 中的频率动态更新 tree 上元素的排序。
      * - 注意 ∵ 使用的是最小堆，而最小堆的遍历顺序是从小到大 ∴ 最后结果中的元素顺序可能跟前三种解法不同。
      * - 💎 技巧：要找到 k 个最大元素，需使用最小堆；要找到 k 个最小元素，需采用最大堆。
      * - 👉 本质：其实在生成了 freq map 之后，该问题就转化成了如何找到 map 中 value 第 k 大的项，本质上就是

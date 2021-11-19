@@ -59,20 +59,20 @@ public class L98_ValidateBinarySearchTree {
      * */
     public static boolean isValidBST2(TreeNode root) {
         if (root == null) return true;
-        return isMaxInBST(root, root.left) && isMinInBST(root, root.right)
+        return isMaxInBST(root.val, root.left) && isMinInBST(root.val, root.right)
             && isValidBST2(root.left) && isValidBST2(root.right);
     }
 
-    private static boolean isMaxInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 > root 树上的所有节点
+    private static boolean isMaxInBST(int val, TreeNode root) {  // 检查 val 是否 > root 树上的所有节点值
         if (root == null) return true;
-        if (node.val <= root.val) return false;
-        return isMaxInBST(node, root.right);  // 右子树是否是 BST 交给 isValidBST 去检查，这里假设右子树是 BST ∴ 只要
-    }                                         // node > root 树上的最右侧节点即说明 node > root 树上的所有节点
+        if (val <= root.val) return false;
+        return isMaxInBST(val, root.right);  // 右子树是否是 BST 交给 isValidBST 去检查，这里假设右子树是 BST ∴ 只要
+    }                                        // val > root 树上的最右侧节点值即说明 val > root 树上的所有节点值
 
-    private static boolean isMinInBST(TreeNode node, TreeNode root) {  // 检查 node 是否 < root 树上的所有节点
+    private static boolean isMinInBST(int val, TreeNode root) {  // 检查 val 是否 < root 树上的所有节点值
         if (root == null) return true;
-        if (node.val >= root.val) return false;
-        return isMinInBST(node, root.left);
+        if (val >= root.val) return false;
+        return isMinInBST(val, root.left);
     }
 
     /*
@@ -100,28 +100,24 @@ public class L98_ValidateBinarySearchTree {
     /*
      * 解法4：Recursion
      * - 思路：另一种思路是使用上下界来检查每层节点是否合法，例如下面这棵树：
-     *                5
-     *              /   \
-     *             3     7
-     *            / \   / \
-     *           2   4 8   6
-     *     - 节点3是合法的 ∵ 它 < 5；      - 节点7是合法的 ∵ 它 > 5；
-     *     - 节点2是合法的 ∵ 它 < 3；      - 节点8是非法的 ∵ 它应该 < 7 且 > 5；
-     *     - 节点4是合法的 ∵ 3 < 它 < 5；  - 节点6是非法的 ∵ 它应该 > 7；
+     *            5
+     *          /   \
+     *         3     7     - 节点3合法 ∵ 3 < 5；节点7合法 ∵ 7 > 5
+     *        / \   / \
+     *       2   4 8   6   - 节点2合法 ∵ 2 < 3；节点4合法 ∵ 3 < 4 < 5；节点8非法 ∵ 8 !< 7；节点6非法 ∵ 6 !> 7
      *   可见每个节点值的上、下界是由其父节点及祖先节点决定的，例如对于节点3来说，5是它的上界，而对于节点4来说5就变成了上界，而3
-     *   是它的下界。这可以通过给递归函数传递上、下界参数来实现。而每层的递归函数可以定义为：当前节点是否 > 下界，且 < 上界。
+     *   是它的下界。这可以通过给递归函数传递上、下界参数来实现。而每层的递归函数可以定义为：当前节点是否 > 下界，且 < 上界。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isValidBST4(TreeNode root) {
-        return withinBounds(root, null, null);  // ∵ 节点值可能不在整型取值范围内 ∴ 不能使用 Integer.MIN_VALUE、Integer.MAX_VALUE
+        return withinRange(root, null, null);  // ∵ 节点值可能不在整型取值范围内 ∴ 不能使用 Integer.MIN_VALUE/MAX_VALUE
     }
 
-    private static boolean withinBounds(TreeNode root, Integer lowerBound, Integer upperBound) {
+    private static boolean withinRange(TreeNode root, Integer min, Integer max) {
         if (root == null) return true;
-        if (lowerBound != null && root.val <= lowerBound) return false;
-        if (upperBound != null && root.val >= upperBound) return false;
-        return withinBounds(root.left, lowerBound, root.val)
-            && withinBounds(root.right, root.val, upperBound);
+        if (min != null && root.val <= min) return false;
+        if (max != null && root.val >= max) return false;
+        return withinRange(root.left, min, root.val) && withinRange(root.right, root.val, max);
     }
 
     /*
@@ -132,29 +128,29 @@ public class L98_ValidateBinarySearchTree {
     public static boolean isValidBST5(TreeNode root) {
         if (root == null) return true;
         Stack<TreeNode> stack = new Stack<>();  // 也可以只用一个栈：Stack<Triplet<节点, 下界, 上界>>，或将三者封装起来
-        Stack<Integer> lowers = new Stack<>();  // 存储对应节点的取值下界
-        Stack<Integer> uppers = new Stack<>();  // 存储对应节点的取值上界
+        Stack<Integer> mins = new Stack<>();    // 存储各节点的取值下界
+        Stack<Integer> maxs = new Stack<>();    // 存储各节点的取值上界
         stack.push(root);
-        lowers.push(null);
-        uppers.push(null);
+        mins.push(null);
+        maxs.push(null);
 
         while (!stack.isEmpty()) {
             TreeNode node = stack.pop();
-            Integer lower = lowers.pop();
-            Integer upper = uppers.pop();
+            Integer min = mins.pop();
+            Integer max = maxs.pop();
 
-            if (lower != null && node.val <= lower) return false;
-            if (upper != null && node.val >= upper) return false;
+            if (min != null && node.val <= min) return false;
+            if (max != null && node.val >= max) return false;
 
             if (node.left != null) {
                 stack.push(node.left);
-                lowers.push(lower);
-                uppers.push(node.val);
+                mins.push(min);
+                maxs.push(node.val);
             }
             if (node.right != null) {
                 stack.push(node.right);
-                lowers.push(node.val);
-                uppers.push(upper);
+                mins.push(node.val);
+                maxs.push(max);
             }
         }
 
