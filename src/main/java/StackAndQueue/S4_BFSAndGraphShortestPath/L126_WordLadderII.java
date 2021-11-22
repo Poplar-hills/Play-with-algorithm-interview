@@ -63,10 +63,10 @@ public class L126_WordLadderII {
     }
 
     /*
-     * 解法2：构建邻接表 + BFS + DFS
-     * - 💎 思路：解法1的思路是使用 BFS 遍历两点间的所有路径，并在过程中比较长度，从而获得所有最短路径，但这种方式在
-     *   branching factor 较大时性能会显著下降。而另一种效率更高的思路是结合 BFS 和 DFS —— 先借助 BFS 的扩散性，快速
-     *   找到从起点到每个顶点的最小步数，再借助 DFS 的纵深性，沿着最小步数形成的最短路径以回溯法将所有最短路径输出出来。
+     * 解法2：构建邻接表 + BFS + DFS（🥇最优解）
+     * - 💎 思路：解法1的思路是使用 BFS 遍历两点间的所有路径，并在过程中比较长度，从而获得所有最短路径，但这种方式在 branching
+     *   factor 较大时性能会显著下降。而另一种更高效的求所有最短路径的思路是结合 BFS 和 DFS —— 先借助 BFS 的扩散性，快速找到
+     *   从起点到每个顶点的最小步数，再借助 DFS 的纵深性，沿着最小步数形成的最短路径以回溯法将所有最短路径输出出来。
      * - 实现：
      *   1. 在 BFS 之前要生成 graph，本解法中采用无向邻接表（Adjacency List），若用邻接矩阵则会超时。
      *   2. 通过 BFS 生成的从起点到各顶点的最小步需要一个数据结构来承载，可以是类似 L127_WordLadderII 解法5中的 steps
@@ -75,7 +75,7 @@ public class L126_WordLadderII {
      *      到达 endWord，并记录下沿途的顶点即可获得最短路径。
      * - 💎 总结：
      *   1. 图上两点之间的最短路径，同时也是从起点到该路径上各顶点的最短路径，证明：
-     *            0 --- 1 --- 2 --- 3     起点: 4，终点: 3            0  1  2  3  4  5  6  7
+     *            0 --- 1 --- 2 --- 3     起点: 4，终点: 3           0  1  2  3  4  5  6  7
      *            |   /______/    / |     顶点4到其他各顶点的最短步数：[2, 2, 2, 3, 1, 2, 3, 4]
      *            | /           /   |     可见，从4到3的最短路径：
      *            4 --- 5 --- 6 --- 7       - 4->2->3：同时也是从4到2的最短路径
@@ -88,7 +88,7 @@ public class L126_WordLadderII {
     public static List<List<String>> findLadders2(String beginWord, String endWord, List<String> wordList) {
         List<List<String>> res = new ArrayList<>();
         if (!wordList.contains(endWord)) return res;
-        if (!wordList.contains(beginWord)) wordList.add(beginWord);
+        if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 构建 graph 需确保所有节点在 wordList 中
 
         // Step 1: 构建无向邻接表，O(n^2)
         List<List<Integer>> graph = buildGraph(wordList);
@@ -128,12 +128,12 @@ public class L126_WordLadderII {
     private static Map<Integer, Integer> bfs(List<List<Integer>> graph, int beginIndex, List<String> wordList) {
         Map<Integer, Integer> stepMap = new HashMap<>();  // Map<wordIndex, beginWord 到该 word 的最小步数>
         stepMap.put(beginIndex, 1);
-        Queue<Integer> q = new LinkedList<>();  // Queue<wordIndex>
+        Queue<Integer> q = new LinkedList<>();    // Queue<wordIndex>
         q.offer(beginIndex);
 
         while (!q.isEmpty()) {
             int i = q.poll();
-            for (int adj : graph.get(i)) {  // 基于 graph 遍历所有相邻顶点的 index
+            for (int adj : graph.get(i)) {        // 基于 graph 遍历所有相邻顶点的 index
                 if (!stepMap.containsKey(adj)) {  // 若 stepMap 中已有 adj，说明之前已找到了更短的路径 ∴ 不能再覆盖
                     stepMap.put(adj, stepMap.get(i) + 1);
                     q.offer(adj);
