@@ -20,7 +20,7 @@ import static Utils.Helpers.*;
 
 public class L199_BinaryTreeRightSideView {
     /*
-     * 解法1：迭代
+     * 解法1：BFS
      * - 思路：该题实际上就是取每层的最后一个节点值 ∴ 可以采用 L107 解法3的形式进行 BFS，让 Queue 每次入队一个层级的所有节点，
      *   并在下一轮 while 循环中全部处理完，再入队下一层级的所有节点。唯一不同点是每层只将最后一个节点值加入 res。
      * - 时间复杂度 O(n)，空间复杂度 O(h)（因为队列中只存 h 个元素），其中 h 为树高。
@@ -44,7 +44,7 @@ public class L199_BinaryTreeRightSideView {
     }
 
     /*
-     * 解法2：递归
+     * 解法2：DFS
      * - 思路：∵ 从右看到的所有节点在树的每层上各有一个，相当于每层要拿出一个节点放到结果列表 res 中的对应位置上（如第1层的节点
      *   放到 res[0] 上、第2层出一个节点放到 res[1] 上，即 res[i] 代表第 i+1 层的最右节点）∴ 在使用 DFS 递归遍历树上节点时，
      *   只需带上节点深度信息，然后在访问每个节点时，要么向 res 添加元素（访问一层最左侧节点时），要么替换 res 中对应位置的节点
@@ -54,20 +54,20 @@ public class L199_BinaryTreeRightSideView {
     public static List<Integer> rightSideView2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        helper2(root, res, 0);
+        dfs2(root, res, 0);
         return res;
     }
 
-    private static void helper2(TreeNode node, List<Integer> res, int level) {
+    private static void dfs2(TreeNode node, List<Integer> res, int depth) {
         if (node == null) return;
-        if (level == res.size()) res.add(node.val);
-        else res.set(level, node.val);
-        helper2(node.left, res, level + 1);
-        helper2(node.right, res, level + 1);
+        if (depth == res.size()) res.add(node.val);
+        else res.set(depth, node.val);
+        dfs2(node.left, res, depth + 1);
+        dfs2(node.right, res, depth + 1);
     }
 
     /*
-     * 解法3：递归（简化版）
+     * 解法3：DFS（解法2的简化版）
      * - 思路：在解法2的基础上化简 —— 对于一个节点，若每次先遍历它的右子节点再遍历左子节点，则第一个访问到的节点值就是所需节点值。
      *   即对于每一层来说，只需向 res 中放入第一个访问到的节点值即可。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高。
@@ -79,11 +79,11 @@ public class L199_BinaryTreeRightSideView {
         return res;
     }
 
-    private static void helper3(TreeNode node, List<Integer> res, int level) {
+    private static void helper3(TreeNode node, List<Integer> res, int depth) {
         if (node == null) return;
-        if (level == res.size()) res.add(node.val);
-        helper3(node.right, res, level + 1);
-        helper3(node.left, res, level + 1);
+        if (depth == res.size()) res.add(node.val);
+        helper3(node.right, res, depth + 1);
+        helper3(node.left, res, depth + 1);
     }
 
     public static void main(String[] args) {
