@@ -19,7 +19,7 @@ import Utils.Helpers.TreeNode;
 public class L450_DeleteNodeInBST {
     /*
      * 解法1：Hibbard Deletion (Recursion)
-     * - 思路：与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致，总的来说是：
+     * - 💎 思路：与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致，总的来说是：
      *   1. 先借助 BST 的二分性质找到 val == key 的目标节点 node；
      *   2. 从以 node 为根的 BST 的右子树中找到最小节点 successor；
      *      - 若 node 左子树为空，则右子树就是 successor；
@@ -63,8 +63,12 @@ public class L450_DeleteNodeInBST {
 
     /*
      * 解法2：Hibbard Deletion (解法1的非递归版)
-     * - 思路：总体思路是：1. 先找到以待删除节点为根的子树； 2. 删除其父节点。具体移动过程比较复杂，要画图来辅助思考。
-     * - 👉 总结：二叉树操作的非递归实现通常都需要拿到：1. 待操作节点；2. 待操作节点的父节点。
+     * - 思路：总体思路是：
+     *   1. 先找到以待删除节点为根的树；
+     *   2. 删除其父节点。具体移动过程比较复杂，要画图来辅助思考。
+     * - 👉 总结：二叉树操作的非递归实现通常都需要拿到：
+     *   1. 待操作节点；
+     *   2. 待操作节点的父节点。
      * - 时间复杂度 O(logn)，空间复杂度 O(1)。
      * */
     public static TreeNode deleteNode2(TreeNode root, int key) {
