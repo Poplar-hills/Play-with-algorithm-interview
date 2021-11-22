@@ -44,6 +44,10 @@ public class L787_CheapestFlightsWithinKStops {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)  // Map<city, List<flight>>
             .collect(Collectors.groupingBy(f -> f[0]));          // 按起始城市进行分组
 
+//        int[][] graph = new int[n][n];  // 也可以用传统方式构建邻接矩阵/邻接表
+//        for (int[] f : flights)
+//            graph[f[0]][f[1]] = f[2];  // 注意该问题中的图是有向图 ∴ 不能 graph[i][j] = graph[j][i] = xxx;
+
         Queue<int[]> q = new LinkedList<>();  // Queue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
         q.offer(new int[]{src, 0, -1});       // 注意 stopCount 要从-1开始 ∵ K 表示的是不包含 src、dst 的步数
 
@@ -53,8 +57,10 @@ public class L787_CheapestFlightsWithinKStops {
             int[] pathInfo = q.poll();
             int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (city == dst)
+            if (city == dst) {
                 minPrice = Math.min(minPrice, totalPrice);   // ∵ 要找到所有 src->dst 的路径 ∴ 当到一条通路之后不能 return
+                continue;
+            }
             if (!graph.containsKey(city) || stopCount == K)  // 剪枝（Pruning）
                 continue;
 
