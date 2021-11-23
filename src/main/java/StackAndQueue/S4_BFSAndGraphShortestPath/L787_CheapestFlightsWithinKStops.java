@@ -250,7 +250,7 @@ public class L787_CheapestFlightsWithinKStops {
             graph[f[0]][f[1]] = f[2];    // graph[src][dst] = price
 
         int[] minPrices = new int[n];     // min prices from src to each city
-        int[] minStops = new int[n];      // min num of stops from src to each city
+        int[] minStops = new int[n];      // min num of stop from src to each city
         Arrays.fill(minPrices, Integer.MAX_VALUE);
         Arrays.fill(minStops, Integer.MAX_VALUE);
         minPrices[src] = 0;
@@ -263,19 +263,19 @@ public class L787_CheapestFlightsWithinKStops {
             int[] pathInfo = pq.poll();
             int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
 
-            if (city == dst) return totalPrice;       // 找到的第一条通路就是最短路径 ∴ 直接 return
-            if (stopCount == K) continue;             // 剪枝
+            if (city == dst) return totalPrice;  // 找到的第一条通路就是最短路径 ∴ 直接 return（∴ 可见该实现也没有对所有边进行松弛）
+            if (stopCount == K) continue;        // 剪枝
 
-            for (int nei = 0; nei < n; nei++) {       // 松弛所有邻边（relax all neighboring edges）
-                if (graph[city][nei] > 0) {           // price > 0 表示有从 city -> nei 的航线
-                    int newPrice = totalPrice + graph[city][nei];
+            for (int adj = 0; adj < n; adj++) {  // 松弛所有邻边（relax all neighboring edges）
+                if (graph[city][adj] > 0) {      // price > 0 表示有从 city -> adj 的航线
+                    int newPrice = totalPrice + graph[city][adj];
                     int newStopCount = stopCount + 1;
 
-                    if (newPrice < minPrices[nei] || newStopCount < minStops[nei])  // 若松弛操作得到的 newPrice/newStopCount < 之前记录的 totalPrice/stopCount 则：
-                        pq.offer(new int[]{nei, newPrice, newStopCount});  // 再次入队 nei 顶点，对其所有邻边重新进行松弛
+                    if (newPrice < minPrices[adj] || newStopCount < minStops[adj])  // 若松弛操作得到的 newPrice/newStopCount < 之前记录的 totalPrice/stopCount 则：
+                        pq.offer(new int[]{adj, newPrice, newStopCount});  // 再次入队 adj 顶点，对其所有邻边重新进行松弛
 
-                    minPrices[nei] = Math.min(minPrices[nei], newPrice);   // 更新记录
-                    minStops[nei] = newStopCount;
+                    minPrices[adj] = Math.min(minPrices[adj], newPrice);  // 💎 实际上只有这两行是与解法5不同的（这是松弛操作的核心句），其他地方本质上都一样
+                    minStops[adj] = newStopCount;
                 }
             }
         }
