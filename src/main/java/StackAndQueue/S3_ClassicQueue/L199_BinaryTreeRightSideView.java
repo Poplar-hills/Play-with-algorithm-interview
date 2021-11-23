@@ -75,15 +75,15 @@ public class L199_BinaryTreeRightSideView {
     public static List<Integer> rightSideView3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
-        helper3(root, res, 0);
+        dfs3(root, res, 0);
         return res;
     }
 
-    private static void helper3(TreeNode node, List<Integer> res, int depth) {
+    private static void dfs3(TreeNode node, List<Integer> res, int depth) {
         if (node == null) return;
         if (depth == res.size()) res.add(node.val);
-        helper3(node.right, res, depth + 1);
-        helper3(node.left, res, depth + 1);
+        dfs3(node.right, res, depth + 1);
+        dfs3(node.left, res, depth + 1);
     }
 
     public static void main(String[] args) {

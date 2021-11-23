@@ -60,7 +60,7 @@ public class L49_GroupAnagrams {
      * - 空间复杂度 O(nk)，即查找表的大小。
      * */
     public static List<List<String>> groupAnagrams2(String[] strs) {
-        Map<String, List<String>> map = new HashMap<>();
+        Map<String, List<String>> map = new HashMap<>();  // Map<pattern, List<matched>>
 
         for (String s : strs) {
             char[] chars = s.toCharArray();

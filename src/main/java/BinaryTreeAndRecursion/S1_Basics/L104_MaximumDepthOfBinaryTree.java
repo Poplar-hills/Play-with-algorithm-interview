@@ -30,16 +30,16 @@ public class L104_MaximumDepthOfBinaryTree {
     public static int maxDepth(TreeNode root) {
         if (root == null) return 0;
         maxDepth = 0;
-        helper(root, 1);
+        dfs(root, 1);
         return maxDepth;
     }
 
-    private static void helper(TreeNode root, int depth) {
+    private static void dfs(TreeNode root, int depth) {
         if (root == null) return;                     // 遇到空节点不处理
         if (root.left == null && root.right == null)  // 遇到叶子节点更新 maxDepth
             maxDepth = Math.max(maxDepth, depth);
-        helper(root.left, depth + 1);
-        helper(root.right, depth + 1);
+        dfs(root.left, depth + 1);
+        dfs(root.right, depth + 1);
 	}
 
 	/*

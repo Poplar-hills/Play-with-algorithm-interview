@@ -29,11 +29,11 @@ public class L113_PathSumII {
      * */
     public static List<List<Integer>> pathSum(TreeNode root, int sum) {
         List<List<Integer>> res = new ArrayList<>();
-        helper(root, sum, new ArrayList<>(), res);
+        dfs(root, sum, new ArrayList<>(), res);
         return res;
     }
 
-    private static void helper(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
+    private static void dfs(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
         if (root == null) return;
         path.add(root.val);
 
@@ -41,8 +41,8 @@ public class L113_PathSumII {
             res.add(path);
             return;
         }
-        helper(root.left, sum - root.val, new ArrayList<>(path), res);  // 每次在分支的时候要 copy path
-        helper(root.right, sum - root.val, new ArrayList<>(path), res);
+        dfs(root.left, sum - root.val, new ArrayList<>(path), res);  // 每次在分支的时候要 copy path
+        dfs(root.right, sum - root.val, new ArrayList<>(path), res);
     }
 
     /*
@@ -56,11 +56,11 @@ public class L113_PathSumII {
      * */
     public static List<List<Integer>> pathSum2(TreeNode root, int sum) {
         List<List<Integer>> res = new ArrayList<>();
-        helper2(root, sum, new ArrayList<>(), res);
+        dfs2(root, sum, new ArrayList<>(), res);
         return res;
     }
 
-    private static void helper2(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
+    private static void dfs2(TreeNode root, int sum, List<Integer> path, List<List<Integer>> res) {
         if (root == null) return;
         path.add(root.val);
 
@@ -69,8 +69,8 @@ public class L113_PathSumII {
             path.remove(path.size() - 1);  // 返回上层递归之前将添加的元素移除，让 path 恢复原状，这样回到上层后才能继续复用 path
             return;
         }
-        helper2(root.left, sum - root.val, path, res);  // 则继续递归并复用 path
-        helper2(root.right, sum - root.val, path, res);
+        dfs2(root.left, sum - root.val, path, res);  // 则继续递归并复用 path
+        dfs2(root.right, sum - root.val, path, res);
         path.remove(path.size() - 1);      // 同样，在返回上层递归之前要将 path 恢复原状（移除本层 add 进来的节点值）
     }
 
