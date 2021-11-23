@@ -43,7 +43,6 @@ public class L787_CheapestFlightsWithinKStops {
     public static int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)  // Map<city, List<flight>>
             .collect(Collectors.groupingBy(f -> f[0]));          // 按起始城市进行分组
-
 //        int[][] graph = new int[n][n];  // 也可以用传统方式构建邻接矩阵/邻接表
 //        for (int[] f : flights)
 //            graph[f[0]][f[1]] = f[2];  // 注意该问题中的图是有向图 ∴ 不能 graph[i][j] = graph[j][i] = xxx;
@@ -77,9 +76,8 @@ public class L787_CheapestFlightsWithinKStops {
      * - 思路：与解法1一致。
      * - 实现：与解法1相比：
      *   1. graph 的生成采用普通遍历（putIfAbsent 方法），并且去掉了每条航线的起点，只保留终点和 price 两个元素；
-     *   2. while 内部采用一次遍历完该层所有顶点的实现；
-     *   3. ∵ 每轮 while 遍历完一层的所有顶点，而从起点到每层的各个顶点的步数是一样的 ∴ 可以在 while 外部记录经过的 stop
-     *      个数（stopCount），而不用将该信息带在 q 中的每个顶点上。
+     *   2. while 内部一次遍历完一层所有顶点 ∴ 起点到每层的各个顶点的步数是一样的 ∴ 可以在 while 外部使用变量 stopCount 记录
+     *      经过的 stop 个数，而不用将该信息带在 q 中的每个顶点上。
      * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
     public static int findCheapestPrice2(int n, int[][] flights, int src, int dst, int K) {
@@ -99,8 +97,10 @@ public class L787_CheapestFlightsWithinKStops {
                 int[] pathInfo = q.poll();
                 int city = pathInfo[0], totalPrice = pathInfo[1];
 
-                if (city == dst)
+                if (city == dst) {
                     minPrice = Math.min(minPrice, totalPrice);
+                    continue;
+                }
                 if (!graph.containsKey(city))
                     continue;
 
