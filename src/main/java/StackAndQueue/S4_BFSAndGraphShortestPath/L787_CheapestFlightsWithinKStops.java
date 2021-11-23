@@ -249,12 +249,12 @@ public class L787_CheapestFlightsWithinKStops {
         for (int[] f : flights)
             graph[f[0]][f[1]] = f[2];    // graph[src][dst] = price
 
-        int[] minPrices = new int[n];     // min prices from src to each city
-        int[] minStops = new int[n];      // min num of stop from src to each city
+        int[] minPrices = new int[n];    // 从 src 出发到各节点的 min price
+        int[] stopCounts = new int[n];   // 从 src 出发到各节点的 stop count（注意不一定是最小 stop count）
         Arrays.fill(minPrices, Integer.MAX_VALUE);
-        Arrays.fill(minStops, Integer.MAX_VALUE);
+        Arrays.fill(stopCounts, Integer.MAX_VALUE);
         minPrices[src] = 0;
-        minStops[src] = 0;
+        stopCounts[src] = 0;
 
         PriorityQueue<int[]> pq = new PriorityQueue<>((p1, p2) -> p1[1] - p2[1]);
         pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
@@ -271,11 +271,11 @@ public class L787_CheapestFlightsWithinKStops {
                     int newPrice = totalPrice + graph[city][adj];
                     int newStopCount = stopCount + 1;
 
-                    if (newPrice < minPrices[adj] || newStopCount < minStops[adj])  // 若松弛操作得到的 newPrice/newStopCount < 之前记录的 totalPrice/stopCount 则：
+                    if (newPrice < minPrices[adj] || newStopCount < stopCounts[adj])  // 若松弛后得到的 newPrice/newStopCount < 之前记录的 totalPrice/stopCount 则：
                         pq.offer(new int[]{adj, newPrice, newStopCount});  // 再次入队 adj 顶点，对其所有邻边重新进行松弛
 
-                    minPrices[adj] = Math.min(minPrices[adj], newPrice);  // 💎 实际上只有这两行是与解法5不同的（这是松弛操作的核心句），其他地方本质上都一样
-                    minStops[adj] = newStopCount;
+                    minPrices[adj] = Math.min(minPrices[adj], newPrice);   // 更新记录
+                    stopCounts[adj] = newStopCount;                        // 注意这里直接覆盖，而非取最小值
                 }
             }
         }
@@ -363,8 +363,8 @@ public class L787_CheapestFlightsWithinKStops {
 //         *       ①  →  →  →  →  ②
 //         *              100
 //         * */
-//        log(findCheapestPrice(3, flights1, 0, 2, 1));  // expects 200
-//        log(findCheapestPrice(3, flights1, 0, 2, 0));  // expects 500
+//        log(findCheapestPrice6(3, flights1, 0, 2, 1));  // expects 200
+//        log(findCheapestPrice6(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = {
                 {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -381,14 +381,14 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-//        log(findCheapestPrice(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-//        log(findCheapestPrice(5, flights2, 0, 4, 0));   // expects -1
-//        log(findCheapestPrice(5, flights2, 2, 0, 4));   // expects -1
+        log(findCheapestPrice6(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+//        log(findCheapestPrice6(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+//        log(findCheapestPrice6(5, flights2, 0, 4, 0));   // expects -1
+//        log(findCheapestPrice6(5, flights2, 2, 0, 4));   // expects -1
 //
 //        int[][] flights3 = {{0, 1, 5}, {1, 2, 5}, {0, 3, 2}, {3, 1, 2}, {1, 4, 1}, {4, 2, 1}};
-//        log(findCheapestPrice(5, flights3, 0, 2, 2));   // expects 7
-//        log(findCheapestPrice(5, flights3, 0, 2, 3));   // expects 6
+//        log(findCheapestPrice6(5, flights3, 0, 2, 2));   // expects 7
+//        log(findCheapestPrice6(5, flights3, 0, 2, 3));   // expects 6
 //        /*
 //         *      ⓪ → → → 5 → → → ① → → → 1 → → → ④
 //         *        ↘            ↗  ↘             ↙
@@ -402,6 +402,6 @@ public class L787_CheapestFlightsWithinKStops {
 //                {1, 0, 19}, {2, 5, 74}, {2, 3, 81}, {2, 0, 56}, {5, 1, 25}, {4, 0, 89},
 //                {3, 6, 18}, {5, 2, 1},  {7, 1, 43}, {3, 2, 66}, {7, 3, 4}
 //        };
-//        log(findCheapestPrice(8, flights4, 0, 6, 6));   // expects 112
+//        log(findCheapestPrice6(8, flights4, 0, 6, 6));   // expects 112
     }
 }
