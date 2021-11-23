@@ -271,8 +271,8 @@ public class L787_CheapestFlightsWithinKStops {
                     int newPrice = totalPrice + graph[city][adj];
                     int newStopCount = stopCount + 1;
 
-                    if (newPrice < minPrices[adj] || newStopCount < stopCounts[adj])  // 若松弛后得到的 newPrice/newStopCount < 之前记录的 totalPrice/stopCount 则：
-                        pq.offer(new int[]{adj, newPrice, newStopCount});  // 再次入队 adj 顶点，对其所有邻边重新进行松弛
+                    if (newPrice < minPrices[adj] || newStopCount < stopCounts[adj])  // 若松弛后找到了更小的 price/stopCount 则再次入队
+                        pq.offer(new int[]{adj, newPrice, newStopCount});  // adj 顶点，基于新的 price/stopCount 对其所有邻边进行松弛
 
                     minPrices[adj] = Math.min(minPrices[adj], newPrice);   // 更新记录
                     stopCounts[adj] = newStopCount;                        // 注意这里直接覆盖，而非取最小值
