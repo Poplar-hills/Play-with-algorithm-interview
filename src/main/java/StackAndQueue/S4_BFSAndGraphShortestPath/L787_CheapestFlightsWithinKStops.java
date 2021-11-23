@@ -60,8 +60,8 @@ public class L787_CheapestFlightsWithinKStops {
         int minPrice = Integer.MAX_VALUE;
 
         while (!q.isEmpty()) {
-            int[] pathInfo = q.poll();
-            int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
+            int[] path = q.poll();
+            int city = path[0], totalPrice = path[1], stopCount = path[2];
 
             if (city == dst) {
                 minPrice = Math.min(minPrice, totalPrice);   // ∵ 要找到所有 src->dst 的路径 ∴ 当到一条通路之后不能 return
@@ -101,8 +101,8 @@ public class L787_CheapestFlightsWithinKStops {
 
         while (!q.isEmpty()) {
             for (int i = 0, qSize = q.size(); i < qSize; i++) {   // qSize is fixed
-                int[] pathInfo = q.poll();
-                int city = pathInfo[0], totalPrice = pathInfo[1];
+                int[] path = q.poll();
+                int city = path[0], totalPrice = path[1];
 
                 if (city == dst) {
                     minPrice = Math.min(minPrice, totalPrice);
@@ -136,8 +136,8 @@ public class L787_CheapestFlightsWithinKStops {
         int minPrice = Integer.MAX_VALUE;
 
         while (!stack.isEmpty()) {
-            int[] pathInfo = stack.pop();
-            int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
+            int[] path = stack.pop();
+            int city = path[0], totalPrice = path[1], stopCount = path[2];
 
             if (city == dst) {
                 minPrice = Math.min(minPrice, totalPrice);
@@ -215,8 +215,8 @@ public class L787_CheapestFlightsWithinKStops {
         pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
 
         while (!pq.isEmpty()) {
-            int[] pathInfo = pq.poll();  // ∵ 每次 poll 出来的都是 pq 里从 src 出发 totalPrice 最小的路径
-            int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
+            int[] path = pq.poll();  // ∵ 每次 poll 出来的都是 pq 里从 src 出发 totalPrice 最小的路径
+            int city = path[0], totalPrice = path[1], stopCount = path[2];
 
             if (city == dst) return totalPrice;  // 第一个到达终点的路径的 totalPrice 即是 minPrice
             if (!graph.containsKey(city) || stopCount == K) continue;
@@ -260,8 +260,8 @@ public class L787_CheapestFlightsWithinKStops {
         pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
 
         while (!pq.isEmpty()) {
-            int[] pathInfo = pq.poll();
-            int city = pathInfo[0], totalPrice = pathInfo[1], stopCount = pathInfo[2];
+            int[] path = pq.poll();
+            int city = path[0], totalPrice = path[1], stopCount = path[2];
 
             if (city == dst) return totalPrice;  // 找到的第一条通路就是最短路径 ∴ 直接 return（∴ 可见该实现也没有对所有边进行松弛）
             if (stopCount == K) continue;        // 剪枝
@@ -354,17 +354,17 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     public static void main(String[] args) {
-//        int[][] flights1 = {{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
-//        /*
-//         *               ⓪
-//         *             ↙   ↘
-//         *       100 ↙       ↘ 500
-//         *         ↙           ↘
-//         *       ①  →  →  →  →  ②
-//         *              100
-//         * */
-//        log(findCheapestPrice6(3, flights1, 0, 2, 1));  // expects 200
-//        log(findCheapestPrice6(3, flights1, 0, 2, 0));  // expects 500
+        int[][] flights1 = {{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
+        /*
+         *               ⓪
+         *             ↙   ↘
+         *       100 ↙       ↘ 500
+         *         ↙           ↘
+         *       ①  →  →  →  →  ②
+         *              100
+         * */
+        log(findCheapestPrice6(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice6(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = {
                 {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -382,26 +382,26 @@ public class L787_CheapestFlightsWithinKStops {
          *                 ③
          * */
         log(findCheapestPrice6(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-//        log(findCheapestPrice6(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-//        log(findCheapestPrice6(5, flights2, 0, 4, 0));   // expects -1
-//        log(findCheapestPrice6(5, flights2, 2, 0, 4));   // expects -1
-//
-//        int[][] flights3 = {{0, 1, 5}, {1, 2, 5}, {0, 3, 2}, {3, 1, 2}, {1, 4, 1}, {4, 2, 1}};
-//        log(findCheapestPrice6(5, flights3, 0, 2, 2));   // expects 7
-//        log(findCheapestPrice6(5, flights3, 0, 2, 3));   // expects 6
-//        /*
-//         *      ⓪ → → → 5 → → → ① → → → 1 → → → ④
-//         *        ↘            ↗  ↘             ↙
-//         *          ↘ 2    2 ↗      ↘ 5     1 ↙
-//         *            ↘    ↗          ↘     ↙
-//         *              ③               ②
-//         * */
-//
-//        int[][] flights4 = {
-//                {7, 5, 20}, {7, 6, 59}, {3, 1, 95}, {7, 0, 85}, {4, 7, 84}, {0, 7, 90},
-//                {1, 0, 19}, {2, 5, 74}, {2, 3, 81}, {2, 0, 56}, {5, 1, 25}, {4, 0, 89},
-//                {3, 6, 18}, {5, 2, 1},  {7, 1, 43}, {3, 2, 66}, {7, 3, 4}
-//        };
-//        log(findCheapestPrice6(8, flights4, 0, 6, 6));   // expects 112
+        log(findCheapestPrice6(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice6(5, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice6(5, flights2, 2, 0, 4));   // expects -1
+
+        int[][] flights3 = {{0, 1, 5}, {1, 2, 5}, {0, 3, 2}, {3, 1, 2}, {1, 4, 1}, {4, 2, 1}};
+        log(findCheapestPrice6(5, flights3, 0, 2, 2));   // expects 7
+        log(findCheapestPrice6(5, flights3, 0, 2, 3));   // expects 6
+        /*
+         *      ⓪ → → → 5 → → → ① → → → 1 → → → ④
+         *        ↘            ↗  ↘             ↙
+         *          ↘ 2    2 ↗      ↘ 5     1 ↙
+         *            ↘    ↗          ↘     ↙
+         *              ③               ②
+         * */
+
+        int[][] flights4 = {
+                {7, 5, 20}, {7, 6, 59}, {3, 1, 95}, {7, 0, 85}, {4, 7, 84}, {0, 7, 90},
+                {1, 0, 19}, {2, 5, 74}, {2, 3, 81}, {2, 0, 56}, {5, 1, 25}, {4, 0, 89},
+                {3, 6, 18}, {5, 2, 1},  {7, 1, 43}, {3, 2, 66}, {7, 3, 4}
+        };
+        log(findCheapestPrice6(8, flights4, 0, 6, 6));   // expects 112
     }
 }
