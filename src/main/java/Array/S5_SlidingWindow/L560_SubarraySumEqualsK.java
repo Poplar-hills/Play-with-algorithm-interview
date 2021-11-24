@@ -148,7 +148,7 @@ public class L560_SubarraySumEqualsK {
     public static int subarraySum3(int[] nums, int k) {
         int count = 0, sum = 0;
         Map<Integer, Integer> map = new HashMap<>();  // Map<complement, frequency>
-        map.put(0, 1);                                // 用于 sum == k 的情况（例如👆sum=10 的情况）
+        map.put(0, 1);                                // 用于 sum == k 的情况（例如👆sum=10 的情况）
 
         for (int n : nums) {                          // 使用 two sum 查找表的话，只需遍历一次（one-pass）
             sum += n;                                 // 累积 preSum
@@ -162,7 +162,7 @@ public class L560_SubarraySumEqualsK {
     }
 
     /*
-     * 解法4：解法3的代码简化版
+     * 解法4：解法3的代码简化版（🥇最优解）
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int subarraySum4(int[] nums, int k) {
