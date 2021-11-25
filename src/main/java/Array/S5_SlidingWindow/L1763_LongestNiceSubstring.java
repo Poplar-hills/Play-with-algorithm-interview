@@ -2,6 +2,7 @@ package Array.S5_SlidingWindow;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static Utils.Helpers.log;
 
@@ -18,7 +19,6 @@ import static Utils.Helpers.log;
  * */
 
 public class L1763_LongestNiceSubstring {
-
     /*
      * 解法1：双指针遍历
      * - 💎 思路：首先，这类求 XXXsubstring、XXXsubarray 的题目通常有两种解法：
@@ -56,7 +56,6 @@ public class L1763_LongestNiceSubstring {
                     result = sub;
             }
         }
-
         return result.isEmpty() ? "-1" : result;
     }
 
@@ -65,6 +64,30 @@ public class L1763_LongestNiceSubstring {
             if (str.contains(Character.toUpperCase(c) + "") != str.contains(Character.toLowerCase(c) + ""))
                 return false;
         return true;
+    }
+
+    /*
+     * 解法2：Divide & Rule + 递归
+     * - 思路：采用分治思想，
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+     * */
+    public static String longestNiceSubstring2(String s) {
+        if (s.length() < 2) return "";
+        char[] chars = s.toCharArray();
+
+        Set<Character> set = new HashSet<>();
+        for (char c : chars) set.add(c);
+
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (set.contains(Character.toUpperCase(c)) && set.contains(Character.toLowerCase(c)))
+                continue;
+            String sub1 = longestNiceSubstring2(s.substring(0, i));
+            String sub2 = longestNiceSubstring2(s.substring(i + 1));
+            return sub1.length() >= sub2.length() ? sub1 : sub2;
+        }
+
+        return s;
     }
 
     /*
