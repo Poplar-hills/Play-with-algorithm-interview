@@ -20,7 +20,31 @@ import static Utils.Helpers.log;
 public class L1763_LongestNiceSubstring {
 
     /*
-     * 解法1：
+     * 解法1：双指针遍历
+     * - 💎 思路：首先，这类求 XXXsubstring、XXXsubarray 的题目通常有两种解法：
+     *     1. 滑动窗口：如 L76_MinimumWindowSubstring、L438_FindAllAnagramsInString、L209_MinimumSizeSubarraySum
+     *     2. 双指针遍历：如 L560_SubarraySumEqualsK
+     *     - 从复杂度看，双指针滑动至少是 O(n^2)，而左右伸缩滑动可以是 O(n)。
+     *   若采用左右伸缩滑动，则需一个条件用于判断何时伸何时缩，但对于该题来说找不到这样的条件（∵ 要找最长 substring ∴ 不能
+     *   因为当前 substring 是 nice 了就停止伸长）∴ 只能采用双指针滑动，这也是最 intuitive 的解法 —— 通过双指针遍历所有
+     *   substring，并检查每个是否 nice，同时使用一个外部变量 result 维护 the longest nice substring 即可。演示：
+     *     "d D e E d E"
+     *      l-r          - 找到一个 nice, result="dD"
+     *      l---r
+     *      l-----r      - 找到一个 nice, result="dDeE"
+     *      l-------r    - 找到一个 nice, result="dDeEd"
+     *      l---------r  - 找到一个 nice, result="dDeEdE"
+     *        l-r
+     *        l---r
+     *        l-----r    - 找到一个 nice, result="DeEd"
+     *        l-------r  - 找到一个 nice, result="DeEdE"
+     *          l-r      - 找到一个 nice, result="eE"
+     *          l---r
+     *          l-----r
+     *            l-r
+     *            l---r
+     *              l-r
+     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
      * */
     public static String longestNiceSubstring(String s) {
         String result = "";
@@ -86,7 +110,7 @@ public class L1763_LongestNiceSubstring {
         log(longestNiceSubstring("YazaAay"));      // expects "aAa"
         log(longestNiceSubstring("Bb"));           // expects "Bb"
         log(longestNiceSubstring("c"));            // expects "-1"
-        log(longestNiceSubstring("dDzeE"));        // expects "dD"
+        log(longestNiceSubstring("deDEE"));        // expects "deDEE"
 
         log(shortestNiceSubstring("azABaabza"));   // expects "ABaab"
         log(shortestNiceSubstring("CATattac"));    // expects "ATat"

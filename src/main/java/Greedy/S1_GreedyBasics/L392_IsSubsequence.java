@@ -39,7 +39,7 @@ public class L392_IsSubsequence {
 
     /*
      * 解法2：Greedy
-     * - 思路：与解法1一致。
+     * - 思路：与解法1一致。
      * - 实现：用 indexOf() 方法代替解法1中的双指针。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。该解法统计性能比解法1高很多，原因是解法1 while 中要调用2次 charAt()，而本解法中的
      *   indexOf() 在 for 中只调用一次（charAt() 和 indexOf() 都是遍历搜索）。

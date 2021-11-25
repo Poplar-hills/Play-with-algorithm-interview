@@ -17,7 +17,7 @@ import static Utils.Helpers.log;
 
 public class L219_ContainsDuplicateII {
     /*
-     * 解法1：数组滑动窗口 + Set
+     * 解法1：滑动窗口 + Set
      * - 思路：题中说"i 和 j 之差不超过 k"，可理解为有一个长度为 k 的窗口在数组上滑动，若窗口内存在重复元素即可返回 true。
      * - 实现：窗口采用双指针实现，“是否存在重复元素”的问题由 Set 来回答。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
