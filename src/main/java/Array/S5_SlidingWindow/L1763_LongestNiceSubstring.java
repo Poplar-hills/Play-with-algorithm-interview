@@ -1,8 +1,6 @@
 package Array.S5_SlidingWindow;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Predicate;
+import java.util.*;
 
 import static Utils.Helpers.log;
 
@@ -15,7 +13,7 @@ import static Utils.Helpers.log;
  * - Given a string s, return the longest substring of s that is nice. If there are multiple, return the
  *   substring of the earliest occurrence. If there are none, return "-1".
  *
- * - Following question: Instead of returning the longest, return the shortest substring of s.
+ * - Following question: Instead of returning the longest, return the shortest nice substring of s.
  * */
 
 public class L1763_LongestNiceSubstring {
@@ -67,9 +65,9 @@ public class L1763_LongestNiceSubstring {
     }
 
     /*
-     * 解法2：Divide & Rule + 递归
-     * - 思路：采用分治思想，
-     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+     * 解法2：Divide & Conquer + 递归
+     * - 思路：采用分治思想 TODO: 未完全理解。
+     * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static String longestNiceSubstring2(String s) {
         if (s.length() < 2) return "";
@@ -92,41 +90,36 @@ public class L1763_LongestNiceSubstring {
 
     /*
      * For the following question - find the shortest nice substring of s.
-     * 解法1：
-     * - for (r=1; r<n; r++)                      for (l=0; l<n; l++)
-     *      for (l=0; l<r; l++)                     for (r=l+1; r<n; r++)
-     *   "C A T a t t a c"                        "C A T a t t a c"
-     *    l-r               - "CA"                   l-r              - "CA"
-     *    l---r             - "CAT"                  l---r            - "CAT"
-     *      l-r             - "AT"                   l-----r          - "CATa"
-     *    l-----r           - "CATa"                 l-------r        - "CATat"
-     *      l---r           - "ATa"                  l---------r      - "CATatt"
-     *        l-r           - "Ta"                   l-----------r    - "CATatta"
-     *    l-------r         - "CATat"                l-------------r  - "CATattac"（找到的第一个解）
-     *      l-----r         - "ATat"（找到的第一个解）
+     * 解法1：双指针遍历
+     * - 思路：双指针遍历所有 substring，在 for 循环内部，检查 substring 的每一个字符，若字符为大小，则放入小写 Set 中，若为
+     *   大写，则先转换为小写后再放入大写 Set 中。这样若该 substring 是 nice 的，则最后得到的2个 Set 中的元素应该一模一样。
+     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
      * */
     public static String shortestNiceSubstring(String s) {
-        if (s == null || s.isEmpty()) return "-1";
+        String res = "-1";
+        if (s == null || s.isEmpty()) return res;
         char[] chars = s.toCharArray();
+        int minLen = s.length() + 1;
 
-        for (int r = 1; r < s.length(); r++) {
-            for (int l = 0; l < r; l++) {
-                Set<Character> lowerSet = new HashSet<>();
-                Set<Character> upperSet = new HashSet<>();
+        for (int l = 0; l < s.length(); l++) {
+            for (int r = l + 1; r < s.length(); r++) {
+                Set<Character> lowerSet = new HashSet<>(), upperSet = new HashSet<>();
 
-                for (int i = l; i <= r; i++) {
-                    if (Character.isLowerCase(chars[i]))
+                for (int i = l; i <= r; i++) {            // 遍历 substring 的每一个字符
+                    if (Character.isLowerCase(chars[i]))  // 若是小写，放入小写 Set 中
                         lowerSet.add(chars[i]);
-                    else
+                    else                                  // 若是大写，先转换成小写后放入大写 Set 中
                         upperSet.add(Character.toLowerCase(chars[i]));
                 }
 
-                if (lowerSet.equals(upperSet))
-                    return s.substring(l, r + 1);
+                if (lowerSet.equals(upperSet) && r - l + 1 < minLen) {  // 比较2个 Set 中的元素来判断 substring
+                    res = s.substring(l, r + 1);                        // 是否 nice
+                    minLen = r - l + 1;
+                }
             }
         }
 
-        return "-1";
+        return res;
     }
 
     public static void main(String[] args) {
@@ -137,6 +130,7 @@ public class L1763_LongestNiceSubstring {
 
         log(shortestNiceSubstring("azABaabza"));   // expects "ABaab"
         log(shortestNiceSubstring("CATattac"));    // expects "ATat"
+        log(shortestNiceSubstring("CATattaA"));    // expects "aA"
         log(shortestNiceSubstring("TacoCat"));     // expects "-1"
         log(shortestNiceSubstring("Madam"));       // expects "-1"
         log(shortestNiceSubstring("AcZCbaBz"));    // expects "AcZCbaBz"
