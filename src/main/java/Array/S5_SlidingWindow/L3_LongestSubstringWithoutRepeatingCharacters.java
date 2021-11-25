@@ -21,15 +21,15 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
      * - 思路：以 [l,r] 为窗口，用 Map 记录每个字符的频次。每次将 r 处字符添加到窗口中之后：
      *   - 若发现其频次 == 1，说明无重复元素，则获取最大长度；
      *   - 若发现其频次 > 1，说明 r 处字符重复，此时让 l 不断右移，收缩窗口，直到将第一个重复的字符从窗口中移出。
-     *     p   w   w   k   e   w
-     *     lr                       - 初始状态：map(p:1), max=1, r++
-     *     l   r                    - map(p:1, w:1), max=2, r++
-     *     l       r                - map(p:1, w:2), foundDuplicate, max=2, l++
-     *         l   r                - map(w:2), foundDuplicate, max=2, l++
-     *             lr               - map(w:1), max=2, r++
-     *             l   r            - map(w:1: k:1), max=2, r++
-     *             l       r        - map(w:1, k:1, e:1), max=3, r++
-     *             l           r    - map(w:2, k:1, e:1), foundDuplicate, max=3, l++, r==arr.length, loop ends
+     *    "p   w   w   k   e   w"
+     *     lr                      - 初始状态：map(p:1), max=1, r++
+     *     l---r                   - map(p:1, w:1), max=2, r++
+     *     l-------r               - map(p:1, w:2), foundDuplicate, max=2, l++
+     *         l---r               - map(w:2), foundDuplicate, max=2, l++
+     *             lr              - map(w:1), max=2, r++
+     *             l---r           - map(w:1: k:1), max=2, r++
+     *             l-------r       - map(w:1, k:1, e:1), max=3, r++
+     *             l-----------r   - map(w:2, k:1, e:1), foundDuplicate, max=3, l++, r==arr.length, loop ends
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring(String s) {
@@ -64,15 +64,15 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
      *   2. r 指向待纳入窗口的下一个字符 ∴ 每次先检查 r 处的字符是否存在于窗口中：
      *      - 若不存在，则扩展窗口（将 r 出字符纳入窗口），并记录窗口最大长度；
      *      - 若存在，则收缩窗口（将 l 处字符从窗口中移出）。
-     *      p   w   w   k   e   w
+     *     "p   w   w   k   e   w"
      *      lr                      - 初始状态：set(), no arr[r], add it to set, r++
-     *      l   r                   - set(p), no arr[r], add it to set, r++
-     *      l       r               - set(p,w), has arr[r], remove arr[l], l++
-     *          l   r               - set(w), has arr[r], remove arr[l], l++
+     *      l---r                   - set(p), no arr[r], add it to set, r++
+     *      l-------r               - set(p,w), has arr[r], remove arr[l], l++
+     *          l---r               - set(w), has arr[r], remove arr[l], l++
      *              lr              - set(), no arr[r], add it to set, r++
-     *              l   r           - set(w), no arr[r], add it to set, r++
-     *              l       r       - set(w,k), no arr[r], add it to set, r++
-     *              l           r   - set(w,k,e), r == arr.length, loop ends, return set.size()
+     *              l---r           - set(w), no arr[r], add it to set, r++
+     *              l-------r       - set(w,k), no arr[r], add it to set, r++
+     *              l-----------r   - set(w,k,e), r == arr.length, loop ends, return set.size()
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring2(String s) {
@@ -203,13 +203,13 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
      *     p   w   w   k   e   w
      *     lr                       - 初始状态：map(), max=0, r++
      *     lr                       - map(p:0), no arr[r], max=1, r++
-     *     l   r                    - map(p:0, w:1), no arr[r], max=2, r++
-     *     l       r                - map(p:0, w:1), found arr[r], l jumps to map.get(w)+1, update map.put(w,r)
+     *     l---r                    - map(p:0, w:1), no arr[r], max=2, r++
+     *     l-------r                - map(p:0, w:1), found arr[r], l jumps to map.get(w)+1, update map.put(w,r)
      *             lr               - map(p:0, w:2), found arr[r], but map.get(w)==l ∴ max=2, r++
-     *             l   r            - map(p:0, w:2, k:3), no arr[r], max=2, r++
-     *             l       r        - map(p:0, w:2, k:3, e:4), no arr[r], max=3, r++
-     *             l           r    - map(p:0, w:2, k:3, e:4), found arr[r], l jumps to map.get(w)+1, update map.put(w,r)
-     *                 l       r    - map(p:0, w:5, k:3, e:4), r==arr.length-1, loop ends
+     *             l---r            - map(p:0, w:2, k:3), no arr[r], max=2, r++
+     *             l-------r        - map(p:0, w:2, k:3, e:4), no arr[r], max=3, r++
+     *             l-----------r    - map(p:0, w:2, k:3, e:4), found arr[r], l jumps to map.get(w)+1, update map.put(w,r)
+     *                 l-------r    - map(p:0, w:5, k:3, e:4), r==arr.length-1, loop ends
      *   注意：该解法中，Map 只会不断 put，而不会 remove（与解法1-6中的 Set 不同的地方）。
      * - 👉 实现：
      *   1. 利用了 map.put(k,v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，否则返回 null）来简化对 l 的更新。
