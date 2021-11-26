@@ -12,10 +12,40 @@ import static Utils.Helpers.log;
  * - 注意：本题中求的是 substring（子串）而非 subsequence（子序列）—— 子串是连续的，子序列可以不连续，例如"pwke"是"pwwkew"
  *   的子序列，但不是其子串。
  *
- * - 💎 心得：对于这种找连续子串的问题，滑动窗口是最常用的解法，即根据题中条件来不断改变窗口的左右界，从而找到所需子串。
+ * - 💎 技巧：对于这种找连续子串的问题，滑动窗口是最常用的解法，即根据题中条件来不断改变窗口的左右界，从而找到所需子串。
  * */
 
 public class L3_LongestSubstringWithoutRepeatingCharacters {
+    /*
+     * 超时解：双指针遍历
+     * - 思路：首先，这类求 XXXsubstring、XXXsubarray 的题目通常有两种解法：
+     *     1. 滑动窗口：如 L76_MinimumWindowSubstring、L438_FindAllAnagramsInString、L209_MinimumSizeSubarraySum
+     *     2. 双指针遍历：如 L560_SubarraySumEqualsK、L1763_LongestNiceSubstring
+     *     - 从复杂度看，双指针滑动至少是 O(n^2)，而左右伸缩滑动可以是 O(n)。
+     *   其中，双指针遍历法最为 intuitive —— 通过改变 [l,r] 来遍历所有 substring，然后检查每个 substring 是否包含重复字符，
+     *   若包含则直接放弃，否则记录其长度即可。
+     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
+     * */
+    public static int lengthOfLongestSubstring0(String s) {
+        if (s == null || s.isEmpty()) return 0;
+        char[] chars = s.toCharArray();
+        int maxLen = 0;
+
+        for (int l = 0; l < s.length(); l++) {
+            for (int r = l; r < s.length(); r++) {
+                Set<Character> set = new HashSet<>();
+                for (int i = l; i <= r; i++) {
+                    if (set.contains(chars[i])) break;  // 检查该 substring 是否包含重复字符，若包含则直接放弃
+                    set.add(chars[i]);
+                }
+                if (set.size() == r - l + 1 && r - l + 1 > maxLen)  // set.size() == r-l+1 表示不包含重复字符
+                    maxLen = r - l + 1;
+            }
+        }
+
+        return maxLen;
+    }
+
     /*
      * 解法1：滑动窗口 + freq Map
      * - 思路：以 [l,r] 为窗口，用 Map 记录每个字符的频次。每次将 r 处字符添加到窗口中之后：
@@ -280,12 +310,12 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     public static void main(String[] args) {
-        log(lengthOfLongestSubstring("abbcaccb"));  // expects 3 ("bca")
-        log(lengthOfLongestSubstring("pwwkew"));    // expects 3 ("wke")
-        log(lengthOfLongestSubstring("cdd"));       // expects 2 ("cd")
-        log(lengthOfLongestSubstring("abba"));      // expects 2 ("ab" or "ba")
-        log(lengthOfLongestSubstring("bbbbba"));    // expects 2 ("ba")
-        log(lengthOfLongestSubstring("bbbbb"));     // expects 1 ("b")
-        log(lengthOfLongestSubstring(""));          // expects 0
+        log(lengthOfLongestSubstring0("abbcaccb"));  // expects 3 ("bca")
+        log(lengthOfLongestSubstring0("pwwkew"));    // expects 3 ("wke")
+        log(lengthOfLongestSubstring0("cdd"));       // expects 2 ("cd")
+        log(lengthOfLongestSubstring0("abba"));      // expects 2 ("ab" or "ba")
+        log(lengthOfLongestSubstring0("bbbbba"));    // expects 2 ("ba")
+        log(lengthOfLongestSubstring0("bbbbb"));     // expects 1 ("b")
+        log(lengthOfLongestSubstring0(""));          // expects 0
     }
 }
