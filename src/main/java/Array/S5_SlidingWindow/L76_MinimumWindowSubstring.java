@@ -14,6 +14,43 @@ import java.util.*;
 
 public class L76_MinimumWindowSubstring {
     /*
+     * 超时解：双指针遍历
+     * - 💎 思路：与 L3_LongestSubstringWithoutRepeatingCharacters 超时解类似，使用双指针遍历所有 substring，然后检查每个
+     *   substring 是否包含 t 中的所有字符（即 brute force）。
+     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
+     * */
+    public static String minWindow0(String s, String t) {
+        char[] sChars = s.toCharArray(), tChars = t.toCharArray();
+        int start = -1, minLen = Integer.MAX_VALUE;
+
+        for (int l = 0; l < sChars.length; l++) {
+            for (int r = l; r < sChars.length; r++) {
+                int len = r - l + 1;
+                if (containAllChars(sChars, l, r, tChars) && len < minLen) {
+                    start = l;
+                    minLen = len;
+                }
+            }
+        }
+
+        return start == -1 ? "" : s.substring(start, start + minLen);
+    }
+
+    private static boolean containAllChars(char[] sChars, int l, int r, char[] tChars) {
+        Map<Character, Integer> tFreq = new HashMap<>();
+        for (char c : tChars)
+            tFreq.merge(c, 1, Integer::sum);
+        for (int i = l; i <= r; i++) {
+            if (tFreq.containsKey(sChars[i])) {
+                tFreq.merge(sChars[i], -1, Integer::sum);
+                if (tFreq.get(sChars[i]) == 0)
+                    tFreq.remove(sChars[i]);
+            }
+        }
+        return tFreq.isEmpty();
+    }
+
+    /*
      * 解法1：滑动窗口
      * - 💎 思路：∵ 是找连续子串的问题 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case 1
      *   可知要求的最小子串需要包含 t 中所有字符，且尽量少的包含重复字符 ∴ 可得到窗口滑动控制方式：先右移 r 扩展窗口，直到 t 中
@@ -146,10 +183,10 @@ public class L76_MinimumWindowSubstring {
     }
 
     public static void main(String[] args) {
-        log(minWindow("ABAACBAB", "ABC"));  // expects "ACB"
-        log(minWindow("BCAACBAB", "BBC"));  // expects "CBAB" (t 中也可能存在重复字符)
-        log(minWindow("TT", "TT"));         // expects "TT"
-        log(minWindow("S", "SS"));          // expects ""
-        log(minWindow("YYZ", "ZY"));        // expects "YZ"
+        log(minWindow0("ABAACBAB", "ABC"));  // expects "ACB"
+        log(minWindow0("BCAACBAB", "BBC"));  // expects "CBAB" (t 中也可能存在重复字符)
+        log(minWindow0("TT", "TT"));         // expects "TT"
+        log(minWindow0("S", "SS"));          // expects ""
+        log(minWindow0("YYZ", "ZY"));        // expects "YZ"
     }
 }
