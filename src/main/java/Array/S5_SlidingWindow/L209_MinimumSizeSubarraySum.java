@@ -133,11 +133,11 @@ public class L209_MinimumSizeSubarraySum {
         for (int i = 0; i < preSums.length; i++)  // 与解法2中的 prefix sum 生成、使用方式一致
             preSums[i] = i == 0 ? nums[0] : preSums[i - 1] + nums[i];
 
-        for (int l = 0, r = 0; l < n; ) {  // 比解法2、3 多了 r < n 的条件
-            if (preSums[r] - preSums[l] + nums[l] < s) {   // 扩展窗口
+        for (int l = 0, r = 0; l < n; ) {
+            if (preSums[r] - preSums[l] + nums[l] < s) {  // 未到达 s 之前持续扩展窗口
                 r++;
-                if (r == n) break;         // 当 r 自增到 n 时需立即结束循环，不再执行下面逻辑，否则数组会越界
-            } else {                       // 收缩窗口
+                if (r == n) break;  // 当 r 到达 n 时 break 循环，不再执行下面逻辑，否则数组会越界
+            } else {                // 到达 s 后开始收缩窗口
                 minLen = Math.min(minLen, r - l + 1);  // 只在收缩收缩窗口时记录最小长度（∵ 此时满足 > s 的条件）
                 l++;
             }
