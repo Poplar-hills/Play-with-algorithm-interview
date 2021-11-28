@@ -96,7 +96,7 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-     * 解法4：窗口滑动 + 内部双 while 查找
+     * 解法4：窗口滑动 + 内部双 while 查找（🥇最优解之一）
      * - 思路：与解法3一致。
      * - 实现：比解法3略繁琐 ∵ 有两个地方都需要更新 minLen。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
@@ -104,17 +104,17 @@ public class L209_MinimumSizeSubarraySum {
     public static int minSubArrayLen4(int s, int[] nums) {
         if (s <= 0 || nums == null) return 0;
         int n = nums.length, minLen = n + 1;
-        int l = 0, r = -1, sum = 0;    // 右边界初始化为-1，使得初始窗口不包含任何元素，这样初始 sum 才能为0
+        int l = 0, r = 0, sum = 0;
 
-        while (r < n - 1) {  // ∵ 下面使用 while 查找 ∴ 这里只需 r 抵达数尾后整个滑动过程即结束，又 ∵ 下面的 r+1 不能越界 ∴ 这里是 r < n-1
-            while (sum < s && r + 1 < n)
-                sum += nums[++r];
+        while (r < n) {                  // ∵ 下面使用 while 查找 ∴ 这里只需 r < n 即可（不同于解法3之处）
+            while (sum < s && r < n)
+                sum += nums[r++];
             if (sum >= s)                // 窗口停止扩展时 sum ≥ s ∴ 此时要计算 minLen
-                minLen = Math.min(minLen, r - l + 1);
+                minLen = Math.min(minLen, r - l);
             while (sum >= s && l < n) {  // 再开始收缩窗口
                 sum -= nums[l++];
                 if (sum >= s)            // 每次收缩一步后都再计算一遍 minLen
-                    minLen = Math.min(minLen, r - l + 1);
+                    minLen = Math.min(minLen, r - l);
             }
         }
 
@@ -147,9 +147,9 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     public static void main(String[] args) {
-        log(minSubArrayLen3(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
-        log(minSubArrayLen3(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
-        log(minSubArrayLen3(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
-        log(minSubArrayLen3(8, new int[]{1, 2, 3}));           // expects 0.
+        log(minSubArrayLen4(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
+        log(minSubArrayLen4(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
+        log(minSubArrayLen4(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
+        log(minSubArrayLen4(8, new int[]{1, 2, 3}));           // expects 0.
     }
 }
