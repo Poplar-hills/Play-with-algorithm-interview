@@ -15,7 +15,7 @@ import java.util.*;
 public class L76_MinimumWindowSubstring {
     /*
      * 超时解：双指针遍历
-     * - 💎 思路：与 L3_LongestSubstringWithoutRepeatingCharacters 超时解类似，使用双指针遍历所有 substring，然后检查每个
+     * - 思路：与 L3_LongestSubstringWithoutRepeatingCharacters 超时解类似，使用双指针遍历所有 substring，然后检查每个
      *   substring 是否包含 t 中的所有字符（即 brute force）。
      * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
      * */

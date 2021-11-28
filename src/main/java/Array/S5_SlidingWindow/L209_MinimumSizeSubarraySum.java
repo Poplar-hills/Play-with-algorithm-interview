@@ -1,5 +1,11 @@
 package Array.S5_SlidingWindow;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Stack;
+import java.util.stream.Collectors;
+
 import static Utils.Helpers.log;
 
 /*
@@ -15,7 +21,7 @@ import static Utils.Helpers.log;
 
 public class L209_MinimumSizeSubarraySum {
     /*
-     * 解法1：Brute force
+     * 解法1：双指针遍历（Brute force）
      * - 思路：用双重循环遍历所有子串（即遍历子串边界 l、r 的所有组合），再对每个子串中的所有元素求和。
      * - 💎 经验：遍历一个数组的所有子串要使用双重循环，复杂度为 O(n^2)。
      * - 时间复杂度 O(n^3)，空间复杂度 O(1)。
@@ -42,24 +48,24 @@ public class L209_MinimumSizeSubarraySum {
      * - 思路：解法1中的问题在于每遍历到一个子串后就要为其求一次和，多次求和过程中有很多重复计算。对此可采用以空间换时间的
      *   prefix sum 技巧，让 sums[i] 记录 nums[0..i] 的和（例如 sums[2] 记录第0、1、2号元素之和），使得不再需要多次
      *   重复计算序列之和。
-     * - 💎 经验：Prefix Sum 本质是为每个位置缓存累加和（cummulative sums），是求解“数组区间求和”类问题时的常用技巧。
+     * - 💎 经验：Prefix Sum 本质是为每个位置缓存累加和（cumulative sums），是求解“数组区间求和”类问题时的常用技巧。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int minSubArrayLen2(int s, int[] nums) {
         if (s <= 0 || nums == null) return 0;
         int n = nums.length;
-        int[] preSums = new int[n];           // prefix sum 数组
+        int[] preSums = new int[n];     // prefix sum 数组
         preSums[0] = nums[0];
 
-        for (int i = 1; i < n; i++)           // 单次遍历即可构造 prefix sum 数组（i 的取值要从1开始）
+        for (int i = 1; i < n; i++)     // 单次遍历即可构造 prefix sum 数组（i 的取值要从1开始）
             preSums[i] = preSums[i - 1] + nums[i];
 
         int minLen = n + 1;
-        for (int l = 0; l < n; l++) {         // 外面仍然是双重循环遍历所有子串
+        for (int l = 0; l < n; l++) {   // 外面仍然是双重循环遍历所有子串
             for (int r = l; r < n; r++) {
-                if (preSums[r] - preSums[l] + nums[l] >= s) {    // 里面使用 prefix sum 快速得到该子串 nums[l..r] 的元素之和 =
+                if (preSums[r] - preSums[l] + nums[l] >= s) {  // 里面使用 prefix sum 快速得到该子串 nums[l..r] 的元素之和 =
                     minLen = Math.min(minLen, r - l + 1);  // nums[0..r] 之和 - nums[0..l) 之和 = preSums[r] - preSums[l] + nums[l]
-                    break;                    // ∵ 已经找到了以 l 为起点的最短符合条件的子串，而后面的子串只会更长（∵ r 在增大）∴ 无需再遍历
+                    break;              // ∵ 已经找到了以 l 为起点的最短符合条件的子串，而后面的子串只会更长（∵ r 在增大）∴ 无需再遍历
                 }
             }
         }
@@ -67,23 +73,23 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-     * 解法3：窗口滑动
+     * 解法3：窗口滑动（🥇最优解之一）
      * - 思路：💎 找连续子串的问题可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case
-     *   可知窗口滑动的控制方式：当窗口中元素之和在 < s 时扩展窗口，在 ≥ s 时收缩窗口并更新最小子串的长度。
+     *   可知窗口滑动的控制方式：当窗口中元素之和在 < s 时扩展窗口，在 ≥ s 时收缩窗口，并更新最小子串的长度。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int minSubArrayLen3(int s, int[] nums) {
         if (s <= 0 || nums == null) return 0;
         int n = nums.length, minLen = n + 1;
-        int l = 0, r = -1, sum = 0;    // 右边界初始化为-1，使得初始窗口不包含任何元素，这样初始 sum 才能为0
+        int l = 0, r = 0, sum = 0;
 
-        while (l < n) {                // 当 r 抵达数组末尾后，l 还得继续滑动直到也抵达末尾后整个滑动过程才算结束
-            if (sum < s && r + 1 < n)  // ∵ 下一句中 r 要在++后访问元素 ∴ 这里要处理越界情况
-                sum += nums[++r];
-            else                       // 若 sum ≥ s 或 r 已经到头
+        while (l < n) {            // 当 r 抵达数组末尾后，l 还得继续滑动直到也抵达末尾后整个滑动过程才算结束
+            if (sum < s && r < n)  // ∵ 下一句中有 r++ ∴ 这里要增加条件放置 num[r] 越界取值
+                sum += nums[r++];
+            else                   // 当 sum ≥ s 或 r 已到达 n 时开始收缩窗口
                 sum -= nums[l++];
             if (sum >= s)
-                minLen = Math.min(minLen, r - l + 1);
+                minLen = Math.min(minLen, r - l);  // ∵ 上面 r 或 l 已经++ 过了 ∴ 这里不能再取 r-l+1
         }
 
         return minLen == n + 1 ? 0 : minLen;  // 若未找到 ≥ s 的子串则返回0
@@ -98,7 +104,7 @@ public class L209_MinimumSizeSubarraySum {
     public static int minSubArrayLen4(int s, int[] nums) {
         if (s <= 0 || nums == null) return 0;
         int n = nums.length, minLen = n + 1;
-        int l = 0, r = -1, sum = 0;
+        int l = 0, r = -1, sum = 0;    // 右边界初始化为-1，使得初始窗口不包含任何元素，这样初始 sum 才能为0
 
         while (r < n - 1) {  // ∵ 下面使用 while 查找 ∴ 这里只需 r 抵达数尾后整个滑动过程即结束，又 ∵ 下面的 r+1 不能越界 ∴ 这里是 r < n-1
             while (sum < s && r + 1 < n)
@@ -141,9 +147,9 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     public static void main(String[] args) {
-        log(minSubArrayLen5(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
-        log(minSubArrayLen5(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
-        log(minSubArrayLen5(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
-        log(minSubArrayLen5(8, new int[]{1, 2, 3}));           // expects 0.
+        log(minSubArrayLen3(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
+        log(minSubArrayLen3(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
+        log(minSubArrayLen3(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
+        log(minSubArrayLen3(8, new int[]{1, 2, 3}));           // expects 0.
     }
 }

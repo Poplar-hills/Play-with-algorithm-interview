@@ -90,7 +90,7 @@ public class L1763_LongestNiceSubstring {
 
     /*
      * For the following question - find the shortest nice substring of s.
-     * 解法1：双指针遍历
+     * 解法1：双指针遍历（Brute force）
      * - 思路：双指针遍历所有 substring，在 for 循环内部，检查 substring 的每一个字符，若字符为大小，则放入小写 Set 中，若为
      *   大写，则先转换为小写后再放入大写 Set 中。这样若该 substring 是 nice 的，则最后得到的2个 Set 中的元素应该一模一样。
      * - 时间复杂度 O(n^3)，空间复杂度 O(n)。

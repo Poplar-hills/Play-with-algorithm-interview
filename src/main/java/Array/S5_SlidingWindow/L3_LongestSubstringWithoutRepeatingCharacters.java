@@ -17,7 +17,7 @@ import static Utils.Helpers.log;
 
 public class L3_LongestSubstringWithoutRepeatingCharacters {
     /*
-     * 超时解：双指针遍历
+     * 超时解：双指针遍历（Brute force）
      * - 💎 思路：首先，这类求 XXXsubstring、XXXsubarray 的题目通常有两种解法：
      *     1. 滑动窗口：如 L76_MinimumWindowSubstring、L438_FindAllAnagramsInString、L209_MinimumSizeSubarraySum
      *     2. 双指针遍历：如 L560_SubarraySumEqualsK、L1763_LongestNiceSubstring
