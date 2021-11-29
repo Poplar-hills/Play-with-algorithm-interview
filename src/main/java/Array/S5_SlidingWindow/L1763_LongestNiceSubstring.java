@@ -70,7 +70,7 @@ public class L1763_LongestNiceSubstring {
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static String longestNiceSubstring2(String s) {
-        if (s.length() < 2) return "";
+        if (s.length() < 2) return "-1";
         char[] chars = s.toCharArray();
 
         Set<Character> set = new HashSet<>();
@@ -123,10 +123,11 @@ public class L1763_LongestNiceSubstring {
     }
 
     public static void main(String[] args) {
-        log(longestNiceSubstring("YazaAay"));      // expects "aAa"
-        log(longestNiceSubstring("Bb"));           // expects "Bb"
-        log(longestNiceSubstring("c"));            // expects "-1"
-        log(longestNiceSubstring("deDEE"));        // expects "deDEE"
+        log(longestNiceSubstring2("YazaAay"));      // expects "aAa"
+        log(longestNiceSubstring2("deDEE"));        // expects "deDEE"
+        log(longestNiceSubstring2("Bb"));           // expects "Bb"
+        log(longestNiceSubstring2("c"));            // expects "-1"
+        log(longestNiceSubstring2("abc"));          // expects "-1"
 
         log(shortestNiceSubstring("azABaabza"));   // expects "ABaab"
         log(shortestNiceSubstring("CATattac"));    // expects "ATat"
