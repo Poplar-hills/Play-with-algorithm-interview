@@ -79,7 +79,7 @@ public class L64_MinimumPathSum {
      *     - ∵ f(2,2) 是右下角终点，再没有路可走 ∴ f(2,2) = 1；
      *     - ∵ 类似 f(2,0)、f(0,2) 的边缘节点只有一个方向可以走 ∴ f(2,0) = f(2,1); f(0,2) = f(1,2)；
      *     - f(1,0)、f(0,1) 都可以走到 f(1,1) ∴ 出现了重叠子问题，本解法中并未进行优化。
-     * - 时间复杂度 O(2^(m*n))，空间复杂度 O(m*n)。
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int minPathSum_2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -101,6 +101,12 @@ public class L64_MinimumPathSum {
      * 超时解3：DFS + Recursion
      * - 思路：虽然都是 DFS，但不同于超时解2，该解法是从左上角开始一直累加路径和 sum 直到到右下角，而非超时解2中从右下角逐层
      *   返回，一直累加到左上角（即 + grid[r][c] 的操作发生在每层递归内部，而非超时解2中的递归外部）。
+     *        1 → 3 → 1
+     *        ↓   ↓   ↓
+     *        1 → 5 → 1
+     *        ↓   ↓   ↓
+     *        4 → 2 → 1
+     * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int minPathSum_3(int[][] grid) {
         if (grid == null || grid.length == 0) return 0;
@@ -132,8 +138,13 @@ public class L64_MinimumPathSum {
 
     /*
      * 解法2：DFS + Recursion + Memoization
-     * - 思路：在超时解2的基础上加入 Memoization 进行优化，以避免重复计算重叠子问题。
-     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+     * - 思路：在超时解2的基础上加入 Memoization 进行优化，以避免重复计算重叠子问题。例如：
+     *       1 ← 3 ← 1
+     *       ↑   ↑   ↑    - 递推表达式：f(r,c) = min(f(r+1,c), f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)
+     *       1 ← 5 ← 1    - 在计算格子 f(0,1)、f(1,0) 时，f(1,1) 会被计算2遍 ∴ 需要 Memoization
+     *       ↑   ↑   ↑
+     *       4 ← 2 ← 1
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int minPathSum2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -146,19 +157,18 @@ public class L64_MinimumPathSum {
     }
 
     private static int dfs2(int[][] grid, int r, int c, int[][] cache) {
-        int m = grid.length;
-        int n = grid[0].length;
-        int sum = grid[r][c];
+        int m = grid.length, n = grid[0].length;
+        int val = grid[r][c];
 
-        if (r == m - 1 && c == n - 1) return sum;
+        if (r == m - 1 && c == n - 1) return val;
         if (cache[r][c] != -1) return cache[r][c];
 
         if (r == m - 1)
-            return cache[r][c] = sum + dfs2(grid, r, c + 1, cache);
+            return cache[r][c] = val + dfs2(grid, r, c + 1, cache);
         if (c == n - 1)
-            return cache[r][c] = sum + dfs2(grid, r + 1, c, cache);
+            return cache[r][c] = val + dfs2(grid, r + 1, c, cache);
 
-        return cache[r][c] = sum + Math.min(dfs2(grid, r + 1, c, cache), dfs2(grid, r, c + 1, cache));
+        return cache[r][c] = val + Math.min(dfs2(grid, r + 1, c, cache), dfs2(grid, r, c + 1, cache));
     }
 
     /*
@@ -169,7 +179,7 @@ public class L64_MinimumPathSum {
      *   出 f(w-2, l-2)…… 如此往复直到递推出 f(0, 0) 为止。
      * - 优化：该解法还可以再进行空间优化 —— ∵ 每一行的计算都只依赖于当前行右侧和下一行中的值 ∴ 可以采用类似 _ZeroOneKnapsack
      *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
-     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int minPathSum3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -207,7 +217,7 @@ public class L64_MinimumPathSum {
      *          4  2  1                           2 → 7 → 6         2 → 7 → 6
      *                                                              ↓   ↓   ↓
      *                                                              6 → 8 → 7
-     * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int minPathSum4(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
@@ -240,7 +250,7 @@ public class L64_MinimumPathSum {
      *       1   5   1   -------->   1   5   1   -------->   2   5   1   --------->   2 → 7 → 6
      *                    1st row                 1st col    ↓            the rest    ↓   ↓   ↓
      *       4   2   1               4   2   1               6   2   1                6 → 8 → 7
-     * - 时间复杂度 O(m*n)，空间复杂度 O(1)。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int minPathSum5(int[][] grid) {
         int m = grid.length;
