@@ -33,7 +33,7 @@ public class L16_3SumClosest {
 
     /*
      * 解法2：转化为 2Sum（指针对撞）
-     * - 思路：这道题本质上与 L15_3Sum 是类似的，只是判断条件由等于 target 变为了最接近 target ∴ 同样可以用 3Sum 的思路
+     * - 💎 思路：这道题本质上与 L15_3Sum 是类似的，只是判断条件由等于 target 变为了最接近 target ∴ 同样可以用 3Sum 的思路
      *   求解 —— 通过在遍历中挨个固定元素，将 3Sum 化简为 2Sum 问题。而一点问题变成了 2Sum，那么久可以考虑 2Sum 的三种经典
      *   思路：1. 指针对撞；2. Binary Search；3. 查找表。但由于本题条件是最接近 target，而非等于 target ∴ 无法使用
      *   Binary Search、查找表这样进行精确搜索的办法，只能使用指针对撞来对逼近 target，并沿途判断哪个是最接近的解。
@@ -47,7 +47,7 @@ public class L16_3SumClosest {
         int closest = nums[0] + nums[1] + nums[2];
         int n = nums.length;
 
-        for (int i = 0; i < n - 2; i++) {  // 固定第一个元素将问题化简为 2Sum，之后在内部做指针对撞
+        for (int i = 0; i < n - 2; i++) {  // 固定一个元素将问题化简为 2Sum，之后在 (i,..] 范围内做指针对撞
             int l = i + 1, r = n - 1;
             while (l < r) {
                 int sum = nums[i] + nums[l] + nums[r];
