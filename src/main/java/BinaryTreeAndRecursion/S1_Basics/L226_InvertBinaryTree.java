@@ -42,7 +42,7 @@ public class L226_InvertBinaryTree {
      * */
     public static TreeNode invertTree2(TreeNode root) {
         if (root == null) return null;
-        TreeNode temp = root.left;
+        TreeNode temp = root.left;  // 注意要先保存 left 的指针，否则下一行中 left 被覆盖后，再在下下行中做参数就会出错
         root.left = invertTree(root.right);
         root.right = invertTree(temp);
         return root;
@@ -75,10 +75,10 @@ public class L226_InvertBinaryTree {
     }
 
     /*
-     * 解法4：DFS (Iteration)
+     * 解法4：DFS (Iteration，解法1的迭代版)
      * - 思路：与解法1、2、3一致。
      * - 实现：采用 DFS 迭代实现，即只是在解法3的基础上将数据结构改为了 Stack。
-     * - 💎 总结：可见使用 Queue/Stack 决定了节点的访问顺序，即 BFS/DFS。
+     * - 💎 总结：使用 Queue/Stack 决定了节点的访问顺序，即决定了是 BFS/DFS。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode invertTree4(TreeNode root) {
