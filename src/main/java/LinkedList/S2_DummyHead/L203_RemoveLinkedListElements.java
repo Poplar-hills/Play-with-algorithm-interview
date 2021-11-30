@@ -55,30 +55,30 @@ public class L203_RemoveLinkedListElements {
      * - 实现：在递归去程的路上执行处理逻辑。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static ListNode removeElements4(ListNode head, int val) {
+    public static ListNode removeElements3(ListNode head, int val) {
         if (head == null) return null;
-        if (head.val == val) return removeElements4(head.next, val);  // 若当前节点是待删除节点则直接跳过，处理下一个节点
-        head.next = removeElements4(head.next, val);                  // 若非待删除节点则正常处理
+        ListNode returned = removeElements3(head.next, val);
+        if (head.val == val) return returned;  // 若当前节点是待删除节点则跳过，直接返回下层递归的返回值
+        head.next = returned;
         return head;
     }
 
     /*
-     * 解法4：解法3的改进版
+     * 解法4：解法3的简化版
      * - 实现：在递归回程的路上执行处理逻辑。
-     * - 👉比较：解法3、4都适用递归，但一个在去程、一个回程时执行业务逻辑。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static ListNode removeElements5(ListNode head, int val) {
+    public static ListNode removeElements4(ListNode head, int val) {
         if (head == null) return null;
-        head.next = removeElements5(head.next, val);
+        head.next = removeElements4(head.next, val);
         return head.val == val ? head.next : head;
     }
 
     public static void main(String[] args) {
         ListNode l = createLinkedList(new int[]{1, 2, 6, 3, 4, 5, 6});
-        log(removeElements(l, 6));  // expects 1->2->3->4->5->NULL
+        log(removeElements3(l, 6));  // expects 1->2->3->4->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{6, 6});
-        log(removeElements(l2, 6));  // expects NULL
+        log(removeElements3(l2, 6));  // expects NULL
     }
 }
