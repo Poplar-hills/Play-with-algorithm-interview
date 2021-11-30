@@ -70,7 +70,7 @@ public class L203_RemoveLinkedListElements {
      * */
     public static ListNode removeElements5(ListNode head, int val) {
         if (head == null) return null;
-        head.next = removeElements4(head.next, val);
+        head.next = removeElements5(head.next, val);
         return head.val == val ? head.next : head;
     }
 
