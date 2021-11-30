@@ -21,7 +21,7 @@ import java.util.Queue;
 
 public class L64_MinimumPathSum {
     /*
-     * 超时解：BFS
+     * 超时解1：BFS
      * - 思路：与 L120_Triangle 解法2完全一致，采用 BFS 遍历每一条路径，同时计算最小的节点值之和。
      *        1 → 3 → 1
      *        ↓   ↓   ↓
@@ -66,15 +66,6 @@ public class L64_MinimumPathSum {
     }
 
     /*
-     * // TODO: 解法1：Dijkstra
-     * - 思路：带权图的最短路径可使用 Dijkstra 算法，可先解决 https://leetcode.com/problems/network-delay-time/，再解决本问题
-     * - 时间复杂度 O()，空间复杂度 O()。
-     * */
-    public static int minPathSum1(int[][] grid) {
-        return 0;
-    }
-
-    /*
      * 超时解2：DFS + Recursion
      * - 思路：从左上到右下递归地计算每个节点到达右下角的 min path sum：
      *   - 子问题定义：f(r,c) 表示从节点 [r,c] 到达右下角的 min path sum。
@@ -92,22 +83,51 @@ public class L64_MinimumPathSum {
      * */
     public static int minPathSum_2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
-        return dfs(grid, 0, 0);
+        return dfs_2(grid, 0, 0);
     }
 
-    private static int dfs(int[][] grid, int r, int c) {
-        int m = grid.length;
-        int n = grid[0].length;
-        int sum = grid[r][c];
+    private static int dfs_2(int[][] grid, int r, int c) {
+        int m = grid.length, n = grid[0].length;
+        int val = grid[r][c];
 
-        if (r == m - 1 && c == n - 1)
-            return sum;
-        if (r == m - 1)
-            return sum + dfs(grid, r, c + 1);
-        if (c == n - 1)
-            return sum + dfs(grid, r + 1, c);
+        if (r == m - 1 && c == n - 1) return val;
+        if (r == m - 1) return val + dfs_2(grid, r, c + 1);
+        if (c == n - 1) return val + dfs_2(grid, r + 1, c);
 
-        return sum + Math.min(dfs(grid, r + 1, c), dfs(grid, r, c + 1));
+        return val + Math.min(dfs_2(grid, r + 1, c), dfs_2(grid, r, c + 1));
+    }
+
+    /*
+     * 超时解3：DFS + Recursion
+     * - 思路：虽然都是 DFS，但不同于超时解2，该解法是从左上角开始一直累加路径和 sum 直到到右下角，而非超时解2中从右下角逐层
+     *   返回，一直累加到左上角（即 + grid[r][c] 的操作发生在每层递归内部，而非超时解2中的递归外部）。
+     * */
+    public static int minPathSum_3(int[][] grid) {
+        if (grid == null || grid.length == 0) return 0;
+        return dfs_3(grid, 0, 0, 0);
+    }
+
+    private static int dfs_3(int[][] grid, int r, int c, int sum) {
+        int newSum = sum + grid[r][c];
+        if (r == grid.length - 1 && c == grid[0].length - 1)
+            return newSum;
+
+        int minSum = Integer.MAX_VALUE;
+        if (r + 1 < grid.length)
+            minSum = dfs_3(grid, r + 1, c, newSum);
+        if (c + 1 < grid[0].length)
+            minSum = Math.min(minSum, dfs_3(grid, r, c + 1, newSum));
+
+        return minSum;
+    }
+
+    /*
+     * // TODO: 解法1：Dijkstra
+     * - 思路：带权图的最短路径可使用 Dijkstra 算法，可先解决 https://leetcode.com/problems/network-delay-time/，再解决本问题
+     * - 时间复杂度 O()，空间复杂度 O()。
+     * */
+    public static int minPathSum1(int[][] grid) {
+        return 0;
     }
 
     /*
@@ -240,22 +260,22 @@ public class L64_MinimumPathSum {
     }
 
     public static void main(String[] args) {
-        log(minPathSum2(new int[][]{
+        log(minPathSum_3(new int[][]{
             {1, 3, 1},
             {1, 5, 1},
             {4, 2, 1}
         }));  // expects 7. (1->3->1->1->1)
 
-        log(minPathSum2(new int[][]{
+        log(minPathSum_3(new int[][]{
             {1, 3, 4},
             {1, 2, 1},
         }));  // expects 5. (1->1->2->1)
 
-        log(minPathSum2(new int[][]{
+        log(minPathSum_3(new int[][]{
             {1, 2, 3}
         }));  // expects 6.
 
-        log(minPathSum2(new int[][]{
+        log(minPathSum_3(new int[][]{
             {0}
         }));  // expects 0.
     }
