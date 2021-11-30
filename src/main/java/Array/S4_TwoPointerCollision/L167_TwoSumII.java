@@ -25,7 +25,8 @@ public class L167_TwoSumII {
      * */
     public static int[] twoSum(int[] nums, int target) {
         for (int i = 0; i < nums.length; i++) {
-            int p = binarySearch(nums, target - nums[i], i + 1, nums.length - 1);  // 在 nums(i..] 中进行查找
+            int complement = target - nums[i];
+            int p = binarySearch(nums, complement, i + 1, nums.length - 1);  // 在 nums(i..] 中进行查找
             if (p != -1)
                 return new int[]{i + 1, p + 1};
         }
