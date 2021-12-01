@@ -127,18 +127,18 @@ public class L120_Triangle {
         int[][] cache = new int[h][triangle.get(h - 1).size()];
         for (int[] row : cache)
             Arrays.fill(row, -1);
-        return helper1(triangle, 0, 0, cache);
+        return dfs1(triangle, 0, 0, cache);
     }
 
-    private static int helper1(List<List<Integer>> triangle, int level, int index, int[][] cache) {
-        if (level == triangle.size() - 1)
-            return triangle.get(level).get(index);
+    private static int dfs1(List<List<Integer>> triangle, int l, int i, int[][] cache) {
+        if (l == triangle.size() - 1)
+            return triangle.get(l).get(i);
 
-        if (cache[level][index] != -1) return cache[level][index];
+        if (cache[l][i] != -1) return cache[l][i];
 
-        return cache[level][index] = Math.min(
-            helper1(triangle, level + 1, index, cache),
-            helper1(triangle, level + 1, index + 1, cache)) + triangle.get(level).get(index);
+        return cache[l][i] = triangle.get(l).get(i) + Math.min(
+            dfs1(triangle, l + 1, i, cache),
+            dfs1(triangle, l + 1, i + 1, cache));
     }
 
     /*
@@ -149,41 +149,44 @@ public class L120_Triangle {
         return 0;
     }
 
-	/*
-     * 解法3：In-place DP
+    /*
+     * 解法3：DP
      * - 思路：既然可以用 DFS + Recursion 求解，那很可能也能用 DP 求解 —— 自下而上递推出每个节点上的解。其中子问题定义和
      *   递推表达式不变）：
      *   - 子问题定义：f(l,i) 表示"从节点 [l,i] 开始到三角形最底层的 minimum path sum"；
-     *   - 递推表达式：f(l,i) = min(f(l+1,i), f(l+1,i+1)) + nodeVal[l,i]。
-     * - 实现：从下到上逐层遍历，同一层内两两节点先进行比较，选出较小的与父节点相加：
+     *   - 递推表达式：f(l,i) = nodeVal[l,i] + min(f(l+1,i), f(l+1,i+1))。
+     * - 实现：从下到上逐层递推，同一层内两两节点先进行比较，选出较小的与父节点相加：
      *            -1         |                                                        -1
      *           /  \        |                                                       ↗  ↖
      *          2    3       |                               1    0                 1    0
      *        /  \  /  \     |                     -->     ↗  ↖  ↗  ↖     -->     ↗  ↖  ↗  ↖
      *       1    -1   -3    |    1     -1    -3         1     -1    -3         1     -1    -3
-     * - 时间复杂度 O(h^2)，其中 h 为三角形高度。之所以为 O(h^2) 是因为代码中的双重循环范围都可以近似为 0~h。
+     * - 时间复杂度 O(n) 或 O(h^2)，其中 h 为三角形高度（之所以为 O(h^2) 是 ∵ 代码中的双重循环范围都可以近似为 0~h）。
      * - 空间复杂度 O(1)。
      * */
     public static int minimumTotal3(List<List<Integer>> triangle) {
-        for (int l = triangle.size() - 2; l >= 0; l--) {  // 从倒数第2层开始往上遍历
-            List<Integer> currLevel = triangle.get(l);
-            List<Integer> lowerLevel = triangle.get(l + 1);
+        int h = triangle.size();
+        int[][] dp = new int[h][triangle.get(h - 1).size()];
 
-            for (int i = 0; i <= l; i++) {  // 遍历一层中的节点（全等三角形每层的节点个数等于层高 ∴ 第 l 层共有 l 个节点）
-                int minVal = Math.min(lowerLevel.get(i), lowerLevel.get(i + 1));
-                currLevel.set(i, currLevel.get(i) + minVal);
+        for (int l = h - 1; l >= 0; l--) {
+            for (int i = 0; i < triangle.get(l).size(); i++) {
+                if (l == h - 1) {
+                    dp[l][i] = triangle.get(l).get(i);
+                    continue;
+                }
+                dp[l][i] = triangle.get(l).get(i) + Math.min(dp[l+1][i], dp[l+1][i+1]);
             }
         }
-        return triangle.get(0).get(0);
+
+        return dp[0][0];
     }
 
     /*
-     * 解法4：DP
+     * 解法4：DP（解法3的优化版，即滚动数组）
      * - 思路：与解法3一致。
-     * - 实现：不改变 triangle 中的值，而是开辟额外的 dp 数组记录每个子问题的解。注意，dp 数组的大小不用是解法2中的 cache
-     *   那么大，只需开辟三角形最底层节点数大小，之后每层都在上面进行覆盖即可（即滚动数组）。
-     * - 时间复杂度 O(h^2)，其中 h 为三角形高度（操作数组比操作 List 更快，∴ 该解法统计性能更优）。
-     * - 空间复杂度 O(n)。
+     * - 实现：dp 数组的大小无需解法3中的那么大，只需开辟三角形最底层节点数大小，之后每层都在上面覆盖即可（即滚动数组）。
+     * - 时间复杂度 O(n) 或 O(h^2)，其中 h 为三角形高度（操作数组比操作 List 更快，∴ 该解法统计性能更优）。
+     * - 空间复杂度 O(h)。
      * */
     public static int minimumTotal4(List<List<Integer>> triangle) {
         int h = triangle.size();
@@ -194,9 +197,26 @@ public class L120_Triangle {
 
         for (int l = h - 2; l >= 0; l--)         // 从倒数第2层开始往上遍历
             for (int i = 0; i <= l; i++)         // 遍历每一层中的每个节点（∵ 每层的节点数 = 当前层的高度 ∴ i ∈ [0,l]）
-                dp[i] = Math.min(dp[i], dp[i + 1]) + triangle.get(l).get(i);  // 覆盖
+                dp[i] = triangle.get(l).get(i) + Math.min(dp[i], dp[i + 1]);  // 覆盖
 
         return dp[0];
+    }
+
+    /*
+     * 解法5：In-place DP
+     * - 思路：与解法3一致。
+     * - 实现：不另开空间，而是直接在 triangle 上覆盖。
+     * - 时间复杂度 O(n) 或 O(h^2)，其中 h 为三角形高度，空间复杂度 O(1)。
+     * */
+    public static int minimumTotal5(List<List<Integer>> triangle) {
+        for (int l = triangle.size() - 2; l >= 0; l--) {  // 从倒数第2层开始往上遍历
+            List<Integer> level = triangle.get(l);
+            List<Integer> levelBelow = triangle.get(l + 1);
+
+            for (int i = 0; i <= l; i++)  // 遍历一层中的节点（全等三角形每层的节点个数等于层高 ∴ 第 l 层共有 l 个节点）
+                level.set(i, level.get(i) + Math.min(levelBelow.get(i), levelBelow.get(i + 1)));
+        }
+        return triangle.get(0).get(0);
     }
 
     public static void main(String[] args) {
@@ -205,13 +225,13 @@ public class L120_Triangle {
               Arrays.asList(3, 4),
              Arrays.asList(6, 5, 7),
             Arrays.asList(4, 1, 8, 3)
-        )));  // expects 11 (2 + 3 + 5 + 1)
+        )));  // expects 11. (2 + 3 + 5 + 1)
 
         log(minimumTotal4(List.of(
                Arrays.asList(-1),
               Arrays.asList(2, 3),
             Arrays.asList(1, -1, -3)
-        )));  // expects -1 (-1 + 3 + -3) 注意不是从每行中找到最小值就行
+        )));  // expects -1. (-1 + 3 + -3) 注意不是从每行中找到最小值就行
 
         log(minimumTotal4(List.of(
             Arrays.asList(-10)
