@@ -7,7 +7,7 @@ import static Utils.Helpers.log;
 /*
  * Climbing Stairs
  *
- * - You are climbing a stair case. It takes n steps to reach to the top. Each time you can either climb
+ * - You are climbing a staircase. It takes n steps to reach to the top. Each time you can either climb
  *   1 or 2 steps. In how many distinct ways can you climb to the top? Note: n > 0.
  * */
 
@@ -19,8 +19,8 @@ public class L70_ClimbingStairs {
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int climbStairs_1(int n) {
-        int numOfPath = 0;
-        if (n <= 0) return numOfPath;
+        int pathCount = 0;
+        if (n <= 0) return pathCount;
 
         Queue<Integer> q = new LinkedList<>();
         q.offer(0);
@@ -29,7 +29,7 @@ public class L70_ClimbingStairs {
             int step = q.poll();
 
             if (step == n) {
-                numOfPath++;
+                pathCount++;
                 continue;
             }
 
@@ -37,7 +37,7 @@ public class L70_ClimbingStairs {
             if (step + 2 <= n) q.offer(step + 2);
         }
 
-        return numOfPath;
+        return pathCount;
     }
 
     /*
@@ -91,9 +91,9 @@ public class L70_ClimbingStairs {
 
     private static int helper_3(int i, int n) {
         if (i == n) return 1;
-        int numOfPath = helper_3(i + 1, n);
-        if (i + 2 <= n) numOfPath += helper_3(i + 2, n);
-        return numOfPath;
+        int pathCount = helper_3(i + 1, n);
+        if (i + 2 <= n) pathCount += helper_3(i + 2, n);
+        return pathCount;
     }
 
     /*
@@ -115,16 +115,16 @@ public class L70_ClimbingStairs {
      * - 实现：在超时解4的基础上加入 L509 解法1的 Memoization 进行优化。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int climbStairs1(int n) {
+    public static int climbStairs(int n) {
         int[] cache = new int[n + 1];
-        return helper1(n, cache);
+        return dfs(n, cache);
     }
 
-    private static int helper1(int n, int[] cache) {
+    private static int dfs(int n, int[] cache) {
         if (n == 0) return 1;
         if (n < 0) return 0;
         if (cache[n] != 0) return cache[n];
-        return cache[n] = helper1(n - 1, cache) + helper1(n - 2, cache);
+        return cache[n] = dfs(n - 1, cache) + dfs(n - 2, cache);
     }
 
     /*
@@ -157,7 +157,7 @@ public class L70_ClimbingStairs {
     public static int climbStairs3(int n) {
         if (n <= 0) return 0;
 
-        // 提前创建好 graph（邻接表，如解法1思路中的图）
+        // 1. 先构建 graph（邻接表，如解法1思路中的图）
         List<List<Integer>> graph = new ArrayList<>(n);
         for (int i = 0; i < n; i++)
             graph.add(new ArrayList<>());
@@ -167,21 +167,21 @@ public class L70_ClimbingStairs {
             if (i + 2 <= n) graph.get(i).add(i + 2);
         }
 
-        // 开始 DFS
+        // 2. 基于 graph 进行 DFS
         int[] cache = new int[n];
         Arrays.fill(cache, -1);
-        return dfs(graph, 0, n, cache);
+        return dfs3(graph, 0, n, cache);
     }
 
-    private static int dfs(List<List<Integer>> graph, int i, int n, int[] cache) {
+    private static int dfs3(List<List<Integer>> graph, int i, int n, int[] cache) {
         if (i == n) return 1;
         if (cache[i] != -1) return cache[i];
 
-        int numOfPath = 0;
+        int pathCount = 0;
         for (int adj : graph.get(i))
-            numOfPath += dfs(graph, adj, n, cache);
+            pathCount += dfs3(graph, adj, n, cache);
 
-        return cache[i] = numOfPath;
+        return cache[i] = pathCount;
     }
 
     /*
@@ -193,18 +193,18 @@ public class L70_ClimbingStairs {
         if (n <= 0) return 0;
         int[] cache = new int[n];
         Arrays.fill(cache, -1);
-        return dfs(0, n, cache);
+        return dfs4(0, n, cache);
     }
 
-    private static int dfs(int i, int n, int[] cache) {
+    private static int dfs4(int i, int n, int[] cache) {
         if (i == n) return 1;
         if (cache[i] != -1) return cache[i];
 
-        int numOfPath = 0;
-        for (int step = 1; step <= 2 && i + step <= n; step++)  // 相邻的两个顶点的值不能相差超过2，且顶点值不能超过 n
-            numOfPath += dfs(i + step, n, cache);
+        int pathCount = 0;
+        if (i + 1 <= n) pathCount += dfs4(i + 1, n, cache);
+        if (i + 2 <= n) pathCount += dfs4(i + 2, n, cache);
 
-        return cache[i] = numOfPath;
+        return cache[i] = pathCount;
     }
 
     public static void main(String[] args) {
