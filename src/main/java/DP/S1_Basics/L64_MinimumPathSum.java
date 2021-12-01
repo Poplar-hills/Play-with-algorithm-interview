@@ -33,9 +33,9 @@ public class L64_MinimumPathSum {
      * */
     static class Path {
         final int r, c, sum;
-        public Path(int row, int col, int sum) {
-            this.r = row;
-            this.c = col;
+        public Path(int r, int c, int sum) {
+            this.r = r;
+            this.c = c;
             this.sum = sum;
         }
     }
@@ -177,7 +177,7 @@ public class L64_MinimumPathSum {
      *   节点的解 f(r+1, c)、f(r, c+1) 之上的 ∴ 可以很自然的使用递归求解 —— 这是自上而下的递推过程。而 DP 的思路与此是一致的，
      *   使用的递推表达式也一样，只是递推过程是自下而上，即从终点 f(w-1, l-1) 开始，递推出 f(w-2, l-1)、f(w-1, l-2)，再递推
      *   出 f(w-2, l-2)…… 如此往复直到递推出 f(0, 0) 为止。
-     * - 优化：该解法还可以再进行空间优化 —— ∵ 每一行的计算都只依赖于当前行右侧和下一行中的值 ∴ 可以采用类似 _ZeroOneKnapsack
+     * - 优化：该解法还可以再进行空间优化 —— ∵ 每行的计算都只依赖于当前行右侧和下一行中的值 ∴ 可以采用类似 _ZeroOneKnapsack
      *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -193,8 +193,8 @@ public class L64_MinimumPathSum {
 
         dp[m - 1][n - 1] = grid[m - 1][n - 1];  // 设置递推的起始值
 
-        for (int r = m - 1; r >= 0; r--) {
-            for (int c = n - 1; c >= 0; c--) {  // 从终点 [m-1,n-1] 开始遍历，往左、往上进行递推
+        for (int r = m - 1; r >= 0; r--) {      // 从终点 [m-1,n-1] 开始往左、往上进行递推
+            for (int c = n - 1; c >= 0; c--) {
                 if (r != m - 1)
                     dp[r][c] = Math.min(dp[r][c], grid[r][c] + dp[r + 1][c]);
                 if (c != n - 1)
