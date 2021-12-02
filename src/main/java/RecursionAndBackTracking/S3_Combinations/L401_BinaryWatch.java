@@ -52,15 +52,15 @@ public class L401_BinaryWatch {
     public static List<String> readBinaryWatch(int num) {
         List<String> res = new ArrayList<>();
         for (int n = 0; n <= num; n++) {  // n ∈ [0,num] 例如 num=2，则可以从小时数中取0个、1个或2个
-            List<Integer> hourChoices = select(hours, n, 12);
-            List<Integer> minChoices = select(minutes, num - n, 60);
+            List<Integer> hourChoices = selectToSum(hours, n, 12);
+            List<Integer> minChoices = selectToSum(minutes, num - n, 60);
             combine(hourChoices, minChoices, res);
         }
         return res;
     }
 
-    private static List<Integer> select(int[] nums, int n, int max) {  // 从 nums 中选出 n 个数来求和，且和要 < max
-        List<Integer> res = new ArrayList<>();                         // 复杂度为 O(C(len(nums), n))
+    private static List<Integer> selectToSum(int[] nums, int n, int max) {  // 从 nums 中选出 n 个数来求和，且和要 < max
+        List<Integer> res = new ArrayList<>();                              // 复杂度为 O(C(len(nums), n))
         backtrack(nums, n, max, 0, 0, res);
         return res;
     }
@@ -94,44 +94,6 @@ public class L401_BinaryWatch {
                 if (Integer.bitCount(i) + Integer.bitCount(j) == num)
                     res.add(String.format("%d:%02d", i, j));
         return res;
-    }
-
-
-
-    private static final int[] hours0 = new int[]{1, 2, 4, 8};
-    private static final int[] minutes0 = new int[]{1, 2, 4, 8, 16, 32};
-
-    public static List<String> readBinaryWatch0(int num) {
-        List<String> res = new ArrayList<>();
-        for (int n = 0; n <= num; n++) {
-            List<Integer> hourChoices0 = select0(hours0, n, 12);
-            List<Integer> minChoices0 = select0(minutes0, num - n, 60);
-            combine0(hourChoices0, minChoices0, res);
-        }
-        return res;
-    }
-
-    private static List<Integer> select0(int[] choices, int n, int max) {
-        List<Integer> res = new ArrayList<>();
-        backtrack0(choices, n, 0, 0, max, res);
-        return res;
-    }
-
-    private static void backtrack0(int[] choices, int n, int i, int sum, int max, List<Integer> res) {
-        if (i == n - 1) {
-            return;
-        }
-        for (int j = i; j < choices.length; j++) {
-            if (sum + choices[j] < max) {
-                res.add(choices[i]);
-            }
-        }
-    }
-
-    private static void combine0(List<Integer> hours, List<Integer> mins, List<String> res) {
-        for (int h : hours)
-            for (int m : mins)
-                res.add(h + ":" + (m < 10 ? "0" + m : m));
     }
 
     public static void main(String[] args) {
