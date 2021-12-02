@@ -28,7 +28,7 @@ public class L18_4Sum {
 
         for (int i = 0; i < n - 2; i++) {
             for (int j = i + 1; j < n - 1; j++) {
-                Set<Integer> set = new HashSet<>();
+                Set<Integer> set = new HashSet<>();  // ∵ 结果中只需保存元素而不需索引 ∴ 可用 Set 而无需使用 Map
                 for (int k = j + 1; k < n; k++) {
                     int complement = target - nums[i] - nums[j] - nums[k];
                     if (set.contains(complement))

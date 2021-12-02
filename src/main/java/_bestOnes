@@ -1,5 +1,5 @@
 
-- Array (18): S1, S2, S3 | L11, L125, L344, L345 | L3, L76, L438, L560
+- Array (18):
   - L80_RemoveDuplicatesII
   - L75_SortColors
   - L11_ContainerWithMostWater
@@ -9,7 +9,7 @@
   - L438_FindAllAnagramsInString ⭐️
   - L1763_LongestNiceSubstring ⭐️
 
-- LinkedList (22): L2, L83, L86, L92, L206, L445 | L21, L82 | L24, L25, L147 | S4 | L19, L61 | L141, L142
+- LinkedList (22):
   - L92_ReverseLinkedListII ⭐️
   - L445_AddTwoNumbersII ⭐️
   - L82_RemoveDuplicatesFromSortedListII
@@ -18,7 +18,7 @@
   - L61_RotateList ⭐️
   - L147_InsertionSortList
 
-- HashTable (20): L202, L205, L242, L290, L349, L350 | L1, L15 | L49, L149 | S4 | S5
+- HashTable (20):
   - L205_IsomorphicStrings
   - L1_TwoSum
   - L15_3Sum ⭐️
@@ -30,7 +30,7 @@
   - L451_SortCharactersByFrequency
   - L16_3SumClosest
 
-- StackAndQueue (17): S1, S2, S3, S4, S5
+- StackAndQueue (17):
   - L341_FlattenNestedListIterator ⭐️
   - L103_BinaryTreeZigzagLevelOrderTraversal
   - L107_BinaryTreeLevelOrderTraversalII
@@ -41,7 +41,7 @@
   - L126_WordLadderII ⭐️
   - L787_CheapestFlightsWithinKStops ⭐️
 
-- BinaryTreeAndRecursion (20): L100, L101, L104, L110, L111, L222 | S2 | L113, L129 | S4 | L98, L230, L235, L450
+- BinaryTreeAndRecursion (20):
   - L101_SymmetricTree
   - L104_MaximumDepthOfBinaryTree
   - L110_BalancedBinaryTree ⭐️
@@ -52,7 +52,7 @@
   - L450_DeleteNodeInBST ⭐️
   - L199_BinaryTreeRightSideView
 
-- RecursionAndBackTracking (19): L17, L93 | S2 | L39, L40, L77, L78, L90, L216 | S4 | L130
+- RecursionAndBackTracking (19):
   - L46_Permutations ⭐️
   - L47_PermutationsII ⭐️
   - L39_CombinationSum ⭐️
@@ -60,7 +60,7 @@
   - L79_WordSearch ⭐️
   - L130_SurroundedRegions ⭐️
 
-- Greedy (3): S1
+- Greedy (3):
   - L455_AssignCookies
 
 - DP (29): L64, L509, L64, L70, L120
