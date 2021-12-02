@@ -13,12 +13,15 @@ import static Utils.Helpers.*;
 public class L147_InsertionSortList {
     /*
      * 解法1：遍历
-     * - 思路：插入排序的核心是在当前元素之前找到合适的位置插入，而 ∵ 当前元素之前都是已经有序的 ∴ 只要遍历这些元素找到适合的
-     *   插入点即可。
+     * - 思路：插入排序的核心是当发现后一个元素 < 前一个元素时，将后一个元素往前移动，直到前一个元素不再小于它时停止移动并插入进去。
      * - 实现：
      *   1. 在标准的排序算法中，遍历是从后往前逐个比较的，但 ∵ 链表中无法从下一节点回到上一节点 ∴ 可采用从前往后遍历；
      *   2. ∵ 插入位置可能是头结点 ∴ 需要创建虚拟头结点；
-     *   3. 虚拟头结点不需要链接到 head 上 ∵ 会不断在它后面链接节点。
+     *           4 -> 2 -> 1 -> 3
+     *      D -> 4
+     *      D -> 2 -> 4
+     *      D -> 1 -> 2 -> 4
+     *      D -> 1 -> 2 -> 3 -> 4
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
     public static ListNode insertionSortList(ListNode head) {
@@ -26,7 +29,7 @@ public class L147_InsertionSortList {
         ListNode curr = head;
 
         while (curr != null) {
-            ListNode pos = dummyHead;       // 从头开始遍历，让 pos 停在最后一个 < curr 的节点上
+            ListNode pos = dummyHead;       // 每次从头开始遍历，让 pos 停在最后一个 < curr 的节点上
             while (pos.next != null && pos.next.val < curr.val)
                 pos = pos.next;
 
