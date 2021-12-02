@@ -29,8 +29,8 @@ public class L401_BinaryWatch {
     /*
      * 解法1：Recursion + Backtracking
      * - 💎 思路：该题是一个组合问题，根据题意可将题目抽象成以下问题：
-     *     1. 从 hours 部分中选出 n 个数字，并使它们的和 ∈ [0, 12)（注意 ∵ 是12小时制 ∴ 不会有12:00，只有0:00）；
-     *     2. 从 minutes 部分中选出 num - n 个数字，并使它们的和 ∈ [0, 60)；
+     *     1. 从 hours 部分中选出 n 个数字来求和，且和 ∈ [0, 12)（注意 ∵ 是12小时制 ∴ 不会有12:00，只有0:00）；
+     *     2. 从 minutes 部分中选出 num - n 个数字来求和，且和 ∈ [0, 60)；
      *     3. 最后的结果集是选出的 n 个小时数和 m 个分钟数的组合。
      *   其中，1、2本质上是同一个问题，即“从 x 个元素中选出不重复的 y 个，一共有几种方式？”，该问题可以使用回溯法：
      *   例如要从表的 hours 部分中选取数字：
@@ -42,7 +42,7 @@ public class L401_BinaryWatch {
      *          1|     1|
      *          11      7                  - 选取3个数字时的解为 [11,7]（最多也只能选取3个数 ∵ 选取4个会 > 12）
      *
-     * - 👉 经验：本题是一道综合型题目，看上去复杂，但进过抽象和分解后就会容易很多 ∴ 关键是👆思路中的抽象思考。
+     * - 👉 经验：本题是一道综合型题目，看上去复杂，但进过抽象和分解后就会容易很多 ∴ 关键是👆思路中的抽象过程。
      * - 时间复杂度 O(num * (C(4,n) + C(6,n) + n^2))，空间复杂度 O(num)。
      * */
 
@@ -59,7 +59,7 @@ public class L401_BinaryWatch {
         return res;
     }
 
-    private static List<Integer> select(int[] nums, int n, int max) {  // 从 nums 中选出 n 个数，且和要 < max
+    private static List<Integer> select(int[] nums, int n, int max) {  // 从 nums 中选出 n 个数来求和，且和要 < max
         List<Integer> res = new ArrayList<>();                         // 复杂度为 O(C(len(nums), n))
         backtrack(nums, n, max, 0, 0, res);
         return res;
@@ -67,7 +67,7 @@ public class L401_BinaryWatch {
 
     private static void backtrack(int[] nums, int n, int max, int i, int sum, List<Integer> res) {
         if (n == 0) {
-            res.add(sum);
+            res.add(sum);  // ∵ 最后要放到 res 里的是选出的 n 个数字的和，而非各个数字 ∴ 只需在 n=0 时 res.add 即可
             return;
         }
         for (int j = i; j < nums.length; j++)  // ∵ 要不重复地选取 ∴ j 要从 i 开始，并且进入下层递归时要 j+1
@@ -94,6 +94,44 @@ public class L401_BinaryWatch {
                 if (Integer.bitCount(i) + Integer.bitCount(j) == num)
                     res.add(String.format("%d:%02d", i, j));
         return res;
+    }
+
+
+
+    private static final int[] hours0 = new int[]{1, 2, 4, 8};
+    private static final int[] minutes0 = new int[]{1, 2, 4, 8, 16, 32};
+
+    public static List<String> readBinaryWatch0(int num) {
+        List<String> res = new ArrayList<>();
+        for (int n = 0; n <= num; n++) {
+            List<Integer> hourChoices0 = select0(hours0, n, 12);
+            List<Integer> minChoices0 = select0(minutes0, num - n, 60);
+            combine0(hourChoices0, minChoices0, res);
+        }
+        return res;
+    }
+
+    private static List<Integer> select0(int[] choices, int n, int max) {
+        List<Integer> res = new ArrayList<>();
+        backtrack0(choices, n, 0, 0, max, res);
+        return res;
+    }
+
+    private static void backtrack0(int[] choices, int n, int i, int sum, int max, List<Integer> res) {
+        if (i == n - 1) {
+            return;
+        }
+        for (int j = i; j < choices.length; j++) {
+            if (sum + choices[j] < max) {
+                res.add(choices[i]);
+            }
+        }
+    }
+
+    private static void combine0(List<Integer> hours, List<Integer> mins, List<String> res) {
+        for (int h : hours)
+            for (int m : mins)
+                res.add(h + ":" + (m < 10 ? "0" + m : m));
     }
 
     public static void main(String[] args) {
