@@ -103,11 +103,40 @@ public class L18_4Sum {
         return res;
     }
 
+    public static List<List<Integer>> fourSum4(int[] nums, int target) {
+        if (nums == null || nums.length < 4) return new ArrayList<>();
+        int n = nums.length;
+
+        Arrays.sort(nums);
+
+        Set<List<Integer>> set = new HashSet<>();
+        for (int i = 0; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    int complement = target - nums[i] - nums[j] - nums[k];
+                    int idx = binarySearch(nums, k + 1, nums.length - 1, complement);
+                    if (idx >= 0)
+                        set.add(Arrays.asList(nums[i], nums[j], nums[k], nums[idx]));
+                }
+            }
+        }
+
+        return new ArrayList<>(set);
+    }
+
+    private static int binarySearch(int[] nums, int l, int r, int target) {
+        if (l > r) return -1;
+        int mid = (r - l) / 2 + l;
+        if (target < nums[mid]) return binarySearch(nums, l, mid - 1, target);
+        if (target > nums[mid]) return binarySearch(nums, mid + 1, r, target);
+        return mid;
+    }
+
     public static void main(String[] args) {
-        log(fourSum2(new int[] {1, 0, -1, 0, -2, 2}, 0));
+        log(fourSum4(new int[] {1, 0, -1, 0, -2, 2}, 0));
         // expects [[-1,0,0,1], [-2,-1,1,2], [-2,0,0,2]]
 
-        log(fourSum2(new int[] {-1, 0, -5, -2, -2, -4, 0, 1, -2}, -9));
+        log(fourSum4(new int[] {-1, 0, -5, -2, -2, -4, 0, 1, -2}, -9));
         // expects [[-5,-4,-1,1], [-5,-4,0,0], [-5,-2,-2,0], [-4,-2,-2,-1]]
     }
 }

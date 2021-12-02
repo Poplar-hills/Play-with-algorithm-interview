@@ -26,18 +26,18 @@ public class L167_TwoSumII {
     public static int[] twoSum(int[] nums, int target) {
         for (int i = 0; i < nums.length; i++) {
             int complement = target - nums[i];
-            int p = binarySearch(nums, complement, i + 1, nums.length - 1);  // 在 nums(i..] 中进行查找
+            int p = binarySearch(nums, i + 1, nums.length - 1, complement);  // 在 nums(i..] 中进行查找
             if (p != -1)
                 return new int[]{i + 1, p + 1};
         }
         return null;
     }
 
-    private static int binarySearch(int[] nums, int e, int l, int r) {
+    private static int binarySearch(int[] nums, int l, int r, int target) {
         if (l > r) return -1;
         int mid = (r - l) / 2 + l;
-        if (e < nums[mid]) return binarySearch(nums, e, l, mid - 1);
-        if (e > nums[mid]) return binarySearch(nums, e, mid + 1, r);
+        if (target < nums[mid]) return binarySearch(nums, l, mid - 1, target);
+        if (target > nums[mid]) return binarySearch(nums, mid + 1, r, target);
         return mid;
     }
 
