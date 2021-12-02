@@ -9,13 +9,14 @@
   - L438_FindAllAnagramsInString ⭐️
   - L1763_LongestNiceSubstring ⭐️
 
-- LinkedList (22): L2, L83, L86, L92, L206, L445 | L21, L82 | L24, L25 | S4 | L19, L61 | L141, L142
+- LinkedList (22): L2, L83, L86, L92, L206, L445 | L21, L82 | L24, L25, L147 | S4 | L19, L61 | L141, L142
   - L92_ReverseLinkedListII ⭐️
   - L445_AddTwoNumbersII ⭐️
   - L82_RemoveDuplicatesFromSortedListII
   - L24_SwapNodesInPairs ⭐️
   - L25_ReverseNodesInKGroup ⭐️
   - L61_RotateList ⭐️
+  - L147_InsertionSortList
 
 - HashTable (20): L202, L205, L242, L290, L349, L350 | L1, L15 | L49, L149 | S4 | S5
   - L205_IsomorphicStrings
