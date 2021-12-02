@@ -58,21 +58,22 @@ public class L147_InsertionSortList {
      * */
     public static ListNode insertionSortList2(ListNode head) {
         if (head == null || head.next == null) return head;
+        ListNode returned = insertionSortList2(head.next);
 
-        ListNode list = insertionSortList2(head.next);
-        if (head.val <= list.val) {
-            head.next = list;
+        // insert head into the returned list
+        if (head.val <= returned.val) {
+            head.next = returned;
             return head;
         }
 
-        ListNode pos = list;
-        while (pos.next != null && pos.next.val < head.val)  // 让 pos 走到插入位置的前一个节点
+        ListNode pos = returned;
+        while (pos.next != null && head.val > pos.next.val)  // 让 pos 停止插入点的上一个节点
             pos = pos.next;
 
         head.next = pos.next;  // 将 head 插入到 pos 后面
         pos.next = head;
 
-        return list;
+        return returned;
     }
 
     public static void main(String[] args) {
