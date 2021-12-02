@@ -26,16 +26,15 @@ public class L18_4Sum {
 
         Arrays.sort(nums);
 
-        Set<Integer> set = new HashSet<>();
         for (int i = 0; i < n - 2; i++) {
             for (int j = i + 1; j < n - 1; j++) {
+                Set<Integer> set = new HashSet<>();
                 for (int k = j + 1; k < n; k++) {
                     int complement = target - nums[i] - nums[j] - nums[k];
                     if (set.contains(complement))
                         resSet.add(Arrays.asList(nums[i], nums[j], nums[k], complement));
                     set.add(nums[k]);
                 }
-                set.clear();
             }
         }
 
