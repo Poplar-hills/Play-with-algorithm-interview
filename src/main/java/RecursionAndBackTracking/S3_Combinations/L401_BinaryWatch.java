@@ -15,20 +15,20 @@ import java.util.List;
  *                | 8  4  2  1 | 32  16  8  4  2  1 |
  *                |       *  * |      *  *        * |
  *                +------------+--------------------+
- *   Given a non-negative integer n which represents the number of LEDs that are currently on, return all
+ *   Given a non-negative integer num which represents the number of LEDs that are currently on, return all
  *   possible times the watch could represent.
  *
  * - Note:
  *   1. The order of output does not matter.
  *   2. The hour must not contain a leading zero, for example "01:00" is not valid, it should be "1:00".
- *   3. The minute must be consist of two digits and may contain a leading zero, for example "10:2" is not
- *      valid, it should be "10:02".
+ *   3. The minute must consist of two digits and may contain a leading zero, for example "10:2" is not valid,
+ *      it should be "10:02".
  * */
 
 public class L401_BinaryWatch {
     /*
      * 解法1：Recursion + Backtracking
-     * - 思路：该题是一个组合问题，根据题意可知该问题可分解为以下子问题：
+     * - 💎 思路：该题是一个组合问题，根据题意可将题目抽象成以下问题：
      *     1. 从 hours 部分中选出 n 个数字，并使它们的和 ∈ [0, 12)（注意 ∵ 是12小时制 ∴ 不会有12:00，只有0:00）；
      *     2. 从 minutes 部分中选出 num - n 个数字，并使它们的和 ∈ [0, 60)；
      *     3. 最后的结果集是选出的 n 个小时数和 m 个分钟数的组合。
@@ -42,23 +42,24 @@ public class L401_BinaryWatch {
      *          1|     1|
      *          11      7                  - 选取3个数字时的解为 [11,7]（最多也只能选取3个数 ∵ 选取4个会 > 12）
      *
+     * - 👉 经验：本题是一道综合型题目，看上去复杂，但进过抽象和分解后就会容易很多 ∴ 关键是👆思路中的抽象思考。
      * - 时间复杂度 O(num * (C(4,n) + C(6,n) + n^2))，空间复杂度 O(num)。
      * */
 
-    final static int[] hours = {8, 4, 2, 1};
-    final static int[] minutes = {32, 16, 8, 4, 2, 1};
+    private final static int[] hours = {8, 4, 2, 1};
+    private final static int[] minutes = {32, 16, 8, 4, 2, 1};
 
     public static List<String> readBinaryWatch(int num) {
         List<String> res = new ArrayList<>();
-        for (int i = 0; i <= num; i++) {       // i ∈ [0,num] 例如 num=2，则可以从小时数中取0个、1个或2个
-            List<Integer> hourStrs = select(hours, i, 12);
-            List<Integer> minuteStrs = select(minutes, num - i, 60);
-            combine(hourStrs, minuteStrs, res);
+        for (int n = 0; n <= num; n++) {  // n ∈ [0,num] 例如 num=2，则可以从小时数中取0个、1个或2个
+            List<Integer> hourChoices = select(hours, n, 12);
+            List<Integer> minChoices = select(minutes, num - n, 60);
+            combine(hourChoices, minChoices, res);
         }
         return res;
     }
 
-    private static List<Integer> select(int[] nums, int n, int max) {  // 从 nums 中选出 n 个数，且数值要 < max
+    private static List<Integer> select(int[] nums, int n, int max) {  // 从 nums 中选出 n 个数，且和要 < max
         List<Integer> res = new ArrayList<>();                         // 复杂度为 O(C(len(nums), n))
         backtrack(nums, n, max, 0, 0, res);
         return res;
@@ -69,7 +70,7 @@ public class L401_BinaryWatch {
             res.add(sum);
             return;
         }
-        for (int j = i; j < nums.length; j++)
+        for (int j = i; j < nums.length; j++)  // ∵ 要不重复地选取 ∴ j 要从 i 开始，并且进入下层递归时要 j+1
             if (sum + nums[j] < max)
                 backtrack(nums, n - 1, max, j + 1, sum + nums[j], res);
     }
@@ -82,8 +83,8 @@ public class L401_BinaryWatch {
 
     /*
      * 解法2：Iteration
-     * - 思路：// TODO: ???。
-     * - 语言：Integer.bitCount(i) 返回整型 i 的二进制表示中1的个数。
+     * - 思路：类似 TwoSum 的思路。
+     * - 实现：Integer.bitCount(i) 返回整型 i 的二进制表示中1的个数。
      * - 时间复杂度 O(12 * 60)，空间复杂度 O(1)。
      * */
     public static List<String> readBinaryWatch2(int num) {
