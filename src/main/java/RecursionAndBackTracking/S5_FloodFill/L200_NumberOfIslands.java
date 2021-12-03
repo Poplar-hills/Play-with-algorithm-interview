@@ -102,10 +102,10 @@ public class L200_NumberOfIslands {
         return count;
     }
 
-    private static void floodFill2(char[][] grid, int intiR, int initC) {
-        grid[intiR][initC] = '0';             // ∵ 后面只会将相邻的格子置'0' ∴ 这里要先将起始格子置'0'
+    private static void floodFill2(char[][] grid, int r, int c) {
         Queue<int[]> q = new LinkedList<>();
-        q.offer(new int[]{intiR, initC});
+        q.offer(new int[]{r, c});
+        grid[r][c] = '0';      // ∵ 后面只会将相邻的格子置'0' ∴ 这里要先将起始格子置'0'
 
         while (!q.isEmpty()) {
             int[] pair = q.poll();
@@ -113,7 +113,7 @@ public class L200_NumberOfIslands {
                 int newR = pair[0] + d[0], newC = pair[1] + d[1];
                 if (isValidPos(newR, newC) && grid[newR][newC] == '1') {
                     q.offer(new int[]{newR, newC});
-                    grid[newR][newC] = '0';    // 先将四周相邻的格子入队，而不是马上访问（BFS 与 DFS 的关键区别）
+                    grid[newR][newC] = '0';  // 先将四周相邻的格子入队，而不是马上访问（BFS 与 DFS 的关键区别）
                 }
             }
         }
@@ -188,28 +188,65 @@ public class L200_NumberOfIslands {
         }
     }
 
+
+
+    private static final int[][] directions0 = {{0,-1}, {1,0}, {0,1}, {-1,0}};
+    private static int m0, n0;
+
+    public static int numIslands0(char[][] grid) {
+        m0 = grid.length;
+        n0 = grid[0].length;
+        boolean[][] visited = new boolean[m0][n0];
+        int count = 0;
+
+        for (int r = 0; r < m0; r++) {
+            for (int c = 0; c < n0; c++) {
+                if (grid[r][c] == '1' && !visited[r][c]) {
+                    count++;
+                    floodFill0(grid, r, c, visited);
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private static void floodFill0(char[][] grid, int r, int c, boolean[][] visited) {
+        visited[r][c] = true;
+        for (int[] d : directions) {
+            int newR = r + d[0], newC = c + d[1];
+            if (isValidPos0(newR, newC) && grid[newR][newC] == '1' && !visited[newR][newC]) {
+                floodFill0(grid, newR, newC, visited);
+            }
+        }
+    }
+
+    private static boolean isValidPos0(int r, int c) {
+        return r >= 0 && r < m0 && c >=0 && c < n0;
+    }
+
     public static void main(String[] args) {
-        log(numIslands3(new char[][] {  // expects 3
+        log(numIslands0(new char[][] {  // expects 3
             {'1', '1', '0', '0', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '1', '0', '0'},
             {'0', '0', '0', '1', '1'},
         }));
 
-        log(numIslands3(new char[][] {  // expects 1
+        log(numIslands0(new char[][] {  // expects 1
             {'1', '1', '1', '1', '0'},
             {'1', '1', '0', '1', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '0', '0', '0'},
         }));
 
-        log(numIslands3(new char[][] {  // expects 2
+        log(numIslands0(new char[][] {  // expects 2
             {'0', '0', '0'},
             {'0', '1', '1'},
             {'1', '0', '0'},
         }));
 
-        log(numIslands3(new char[][] {  // expects 1
+        log(numIslands0(new char[][] {  // expects 1
             {'1'},
         }));
     }
