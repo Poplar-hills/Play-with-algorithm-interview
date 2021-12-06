@@ -27,16 +27,17 @@ public class L91_DecodeWays {
      *       2. 以0开头的字符串无法解码：f("0...") = 0。
      *   则整个解码过程就可以用递归的方式进行：
      *               f("102213")                            5
-     *                ↙       ↘                           ↗   ↖
+     *               1↙       10↘                         ↗   ↖
      *          f("02213")   f("2213")                  0       5
-     *                       ↙       ↘                        ↗   ↖
+     *                      2↙       22↘                      ↗   ↖
      *                f("213")       f("13")                3       2
-     *                 ↙    ↘         ↙    ↘              ↗   ↖   ↗   ↖
+     *                2↙   21↘       1↙   13↘             ↗   ↖   ↗   ↖
      *           f("13")   f("3")  f("3")  f("")         2    1   1    1
-     *           ↙    ↘       ↓       ↓                ↗  ↖   ↑   ↑
+     *          1↙   13↘     3↓      3↓                ↗  ↖   ↑   ↑
      *       f("3")  f("")  f("")   f("")             1    1  1   1
-     *         ↓                                      ↑
+     *        3↓                                      ↑
      *       f("")                                    1
+     * - 💎 经验：DFS、DP 类的题目要先写出递推表达式，非常有助于代码实现，这不不要偷懒。
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int numDecodings_1(String s) {
@@ -45,8 +46,8 @@ public class L91_DecodeWays {
     }
 
     private static int dfs_1(String s, int i) {  // 索引 i 指向本次递归中最后一个要解码的字符
-        if (i == s.length()) return 1;            // f("") 的情况
-        if (s.charAt(i) == '0') return 0;         // f("0...") 的情况
+        if (i == s.length()) return 1;           // f("") 的情况
+        if (s.charAt(i) == '0') return 0;        // f("0...") 的情况
 
         int count = dfs_1(s, i + 1);
         if (i + 2 <= s.length() && Integer.parseInt(s.substring(i, i + 2)) <= 26)
@@ -63,13 +64,13 @@ public class L91_DecodeWays {
     public static int numDecodings(String s) {
         if (s == null || s.length() == 0) return 0;
         int[] cache = new int[s.length()];
-        Arrays.fill(cache, -1);    // ∵ 计算结果可能为0，所以要初始化为-1
+        Arrays.fill(cache, -1);         // ∵ 计算结果可能为0，所以要初始化为-1
         return dfs(s, 0, cache);
     }
 
     public static int dfs(String s, int i, int[] cache) {
-        if (i == s.length()) return 1;
-        if (s.charAt(i) == '0') return 0;
+        if (i == s.length()) return 1;     // f("") 的情况
+        if (s.charAt(i) == '0') return 0;  // f("0...") 的情况
         if (cache[i] != -1) return cache[i];
 
         int count = dfs(s, i + 1, cache);
