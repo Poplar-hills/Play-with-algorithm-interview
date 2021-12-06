@@ -8,7 +8,7 @@ import java.util.Queue;
 /*
  * Unique Paths
  *
- * - A robot is located at the top-left corner of a m x n grid (m 行 n 列). The robot can only move either
+ * - A robot is located in the top-left corner of a m x n grid (m 行 n 列). The robot can only move either
  *   down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid.
  *   How many possible unique paths are there?
  *
@@ -24,8 +24,8 @@ public class L62_UniquePaths {
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)，n 为节点个数。
      * */
     public static int uniquePaths_1(int m, int n) {
-        int numOfPath = 0;
-        if (m == 0 || n == 0) return numOfPath;
+        int pathCount = 0;
+        if (m == 0 || n == 0) return pathCount;
 
         Queue<int[]> q = new LinkedList<>();
         q.offer(new int[]{0, 0});
@@ -35,7 +35,7 @@ public class L62_UniquePaths {
             int r = pos[0], c = pos[1];
 
             if (r == m - 1 && c == n - 1) {
-                numOfPath++;
+                pathCount++;
                 continue;
             }
 
@@ -43,7 +43,7 @@ public class L62_UniquePaths {
             if (c + 1 < n) q.offer(new int[]{r, c + 1});
         }
 
-        return numOfPath;
+        return pathCount;
     }
 
     /*
@@ -58,13 +58,13 @@ public class L62_UniquePaths {
      * */
     public static int uniquePaths_2(int m, int n) {
         if (m == 0 || n == 0) return 0;
-        return helper_2(m, n, 0, 0);
+        return dfs_2(m, n, 0, 0);
     }
 
-    private static int helper_2(int m, int n, int r, int c) {
+    private static int dfs_2(int m, int n, int r, int c) {
         if (r == m || c == n) return 0;
         if (r == m - 1 && c == n - 1) return 1;
-        return helper_2(m, n, r + 1, c) + helper_2(m, n, r, c + 1);
+        return dfs_2(m, n, r + 1, c) + dfs_2(m, n, r, c + 1);
     }
 
     /*
@@ -78,21 +78,20 @@ public class L62_UniquePaths {
      *   所有有两个箭头指向的格子，如 f(1,1)、f(1,2)、f(2,1)、f(2,2) 会被重复计算2次 ∴ 可以使用 Memoization 进行优化。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
-    public static int uniquePaths1(int m, int n) {
+    public static int uniquePaths(int m, int n) {
         if (m == 0 || n == 0) return 0;
-        int[][] cache = new int[m][n];
-        return helper1(m, n, 0, 0, cache);
+        return dfs(m, n, 0, 0, new int[m][n]);
     }
 
-    private static int helper1(int m, int n, int r, int c, int[][] cache) {
+    private static int dfs(int m, int n, int r, int c, int[][] cache) {
         if (r == m - 1 && c == n - 1) return 1;
         if (cache[r][c] != 0) return cache[r][c];
 
-        int res = 0;
-        if (r != m - 1) res += helper1(m, n, r + 1, c, cache);
-        if (c != n - 1) res += helper1(m, n, r, c + 1, cache);
+        int pathCount = 0;
+        if (r != m - 1) pathCount += dfs(m, n, r + 1, c, cache);
+        if (c != n - 1) pathCount += dfs(m, n, r, c + 1, cache);
 
-        return cache[r][c] = res;
+        return cache[r][c] = pathCount;
     }
 
     /*
@@ -110,10 +109,8 @@ public class L62_UniquePaths {
 
         for (int r = m - 1; r >= 0; r--) {
             for (int c = n - 1; c >= 0; c--) {
-                if (r != m - 1)
-                    dp[r][c] += dp[r+1][c];
-                if (c != n - 1)
-                    dp[r][c] += dp[r][c+1];
+                if (r != m - 1) dp[r][c] += dp[r + 1][c];
+                if (c != n - 1) dp[r][c] += dp[r][c + 1];
             }
         }
 
@@ -140,10 +137,8 @@ public class L62_UniquePaths {
 
         for (int r = 0; r < m; r++) {
             for (int c = 0; c < n; c++) {
-                if (r != 0)
-                    dp[r][c] += dp[r - 1][c];
-                if (c != 0)
-                    dp[r][c] += dp[r][c - 1];
+                if (r != 0) dp[r][c] += dp[r - 1][c];
+                if (c != 0) dp[r][c] += dp[r][c - 1];
             }
         }
 
@@ -151,8 +146,8 @@ public class L62_UniquePaths {
     }
 
     /*
-     * 解法4：DP（解法2的另一种实现）
-     * - 思路：与解法2一致。
+     * 解法4：DP（解法3的另一种实现）
+     * - 思路：与解法3一致。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePaths4(int m, int n) {
@@ -201,8 +196,9 @@ public class L62_UniquePaths {
     /*
      * 解法6：DP
      * - 思路：与解法3、4、5一致。
-     * - 实现：采用 _ZeroOneKnapsack 解法4的思路再进一步优化 —— 只使用一维数组，每次对其进行覆盖。
-     * - 注意：覆盖的方向要跟递推方向相同 —— 递推是从左到右，即由 f(r-1) 推出 f(r)，覆盖是从 0 到 n 进行覆盖。
+     * - 实现：
+     *   1. 采用 _ZeroOneKnapsack 解法4的思路再进一步优化 —— 只使用一维数组，每次对其进行覆盖。
+     *   2. 覆盖的方向要跟递推方向相同 —— 递推是从左到右，即由 f(r-1) 推出 f(r)，覆盖是从 0 到 n 进行覆盖。
      * - 时间复杂度 O(m*n)，空间复杂度 O(1n)。
      * */
     public static int uniquePaths6(int m, int n) {
