@@ -5,13 +5,13 @@ import static Utils.Helpers.log;
 /*
  * Unique Paths II
  *
- * - 在 L62 的条件上，now consider if some obstacles are added to the grids. How many unique paths would there be?
+ * - 在 L62_UniquePaths 的条件上，now consider if some obstacles are added to the grids. How many unique paths would there be?
  * */
 
 public class L63_UniquePathsII {
     /*
      * 超时解：Recursion + Memoizaiton
-     * - 思路：在 L62 解法1的基础上加上对障碍物的判断条件即可。
+     * - 思路：在 L62_UniquePaths 解法1的基础上加上对障碍物的判断条件即可。
      *        ■ → ■ → ■         2 ← 1 ← 1
      *        ↓       ↓         ↑       ↑
      *        ■   □   ■   -->   1   0   1
@@ -42,14 +42,13 @@ public class L63_UniquePathsII {
 
     /*
      * 解法1：DP
-     * - 思路：在 L62 解法2的基础上加上对障碍物的判断即可。
+     * - 思路：在 L62_UniquePaths 解法2的基础上加上对障碍物的判断即可。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePathsWithObstacles1(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
-        int m = grid.length;
-        int n = grid[0].length;
+        int m = grid.length, n = grid[0].length;
         int[][] dp = new int[m][n];
         dp[m - 1][n - 1] = 1;
 
@@ -68,12 +67,37 @@ public class L63_UniquePathsII {
     }
 
     /*
-     * 解法2：DP + 一维数组
-     * - 思路：类似 L62 解法6的思路，但不同点在于 ∵ grid 中有障碍物 ∴ L62 解法4、5、6里的 "if (r==0 || c==0) dp[c] = 1;"
-     *   不再成立（∵ dp[障碍物] = 0）∴ 只能用 L62 解法3的方式实现。
-     * - 时间复杂度 O(m*n)，空间复杂度 O(n)。
+     * 解法2：DP
+     * - 思路：类似 L62_UniquePaths 解法4
+     * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int uniquePathsWithObstacles2(int[][] grid) {
+        if (grid == null || grid[0] == null) return 0;
+
+        int m = grid.length, n = grid[0].length;
+        int[][] dp = new int[m][n];
+
+        for (int r = m - 1; r >= 0; r--) {
+            for (int c = n - 1; c >= 0; c--) {
+                if (grid[r][c] == 1)
+                    dp[r][c] = 0;
+                else if (r == m - 1 || c == n - 1)
+                    dp[r][c] = 1;
+                else
+                    dp[r][c] = dp[r + 1][c] + dp[r][c + 1];
+            }
+        }
+
+        return dp[0][0];
+    }
+
+    /*
+     * 解法3：DP + 一维数组
+     * - 思路：类似 L62_UniquePaths 解法6的思路，但不同点在于 ∵ grid 中有障碍物 ∴ L62 解法4、5、6里的
+     *   "if (r==0 || c==0) dp[c] = 1;" 不再成立（∵ dp[障碍物] = 0）∴ 只能用 L62_UniquePaths 解法3的方式实现。
+     * - 时间复杂度 O(m*n)，空间复杂度 O(n)。
+     * */
+    public static int uniquePathsWithObstacles3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int m = grid.length;
