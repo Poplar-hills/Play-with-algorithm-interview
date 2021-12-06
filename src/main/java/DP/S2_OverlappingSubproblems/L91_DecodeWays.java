@@ -7,7 +7,7 @@ import java.util.Arrays;
 /*
  * Decode Ways
  *
- * - A message containing letters from A-Z is being encoded to numbers using the following mapping:
+ * - A message containing letters from A-Z is being encoded into numbers using the following mapping:
  *      'A' -> 1
  *      'B' -> 2
  *         ...
@@ -39,20 +39,20 @@ public class L91_DecodeWays {
      *       f("")                                    1
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
-    public static int numDecodings(String s) {
+    public static int numDecodings_1(String s) {
         if (s == null || s.length() == 0) return 0;
-        return helper(s, 0);
+        return dfs_1(s, 0);
     }
 
-    private static int helper(String s, int i) {  // 索引 i 指向本次递归中最后一个要解码的字符
+    private static int dfs_1(String s, int i) {  // 索引 i 指向本次递归中最后一个要解码的字符
         if (i == s.length()) return 1;            // f("") 的情况
         if (s.charAt(i) == '0') return 0;         // f("0...") 的情况
 
-        int res = helper(s, i + 1);
+        int count = dfs_1(s, i + 1);
         if (i + 2 <= s.length() && Integer.parseInt(s.substring(i, i + 2)) <= 26)
-            res += helper(s, i + 2);
+            count += dfs_1(s, i + 2);
 
-        return res;
+        return count;
     }
 
     /*
@@ -60,10 +60,10 @@ public class L91_DecodeWays {
      * - 思路：在超时解的基础上加入 Memoization 优化。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int numDecodings1(String s) {
+    public static int numDecodings(String s) {
         if (s == null || s.length() == 0) return 0;
         int[] cache = new int[s.length()];
-        Arrays.fill(cache, -1);             // ∵ 计算结果可能为0，所以要初始化为-1
+        Arrays.fill(cache, -1);    // ∵ 计算结果可能为0，所以要初始化为-1
         return dfs(s, 0, cache);
     }
 
@@ -72,11 +72,11 @@ public class L91_DecodeWays {
         if (s.charAt(i) == '0') return 0;
         if (cache[i] != -1) return cache[i];
 
-        int res = dfs(s, i + 1, cache);
-        if (i + 1 < s.length() && Integer.parseInt(s.substring(i, i + 2)) < 27)
-            res += dfs(s, i + 2, cache);
+        int count = dfs(s, i + 1, cache);
+        if (i + 1 < s.length() && Integer.parseInt(s.substring(i, i + 2)) <= 26)
+            count += dfs(s, i + 2, cache);
 
-        return cache[i] = res;
+        return cache[i] = count;
     }
 
     /*
