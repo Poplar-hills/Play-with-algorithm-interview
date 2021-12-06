@@ -15,6 +15,10 @@ import java.util.Set;
  * - Note:
  *   - The same word in the dictionary may be reused multiple times in the segmentation.
  *   - You may assume the dictionary does not contain duplicate words.
+ *
+ * - 👉 语法：Arrays.asList vs. List.of
+ *   1. Arrays.asList returns a mutable list, while List.of returns an immutable list.
+ *   2. Arrays.asList allows null elements, while List.of doesn't.
  * */
 
 public class L139_WordBreak {
@@ -27,22 +31,33 @@ public class L139_WordBreak {
      *       ×        "rs"       "s"        ×     - ca、car 存在于 wordDict 中 ∴ 继续递归截取
      *              r/  rs\      s|               - r、rs 都不存在于 wordDict 中 ∴ 终止
      *              ×     ×       ""              - 当剩余部分为""时，说明找到解了，返回 true
+     *
+     *    另一个例子，对于：s="applepenapple", wordDict["apple", "pen"] 来说：
+     *                 "applepenapple"
+     *      a/  ap/  ...  apple|    applep\  ...
+     *      x    x         "penapple"      x
+     *              p/  pe/  pen|  pena\  ...
+     *              x    x   "apple"    x
+     *                    a/ ... apple\
+     *                    x           ""
      *   ∴ 可知：
-     *     - 子问题定义：f(i) 表示“从索引 i 开始到末尾的字符串 s[i..n) 能否由 wordDict 中的单词拼接而成”；
-     *     - 递推表达式：f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
+     *     - 子问题定义：f(s,i) 表示“从索引 i 开始到末尾的字符串 s[i..n) 能否由 wordDict 中的单词拼接而成”；
+     *     - 递推表达式：f(s,i) = any(s[i..j) && f(s,j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
      * - 说明：该解法其实就是回溯搜索。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
-   public static boolean wordBreak_1(String s, List<String> wordDict) {
+    public static boolean wordBreak_1(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
-        return helper_1(s, 0, new HashSet<>(wordDict));    // 将 wordDict 转为 Set
+        return dfs_1(s, 0, new HashSet<>(wordDict));
     }
 
-    private static boolean helper_1(String s, int i, Set<String> set) {
-        if (i == s.length()) return true;           // f("") 的情况返回 true
-        for (int j = i + 1; j <= s.length(); j++)   // 注意 j 可以等于 s.length() ∵ 下面 substring 时 j 是不包含的
-            if (set.contains(s.substring(i, j)) && helper_1(s, j, set))  // 若前后两段都在 set 中，说明该问题有解
+    private static boolean dfs_1(String s, int i, Set<String> set) {
+        if (i == s.length()) return true;                           // f("") 的情况返回 true
+        for (int j = i + 1; j < s.length(); j++) {
+            String firstHalf = s.substring(i, j + 1);
+            if (set.contains(firstHalf) && dfs_1(s, j + 1, set))  // 若前后两段都在 set 中，说明找到解
                 return true;
+        }
         return false;
     }
 
@@ -62,15 +77,17 @@ public class L139_WordBreak {
     public static boolean wordBreak(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
         Boolean[] cache = new Boolean[s.length()];   // 此处使用 Boolean 而非 boolean，未计算的位置上初值为 null
-        return helper(s, 0, new HashSet<>(wordDict), cache);
+        return dfs(s, 0, new HashSet<>(wordDict), cache);
     }
 
-    private static boolean helper(String s, int i, HashSet<String> set, Boolean[] cache) {
+    private static boolean dfs(String s, int i, HashSet<String> set, Boolean[] cache) {
         if (i == s.length()) return true;
         if (cache[i] != null) return cache[i];
-        for (int j = i + 1; j <= s.length(); j++)
-            if (set.contains(s.substring(i, j)) && helper(s, j, set, cache))
+
+        for (int j = i + 1; j < s.length(); j++)
+            if (set.contains(s.substring(i, j + 1)) && dfs(s, j + 1, set, cache))
                 return cache[i] = true;
+
         return cache[i] = false;
     }
 
@@ -139,17 +156,17 @@ public class L139_WordBreak {
     public static boolean wordBreak4(String s, List<String> wordDict) {
         if (s == null || s.length() == 0) return false;
         Boolean[] cache = new Boolean[s.length()];
-        return dfs(s, 0, wordDict, cache);
+        return dfs4(s, 0, wordDict, cache);
     }
 
-    private static boolean dfs(String s, int i, List<String> wordDict, Boolean[] cache) {
+    private static boolean dfs4(String s, int i, List<String> wordDict, Boolean[] cache) {
         if (i == s.length()) return true;
         if (cache[i] != null) return cache[i];
 
         for (String word : wordDict)
-            if (s.startsWith(word, i) && dfs(s, i + word.length(), wordDict, cache))  // 若前、后两段都存在于 wordDict 中
+            if (s.startsWith(word, i) && dfs4(s, i + word.length(), wordDict, cache))  // 若前、后两段都存在于 wordDict 中
                 return cache[i] = true;
-                
+
         return cache[i] = false;
     }
 
