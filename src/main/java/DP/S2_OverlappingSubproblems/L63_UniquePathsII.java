@@ -132,8 +132,7 @@ public class L63_UniquePathsII {
     public static int uniquePathsWithObstacles4(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
-        int m = grid.length;
-        int n = grid[0].length;
+        int m = grid.length, n = grid[0].length;
         int[] dp = new int[n];
         dp[0] = 1;
 
