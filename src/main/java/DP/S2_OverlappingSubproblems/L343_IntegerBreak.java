@@ -52,12 +52,12 @@ public class L343_IntegerBreak {
      *
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
-    public static int integerBreak(int n) {
+    public static int integerBreak_1(int n) {
         if (n == 1) return 1;
 
         int maxProduct = 0;
-        for (int i = 1; i < n; i++)    // 遍历所有分割方案
-            maxProduct = maxOfN(maxProduct, i * integerBreak(n-i), i * (n-i));  // 求所有方案中的最大乘积
+        for (int i = 1; i < n; i++)  // 遍历所有分割方案，并求所有方案中的最大乘积
+            maxProduct = maxOfN(maxProduct, i * integerBreak(n - i), i * (n - i));
 
         return maxProduct;
     }
@@ -73,18 +73,18 @@ public class L343_IntegerBreak {
      * - 思路：在超时解的基础上加入 Memoization 优化。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static int integerBreak1(int n) {
+    public static int integerBreak(int n) {
         assert n > 1;                       // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >1
-        return helper1(n, new int[n + 1]);  // ∵ 正整数分解不会出现0 ∴ 最大乘积一定大于0 ∴ cache 初值为0即可
+        return dfs(n, new int[n + 1]);  // ∵ 正整数分解不会出现0 ∴ 最大乘积一定大于0 ∴ cache 初值为0即可
     }
 
-    private static int helper1(int n, int[] cache) {
+    private static int dfs(int n, int[] cache) {
         if (n == 1) return 1;
         if (cache[n] != 0) return cache[n];
 
         int maxProduct = 0;
         for (int i = 1; i < n; i++)
-            maxProduct = maxOf3(maxProduct, i*helper1(n-i, cache), i*(n-i));
+            maxProduct = maxOf3(maxProduct, i * dfs(n - i, cache), i * (n - i));
 
         return cache[n] = maxProduct;
     }
