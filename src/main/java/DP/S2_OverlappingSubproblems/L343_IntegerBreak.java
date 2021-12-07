@@ -57,7 +57,7 @@ public class L343_IntegerBreak {
 
         int maxProduct = 0;
         for (int i = 1; i < n; i++)  // 遍历所有分割方案，并求所有方案中的最大乘积
-            maxProduct = maxOfN(maxProduct, i * integerBreak(n - i), i * (n - i));
+            maxProduct = maxOfN(maxProduct, i * (n - i), i * integerBreak(n - i));
 
         return maxProduct;
     }
@@ -74,7 +74,7 @@ public class L343_IntegerBreak {
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int integerBreak(int n) {
-        assert n > 1;                       // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >1
+        assert n > 1;                   // ∵ 题中要求 n 至少分要被割成两部分 ∴ 要 >1
         return dfs(n, new int[n + 1]);  // ∵ 正整数分解不会出现0 ∴ 最大乘积一定大于0 ∴ cache 初值为0即可
     }
 
@@ -84,7 +84,7 @@ public class L343_IntegerBreak {
 
         int maxProduct = 0;
         for (int i = 1; i < n; i++)
-            maxProduct = maxOf3(maxProduct, i * dfs(n - i, cache), i * (n - i));
+            maxProduct = maxOf3(maxProduct, i * (n - i), i * dfs(n - i, cache));
 
         return cache[n] = maxProduct;
     }
@@ -96,6 +96,7 @@ public class L343_IntegerBreak {
     /*
      * 解法2：DP
      * - 思路：与 L279_PerfectSquares 解法3类似。
+     * - 👉 实现：可以看做就是解法1的迭代版，将递归翻译成外层 for 循环，将递归内的 for 循环直接搬进去作为内层 for 循环即可。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int integerBreak2(int n) {
@@ -105,7 +106,7 @@ public class L343_IntegerBreak {
 
         for (int m = 2; m <= n; m++)
             for (int i = 1; i < m; i++)  // 用不同的 i 去分割 m
-                dp[m] = maxOf3(dp[m], i*dp[m-i], i*(m-i));
+                dp[m] = maxOf3(dp[m], i * (m - i), i * dp[m - i]);
 
         return dp[n];                    // 最后返回最大问题的解
      }
