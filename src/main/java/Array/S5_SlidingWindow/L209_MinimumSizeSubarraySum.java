@@ -1,11 +1,5 @@
 package Array.S5_SlidingWindow;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Stack;
-import java.util.stream.Collectors;
-
 import static Utils.Helpers.log;
 
 /*
