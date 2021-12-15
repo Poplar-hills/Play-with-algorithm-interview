@@ -29,7 +29,10 @@ import static Utils.Helpers.log;
  *   2. 若是从单向链表尾部删除节点需要先拿到上一个节点 ∴ 要从头遍历过去才能拿到，无法满足 O(1) 的要求 ∴ 不如直接使用双向链表方便。
  *               k1     k2     k3     k4            - Map 的 keys
  *                ↓      ↓      ↓      ↓
- *      head <-> n1 <-> n2 <-> n3 <-> n4 <-> tail   - Map 的 values，同时也是双向链表
+ *     dHead <-> n1 <-> n2 <-> n3 <-> n4 <-> dTail  - Map 的 values，同时也是双向链表
+ * - 💎 LinkedHashMap vs. TreeMap
+ *   - LinkedHashMap keeps the keys in insertion order
+ *   - TreeMap keeps the keys sorted via a Comparator or the natural Comparable ordering of the elements.
  * - 时间复杂度：get、put 操作都是 O(1)；空间复杂度 O(n)。
  * */
 public class LRUCache_1 {
@@ -43,7 +46,7 @@ public class LRUCache_1 {
         }
     }
 
-    private final Map<Integer, Node> map;  // 👉 关键点：Map<数据的 key, 该数据的 value 在链表上对应的 Node>
+    private final Map<Integer, Node> map;  // 👉 关键点：Map<数据的 key, 链表上该 value 对应的 Node>
     private final Node dummyHead, dummyTail;
     private final int capacity;
 
@@ -52,7 +55,7 @@ public class LRUCache_1 {
         map = new HashMap<>();
         dummyHead = new Node(0,0);
         dummyTail = new Node(0,0);
-        join(dummyHead, dummyTail);  // 👉 初始化头尾两个节点，并互相连接（即初始链表为空）
+        join(dummyHead, dummyTail);       // 👉 关键点：初始化头尾两个节点，并互相连接（即初始链表为空）
     }
 
     private void join(Node node1, Node node2) {
