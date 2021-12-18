@@ -2,6 +2,7 @@ package DP.S1_Basics;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.RecursiveTask;
 
 import static Utils.Helpers.log;
 import static Utils.Helpers.timeIt;
@@ -15,7 +16,7 @@ import static Utils.Helpers.timeIt;
  *   Given N, calculate F(N).
  *
  * - DP 定义：Dynamic programming is a method for solving a complex problem by breaking it down into simpler
- *   subproblems, solving each of those subproblems just once, and storing their solutions – ideally, in an
+ *   sub-problems, solving each of those sub-problems just once, and storing their solutions – ideally, in a
  *   memory-based data structure.
  *
  * ️- 看完本题后再看 L279_PerfectSquares、L64_MinimumPathSum，它们都采用了2种 DP 解法，是非常好的例子。
@@ -112,6 +113,26 @@ public class L509_FibonacciNumber {
         return prev1;
     }
 
+    /*
+     * 解法6：fork/join 多线程计算
+     * - 思路：对于每个需要计算的数字都创建一个线程单独执行。
+     * - 时间复杂度：使用多线程的本意是为了将大型任务 divide and rule，并行计算多个子任务。但该解法中由于计算量太小、创建的线程
+     *   数又多 ∴ 耗时反而更长，且有 OOM 的风险。
+     * */
+    private static class FibTask extends RecursiveTask<Integer> {  // 继承 RecursiveTask
+        private final int n;
+        public FibTask(int n) {
+            this.n = n;
+        }
+        public Integer compute() {            // RecursiveTask 接口方法
+            if (n <= 1) return n;
+            FibTask f1 = new FibTask(n - 1);
+            f1.fork();                        // 分支出一个线程计算任务 f1
+            FibTask f2 = new FibTask(n - 2);
+            return f2.compute() + f1.join();  // 主线程计算任务 f2，等待 f1 的结果，并加到一起返回
+        }
+    }
+
     public static void main(String[] args) {
         log(fib(40));
         log(fib1(40));
@@ -119,6 +140,7 @@ public class L509_FibonacciNumber {
         log(fib3(40));
         log(fib4(40));
         log(fib5(40));
+        log(new FibTask(40).compute());
 
         timeIt(40, L509_FibonacciNumber::fib);
         timeIt(40, L509_FibonacciNumber::fib1);
@@ -126,5 +148,6 @@ public class L509_FibonacciNumber {
         timeIt(40, L509_FibonacciNumber::fib3);  // 第二快
         timeIt(40, L509_FibonacciNumber::fib4);
         timeIt(40, L509_FibonacciNumber::fib5);  // 最快
+        timeIt(40, (n) -> new FibTask(n).compute());  // 最慢（慢了好几个数量级 ∵ 任务太小，而线程创建和切换成本高）
     }
 }
