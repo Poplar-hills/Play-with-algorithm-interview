@@ -121,9 +121,12 @@ public class L509_FibonacciNumber {
      * */
     private static class FibTask extends RecursiveTask<Integer> {  // 继承 RecursiveTask
         private final int n;
+
         public FibTask(int n) {
             this.n = n;
         }
+
+        @Override
         public Integer compute() {            // RecursiveTask 接口方法
             if (n <= 1) return n;
             FibTask f1 = new FibTask(n - 1);
