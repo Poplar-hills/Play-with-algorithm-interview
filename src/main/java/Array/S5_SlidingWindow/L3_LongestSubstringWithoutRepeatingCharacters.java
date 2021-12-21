@@ -13,6 +13,9 @@ import static Utils.Helpers.log;
  *   的子序列，但不是其子串。
  *
  * - 💎 技巧：对于这种找连续子串的问题，滑动窗口是最常用的解法，即根据题中条件来不断改变窗口的左右界，从而找到所需子串。
+ *
+ * - Follow-up Question: Instead of finding the length, now we need to find the indexes of all the longest
+ *   substring without repeating characters.
  * */
 
 public class L3_LongestSubstringWithoutRepeatingCharacters {
@@ -310,6 +313,37 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         return maxLen;
     }
 
+    /*
+     * Follow-up Question: Instead of finding the length, now we need to find the indexes of all the longest
+     * substring without repeating characters.
+     * - 思路：在解法2的基础上，对 maxLen 的取值语句进行改造。
+     * */
+    public static List<Integer> indexesOfLongestSubstring(String s) {
+        List<Integer> indexes = new ArrayList<>();
+        if (s == null) return indexes;
+        char[] chars = s.toCharArray();
+        int l = 0, r = 0, maxLen = 0;
+        Set<Character> window = new HashSet<>();  // 以 Set 为窗口
+
+        while (r < chars.length) {
+            if (!window.contains(chars[r])) {    // 若判断窗口中无 r 处字符，再将其纳入窗口，并取最大长度
+                window.add(chars[r++]);
+                int currLen = window.size();
+                if (currLen > maxLen) {          // 若找到更大的窗口 length，则：
+                    maxLen = currLen;            // 1. 更新 maxLen
+                    indexes.clear();             // 2. 清空之前记录的 indexes（∵ 之前记录的都是 length 更小的 indexes）
+                    indexes.add(l);              // 3. 重新记录 index
+                } else if (currLen == maxLen) {  // 若找到一样大的 length 则直接记录 index 就好
+                    indexes.add(l);
+                }
+            } else {
+                window.remove(chars[l++]);
+            }
+        }
+
+        return indexes;
+    }
+
     public static void main(String[] args) {
         log(lengthOfLongestSubstring7("abbcaccb"));  // expects 3 ("bca")
         log(lengthOfLongestSubstring7("pwwkew"));    // expects 3 ("wke")
@@ -318,5 +352,8 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         log(lengthOfLongestSubstring7("bbbbba"));    // expects 2 ("ba")
         log(lengthOfLongestSubstring7("bbbbb"));     // expects 1 ("b")
         log(lengthOfLongestSubstring7(""));          // expects 0
+
+        log(indexesOfLongestSubstring("abba"));      // expects [0, 2]
+        log(indexesOfLongestSubstring("abcbaacb"));  // expects [0, 2, 5]
     }
 }
