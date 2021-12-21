@@ -103,7 +103,8 @@ public class L347_TopKFrequentElements {
         PriorityQueue<Integer> pq = new PriorityQueue<>(k + 1, Comparator.comparingInt(freq::get));
         for (int key : freq.keySet()) {  // O(nlogk)
             pq.offer(key);
-            if (pq.size() == k + 1) pq.poll();  // 若 pq 中存在 k+1 个元素时，先去除最小的，再添加新的
+            if (pq.size() == k + 1)  // 若 pq 中存在 k+1 个元素时，先去除最小的，再添加新的
+                pq.poll();
         }
 
         return new ArrayList<>(pq);

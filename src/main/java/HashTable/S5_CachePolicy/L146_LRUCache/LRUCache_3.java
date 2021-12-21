@@ -73,7 +73,7 @@ public class LRUCache_3<K, V> {
                 queue.add(key);
                 map.put(key, val);
                 if (expireTime > 0)  // 添加完数据后还要给数据设置过期时间
-                    removeAfterExpireTime(key, expireTime);
+                    setExpireTime(key, expireTime);
             }
         } finally {
             writeLock.unlock();
@@ -91,7 +91,7 @@ public class LRUCache_3<K, V> {
             map.remove(oldestKey);
     }
 
-    private void removeAfterExpireTime(K key, long expireTime) {
+    private void setExpireTime(K key, long expireTime) {
         scheduledExSrv.schedule(() -> {
            map.remove(key);
            queue.remove(key);
