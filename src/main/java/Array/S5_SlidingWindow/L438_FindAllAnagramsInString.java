@@ -8,11 +8,10 @@ import static Utils.Helpers.log;
  * Find All Anagrams in a String
  *
  * - Given a string s and a non-empty string p, find all the start indices of p's anagrams (由颠倒字母顺序而
- *   构成的词) in s.
+ *   构成的词) in s. Note strings consists of lowercase English letters only and the order of output does
+ *   not matter.
  *
- * - Note:
- *   - Strings consists of lowercase English letters only.
- *   - The order of output does not matter.
+ * - 该题与 L76_MinimumWindowSubstring 非常类似，L76 是找包含目标字符串的最短 substring，该题是找 anagrams（没有多余字符）。
  * */
 
 public class L438_FindAllAnagramsInString {
@@ -73,8 +72,8 @@ public class L438_FindAllAnagramsInString {
                 matchCount++;
             freq.merge(sChars[r++], -1, Integer::sum);
 
-            while (matchCount == p.length()) {
-                if (r - l == p.length()) res.add(l);
+            while (matchCount == p.length()) {        // 若窗口中包含了 p 的所有字符（找到了全部字符的 substring）
+                if (r - l == p.length()) res.add(l);  // 若 substring 的长度等于 p 的长度，说明是 p 的 anagram
                 if (freq.get(sChars[l]) == 0) matchCount--;
                 freq.merge(sChars[l++], 1, Integer::sum);
             }
