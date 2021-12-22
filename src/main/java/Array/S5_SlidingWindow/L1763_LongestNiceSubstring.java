@@ -48,9 +48,9 @@ public class L1763_LongestNiceSubstring {
         String result = "";
 
         for (int l = 0; l < s.length(); l++) {
-            for (int r = l + 1; r <= s.length(); r++) {
+            for (int r = l + 2; r <= s.length(); r++) {  // r 从 l+2 开始 ∵ nice substring 至少要有两个字符
                 String sub = s.substring(l, r);
-                if (sub.length() > 1 && result.length() < sub.length() && isNice(sub))
+                if (result.length() < sub.length() && isNice(sub))
                     result = sub;
             }
         }
@@ -123,11 +123,11 @@ public class L1763_LongestNiceSubstring {
     }
 
     public static void main(String[] args) {
-        log(longestNiceSubstring2("YazaAay"));      // expects "aAa"
-        log(longestNiceSubstring2("deDEE"));        // expects "deDEE"
-        log(longestNiceSubstring2("Bb"));           // expects "Bb"
-        log(longestNiceSubstring2("c"));            // expects "-1"
-        log(longestNiceSubstring2("abc"));          // expects "-1"
+        log(longestNiceSubstring("YazaAay"));      // expects "aAa"
+        log(longestNiceSubstring("deDEE"));        // expects "deDEE"
+        log(longestNiceSubstring("Bb"));           // expects "Bb"
+        log(longestNiceSubstring("c"));            // expects "-1"
+        log(longestNiceSubstring("abc"));          // expects "-1"
 
         log(shortestNiceSubstring("azABaabza"));   // expects "ABaab"
         log(shortestNiceSubstring("CATattac"));    // expects "ATat"
