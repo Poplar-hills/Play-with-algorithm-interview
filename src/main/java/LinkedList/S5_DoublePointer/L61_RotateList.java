@@ -14,29 +14,29 @@ public class L61_RotateList {
     /*
      * 解法1：截断移动
      * - 思路：要得到 rotate 之后的链表，关键在于要确定从哪里截断并链到头节点上去。例如 1->2->3->4->5，k=7，rotate 之后
-     *   得到 4->5->1->2->3，即从原链表2节点之后截断，并把截断的部分放到链表头部。
+     *   得到 4->5->1->2->3，即从原链表3节点之后截断，并把截断的部分放到链表头部。
      * - 实现：要确定从哪里截断则需要知道去掉套圈后的剩余距离（上例中 k % len = 2），即说明原链表中最后2个节点要被截断并放到
-     *   链表头部，至此问题转化成了类似 L19 中的问题。
+     *   链表头部，至此问题转化成了类似 L19_RemoveNthNodeFromEndOfList 中的问题。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode rotateRight(ListNode head, int k) {
         if (head == null || k == 0) return head;  // 若只有1个节点则直接返回
 
         int l = getLength(head);
-        int numToRotate = k % l;            // 去掉套圈后需要移动的节点个数
-        if (numToRotate == 0) return head;  // 若去掉套圈后没有需要移动的节点则直接返回
+        int numToRotate = k % l;             // 去掉套圈后需要移动的节点个数
+        if (numToRotate == 0) return head;   // 若去掉套圈后没有需要移动的节点则直接返回
 
-        int numToStay = l - numToRotate;    // 不需移动的节点个数
-        ListNode curr = head;               // ∵ 要截断链表 ∴ 要找到截断处的上一个节点
-        for (int i = 1; i < numToStay; i++)
+        int numToStay = l - numToRotate;     // 不需移动的节点个数
+        ListNode curr = head;                // ∵ 要截断链表 ∴ 要找到截断处的上一个节点
+        for (int i = 1; i < numToStay; i++)  // 跳过不需移动的节点后，curr 指向截断处的上一个节点（上例中的3节点）
             curr = curr.next;
 
         ListNode newHead = curr.next, tail = newHead;
-        curr.next = null;                   // 截断
+        curr.next = null;                    // 截断
 
-        while (tail.next != null)           // 获取待截断链表的最后一个节点
+        while (tail.next != null)            // 获取待截断链表的最后一个节点
             tail = tail.next;
-        tail.next = head;                   // 链接成新链表
+        tail.next = head;                    // 链接成新链表
 
         return newHead;
     }
