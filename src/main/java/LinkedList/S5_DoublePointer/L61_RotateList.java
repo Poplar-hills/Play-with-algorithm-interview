@@ -108,7 +108,7 @@ public class L61_RotateList {
 
         ListNode newHead = l.next;
         l.next = null;            // 此时 l 一定停在截断点的上一节点，此时可进行截断
-        r.next = head;            
+        r.next = head;
         return newHead;
     }
 

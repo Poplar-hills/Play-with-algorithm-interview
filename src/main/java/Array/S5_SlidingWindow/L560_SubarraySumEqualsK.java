@@ -6,16 +6,19 @@ import static Utils.Helpers.timeIt;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 /*
  * Subarray Sum Equals K
  *
- * - Given an integer array and an integer k, find the total number of continuous subarrays whose sum equals to k.
+ * - Given an integer array and an integer k, find the total number of continuous sub-arrays whose sum equals to k.
  *
  * - 👉 此题非常经典，5个解法，从超时 -> O(n^3) -> O(n^2) -> O(n) -> 代码优化，层层递进，且涉及多种解决经典问题的技巧。
  *
  * - 分析：若该题中的数组元素都是正数，则可以通过滑动窗口轻易解决（类似 L209_MinimumSizeSubarraySum 解法3）。但由于元素既可以
  *   是正也可以是负（如 test case 4、5）∴ 当窗口中元素之和 > k 时无法判断是应该移动左界还是移动右界 ∴ 无法使用单纯的滑动窗口。
+ *
+ * - Follow-up Question: Given an integer array, find a continuous sub-array with the minimum sum.
  * */
 
 public class L560_SubarraySumEqualsK {
@@ -179,6 +182,49 @@ public class L560_SubarraySumEqualsK {
         return count;
     }
 
+    /*
+     * Follow-up Question: Given an integer array, find a continuous sub-array with the minimum sum.
+     * - 思路：该题也可使用👆的解法：
+     *   1. Brute force - O(n^3)
+     *   2. 2 pointers + Prefix sum - O(n^2)
+     *   3.（本解法）采用 max heap，在堆顶维护之前遇到过的最大 sum（maxPrevSum），这样只需使用 sum - maxPrevSum 就可以
+     *      得到 minSum。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+     * */
+    public static int minSubarraySum(int[] nums) {
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> b - a);
+        int sum = 0, minSum = Integer.MAX_VALUE;
+        maxHeap.offer(sum);
+
+        for (int n : nums) {
+            sum += n;
+            int maxPrevSum = maxHeap.peek();
+            minSum = Math.min(minSum, sum - maxPrevSum);
+            maxHeap.offer(sum);
+        }
+
+        return minSum;
+    }
+
+    /*
+     * Follow-up Question 解法2
+     * - 思路：解法1中的 max heap 将问题复杂化了，其实只需用一个 maxPreSum 变量维护之前遇到的最大 sum 即可。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static int minSubarraySum2(int[] nums) {
+        int sum = 0, minSum = Integer.MAX_VALUE;
+        int maxPreSum = Integer.MIN_VALUE;
+
+        for (int n : nums) {
+            sum += n;
+            maxPreSum = Math.max(maxPreSum, sum);
+            minSum = Math.min(minSum, sum - maxPreSum);
+        }
+
+        return minSum;
+    }
+
+
     public static void main(String[] args) {
         log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
         log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)
@@ -186,5 +232,9 @@ public class L560_SubarraySumEqualsK {
         log(subarraySum4(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
         log(subarraySum4(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
         log(subarraySum4(new int[]{4, 2, -1}, 0));                // expects 0.
+
+        log(minSubarraySum2(new int[]{4, -4, 2, -2}));                // expects -4.
+        log(minSubarraySum2(new int[]{4, -4, 2, -3}));                // expects -5.
+        log(minSubarraySum2(new int[]{-1, 4, 2, -2}));                // expects -2.
     }
 }
