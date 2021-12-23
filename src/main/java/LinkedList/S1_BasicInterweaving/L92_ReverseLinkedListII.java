@@ -134,7 +134,7 @@ public class L92_ReverseLinkedListII {
 
     private static ListNode[] reverseBeforeN(ListNode head, int i, int n) {
         if (i == n) return new ListNode[]{head, head.next};  // 走到第 n 个节点时递归到底，返回第 n、n+1 个节点
-        ListNode[] reversed = reverseBeforeN(head.next, ++i, n);
+        ListNode[] reversed = reverseBeforeN(head.next, i + 1, n);
         head.next.next = head;  // 将 A -> B -> C 改为 A <-> B   C
         head.next = null;       // 将 A <-> B   C 改为 A <- B   C
         return reversed;        // 返回的总是递归到底后返回的节点

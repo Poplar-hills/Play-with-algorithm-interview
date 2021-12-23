@@ -59,7 +59,7 @@ public class L1763_LongestNiceSubstring {
 
     public static boolean isNice(String str) {
         for (char c : str.toCharArray())
-            if (str.contains(Character.toUpperCase(c) + "") != str.contains(Character.toLowerCase(c) + ""))
+            if (!str.contains(Character.toUpperCase(c) + "") || !str.contains(Character.toLowerCase(c) + ""))
                 return false;
         return true;
     }
