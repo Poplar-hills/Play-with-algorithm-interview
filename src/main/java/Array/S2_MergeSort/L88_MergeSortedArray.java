@@ -57,8 +57,8 @@ public class L88_MergeSortedArray {
 
     /*
      * 解法3：Merge sort（解法2的时空优化版）
-     * - 思路：与解法1一致，都是归并排序。
-     * - 实现：解法1中之所以需要辅助空间是因为若在 nums1 中原地排序，当 nums1[i] > nums2[j] 时，需 nums1[k] = nums2[j]，
+     * - 思路：与解法2一致，都是归并排序。
+     * - 实现：解法2中之所以需要辅助空间是因为若在 nums1 中原地排序，当 nums1[i] > nums2[j] 时，需 nums1[k] = nums2[j]，
      *   从而可能冲掉了还未处理的元素 nums1[k]，导致排序错误。但该题中说了 nums1 尾部有足够空间 ∴ 可以直接利用尾部空间而不再
      *   额外开辟新空间。而 ∵ 是尾部空间 ∴ 需要从后往前填充（即从大到小填充），又 ∵ 两个数组各自有序 ∴ 只需从后往前遍历即可：
      *
@@ -72,13 +72,12 @@ public class L88_MergeSortedArray {
      *
      *   该实现中藏有一个优化 —— 当 nums2 中的元素已全部处理完时，整个排序就已经完成（∵ 此时 nums1 中剩余的元素都 < nums2 中
      *   的最小元素 ∴ nums1 中剩余元素的位置不用再变）。
-     *
      * - 时间复杂度 O(m)，空间复杂度 O(1)。
      * */
     private static void merge3(int[] nums1, int m, int[] nums2, int n) {
         int i = m - 1, j = n - 1;
-        for (int k = m + n - 1; k >= 0 && j >= 0; k--) {  // 加上条件 j>=0 就是要在 nums2 中的元素全部处理完时结束整个排序
-            if (i >= 0 && nums1[i] >= nums2[j])
+        for (int k = m + n - 1; k >= 0 && j >= 0; k--) {  // 加上条件 j>=0 就是当 nums2 中的元素全部处理完时即可结束排序
+            if (i >= 0 && nums1[i] >= nums2[j])           // i >= 0 是必须的，确保不是越界情况
                 nums1[k] = nums1[i--];
             else
                 nums1[k] = nums2[j--];

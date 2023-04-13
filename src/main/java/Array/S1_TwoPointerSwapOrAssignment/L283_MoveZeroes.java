@@ -61,7 +61,21 @@ public class L283_MoveZeroes {
 
     /*
      * 解法4：双指针 + Swap
-     * - 思路：类似 L27_RemoveElement 解法2。
+     * - 思路：类似 L27_RemoveElement 解法2。推导过程：
+     *  [0, 1, 4, 0, 0, 0, 3, 8]
+     *   vi                       arr[i]==0 -> v stays, i++
+     *   v  i                     arr[i]!=0 -> swap(v,i), v++, i++
+     *  [1, 0, 4, 0, 0, 0, 3, 8]
+     *      v  i                  arr[i]!=0 -> swap(v,i), v++, i++
+     *  [1, 4, 0, 0, 0, 0, 3, 8]
+     *         v  i               arr[i]==0 -> v stays, i++
+     *         v     i            arr[i]==0 -> v stays, i++
+     *         v        i         arr[i]==0 -> v stays, i++
+     *         v           i      arr[i]!=0 -> swap(v,i), v++, i++
+     *  [1, 4, 3, 0, 0, 0, 0, 8]
+     *            v           i   arr[i]!=0 -> swap(v,i), v++, i++
+     *  [1, 4, 3, 8, 0, 0, 0, 0]
+     *               v          i
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static void moveZeros4(int[] arr) {
@@ -69,7 +83,7 @@ public class L283_MoveZeroes {
         int nextValidIdx = 0;
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] == 0) continue;  // 若发现0元素，则只让 i++，nextValidIdx 不变
-            if (i != nextValidIdx)
+            if (i != nextValidIdx)      // 加个判断更优，不加也可以
                 swap(arr, i, nextValidIdx);
             nextValidIdx++;
         }

@@ -40,8 +40,8 @@ public class L80_RemoveDuplicatesII {
                 continue;           // 若发现有元素连续出现3次，则只让 i++，nextValidIdx 不变
             if (nextValidIdx != i)
                 arr[nextValidIdx] = arr[i];
-            nextValidIdx++;
-        }
+            nextValidIdx++;   // 这句不能放在上面的 if 里否则 test case 会失败。∵ v 的语义是"下一个有效位置的索引"，
+        }                     // ∴ 只要 arr[i] != arr[v-2]，即表明当前的 v 是有效的，∴ 就应该让 v++
         return nextValidIdx;
     }
 
