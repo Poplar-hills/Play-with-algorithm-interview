@@ -17,6 +17,26 @@ import static Utils.Helpers.log;
  * */
 
 public class L167_TwoSumII {
+    /**
+     * 超时解：双指针遍历（Brute force）
+     * 对于 [-3, -2, 2, 3], target=0 来说：
+     *       l   r
+     *       l      r
+     *       l         r
+     *           l  r
+     *           l     r
+     *              l  r    - 从推演可知 l ∈ [0,n-1], r ∈ [1,n]
+     * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
+     */
+    public static int[] twoSum0(int[] nums, int target) {
+        if (nums == null || nums.length < 2) return null;
+        for (int l = 0; l < nums.length - 1; l++)      // 从推演可知 l ∈ [0,n-1]
+            for (int r = l + 1; r < nums.length; r++)  // r ∈ [1,n]
+                if (nums[l] + nums[r] == target)
+                    return new int[]{l + 1, r + 1};
+        return null;
+    }
+
     /*
      * 解法1：二分查找
      * - 思路：遍历数组，对于每个元素 nums[i]，在 (i,..] 范围中查找 target - nums[i] ∴ 该问题转化为搜索问题，而要在有序数组内
@@ -90,8 +110,9 @@ public class L167_TwoSumII {
     }
 
     public static void main(String[] args) {
-        log(twoSum4(new int[]{2, 7, 11, 15}, 9));  // expects [1, 2]（注意返回的是从1开始的元素序号）
-        log(twoSum4(new int[]{2, 3, 4}, 6));       // expects [1, 3]
-        log(twoSum4(new int[]{-3, -2, 2, 3}, 0));  // expects [1, 4] or [2, 3]
+        log(twoSum0(new int[]{2, 7, 11, 15}, 9));  // expects [1, 2]（注意返回的是从1开始的元素序号）
+        log(twoSum0(new int[]{2, 3, 4}, 6));       // expects [1, 3]
+        log(twoSum0(new int[]{-3, -2, 2, 3}, 0));  // expects [1, 4] or [2, 3]
+        log(twoSum0(new int[]{-1, 0}, -1));        // expects [1, 2]
     }
 }
