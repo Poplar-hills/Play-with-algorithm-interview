@@ -2,6 +2,7 @@ package Array.S4_TwoPointerCollision;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static Utils.Helpers.log;
@@ -21,17 +22,16 @@ import static Utils.Helpers.swap;
 public class L345_ReverseVowelsOfString {
     /*
      * 解法1：指针对撞
-     * - 思路：整体思路与 L345_ReverseVowelsOfString 解法1类似。具体来说，将字符串中的元音字母反向其实就是在
-     *   L344_ReverseString 的基础上加入对元音字母的判断即可 ∴ 总体逻辑还是指针对撞，代码外层循环同时移动 l、r 两指针，
-     *   但 l、r 移动之后不一定指向的就是元音字母 ∴ 内层需要2个 while 循环让 l、r 移动到下一个元音字母的位置上。
+     * - 思路：代码外层循环同时移动 l、r 两指针，但 l、r 移动之后不一定指向的就是元音字母 ∴ 内层需要2个 while 循环让
+     *   l、r 移动到下一个元音字母的位置上。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static String reverseVowels(String s) {
         char[] chars = s.toCharArray();
         for (int l = 0, r = chars.length - 1; l < r; l++, r--) {
-            while (l < r && !isVowel(chars[l])) l++;
-            while (l < r && !isVowel(chars[r])) r--;
-            if (l != r) swap(chars, l, r);  // 上面的 while 保证了 l <= r ∴ 这里只需排除 l == r 的情况即可
+            while (l < r && !isVowel(chars[l])) l++;  // 👉🏻内层 while 要注意越界条件不能少！
+            while (r > l && !isVowel(chars[r])) r--;
+            if (l != r) swap(chars, l, r);  // 上面的 while 保证了 l <= r ∴ 这里只需排除 l == r 的情况即可（没有也可以）
         }
         return String.valueOf(chars);  // 或者 new String(chars)
     }
@@ -49,21 +49,21 @@ public class L345_ReverseVowelsOfString {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static String reverseVowels2(String s) {
-        Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));  // 从 List 生成 Set
+        Set<Character> vowels = new HashSet<>(List.of('a', 'e', 'i', 'o', 'u'));  // 从 List 生成 Set
         char[] chars = s.toCharArray();
-        for (int i = 0, j = s.length() - 1; i < j; i++, j--) {
-            while (i < j && !vowels.contains(Character.toLowerCase(chars[i]))) i++;
-            while (i < j && !vowels.contains(Character.toLowerCase(chars[j]))) j--;
-            if (i != j) swap(chars, i, j);
+        for (int l = 0, r = s.length() - 1; l < r; l++, r--) {
+            while (l < r && !vowels.contains(Character.toLowerCase(chars[l]))) l++;
+            while (l < r && !vowels.contains(Character.toLowerCase(chars[r]))) r--;
+            if (l != r) swap(chars, l, r);
         }
         return new String(chars);
     }
 
     public static void main(String[] args) {
-        log(reverseVowels("hello"));     // expects "holle"
-        log(reverseVowels("leetcode"));  // expects "leotcede"
-        log(reverseVowels("aA"));        // expects "Aa"
-        log(reverseVowels("azozzA"));    // expects "Azozza"
-        log(reverseVowels("ccccc"));     // expects "ccccc"
+        log(reverseVowels2("hello"));     // expects "holle"
+        log(reverseVowels2("leetcode"));  // expects "leotcede"
+        log(reverseVowels2("aA"));        // expects "Aa"
+        log(reverseVowels2("azozzA"));    // expects "Azozza"
+        log(reverseVowels2("ccccc"));     // expects "ccccc"
     }
 }
