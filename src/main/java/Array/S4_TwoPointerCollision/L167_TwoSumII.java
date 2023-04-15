@@ -19,13 +19,13 @@ import static Utils.Helpers.log;
 public class L167_TwoSumII {
     /**
      * 超时解：双指针遍历（Brute force）
-     * 对于 [-3, -2, 2, 3], target=0 来说：
-     *       l   r
-     *       l      r
-     *       l         r
-     *           l  r
-     *           l     r
-     *              l  r    - 从推演可知 l ∈ [0,n-1], r ∈ [1,n]
+     * - 对于 [-3, -2, 2, 3], target=0 来说：
+     *         l   r
+     *         l      r
+     *         l         r
+     *             l  r
+     *             l     r
+     *                l  r    - 👉🏻从推演可知 l ∈ [0,n-1], r ∈ [1,n]
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      */
     public static int[] twoSum0(int[] nums, int target) {
@@ -39,8 +39,12 @@ public class L167_TwoSumII {
 
     /*
      * 解法1：二分查找
-     * - 思路：遍历数组，对于每个元素 nums[i]，在 (i,..] 范围中查找 target - nums[i] ∴ 该问题转化为搜索问题，而要在有序数组内
-     *   搜索某个值，二分查找是最快的 ∴ 只需在遍历过程中不断在 (i,..] 中二分查找 target - nums[i]，直到找到或遍历结束即可。
+     * - 思路：将该问题转化为搜索问题，而要在有序数组内搜索某个值，二分查找是最快的 ∴ 只需在遍历数组的过程中不断在 [i+1..n] 范围内
+     *   二分查找 target - nums[i]，直到找到解或遍历结束即可。
+     * - 对于 [-5, -2, 1, 3, 4], target=5 来说：
+     *         i               - nums[i]=-5 ∴ binary search target+5 within [1,n]
+     *             i           - nums[i]=-2 ∴ binary search target+2 within [2,n]
+     *                i        - nums[i]=0  ∴ binary search target-1 within [3,n], found solution [2,4]
      * - 时间复杂度 O(nlogn)，空间复杂度 O(logn)。
      * */
     public static int[] twoSum(int[] nums, int target) {
@@ -109,10 +113,21 @@ public class L167_TwoSumII {
         return null;
     }
 
+
+    public static int[] twoSum_(int[] nums, int target) {
+        for (int i = 0; i < nums.length - 1; i++) {
+            int searchTarget = target - nums[i];
+            int r = binarySearch_(nums, searchTarget, i + 1, nums.length - 1);  // binary search within [i+1,n]
+            if (r != -1) return new int[]{i+1, r+1};
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
-        log(twoSum0(new int[]{2, 7, 11, 15}, 9));  // expects [1, 2]（注意返回的是从1开始的元素序号）
-        log(twoSum0(new int[]{2, 3, 4}, 6));       // expects [1, 3]
-        log(twoSum0(new int[]{-3, -2, 2, 3}, 0));  // expects [1, 4] or [2, 3]
-        log(twoSum0(new int[]{-1, 0}, -1));        // expects [1, 2]
+        log(twoSum_(new int[]{-5, -2, 1, 3, 4}, 5));  // expects [2, 4]（注意返回的是从1开始的元素序号）
+        log(twoSum_(new int[]{2, 7, 11, 15}, 9));     // expects [1, 2]
+        log(twoSum_(new int[]{2, 3, 4}, 6));          // expects [1, 3]
+        log(twoSum_(new int[]{-3, -2, 2, 3}, 0));     // expects [1, 4] or [2, 3]
+        log(twoSum_(new int[]{-1, 0}, -1));           // expects [1, 2]
     }
 }
