@@ -51,8 +51,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
 
     /*
      * 解法1：滑动窗口 + freq Map
-     * - 思路：👆的超时解其实就是 brute force，虽然 work，但复杂度高 ∴ 可以尝试采用滑动窗口来提高时间效率 —— 以 [l,r] 为窗口，
-     *   用 Map 记录窗口内每个字符的频次。每次将 r 处字符纳入窗口和 Map 中之后：
+     * - 思路：严格以 [l,r] 为窗口定义，用 Map 记录窗口内每个字符的频次。每次将 r 处字符纳入窗口和 Map 中之后：
      *   - 若其在 Map 中的频次为1，说明 r 处字符不重复，则可记录窗口最大长度；
      *   - 若其在 Map 中的频次 > 1，说明 r 处字符重复，此时需让 l 不断右移，收缩窗口，直到将第一个重复的字符从窗口中移出。
      *    "p   w   w   k   e   w"
@@ -64,25 +63,31 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
      *             l---r           - map(w:1: k:1), max=2, r++
      *             l-------r       - map(w:1, k:1, e:1), max=3, r++
      *             l-----------r   - map(w:2, k:1, e:1), foundDuplicate, max=3, l++, r==arr.length, loop ends
+     * - 实现：∵ 严格以 [l,r] 为窗口定义 ∴
+     *   1. 若把 l,r 初始化为0，则窗口内元素个数为1 ∴ 也要把 maxLen 和 Map 初始化为包含第0个元素；
+     *   2. 每次右移 r 后都要将 r 处字符纳入窗口中，无论该字符在窗口中是否重复。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     *    "p   w   w   k   e   w"
+     *     lr                      - 初始状态：map(p:1), max=1, r++
+     *     l   r                   - not found ∴ map(p:1, w:1), max=2, r++
+     *     l       r               - found ∴
      * */
     public static int lengthOfLongestSubstring(String s) {
         if (s == null || s.isEmpty()) return 0;
         char[] chars = s.toCharArray();
         int l = 0, r = 0, maxLen = 1;
         boolean foundDuplicate = false;
-        Map<Character, Integer> freq = new HashMap<>();
-        freq.put(chars[0], 1);
+        Map<Character, Integer> map = new HashMap<>();
+        map.put(chars[0], 1);
 
-        while (r < chars.length - 1) {
-            if (foundDuplicate) {
-                freq.merge(chars[l++], -1, Integer::sum);
-                if (freq.get(chars[r]) == 1)  // 在 r 向右移动的过程中，只要发现重复，r 就会停止不动 ∴ 重复的元素就是 chars[r]
+        while (r < chars.length - 1) {  // ∵ 下面要 ++r ∴ 这里要留出余地，不让 r 越界
+            while (foundDuplicate) {    // 直到窗口内不再有重复元素时，才会跳出循环并再次右移 r
+                map.merge(chars[l++], -1, Integer::sum);
+                if (map.get(chars[r]) == 1)  // 在 r 向右移动的过程中，只要发现重复，r 就会停止不动 ∴ 重复的元素就是 chars[r]
                     foundDuplicate = false;
-                continue;
             }
-            freq.merge(chars[++r], 1, Integer::sum);
-            if (freq.get(chars[r]) > 1)  // 若发现重复元素，set flag
+            map.merge(chars[++r], 1, Integer::sum);  // ∵ 严格以 [l,r] 为窗口定义 ∴ 每次右移 r 后都要将 r 处字符纳入窗口中，无论是否重复
+            if (map.get(chars[r]) > 1)  // 若发现重复元素，set flag
                 foundDuplicate = true;
             else                         // 没有重复时取得最大长度
                 maxLen = Math.max(maxLen, r - l + 1);
@@ -93,34 +98,37 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
 
     /*
      * 解法2：滑动窗口 + Set（🥇最优解之一）
-     * - 思路：不同于解法1：
-     *   1. 该解法以 Set 作为窗口，初始窗口中无字符，set.size() 即为窗口长度；
-     *   2. r 指向待纳入窗口的下一个字符 ∴ 每次先检查 r 处的字符是否存在于窗口中：
-     *      - 若不存在，则扩展窗口（将 r 出字符纳入窗口），并记录窗口最大长度；
+     * - 思路：不同于解法1，该解法：
+     *   1. 以 Set 作为窗口；
+     *   2. 不严格以 [l,r] 为窗口定义，初始窗口中无字符；
+     *   3. r 指向待纳入窗口的下一个字符 ∴ 每次先检查 r 处的字符是否存在于窗口中：
+     *      - 若不存在，则扩展窗口（将 r 处字符纳入窗口），并记录 maxLen（set.size()）；
      *      - 若存在，则收缩窗口（将 l 处字符从窗口中移出）。
      *     "p   w   w   k   e   w"
-     *      lr                      - 初始状态：set(), no arr[r], add it to set, r++
-     *      l---r                   - set(p), no arr[r], add it to set, r++
-     *      l-------r               - set(p,w), has arr[r], remove arr[l], l++
-     *          l---r               - set(w), has arr[r], remove arr[l], l++
-     *              lr              - set(), no arr[r], add it to set, r++
-     *              l---r           - set(w), no arr[r], add it to set, r++
-     *              l-------r       - set(w,k), no arr[r], add it to set, r++
-     *              l-----------r   - set(w,k,e), r == arr.length, loop ends, return set.size()
+     *      lr                      - 初始状态：set(), arr[r] not found ∴ add to set, r++, max=1
+     *      l---r                   - set(p), arr[r] not found ∴ add to set, r++, max=2
+     *      l-------r               - set(p,w), found duplicate ∴ remove arr[l] from set, l++
+     *          l---r               - set(w), found duplicate ∴ remove arr[l] from set, l++
+     *              lr              - set(), arr[r] not found ∴ add to set, r++
+     *              l---r           - set(w), arr[r] not found ∴ add to set, r++
+     *              l-------r       - set(w,k), arr[r] not found ∴ add to set, r++, max=3
+     *              l-----------r   - set(w,k,e), found duplicate ∴ remove arr[l] from set, l++
+     *                  l-------r   - set(k,e), arr[r] not found ∴ add to set, r++
+     *                            r - set(k,e,w), r == set.size() ∴ loop ends
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring2(String s) {
-        if (s == null) return 0;
+        if (s == null || s.isEmpty()) return 0;
         char[] chars = s.toCharArray();
         int l = 0, r = 0, maxLen = 0;
-        Set<Character> window = new HashSet<>();  // 以 Set 为窗口
+        Set<Character> set = new HashSet<>();
 
         while (r < chars.length) {
-            if (!window.contains(chars[r])) {  // 若判断窗口中无 r 处字符，再将其纳入窗口，并取最大长度
-                window.add(chars[r++]);
-                maxLen = Math.max(maxLen, window.size());
+            if (!set.contains(chars[r])) {  // 若判断窗口中无 r 处字符，再将其纳入 set，并取最大长度
+                set.add(chars[r++]);
+                maxLen = Math.max(maxLen, set.size());
             } else {
-                window.remove(chars[l++]);
+                set.remove(chars[l++]);
             }
         }
 
@@ -345,15 +353,15 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     public static void main(String[] args) {
-        log(lengthOfLongestSubstring7("abbcaccb"));  // expects 3 ("bca")
-        log(lengthOfLongestSubstring7("pwwkew"));    // expects 3 ("wke")
-        log(lengthOfLongestSubstring7("cdd"));       // expects 2 ("cd")
-        log(lengthOfLongestSubstring7("abba"));      // expects 2 ("ab" or "ba")
-        log(lengthOfLongestSubstring7("bbbbba"));    // expects 2 ("ba")
-        log(lengthOfLongestSubstring7("bbbbb"));     // expects 1 ("b")
-        log(lengthOfLongestSubstring7(""));          // expects 0
-
-        log(indexesOfLongestSubstring("abba"));      // expects [0, 2]
-        log(indexesOfLongestSubstring("abcbaacb"));  // expects [0, 2, 5]
+//        log(lengthOfLongestSubstring2("abbcaccb"));  // expects 3 ("bca")
+        log(lengthOfLongestSubstring2("pwwkew"));    // expects 3 ("wke")
+//        log(lengthOfLongestSubstring2("cdd"));       // expects 2 ("cd")
+//        log(lengthOfLongestSubstring2("abba"));      // expects 2 ("ab" or "ba")
+//        log(lengthOfLongestSubstring2("bbbbba"));    // expects 2 ("ba")
+//        log(lengthOfLongestSubstring2("bbbbb"));     // expects 1 ("b")
+//        log(lengthOfLongestSubstring2(""));          // expects 0
+//
+//        log(indexesOfLongestSubstring("abba"));      // expects [0, 2]
+//        log(indexesOfLongestSubstring("abcbaacb"));  // expects [0, 2, 5]
     }
 }
