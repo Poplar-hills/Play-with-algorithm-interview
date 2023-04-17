@@ -166,7 +166,7 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     /*
      * 解法4：解法3的 int[256] 版
      * - 思路：与解法2、3一致。
-     * - 实现：使用 int[256] 而非 Set 来记录窗口中的元素（ASCII 全集有256个字符，其中前128个是最常用的，后128个属于扩展字符集
+     * - 👉🏻实现：使用 int[256] 而非 Set 来记录窗口中的元素（ASCII 全集有256个字符，其中前128个是最常用的，后128个属于扩展字符集
      *   ∴ 若题中说明字符集只是 0-9 或 a-z，则可只开辟 int[128] 大小）。
      * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
      * */
@@ -353,15 +353,15 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     public static void main(String[] args) {
-//        log(lengthOfLongestSubstring2("abbcaccb"));  // expects 3 ("bca")
+        log(lengthOfLongestSubstring2("abbcaccb"));  // expects 3 ("bca")
         log(lengthOfLongestSubstring2("pwwkew"));    // expects 3 ("wke")
-//        log(lengthOfLongestSubstring2("cdd"));       // expects 2 ("cd")
-//        log(lengthOfLongestSubstring2("abba"));      // expects 2 ("ab" or "ba")
-//        log(lengthOfLongestSubstring2("bbbbba"));    // expects 2 ("ba")
-//        log(lengthOfLongestSubstring2("bbbbb"));     // expects 1 ("b")
-//        log(lengthOfLongestSubstring2(""));          // expects 0
-//
-//        log(indexesOfLongestSubstring("abba"));      // expects [0, 2]
-//        log(indexesOfLongestSubstring("abcbaacb"));  // expects [0, 2, 5]
+        log(lengthOfLongestSubstring2("cdd"));       // expects 2 ("cd")
+        log(lengthOfLongestSubstring2("abba"));      // expects 2 ("ab" or "ba")
+        log(lengthOfLongestSubstring2("bbbbba"));    // expects 2 ("ba")
+        log(lengthOfLongestSubstring2("bbbbb"));     // expects 1 ("b")
+        log(lengthOfLongestSubstring2(""));          // expects 0
+
+        log(indexesOfLongestSubstring("abba"));      // expects [0, 2]
+        log(indexesOfLongestSubstring("abcbaacb"));  // expects [0, 2, 5]
     }
 }
