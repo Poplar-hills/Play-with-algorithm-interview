@@ -10,8 +10,8 @@ import static Utils.Helpers.log;
  *
  * - 在一个有序数组中找到两个不同元素之和等于给定的值，返回这两个元素各自的元素序号（从1开始）。
  *
- * - 👉🏻思路：找两个元素之和==给定值，可以将该问题转化为搜索问题，即在某个范围内搜索给定值-当前值。
- * - 💎套路：条件中说了是数组是"有序"的，由此可联想：
+ * - 👉🏻 思路：找两个元素之和==给定值，可以将该问题转化为搜索问题，即在某个范围内搜索给定值-当前值。
+ * - 💎 套路：条件中说了是数组是"有序"的，由此可联想：
  *   - 是否可使用二分查找？
  *   - 是否可使用分治、递归思路？
  *   - 是否可构建一棵搜索树？
@@ -46,7 +46,7 @@ public class L167_TwoSumII {
      *         i               - nums[i]=-5 ∴ binary search target+5 within [1,n]
      *             i           - nums[i]=-2 ∴ binary search target+2 within [2,n]
      *                i        - nums[i]=0  ∴ binary search target-1 within [3,n], found solution [2,4]
-     * - 👉🏻时间复杂度 O(nlogn)，空间复杂度 O(logn)。∵ 二分搜索要进行递归 ∴ 空间复杂度为 O(logn)。
+     * - 👉🏻 时间复杂度 O(nlogn)，空间复杂度 O(logn)。∵ 二分搜索要进行递归 ∴ 空间复杂度为 O(logn)。
      * */
     public static int[] twoSum(int[] nums, int target) {
         for (int i = 0; i < nums.length; i++) {
