@@ -50,12 +50,74 @@ public class L76_MinimumWindowSubstring {
         return tFreq.isEmpty();
     }
 
+    /**
+     * 解法1：滑动窗口（）
+     * - 💎 思路：∵ 是找连续子串的问题 ∴ 可尝试滑动窗口方法求解。
+     *   - 滑动方式：先右移 r 扩展窗口，直到 t 中所有字符进入窗口，之后右移 l 收缩窗口，直到窗口中不再包含 t 中所有字符。
+     *     重复该过程直到 r 抵达 s 末尾。
+     *   - 记录方式：∵ 要从 s 中切割子串出来 ∴ 需要 start index 和切割的长度。给这俩变量赋值的时机是：
+     *     1. 每次窗口扩展到包含 t 中所有字符的时候；
+     *     2. 每次窗口收缩到不再包含 t 中所有字符的前一步。
+     * - 例：
+     *      0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16
+     * - s="C  A  B  W  E  F  G  E  W  C  W  A  E  F  G  C  F", t="CAE"：
+     *      lr             - 初始化 map(c:1,a:1,e:1), start to expand
+     *      l-----------r   unmatchCount==0 ∴ start=0, minLen=5, start to shrink
+     *         l--------r   miss c ∴ unmatchCount!=0, start to expand
+     *         l-----------------------r   unmatchCount==0 ∴ start to shrink
+     *            l--------------------r   miss b ∴ unmatchCount!=0, start to expand
+     *            l--------------------------r   unmatchCount==0 ∴ start to shrink, update start & minLen on every step
+     *                           l-----------r   still shrinking, start=7, minLen=5
+     *                              l--------r   miss e ∴ unmatchCount!=0, start to expand
+     *                              l-----------r   unmatchCount==0 ∴ start to shrink
+     *                                 l--------r   still shrinking, start=9, minLen=4
+     *                                    l-----r   missing c ∴ unmatchCount!=0, start to expand
+     *                                    l--------------r   unmatchCount==0 ∴ start to shrink
+     *                                          l--------r   missing a, start to expand
+     *                                          l-----------r   r < n-1, loop ends
+     */
+    public static String minWindow(String s, String t) {
+        if (s == null || t == null || s.isEmpty() || t.isEmpty()) return null;
+        char[] chars = s.toCharArray();
+        int l = 0, r = -1, n = chars.length, start = -1, minLen = n + 1;  // r 初始化为-1, minLen 为 n+1
+        Map<Character, Integer> freq = new HashMap<>();
+        boolean isShrinking = false;      // 标识窗口是在 expanding or shrinking
+
+        for (char c : t.toCharArray())
+            freq.merge(c, 1, Integer::sum);
+        int unmatchCount = freq.size();   // unmatchCount 初始化为 t 中不重复的元素个数
+
+        while (r < n - 1) {  // ∵ 扩展之后会充分收缩（由内层 while 保证）∴ 外层循环条件只需关注 r（n-1 是为了保证下面先 ++r 的时候不越界）
+            while (!isShrinking && r < n - 1) {  // expanding
+                freq.merge(chars[++r], -1, Integer::sum);  // ∵ r 初值为-1 ∴ 这里要先++
+                if (freq.get(chars[r]) == 0) unmatchCount--;  // chars[r] 在 freq 中的个数为0表示当前窗口已包含了 t 中所有的该元素 ∴ unmatchCount--
+                if (unmatchCount == 0) {       // 当前窗口已包含了若 t 中所有元素，则取 minLen & start 并开始 shrink
+                    if (r - l + 1 < minLen) {  // 注意 ==minLen 的情况也要更新，否则 case s="TT",t="TT" 会失败
+                        start = l;
+                        minLen = r - l + 1;
+                    }
+                    isShrinking = true;
+                }
+            }
+            while (isShrinking) {                // shrinking
+                freq.merge(chars[l], 1, Integer::sum);  // 从窗口中移出 chars[l] 并更新 unmatchCount 后再 l++
+                if (freq.get(chars[l]) > 0) unmatchCount++;
+                l++;
+                if (unmatchCount == 0 && (r - l + 1 < minLen)) {
+                    start = l;
+                    minLen = r - l + 1;
+                }
+                if (unmatchCount != 0 || l == r)  // 若 miss 了 t 中的任何元素，则 unmatchCount!=0（l==r 用于 case s="ab",t="a"）
+                    isShrinking = false;
+            }
+        }
+
+        return start == -1 ? "" : s.substring(start, start + minLen);
+    }
+
     /*
-     * 解法1：滑动窗口
-     * - 💎 思路：∵ 是找连续子串的问题 ∴ 可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case 1
-     *   可知要求的最小子串需要包含 t 中所有字符，且尽量少的包含重复字符 ∴ 可得到窗口滑动控制方式：先右移 r 扩展窗口，直到 t 中
-     *   所有字符进入窗口。之后右移 l 收缩窗口，直到窗口中不再包含 t 中所有字符，此时记录窗口长度，重复该过程直到 r 抵达 s 末尾。
-     *   例如对于 s="ABAACBAB", t="ABC" 来说：
+     * 解法2：滑动窗口（另一版本）
+     * - 思路：与解法1一致。例如对于 s="ABAACBAB", t="ABC" 来说：
      *       A  B  A  A  C  B  A  B
      *       lr                       - 未包含 t 中全部字符 ∴ 继续扩展
      *       l--r                     - 未包含 t 中全部字符 ∴ 继续扩展
@@ -78,7 +140,7 @@ public class L76_MinimumWindowSubstring {
      *     - int matchCount 记录已经匹配上的 t 中的字符的个数，若 matchCount == t.size() 说明 t 中所有字符已在窗口内。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static String minWindow(String s, String t) {
+    public static String minWindow2(String s, String t) {
         Map<Character, Integer> freq = new HashMap<>();
         for (char c : t.toCharArray())              // 先构建 t 中字符的频谱
             freq.merge(c, 1, Integer::sum);   // 相当于 freq.put(c, freq.getDefault(c) + 1);
@@ -117,9 +179,9 @@ public class L76_MinimumWindowSubstring {
     }
 
     /*
-     * 解法2：滑动窗口（解法1的简化版，🥇最优解）
-     * - 思路：与解法1一致。
-     * - 实现：与解法1区别在于：
+     * 解法3：滑动窗口（解法2的简化版，🥇最优解）
+     * - 思路：与解法1、2一致。
+     * - 实现：与解法2区别在于：
      *   1. 取 minLen 的时机改到了 while 内部（即每次收缩时取 minLen）∴ 不再需要 shrinked 标志位标识是否收缩过。
      *   2. 在扩展、收缩窗口时不再需要判断 r、l 处的字符是否在 freq 中（即是否为 t 中字符），即使是非 t 中字符也可以添加进去。
      * - 💎 套路：扩展/收缩滑动窗口类型的题目都可以采用该模式
@@ -129,7 +191,7 @@ public class L76_MinimumWindowSubstring {
      *   4. 大 while 结束条件为 r < n。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static String minWindow2(String s, String t) {
+    public static String minWindow3(String s, String t) {
         Map<Character, Integer> freq = new HashMap<>();
         for (char c : t.toCharArray())
             freq.merge(c, 1, Integer::sum);
@@ -156,37 +218,13 @@ public class L76_MinimumWindowSubstring {
         return start == -1 ? "" : s.substring(start, start + minLen);
     }
 
-    /*
-     * 解法3：滑动窗口（解法2的 int[256] 版）
-     * - 思路：与解法1、2一致。
-     * - 实现：采用 int[256] 代替解法1中的 Map，从而得以简化语句（这种类型的题目中，int[256] 的解法通常都能比 Map 更简洁）。
-     * - 时间复杂度 O(n)，空间复杂度 O(len(charset))。
-     * */
-    public static String minWindow3(String s, String t) {
-        int[] freq = new int[256];
-        for (char c : t.toCharArray()) freq[c]++;
-
-        int l = 0, r = 0, matchCount = 0;
-        int minLen = s.length() + 1, start = -1;
-
-        while (r < s.length()) {
-            if (freq[s.charAt(r++)]-- > 0)  // 这一个条件在解法1中需要两个条件才能实现 ∵ int[256] 为所有字符都设了初值0
-                matchCount++;
-            while (matchCount == t.length()) {
-                if (r - l < minLen)
-                    minLen = r - (start = l);    // 2 assignments in 1 line
-                if (freq[s.charAt(l++)]++ == 0)
-                    matchCount--;
-            }
-        }
-        return start == -1 ? "" : s.substring(start, start + minLen);
-    }
-
     public static void main(String[] args) {
-        log(minWindow0("ABAACBAB", "ABC"));  // expects "ACB"
-        log(minWindow0("BCAACBAB", "BBC"));  // expects "CBAB" (t 中也可能存在重复字符)
-        log(minWindow0("TT", "TT"));         // expects "TT"
-        log(minWindow0("S", "SS"));          // expects ""
-        log(minWindow0("YYZ", "ZY"));        // expects "YZ"
+        log(minWindow2("ABAACBAB", "ABC"));           // expects "ACB" or "CBA"
+        log(minWindow2("BCAACBAB", "BBC"));           // expects "CBAB" (t 中存在重复字符的情况)
+        log(minWindow2("TT", "TT"));                  // expects "TT"
+        log(minWindow2("S", "SS"));                   // expects ""
+        log(minWindow2("YYZ", "ZY"));                 // expects "YZ"
+        log(minWindow2("CABWEFGEWCWAEFGCF", "CAE"));  // expects "CWAE"
+        log(minWindow2("ab", "a"));                   // expects "a"
     }
 }
