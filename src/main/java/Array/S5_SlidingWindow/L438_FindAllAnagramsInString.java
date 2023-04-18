@@ -53,7 +53,7 @@ public class L438_FindAllAnagramsInString {
 
     /*
      * 解法2：滑动窗口（解法1的简化版，🥇最优解）
-     * - 思路：与 L76_MinimumWindowSubstring 解法3一致。
+     * - 思路：与 L76_MinimumWindowSubstring 解法2一致。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static List<Integer> findAnagrams2(String s, String p) {
