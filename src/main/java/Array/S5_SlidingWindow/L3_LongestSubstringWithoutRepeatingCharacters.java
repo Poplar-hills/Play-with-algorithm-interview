@@ -238,22 +238,17 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
      * - 思路：以 [l,r] 为窗口，并用 Map 记录每个字符最新出现的位置。当重复元素进入窗口时（在 Map 中发现有之前记录的索引），
      *   此时不再让 l 一步一步右移来越过重复元素，而是直接从 Map 中取得该重复元素之前的索引，并直接跳到该索引+1处，从而快速
      *   去除了重复元素。该思路与前面解法的最大不同点是，l 是跳跃的，只有 r 在滑动。
-     *     p   w   w   k   e   w
-     *     lr                       - 初始状态：map(), max=0, r++
-     *     lr                       - map(p:0), no arr[r], max=1, r++
-     *     l---r                    - map(p:0, w:1), no arr[r], max=2, r++
-     *     l-------r                - map(p:0, w:1), found arr[r], l jumps to map.get(w)+1, update map.put(w,r)
-     *             lr               - map(p:0, w:2), found arr[r], but map.get(w)==l ∴ max=2, r++
-     *             l---r            - map(p:0, w:2, k:3), no arr[r], max=2, r++
-     *             l-------r        - map(p:0, w:2, k:3, e:4), no arr[r], max=3, r++
-     *             l-----------r    - map(p:0, w:2, k:3, e:4), found arr[r], l jumps to map.get(w)+1, update map.put(w,r)
-     *                 l-------r    - map(p:0, w:5, k:3, e:4), no arr[r], r++
-     *                           r  - map(p:0, w:5, k:3, e:4), r==arr.length, loop ends
-     *   注意：该解法中，Map 只会不断 put，而不会 remove（与解法1-6中的 Set 不同的地方）。
+     *     p   w   w   k   e   w    -
+     *     lr                       - 初始状态：map(), max=0, no prev index for arr[r] ∴ map(p:0), max=1, r++
+     *     l---r                    - no prev index for arr[r] ∴ map(p:0, w:1), max=2, r++
+     *     l-------r                - found prev index w:1 ∴ l jumps to 1+1, update map to (p:0, w:2), r++
+     *             l---r            - no prev index for arr[r] ∴ map(p:0, w:2, k:3), r++
+     *             l-------r        - no prev index for arr[r] ∴ map(p:0, w:2, k:3, e:4), max=3, r++
+     *             l-----------r    - found prev index w:2 ∴ l jumps to 2+1, update map to (p:0, w:3, k:3, e:4), r++
+     *                 l---------r  - r==arr.length, loop ends
      * - 👉 实现：
      *   1. 利用了 map.put(k,v) 的返回值特性（若 k 已存在于 map 中则返回之前的 v，否则返回 null）来简化对 l 的更新。
-     *   2. ∵ l 是跳跃向前移动的 ∴ indexMap 中的元素只能增不能删。若碰到 test case 4 的"abba"，在 r 移动到第2个 a 上时，l 指向
-     *      第2个 b，此时在 indexMap 中能找到 a 的 prevIndex，但由于不能让 l 后退 ∴ 需要取 Math.max。
+     *   2. ∵ l 是跳跃向前移动的 ∴ indexMap 中的元素有增无减（与解法1-6中的 Set 不同的地方）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int lengthOfLongestSubstring7(String s) {
@@ -263,12 +258,12 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         Map<Character, Integer> indexMap = new HashMap<>();  // Map<字符, 该字符最新的索引>
 
         while (r < chars.length) {
-            Integer prevIndex = indexMap.put(chars[r], r);   // 让 r 处的字符进入窗口
-            if (prevIndex != null)                 // 判断字符是否已存在于窗口中
-                l = Math.max(l, prevIndex + 1);    // 取 Math.max，确保 l 不会后退
-            maxLen = Math.max(maxLen, r - l + 1);  // 注意：即使 prevIndex != null 也要比较一遍 maxLen（例如 test case 1 中，
-            r++;                                   // 当遍历到的第二个 a 时，prevIndex=0，但 ∵ 此时l 已经 > 0，l 的取值不会被覆盖，
-        }                                          // 即只有 r 右移，l 没动 ∴ 仍然需要重新计算 maxLen）
+            Integer prevIndex = indexMap.put(chars[r], r);   // 记录 r 处的字符的 index
+            if (prevIndex != null && prevIndex >= l)         // 若之前已经记录过 index 且 >= l（确保 l 不会后退）
+                l = prevIndex + 1;
+            maxLen = Math.max(maxLen, r - l + 1);
+            r++;
+        }
 
         return maxLen;
     }
@@ -282,17 +277,16 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
         if (s == null || s.isEmpty()) return 0;
         int l = 0, r = 0, maxLen = 1;     // maxLen 从1开始
         char[] chars = s.toCharArray();
-        Map<Character, Integer> indexMap = new HashMap<>();  // Map<字符, 该字符的最新索引>
-        indexMap.put(chars[0], 0);        // 预先放入第0个字符
+        Map<Character, Integer> indexMap = new HashMap<>();
+        indexMap.put(chars[0], 0);        // 预先放入第0个元素
 
-        while (r < chars.length - 1) {    // r 最大只能到最后一个字符，否则下面 ++r 会越界
-            Integer prevIndex = indexMap.put(chars[++r], r);
-            if (prevIndex != null && prevIndex >= l)  // ∵ prevIndex 可能是 < l ∴ 这里要加上 prevIndex >= l 的条件
-                l = prevIndex + 1;
-            else                          // 只有在 r 右移之后窗口中仍无重复元素的时候才需要取最大长度
-                maxLen = Math.max(maxLen, r - l + 1);
-        }
-
+        while (r < chars.length - 1) {    // 为了确保下一行 ++r 不会越界 ∴ 这里的 r ∈ [0,n-1]
+            Integer prevIndex = indexMap.put(chars[++r], r);  // ∵ 上面预先放入了第0个元素 ∴ 在开始循环之前要先 ++r
+            if (prevIndex != null)
+                l = Math.max(l, prevIndex + 1);    // 这里取 max ∴ 上一行无需再判断 prevIndex >= l
+            maxLen = Math.max(maxLen, r - l + 1);  // 注意，这句不能放入 else 中，也就是说即使让 l 向后跳跃，也要重新计算 maxLen
+        }                                          // 否则，当遍历到"abbcaccb"中的第2个"a"时，prevIndex=0，但 ∵ 此时l 已经 > 0，
+                                                   // l 的取值不会被覆盖，即只有 r 右移（上面++r），l 没动 ∴ 仍需重新计算 maxLen。
         return maxLen;
     }
 
@@ -320,46 +314,75 @@ public class L3_LongestSubstringWithoutRepeatingCharacters {
     }
 
     /*
-     * Follow-up Question: Instead of finding the length, now we need to find the indexes of all the longest
-     * substring without repeating characters.
-     * - 思路：在解法2的基础上，对 maxLen 的取值语句进行改造。
+     * Follow-up Question: Instead of finding the length, now we need to find the starting indexes of all the
+     * longest substring without repeating characters.
+     * - 👉🏻 思路：∵ 题目主体不变，仍然是找无重复的最大子串 ∴ 只需在上述解法的基础上对 maxLen 的取值语句进行改造即可。
+     * - 实现：基于解法2。
      * */
     public static List<Integer> indexesOfLongestSubstring(String s) {
         List<Integer> indexes = new ArrayList<>();
         if (s == null) return indexes;
         char[] chars = s.toCharArray();
         int l = 0, r = 0, maxLen = 0;
-        Set<Character> window = new HashSet<>();  // 以 Set 为窗口
+        Set<Character> set = new HashSet<>();  // 以 Set 为窗口
 
         while (r < chars.length) {
-            if (!window.contains(chars[r])) {    // 若判断窗口中无 r 处字符，再将其纳入窗口，并取最大长度
-                window.add(chars[r++]);
-                int currLen = window.size();
-                if (currLen > maxLen) {          // 若找到更大的窗口 length，则：
-                    maxLen = currLen;            // 1. 更新 maxLen
-                    indexes.clear();             // 2. 清空之前记录的 indexes（∵ 之前记录的都是 length 更小的 indexes）
-                    indexes.add(l);              // 3. 重新记录 index
-                } else if (currLen == maxLen) {  // 若找到一样大的 length 则直接记录 index 就好
+            if (!set.contains(chars[r])) {    // 若判断窗口中无 r 处字符，再将其纳入窗口，并取当前长度
+                set.add(chars[r++]);
+                int currLen = set.size();
+                if (currLen > maxLen) {       // 若找到更大的窗口 length，则：
+                    maxLen = currLen;         // 1. 更新 maxLen
+                    indexes.clear();          // 2. 清空之前记录的 indexes（∵ 之前记录的都是 length 更小的 indexes）
+                    indexes.add(l);           // 3. 重新记录 index
+                } else if (currLen == maxLen) {  // 若找到一样大的 length 则直接记录 index
                     indexes.add(l);
                 }
             } else {
-                window.remove(chars[l++]);
+                set.remove(chars[l++]);
             }
         }
 
         return indexes;
     }
 
-    public static void main(String[] args) {
-        log(lengthOfLongestSubstring7("abbcaccb"));  // expects 3 ("bca")
-        log(lengthOfLongestSubstring7("pwwkew"));    // expects 3 ("wke")
-        log(lengthOfLongestSubstring7("cdd"));       // expects 2 ("cd")
-        log(lengthOfLongestSubstring7("abba"));      // expects 2 ("ab" or "ba")
-        log(lengthOfLongestSubstring7("bbbbba"));    // expects 2 ("ba")
-        log(lengthOfLongestSubstring7("bbbbb"));     // expects 1 ("b")
-        log(lengthOfLongestSubstring7(""));          // expects 0
+    /**
+     * - 实现：基于解法7。
+     */
+    public static List<Integer> indexesOfLongestSubstring2(String s) {
+        List<Integer> indexes = new ArrayList<>();
+        if (s == null) return indexes;
+        char[] chars = s.toCharArray();
+        int l = 0, r = 0, maxLen = 0;
+        Map<Character, Integer> indexMap = new HashMap<>();
 
-        log(indexesOfLongestSubstring("abba"));      // expects [0, 2]
-        log(indexesOfLongestSubstring("abcbaacb"));  // expects [0, 2, 5]
+        while (r < chars.length) {
+            Integer prevIndex = indexMap.put(chars[r], r);
+            if (prevIndex != null && prevIndex >= l)
+                l = prevIndex + 1;
+            int currLen = r - l + 1;
+            if (currLen > maxLen) {
+                maxLen = currLen;
+                indexes.clear();
+                indexes.add(l);
+            } else if (currLen == maxLen) {
+                indexes.add(l);
+            }
+            r++;
+        }
+
+        return indexes;
+    }
+
+    public static void main(String[] args) {
+        log(lengthOfLongestSubstring8("abbcaccb"));  // expects 3 ("bca")
+        log(lengthOfLongestSubstring8("pwwkew"));    // expects 3 ("wke")
+        log(lengthOfLongestSubstring8("cdd"));       // expects 2 ("cd")
+        log(lengthOfLongestSubstring8("abba"));      // expects 2 ("ab" or "ba")
+        log(lengthOfLongestSubstring8("bbbbba"));    // expects 2 ("ba")
+        log(lengthOfLongestSubstring8("bbbbb"));     // expects 1 ("b")
+        log(lengthOfLongestSubstring8(""));          // expects 0
+
+        log(indexesOfLongestSubstring2("abba"));      // expects [0, 2]
+        log(indexesOfLongestSubstring2("abcbaacb"));  // expects [0, 2, 5]
     }
 }
