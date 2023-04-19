@@ -76,6 +76,7 @@ public class L76_MinimumWindowSubstring {
      *                                    l--------------r   unmatchCount==0 ∴ start to shrink
      *                                          l--------r   missing a, start to expand
      *                                          l-----------r   r < n-1, loop ends
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      */
     public static String minWindow(String s, String t) {
         if (s == null || t == null || s.isEmpty() || t.isEmpty()) return null;
