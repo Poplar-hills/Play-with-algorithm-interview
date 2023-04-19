@@ -36,7 +36,7 @@ public class L438_FindAllAnagramsInString {
      *      - 外层 while 控制整个循环 ∵ 内层2个 while 已经充分扩展和收缩了 ∴ 外层 while 的退出条件只需关注 r==n；
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      */
-    public static List<Integer> findAnagrams_(String s, String p) {
+    public static List<Integer> findAnagrams(String s, String p) {
         List<Integer> res = new ArrayList<>();
         if (s == null || p == null || s.isEmpty() || p.isEmpty() || p.length() > s.length()) return res;
         char[] chars = s.toCharArray();
@@ -66,11 +66,11 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法1：滑动窗口
+     * 解法2：滑动窗口
      * - 思路：与 L76_MinimumWindowSubstring 解法2一致。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static List<Integer> findAnagrams(String s, String p) {
+    public static List<Integer> findAnagrams2(String s, String p) {
         List<Integer> res = new ArrayList<>();
         if (s == null || s.isEmpty()) return res;
 
@@ -78,21 +78,22 @@ public class L438_FindAllAnagramsInString {
         for (char c : p.toCharArray())
             freq.merge(c, 1, Integer::sum);
 
-        int matchCount = 0, l = 0, r = 0;
-        char[] sChars = s.toCharArray();
+        int matchCount = 0, l = 0, r = 0, n = s.length();
+        char[] chars = s.toCharArray();
 
-        while (r < s.length()) {
-            if (freq.containsKey(sChars[r])) {
-                if (freq.get(sChars[r]) > 0) matchCount++;
-                freq.merge(sChars[r], -1, Integer::sum);
+        while (true) {
+            if (!(r < n)) break;
+            if (freq.containsKey(chars[r])) {
+                if (freq.get(chars[r]) > 0) matchCount++;
+                freq.merge(chars[r], -1, Integer::sum);
             }
             r++;
             while (matchCount == p.length()) {
                 if (r - l == p.length())
                     res.add(l);
-                if (freq.containsKey(sChars[l])) {
-                    if (freq.get(sChars[l]) == 0) matchCount--;
-                    freq.merge(sChars[l], 1, Integer::sum);
+                if (freq.containsKey(chars[l])) {
+                    if (freq.get(chars[l]) == 0) matchCount--;
+                    freq.merge(chars[l], 1, Integer::sum);
                 }
                 l++;
             }
@@ -102,11 +103,14 @@ public class L438_FindAllAnagramsInString {
     }
 
     /*
-     * 解法2：滑动窗口（解法1的简化版，🥇最优解）
+     * 解法3：滑动窗口（解法1、2的简化版，🥇最优解）
      * - 思路：与 L76_MinimumWindowSubstring 解法2一致。
+     * - 实现：与解法1的区别：
+     *   1. 只用一个内层 while 来收缩窗口，而扩展窗口使用外层 while 控制 ∴ 不再需要 isShrinking 标志位；
+     *   2. 使用 matchCount 正向记录命中 t 中元素的个数（∴ 初值为0）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static List<Integer> findAnagrams2(String s, String p) {
+    public static List<Integer> findAnagrams3(String s, String p) {
         List<Integer> res = new ArrayList<>();
         if (s == null || s.isEmpty()) return res;
 
