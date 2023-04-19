@@ -15,13 +15,13 @@ import static Utils.Helpers.log;
 
 public class L209_MinimumSizeSubarraySum {
     /*
-     * 解法1：双指针遍历（Brute force）
+     * 超时解：双指针遍历（Brute force）
      * - 思路：用双重循环遍历所有子串（即遍历子串边界 l、r 的所有组合），再对每个子串中的所有元素求和。
      * - 💎 经验：遍历一个数组的所有子串要使用双重循环，复杂度为 O(n^2)。
      * - 时间复杂度 O(n^3)，空间复杂度 O(1)。
      * */
-    public static int minSubArrayLen(int s, int[] nums) {
-        if(s <= 0 || nums == null) return 0;
+    public static int minSubArrayLen0(int s, int[] nums) {
+        if (s <= 0 || nums == null) return 0;
         int n = nums.length, minLen = n + 1;
 
         for (int l = 0; l < n; l++) {
@@ -38,14 +38,14 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-     * 解法2：Prefix Sum
+     * 解法1：Prefix Sum
      * - 思路：解法1中的问题在于每遍历到一个子串后就要为其求一次和，多次求和过程中有很多重复计算。对此可采用以空间换时间的
      *   prefix sum 技巧，让 sums[i] 记录 nums[0..i] 的和（例如 sums[2] 记录第0、1、2号元素之和），使得不再需要多次
      *   重复计算序列之和。
      * - 💎 经验：Prefix Sum 本质是为每个位置缓存累加和（cumulative sums），是求解“数组区间求和”类问题时的常用技巧。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
-    public static int minSubArrayLen2(int s, int[] nums) {
+    public static int minSubArrayLen(int s, int[] nums) {
         if (s <= 0 || nums == null) return 0;
         int n = nums.length;
         int[] preSums = new int[n];     // prefix sum 数组
@@ -67,9 +67,43 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-     * 解法3：窗口滑动（🥇最优解之一）
-     * - 思路：💎 找连续子串的问题可尝试滑动窗口方法求解 —— 控制窗口左右边界的滑动来找到所需子串。通过观察 test case
-     *   可知窗口滑动的控制方式：当窗口中元素之和在 < s 时扩展窗口，在 ≥ s 时收缩窗口，并更新最小子串的长度。
+     * 解法2：窗口滑动 + 内部双 while 查找（🥇最优解之一）
+     * - 思路：💎 与 L76_MinimumWindowSubstring 解法1、2一致（也是用滑动窗口找连续子串的通用解法）—— 先充分扩展窗口，
+     *   直到找到符合条件的解，然后再充分收缩，直到窗口内的子串不再符合条件，且收缩过程中每步都要记录解。
+     * - 例：[1, 2, 2, 3, 3, 4], s=7
+     *       -
+     *       ----
+     *       ----------   minLen=4, start to shrink
+     *          -------   minLen=3, still shrinking
+     *             ----   start to expand
+     *             -------   start to shrink
+     *                ----   start to expand
+     *                -------   start to shrink
+     *                    ---   minLen=2, still shrinking
+     *                      -   end
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * */
+    public static int minSubArrayLen2(int s, int[] nums) {
+        if (s <= 0 || nums == null) return 0;
+        int n = nums.length, minLen = n + 1;
+        int l = 0, r = 0, sum = 0;
+
+        while (r < n) {      // ∵ 下面使用内层 while 查找 ∴ 这里只需 r < n 即可（不同于解法2之处）
+            while (sum < s && r < n)           // 扩展窗口
+                sum += nums[r++];
+            minLen = Math.min(minLen, r - l);  // 窗口停止扩展时 sum ≥ s ∴ 此时计算 minLen
+            while (sum >= s && l < n) {        // 收缩窗口
+                sum -= nums[l++];
+                minLen = Math.min(minLen, r - l);  // 每次收缩一步后都再计算一遍 minLen
+            }
+        }
+
+        return minLen == n + 1 ? 0 : minLen;
+    }
+
+    /*
+     * 解法3：窗口滑动（解法2的另一版本）
+     * - 思路：与解法2一致。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int minSubArrayLen3(int s, int[] nums) {
@@ -90,41 +124,15 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-     * 解法4：窗口滑动 + 内部双 while 查找（🥇最优解之一）
-     * - 思路：与解法3一致。
-     * - 实现：比解法3略繁琐 ∵ 有两个地方都需要更新 minLen。
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
-     * */
-    public static int minSubArrayLen4(int s, int[] nums) {
-        if (s <= 0 || nums == null) return 0;
-        int n = nums.length, minLen = n + 1;
-        int l = 0, r = 0, sum = 0;
-
-        while (r < n) {                  // ∵ 下面使用 while 查找 ∴ 这里只需 r < n 即可（不同于解法3之处）
-            while (sum < s && r < n)
-                sum += nums[r++];
-            if (sum >= s)                // 窗口停止扩展时 sum ≥ s ∴ 此时要计算 minLen
-                minLen = Math.min(minLen, r - l);
-            while (sum >= s && l < n) {  // 再开始收缩窗口
-                sum -= nums[l++];
-                if (sum >= s)            // 每次收缩一步后都再计算一遍 minLen
-                    minLen = Math.min(minLen, r - l);
-            }
-        }
-
-        return minLen == n + 1 ? 0 : minLen;
-    }
-
-    /*
-     * 解法5：窗口滑动 + Prefix Sum
-     * - 思路：结合解法2、3。
+     * 解法4：窗口滑动 + Prefix Sum
+     * - 思路：结合解法1、2。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int minSubArrayLen5(int s, int[] nums) {
+    public static int minSubArrayLen4(int s, int[] nums) {
         int n = nums.length, minLen = n + 1;
 
         int[] preSums = new int[n];
-        for (int i = 0; i < preSums.length; i++)  // 与解法2中的 prefix sum 生成、使用方式一致
+        for (int i = 0; i < preSums.length; i++)  // 与解法1中的 prefix sum 生成、使用方式一致
             preSums[i] = i == 0 ? nums[0] : preSums[i - 1] + nums[i];
 
         for (int l = 0, r = 0; l < n; ) {
@@ -141,9 +149,9 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     public static void main(String[] args) {
-        log(minSubArrayLen4(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
-        log(minSubArrayLen4(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
-        log(minSubArrayLen4(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
-        log(minSubArrayLen4(8, new int[]{1, 2, 3}));           // expects 0.
+        log(minSubArrayLen(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
+        log(minSubArrayLen(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
+        log(minSubArrayLen(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
+        log(minSubArrayLen(8, new int[]{1, 2, 3}));           // expects 0.
     }
 }
