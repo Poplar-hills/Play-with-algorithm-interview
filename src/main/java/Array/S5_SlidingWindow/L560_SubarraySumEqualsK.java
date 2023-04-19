@@ -224,7 +224,6 @@ public class L560_SubarraySumEqualsK {
         return minSum;
     }
 
-
     public static void main(String[] args) {
         log(subarraySum4(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
         log(subarraySum4(new int[]{1, 2, 3}, 3));                 // expects 2. (1+2, 3)

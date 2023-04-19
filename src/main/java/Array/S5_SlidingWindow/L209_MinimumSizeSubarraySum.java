@@ -124,23 +124,22 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     /*
-     * 解法4：窗口滑动 + Prefix Sum
+     * 解法4：窗口滑动 + Prefix Sum（🥇最优解之一）
      * - 思路：结合解法1、2。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int minSubArrayLen4(int s, int[] nums) {
-        int n = nums.length, minLen = n + 1;
+        int l = 0, r = 0, n = nums.length, minLen = n + 1;
 
         int[] preSums = new int[n];
-        for (int i = 0; i < preSums.length; i++)  // 与解法1中的 prefix sum 生成、使用方式一致
+        for (int i = 0; i < preSums.length; i++)          // 与解法1中的 prefix sum 生成、使用方式一致
             preSums[i] = i == 0 ? nums[0] : preSums[i - 1] + nums[i];
 
-        for (int l = 0, r = 0; l < n; ) {
+        while (r < n && l <= r) {
             if (preSums[r] - preSums[l] + nums[l] < s) {  // 未到达 s 之前持续扩展窗口
                 r++;
-                if (r == n) break;  // 当 r 到达 n 时 break 循环，不再执行下面逻辑，否则数组会越界
-            } else {                // 到达 s 后开始收缩窗口
-                minLen = Math.min(minLen, r - l + 1);  // 只在收缩收缩窗口时记录最小长度（∵ 此时满足 > s 的条件）
+            } else {                                      // 到达 s 后开始收缩窗口
+                minLen = Math.min(minLen, r - l + 1);     // 只在收缩收缩窗口时记录最小长度（∵ 此时满足 > s 的条件）
                 l++;
             }
         }
@@ -149,9 +148,9 @@ public class L209_MinimumSizeSubarraySum {
     }
 
     public static void main(String[] args) {
-        log(minSubArrayLen(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
-        log(minSubArrayLen(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
-        log(minSubArrayLen(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
-        log(minSubArrayLen(8, new int[]{1, 2, 3}));           // expects 0.
+        log(minSubArrayLen4(7, new int[]{2, 3, 1, 2, 4, 3}));  // expects 2. [4, 3]
+        log(minSubArrayLen4(5, new int[]{1, 2, 3, 5, 7}));     // expects 1. [5] or [7]
+        log(minSubArrayLen4(4, new int[]{1, 1, 1, 1}));        // expects 4. [1, 1, 1, 1]
+        log(minSubArrayLen4(8, new int[]{1, 2, 3}));           // expects 0.
     }
 }
