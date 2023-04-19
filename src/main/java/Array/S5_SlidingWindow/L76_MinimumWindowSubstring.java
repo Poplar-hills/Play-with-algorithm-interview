@@ -120,8 +120,8 @@ public class L76_MinimumWindowSubstring {
      * 解法2：滑动窗口（解法1的简化版，🥇最优解）
      * - 思路：与解法1一致。
      * - 实现：与解法1的区别：
-     *   1. 不再需要 isShrinking 标志位；
-     *   2. 使用 matchCount 正向记录命中 t 中元素的个数。
+     *   1. 只用一个内层 while 来收缩窗口，而扩展窗口使用外层 while 控制 ∴ 不再需要 isShrinking 标志位；
+     *   2. 使用 matchCount 正向记录命中 t 中元素的个数（∴ 初值为0）。
      * - 💎 套路：扩展/收缩滑动窗口类型的题目都可以采用该模式
      *   1. 大 while 循环内，让 r 向右充分扩展后再让 l 向右充分收缩（r 用 if 扩展，l 用 while 收缩）；
      *   2. 扩展/收缩时检测 r/l 处的字符在频谱 freq 中的值来增/减 matchCount；
