@@ -11,8 +11,8 @@ import static Utils.Helpers.log;
 public class L1749_MaximumAbsoluteSumOfAnySubarray {
     /**
      * 解法1：Prefix Sum
-     * - 思路：最大的 subarray 之和的绝对值 = 最大的 subarray 之和 - 前面最小的 subarray 之和 ∴ 只需维护两个变量，记录
-     *   数组遍历过程中最大、最小的 sum，最后返回他们的差即可。
+     * - 思路：最大的 subarray 之和的绝对值 = [0,i] 中最大的 subarray 之和 - [0,i] 中最小的 subarray 之和 ∴ 只需维护
+     *   两个变量，记录数组遍历过程中最大、最小的 sum，最后返回他们的差即可。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      */
     public static int maxAbsoluteSum(int[] nums) {

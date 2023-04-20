@@ -170,39 +170,63 @@ public class L560_SubarraySumEqualsK {
      * - 思路：该题也可使用👆的解法：
      *   1. Brute force - O(n^3)
      *   2. 2 pointers + Prefix sum - O(n^2)
-     *   3.（本解法）要找到和最小的 sub-array，相当于找 sum[0,r] - max(sum[0,l-1])，这样问题就转化为如何找到 [0,l-1] 中
-     *      的最大 preSum ∴ 可采用 max heap，在累积 preSum 的过程中，将次的 preSum 放入堆中 ∴ 堆顶即是之前遇到过的最大
-     *      preSum。这样只需使用 sum[0,r] - 堆顶的 preSum 即可得到 minSum。
-     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
+     *   3.（本解法）要找到和最小的 sub-array，相当于找 sum[0,r] - max(sum[0,l-1])，这样问题就转化为如何找到 [0,l-1]
+     *      中最大的 sum ∴ 可以在不断累积 sum 的过程中用一个变量 maxSum 记录遇到过的最大的 sum。然后再用 sum[0,r] - maxSum
+     *      即可得到解。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static int minSubarraySum(int[] nums) {
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> b - a);
         int sum = 0, res = Integer.MAX_VALUE;
-        maxHeap.offer(sum);
+        int maxSum = Integer.MIN_VALUE;
 
         for (int n : nums) {
-            sum += n;       // 累积 sum[0,r]，即 [0,r] 上的 preSum
-            int maxPrevSum = maxHeap.peek();
-            res = Math.min(res, sum - maxPrevSum);
-            maxHeap.offer(sum);
+            sum += n;
+            maxSum = Math.max(maxSum, sum);
+            res = Math.min(res, sum - maxSum);
         }
 
         return res;
     }
 
-    /*
-     * Follow-up Question 解法2
-     * - 思路：解法1中的 max heap 将问题复杂化了，其实只需用一个 maxPreSum 变量维护之前遇到的最大 sum 即可。
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
-     * */
+    /**
+     * Follow-up Question
+     * - 解法2：DP
+     * - 思路：Kadane's algorithm 是在 DP 思路上的
+     *
+     * [4, -4, 2, -3]
+     *  4                   - minSum 初始化为 nums[0]=4, minSum > 4 ∴ minSum=4
+     *     -4               - minSum = min(minSum, minSum+nums[i], nums[i]) = min(4, 4-4, -4) = -4
+     *        -4            - minSum = min(-4, -4+2, 2) = -4
+     *            -5        - minSum = min(-4, -4-3, -3) = -7
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     */
     public static int minSubarraySum2(int[] nums) {
-        int sum = 0, res = Integer.MAX_VALUE;
-        int maxPreSum = Integer.MIN_VALUE;
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+
+        for (int i = 1; i < n; i++)
+            dp[i] = Math.min(dp[i - 1] + nums[i], nums[i]);
+
+        int res = Integer.MAX_VALUE;
+        for (int d : dp)
+            res = Math.min(res, d);
+
+        return res;
+    }
+
+    /**
+     * Follow-up Question
+     * - 解法3：Kadane's algorithm
+     * - SEE: https://zhuanlan.zhihu.com/p/85188269
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     */
+    public static int minSubarraySum3(int[] nums) {
+        int sum = 0, subArrMinSum = nums[0], res = nums[0];
 
         for (int n : nums) {
-            sum += n;
-            maxPreSum = Math.max(maxPreSum, sum);
-            res = Math.min(res, sum - maxPreSum);
+            subArrMinSum = Math.min(subArrMinSum + n, n);
+            res = Math.min(res, subArrMinSum);
         }
 
         return res;
@@ -216,8 +240,9 @@ public class L560_SubarraySumEqualsK {
         log(subarraySum3(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
         log(subarraySum3(new int[]{4, 2, -1}, 0));                // expects 0.
 
-        log(minSubarraySum2(new int[]{4, -4, 2, -2}));               // expects -4. (-4+2-2)
-        log(minSubarraySum2(new int[]{4, -4, 2, -3}));               // expects -5. (-4+2-3)
-        log(minSubarraySum2(new int[]{-1, 4, 2, -2}));               // expects -2. (-2)
+        log(minSubarraySum2(new int[]{4, -4, 2, -2}));                // expects -4. (-4+2-2)
+        log(minSubarraySum2(new int[]{4, -4, 2, -3}));                // expects -5. (-4+2-3)
+        log(minSubarraySum2(new int[]{-1, 4, 2, -2}));                // expects -2. (-2)
+        log(minSubarraySum2(new int[]{4, 2, -1, 5, -5, 5}));          // expects -5. (-5)
     }
 }
