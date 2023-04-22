@@ -55,10 +55,47 @@ public class L53_MaximumSubarray {
         return res;
     }
 
+    /**
+     * 解法3：DP
+     * - 思路：
+     *   - 子问题定义：f(i) 表示"在所有以 i 为终止下标的 subarray 中，数组之和最大的那个值"
+     *   - f(i) = max(f(i-1) + nums[i], min[i])
+     * - 例：[-4, 4, -2, 3, -1]
+     *       -4
+     *           4
+     *               2
+     *                  5
+     *                      4
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     */
+    public static int maxSubArray3(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+
+        for (int i = 1; i < n; i++)
+            dp[i] = Math.max(dp[i - 1] + nums[i], nums[i]);
+
+        int res = Integer.MIN_VALUE;
+        for (int d : dp)
+            res = Math.max(res, d);
+
+        return res;
+    }
+
+    /**
+     * 解法4：Kadane algorithm
+     * - 思路：
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     */
+    public static int maxSubArray4(int[] nums) {
+        return 0;
+    }
+
     public static void main(String[] args) {
-        log(maxSubArray2(new int[]{4, -4, 2}));         // expects 4. (4)
-        log(maxSubArray2(new int[]{4, -1, 2, -3, 1}));  // expects 5. (4-1+2)
-        log(maxSubArray2(new int[]{4, 1, -2, -2, 1}));  // expects 5. (4+1)
-        log(maxSubArray2(new int[]{4, 1, -2, -2, 8}));  // expects 9. (4+1-2-2+8)
+        log(maxSubArray3(new int[]{-4, 4, -2, 3, -1}));  // expects 5. (4-2+3)
+        log(maxSubArray3(new int[]{4, -1, 2, -3, 1}));   // expects 5. (4-1+2)
+        log(maxSubArray3(new int[]{4, -4, 2}));          // expects 4. (4)
+        log(maxSubArray3(new int[]{4, 1, -2, -2, 8}));   // expects 9. (4+1-2-2+8)
     }
 }
