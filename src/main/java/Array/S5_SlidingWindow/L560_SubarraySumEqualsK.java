@@ -167,77 +167,8 @@ public class L560_SubarraySumEqualsK {
 
     /*
      * Follow-up Question: Given an integer array, find a continuous subarray with the minimum sum.
-     * - 💎 思路：
-     *   1. Brute force - O(n^3)
-     *   2. 2 pointers + Prefix sum - O(n^2)
-     *   3. 转化为求前 n 个元素的最大 sum - O(n)
-     *   4. 用 DP 求 [0,n] 上每一位上的 subarray min sum，然后去其中的最小值 - O(n)
-     *   5. Kadane 算法 - O(n)
-     * - 实现：采用👆🏻的思路3：要找到 [0,n] 上的 subarray min sum，相当于要找 sum[0,r] - max(sum[0,l-1])，其中 l,r 为
-     *   subarray 的左右边界。相当于将问题就转化为如何找到前 x 个元素的最大 sum。而解法就是在不断累积 sum 的过程中用变量 maxSum
-     *   记录遇到的最大 sum。
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * - 💎 思路：SEE: L53_MaximumSubarray
      * */
-    public static int minSubarraySum(int[] nums) {
-        int sum = 0, res = Integer.MAX_VALUE;
-        int maxSum = Integer.MIN_VALUE;
-
-        for (int n : nums) {
-            sum += n;
-            maxSum = Math.max(maxSum, sum);
-            res = Math.min(res, sum - maxSum);
-        }
-
-        return res;
-    }
-
-    /**
-     * Follow-up Question
-     * - 解法2：DP（👆🏻的思路4）
-     * - 思路：通过定义子问题来找到递推关系：
-     *   - 定义子问题：f(i) 表示"在所有以 i 为终止下标的 subarray 中，数组之和最小的那个值"（注意跟子问题和原问题定义并不一致）；
-     *   - 递推表达式：根据子问题定义 ∵ f(i-1) 已经表示"以 i-1 为终止下边的 subarray 中，数组之和最小的那个值" ∴ 要求 f(i) 其实就是
-     *     比较 f(i-1) + nums[i]（只有加了 nums[i] 才是以 i 为终止下边的 subarray）与 nums[i] 之间的大小 ∴ 可得到递推表达式：
-     *     f(i) = min(f(i-1), f(i-1) + nums[i], nums[i])
-     * - 例：[4, -4, 2, -3, 1]
-     *       4       - f(0) = nums[0] = 4
-     *          -4      - f(1)：即比较 [4,-4]、[-4] 这两个 subarray 的 sum；f(1) = min(f(0)+nums[1], nums[1]) = min(4-4, -4) = -4
-     *             -2      - f(2)：即比较 [4,-4,2]、[-4,2]、[2] 这三个 subarray 的 sum；∵ f(1) 已经是 [4,-4]、[-4] 这两个 subarray 中 sum 最小的那个了 ∴ f(2) = min(f(1)+nums[2], nums[2]) = min(-4+2, 2) = -2
-     *                 -5     - f(3)：即比较 [4,-4,2,-3]、[-4,2,-3]、[2,-3]、[-3] 这四个 subarray 的 sum；∵ f(2) 已经是 [4,-4,2]、[-4,2]、[2] 这三个 subarray 中 sum 最小的那个了 ∴ f(3) = min(f(2)+nums[3], nums[3]) = min(-2-3, -3) = -5
-     *                     -4    - f(4)：....；f(4) = min(f(3)+nums[4], nums[4]) = min(-5+1, 1) = -4
-     * - Reference SEE: https://zhuanlan.zhihu.com/p/85188269
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
-     */
-    public static int minSubarraySum2(int[] nums) {
-        int n = nums.length;
-        int[] dp = new int[n];
-        dp[0] = nums[0];
-
-        for (int i = 1; i < n; i++)
-            dp[i] = Math.min(dp[i - 1] + nums[i], nums[i]);
-
-        int res = Integer.MAX_VALUE;
-        for (int d : dp)             // 最后再求 dp 数组中的 min
-            res = Math.min(res, d);
-
-        return res;
-    }
-
-    /**
-     * Follow-up Question
-     * - 解法3：Kadane's algorithm（即 DP + 空间优化）
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
-     */
-    public static int minSubarraySum3(int[] nums) {
-        int sum = 0, subArrMinSum = nums[0], res = nums[0];
-
-        for (int n : nums) {
-            subArrMinSum = Math.min(subArrMinSum + n, n);
-            res = Math.min(res, subArrMinSum);
-        }
-
-        return res;
-    }
 
     public static void main(String[] args) {
         log(subarraySum3(new int[]{1, 1, 1}, 2));                 // expects 2. (1+1, 1+1)
@@ -246,10 +177,5 @@ public class L560_SubarraySumEqualsK {
         log(subarraySum3(new int[]{-1, -1, 1}, 0));               // expects 1. (-1+1)
         log(subarraySum3(new int[]{4, 2, -1, 5, -5, 5}, 5));      // expects 5. (4+2-1, 4+2-1+5-5, 5, 5-5+5, 5)
         log(subarraySum3(new int[]{4, 2, -1}, 0));                // expects 0.
-
-        log(minSubarraySum2(new int[]{4, -4, 2, -2}));                // expects -4. (-4+2-2)
-        log(minSubarraySum2(new int[]{4, -4, 2, -3, 1}));             // expects -5. (-4+2-3)
-        log(minSubarraySum2(new int[]{-1, 4, 2, -2}));                // expects -2. (-2)
-        log(minSubarraySum2(new int[]{4, 2, -1, 5, -5, 5}));          // expects -5. (-5)
     }
 }

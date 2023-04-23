@@ -170,7 +170,7 @@ public class TimeComplexity {
      * 从而总体复杂度为 O(n)。换一种方式理解：每个数字都只计算一次，因此总共计算 n 次，即 O(n)。
      * */
     public void allFibUsingCache(int n) {
-        int[] memo = new int[n + 1];  // 范围是 [0, n]，因此开辟 n+1 的空间（或使用 HashMap 也可）
+        int[] memo = new int[n + 1];  // 范围是 [0,n]，因此开辟 n+1 的空间（或使用 HashMap 也可）
         for (int i = 0; i < n; i++)
             log(i + " : " + fib(i, memo));
     }

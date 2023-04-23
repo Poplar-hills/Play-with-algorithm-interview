@@ -10,7 +10,7 @@ import static Utils.Helpers.log;
  *   1. Brute force - O(n^3)
  *   2. 2 pointers + Prefix sum - O(n^2)
  *   3. 转化为求前 n 个元素的最大 sum - O(n)
- *   4. 用 DP 求 [0,n] 上每一位上的 subarray min sum，然后去其中的最小值 - O(n)
+ *   4. 用 DP 求 [0,n) 上每一位上的 subarray min sum，然后去其中的最小值 - O(n)
  *   5. Kadane 算法 - O(n)
  */
 
@@ -57,45 +57,80 @@ public class L53_MaximumSubarray {
 
     /**
      * 解法3：DP
-     * - 思路：
-     *   - 子问题定义：f(i) 表示"在所有以 i 为终止下标的 subarray 中，数组之和最大的那个值"
-     *   - f(i) = max(f(i-1) + nums[i], min[i])
+     * - 思路：通过定义子问题来找到递推关系：
+     *   - 定义子问题：
+     *     - 若将子问题直接定义为与原问题一致：f(i) 表示"在 [0,i] 上的最大子数组之和"，这样在思考 f(i) 与 f(i-1) 之间关系时很难
+     *       找到递推关系（f(0)=-4, f(1)=4, f(2)=4, f(3)=5, f(4)=5）；
+     *     - ∴ 换一个思路 —— 将子问题定义为与原问题不一致：f(i) 表示"在 [0,i] 上所有以 i 为终止下标的子数组中最大的数组之和"，
+     *       最后只要找到 [0,n) 上最大的 f(i) 即是原问题的解。
+     *   - 递推表达式：根据子问题定义 ∵ f(i-1) 已经表示"在 [0,i] 上所有以 i 为终止下标的子数组中最大的数组之和" ∴ 求 f(i) 其实
+     *     就是比较 f(i-1) + nums[i] 与 nums[i] 之间的大小（只有加了 nums[i] 才是以 i 为终止下边的 subarray）∴ 可得到递推表
+     *     达式：f(i) = max(f(i-1) + nums[i], nums[i])
      * - 例：[-4, 4, -2, 3, -1]
-     *       -4
-     *           4
-     *               2
-     *                  5
-     *                      4
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     *       -4       - f(0) = nums[0] = 4
+     *           4      - f(1)：即比较 [-4,4]、[4] 这2个子数组之和；f(1) = max(-4+4, 4) = 4
+     *               2      - f(2)：即比较 [-4,4,-2]、[4,-2]、[-2] 这3个子数组之和；∵ f(1) 已经是 [-4,4]、[4] 这2个子数组之和中最大的了 ∴ f(2) = min(f(1)+nums[2], nums[2]) = min(4-2, 2) = 2
+     *                  5     - f(3)：即比较 [-4,4,-2,3]、[4,-2,3]、[-2,3]、[3] 这4个子数组之和；∵ f(3) [-4,4,-2]、[4,-2]、[-2] 这3个子数组之和中最大的了 ∴ f(3) = min(f(2)+nums[3], nums[3]) = min(2+3, 3) = 5
+     *                      4    - f(4)：....；f(4) = min(f(3)+nums[4], nums[4]) = min(5-1, -1) = 4
+     * - Reference SEE: https://zhuanlan.zhihu.com/p/85188269
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      */
     public static int maxSubArray3(int[] nums) {
-        int n = nums.length;
+        int n = nums.length, maxSubSum = Integer.MIN_VALUE;
         int[] dp = new int[n];
         dp[0] = nums[0];
 
         for (int i = 1; i < n; i++)
             dp[i] = Math.max(dp[i - 1] + nums[i], nums[i]);
 
-        int res = Integer.MIN_VALUE;
         for (int d : dp)
-            res = Math.max(res, d);
+            maxSubSum = Math.max(maxSubSum, d);  // 最后再求 dp 数组中的最大值
 
-        return res;
+        return maxSubSum;
     }
 
     /**
-     * 解法4：Kadane algorithm
-     * - 思路：
+     * 解法4：Kadane algorithm（解法3 DP 的的空间优化版）
+     * - 思路：与解法3一致。
+     * - 实现：用一个变量维护 max subarray sum，不再需要解法3中的 dp 数组。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      */
     public static int maxSubArray4(int[] nums) {
-        return 0;
+        int maxSubSumEndingHere = 0, maxSubSum = Integer.MIN_VALUE;
+
+        for (int n : nums) {
+            maxSubSumEndingHere = Math.max(maxSubSumEndingHere + n, n);
+            maxSubSum = Math.max(maxSubSum, maxSubSumEndingHere);
+        }
+
+        return maxSubSum;
+    }
+
+    /**
+     * 解法5：
+     * - 思路：与解法3、4思路相反 —— 要求 [0,n) 上的最大子数组之和，相当于求 sum[0,i] - min(sum[0,i-1])，即：
+     *   不断累积的 sum - 以0为起始下标的所有子数组中最小的数组和。这就将问题就转化为如何找到前 i-1 个元素的最小数组和（之所以
+     *   是 i-1 是 ∵ 若不-1则可能出现 sum[0->i] - sum[0->i] 的情况，最后得到的是空数组而非子数组）。
+     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     */
+    public static int maxSubArray5(int[] nums) {
+        int sum = 0, minSumFrom0 = Integer.MAX_VALUE, maxSubSum = Integer.MIN_VALUE;
+
+        for (int n : nums) {
+            sum += n;
+            minSumFrom0 = Math.min(minSumFrom0, sum - n);  // -n 是为了求 [0,i-1] 上以0为起始下标的所有子数组中最小的数组和
+            maxSubSum = Math.max(maxSubSum, sum - minSumFrom0);
+        }
+
+        return maxSubSum;
     }
 
     public static void main(String[] args) {
-        log(maxSubArray3(new int[]{-4, 4, -2, 3, -1}));  // expects 5. (4-2+3)
-        log(maxSubArray3(new int[]{4, -1, 2, -3, 1}));   // expects 5. (4-1+2)
-        log(maxSubArray3(new int[]{4, -4, 2}));          // expects 4. (4)
-        log(maxSubArray3(new int[]{4, 1, -2, -2, 8}));   // expects 9. (4+1-2-2+8)
+        log(maxSubArray5(new int[]{-4, 4, -2, 3, -1}));  // expects 5. (4-2+3)
+        log(maxSubArray5(new int[]{4, -1, 2, -3, 1}));   // expects 5. (4-1+2)
+        log(maxSubArray5(new int[]{4, -4, 2}));          // expects 4. (4)
+        log(maxSubArray5(new int[]{4, 1, -2, -2, 8}));   // expects 9. (4+1-2-2+8)
+        log(maxSubArray5(new int[]{5, 4, -1, 7, 8}));    // expects 23. (5+4-1+7+8)
+        log(maxSubArray5(new int[]{-1}));                // expects -1. (-1)
     }
 }
