@@ -89,7 +89,7 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-     * 解法3：反向节点间的链接（解法1、2的递归版，🥇最优解）
+     * 解法3：反向节点间的链接（解法1、2的递归版，🥇最优解之一）
      * - 思路：
      *   1. 与解法1、2一致，先让两个指针 prev、curr 分别走到第 m-1、m 号节点上；
      *   2. 然后递归地对 [m,n] 内的节点进行反向，并返回反向后新头结点 rHead 及不需要反向的第一个节点 rest；
@@ -107,7 +107,7 @@ public class L92_ReverseLinkedListII {
      *        prev  curr     rHead rest      - 再将5链到2上、将6链到3上
      *
      * - 👉 对比：相比解法1、2，该解法更加声明式（declarative）∴ 可读性更强。
-     * - 时间复杂度 O(n)，空间复杂度 O(1)。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode reverseBetween3(ListNode head, int m, int n) {
         ListNode dummyHead = new ListNode();
@@ -138,6 +138,57 @@ public class L92_ReverseLinkedListII {
         head.next.next = head;  // 将 A -> B -> C 改为 A <-> B   C
         head.next = null;       // 将 A <-> B   C 改为 A <- B   C
         return reversed;        // 返回的总是递归到底后返回的节点
+    }
+
+    /**
+     * 解法4：反向节点间的链接（解法1、2的递归版，🥇最优解之一）
+     * - 思路：与解法3一致。
+     * - 实现：不用于解法3，该解法预先标记所有需要用到的节点，并在反向之前将需要反向的部分从主链表中分离出来，使得 reverseList
+     *   的实现更简单。
+     * - 例：
+     *              pb   b         pt   t
+     *    d -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7,  m=3, n=5
+     *    p    c         - m=3,n=5
+     *         p    c         - m=2,n=4
+     *              p    c         - m=1,n=3, let prevBody=p, body=c
+     *                   p    c         - m=0,n=2
+     *                        p    c         - m=-1,n=1
+     *                             p    c         - m=-2,n=0, let prevTail=p, tail=c
+     *
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     */
+    public static ListNode reverseBetween4(ListNode head, int m, int n) {
+        ListNode dummyHead = new ListNode();
+        dummyHead.next = head;
+
+        ListNode prev = dummyHead, curr = head;
+        ListNode prevBody = dummyHead, body = head, prevTail, tail;
+
+        while (n != 0) {
+            if (m == 1) {  // 当 curr 走到要反向的部分里的第一个节点时，标记 prevBody, body
+                prevBody = prev;
+                body = curr;
+            }
+            prev = prev.next;
+            curr = curr.next;
+            m--; n--;
+        }
+        prevTail = prev;  // 当 curr 走到要反向的部分之后的第一个节点时，标记 prevTail, tail
+        tail = curr;
+
+        prevBody.next = prevTail.next = null;  // 先将要反向的部分从主链表上分离开，这样 reverseList 的实现会简单一些
+        prevBody.next = reverseList(body);
+        body.next = tail;   // 反向后 body 即是最后一个节点，把 tail 连上去即可
+
+        return dummyHead.next;
+    }
+
+    private static ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode newHead = reverseList(head.next);
+        head.next.next = head;
+        head.next = null;
+        return newHead;
     }
 
     /*
@@ -176,7 +227,7 @@ public class L92_ReverseLinkedListII {
     }
 
     /*
-     * 解法4：指针对撞 + 交换节点值
+     * 解法5：指针对撞 + 交换节点值
      * - 思路：👆解法不成立的原因是单向链表没有从后一个节点指向前一个节点的指针，但若借助递归则可以实现 —— ∵ 每层递归结束时会
      *   回到上一层调用栈，此时即可获得上一个节点（过程可视化 SEE: https://leetcode.com/problems/reverse-linked-list-ii/solution/）
      * - 实现：递归函数的设计要点：
@@ -199,7 +250,7 @@ public class L92_ReverseLinkedListII {
     private static ListNode l;   // ∵ 递归过程中不好拿到 l 指针 ∴ 将其设计为外部变量
     private static boolean stop;
 
-    public static ListNode reverseBetween4(ListNode head, int m, int n) {
+    public static ListNode reverseBetween5(ListNode head, int m, int n) {
         l = head;
         stop = false;          // 要先 init 静态成员变量，否则 test case 之间会互相影响
         recurseAndReverse(head, m, n);
@@ -225,12 +276,12 @@ public class L92_ReverseLinkedListII {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7});
-        log(reverseBetween4(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
+        log(reverseBetween(l1, 3, 5));  // expects 1->2->5->4->3->6->7->NULL
 
         ListNode l2 = createLinkedList(new int[]{3, 5});
-        log(reverseBetween4(l2, 1, 2));  // expects 5->3->NULL
+        log(reverseBetween(l2, 1, 2));  // expects 5->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{5});
-        log(reverseBetween4(l3, 1, 1));  // expects 5->NULL
+        log(reverseBetween(l3, 1, 1));  // expects 5->NULL
     }
 }
