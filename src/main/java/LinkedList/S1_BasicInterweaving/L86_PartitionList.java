@@ -59,22 +59,24 @@ public class L86_PartitionList {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode partition2(ListNode head, int x) {
-        ListNode dummyHead1 = new ListNode(), prev1 = dummyHead1;
-        ListNode dummyHead2 = new ListNode(), prev2 = dummyHead2;
+        if (head == null || head.next == null) return head;
+        ListNode smallDummy = new ListNode(), smallCurr = smallDummy;
+        ListNode largeDummy = new ListNode(), largeCurr = largeDummy;
 
-        for (; head != null; head = head.next) {
+        while (head != null) {
             if (head.val < x) {
-                prev1.next = head;
-                prev1 = prev1.next;
+                smallCurr.next = head;
+                smallCurr = smallCurr.next;
             } else {
-                prev2.next = head;
-                prev2 = prev2.next;
+                largeCurr.next = head;
+                largeCurr = largeCurr.next;
             }
+            head = head.next;
         }
 
-        prev1.next = dummyHead2.next;
-        prev2.next = null;  // 注意 prev2 的最后一个节点的 next 可能还链接着原来的节点，需断开链接
-        return dummyHead1.next;
+        smallCurr.next = largeDummy.next;
+        largeCurr.next = null;  // 注意 large 链表的最后一个节点的 next 可能还链接着原来的节点，需断开链接
+        return smallDummy.next;
     }
 
     public static void main(String[] args) {
