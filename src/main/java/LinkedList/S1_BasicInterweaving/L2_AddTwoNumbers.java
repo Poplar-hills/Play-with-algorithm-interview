@@ -36,7 +36,7 @@ public class L2_AddTwoNumbers {
     private static ListNode longToLinkedList(long num) {
         ListNode dummyHead = new ListNode();
         ListNode curr = dummyHead;
-        while (num >= 1) {
+        while (num > 0) {
             curr.next = new ListNode((int)(num % 10));  // 注意类型转换时后面如果是表达式要加上括号提高优先级
             curr = curr.next;
             num /= 10;
@@ -49,7 +49,7 @@ public class L2_AddTwoNumbers {
      * - 思路：模拟加法运算，遍历链表，手动处理进位。
      * - 实现：∵ while 的条件是 l1 != null && l2 != null ∴ 当抵达较短的链表尾部时循环就结束了，之后再将较长链表的剩余节点
      *   拼接到 node 后面。
-     * - 问题：这种实现在 test case 2 中会出错 ∵ 在拼接剩余节点时，没有（也不易）处理进位问题。
+     * - 问题：这种实现在 test case 2 中会出错 ∵ 在拼接剩余节点时，没有（也不便于）处理进位问题。
      * */
     public static ListNode addTwoNumbers0(ListNode l1, ListNode l2) {
         if (l1 == null && l2 == null) return null;
@@ -82,7 +82,7 @@ public class L2_AddTwoNumbers {
         ListNode curr = dummyHead;
         int carry = 0;
 
-        while (l1 != null || l2 != null) {  // 关键点是这个循环的退出条件（与解法3的递归结束条件对比）
+        while (l1 != null || l2 != null || carry != 0) {  // 关键点：循环的退出条件（与解法3的递归结束条件一致）
             int v1 = l1 == null ? 0 : l1.val;
             int v2 = l2 == null ? 0 : l2.val;
             int sum = v1 + v2 + carry;
@@ -94,9 +94,6 @@ public class L2_AddTwoNumbers {
             if (l1 != null) l1 = l1.next;
             if (l2 != null) l2 = l2.next;
         }
-
-        if (carry != 0)  // 如果还有进位则需再加一位
-            curr.next = new ListNode(carry);
 
         return dummyHead.next;
     }
@@ -111,7 +108,7 @@ public class L2_AddTwoNumbers {
     }
 
     private static ListNode helper3(ListNode l1, ListNode l2, int carry) {
-        if (l1 == null && l2 == null && carry == 0)  // 关键点：三个条件同时满足才结束递归
+        if (l1 == null && l2 == null && carry == 0)  // 关键点：三个条件同时满足才结束递归（与解法2一致）
             return null;
 
         int v1 = l1 == null ? 0 : l1.val;
@@ -119,11 +116,11 @@ public class L2_AddTwoNumbers {
         int sum = v1 + v2 + carry;
 
         carry = sum / 10;
-        ListNode head = new ListNode(sum % 10);   // 每层递归创建一个节点
+        ListNode head = new ListNode(sum % 10);  // 每层递归创建一个节点
 
-        ListNode next1 = l1 == null ? null : l1.next;
-        ListNode next2 = l2 == null ? null : l2.next;
-        head.next = helper3(next1, next2, carry);  // 下层创建的节点链接到该层创建的节点后面
+        if (l1 != null) l1 = l1.next;
+        if (l2 != null) l2 = l2.next;
+        head.next = helper3(l1, l2, carry);  // 下层创建的节点链接到该层创建的节点后面
 
         return head;  // 每层递归最后返回该层创建出来的节点
     }
@@ -131,11 +128,11 @@ public class L2_AddTwoNumbers {
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{2, 4, 3});
         ListNode l2 = createLinkedList(new int[]{5, 6, 4, 1});
-        log(addTwoNumbers(l1, l2));   // expects 7->0->8->1->NULL
+        log(addTwoNumbers2(l1, l2));   // expects 7->0->8->1->NULL
 
         ListNode l3 = createLinkedList(new int[]{3, 9, 9, 9, 9, 9, 9, 9, 9, 9});
         ListNode l4 = createLinkedList(new int[]{7});
-        log(addTwoNumbers(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
+        log(addTwoNumbers2(l3, l4));   // expects 0->0->0->0->0->0->0->0->0->0->1->NULL
     }
 }
 
