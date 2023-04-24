@@ -23,22 +23,22 @@ public class L92_ReverseLinkedListII {
      * - 实现：要进行上面第2步 fix 的话需先获得这4个节点的引用 ∴ 在遍历和反向的过程中要能记录到这4个节点。
      *         m-1   m         n   n+1
      *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
-     *        prev  curr                     - 遍历到 m-1、m 号节点时用 conn、rTail 记录索引
+     *        prev  curr                     - 遍历到 m-1、m 号节点时用 prevBody、prevTail 记录索引
      *     1 -> 2 <- 3 <- 4 <- 5    6 -> 7
-     *        conn rTail     prev  curr      - 反向 [m,n] 之间的链接（实际上反向的是 [m-1,n] 之间的链接，但没关系，
+     *        pBody pTail     prev  curr      - 反向 [m,n] 之间的链接（实际上反向的是 [m-1,n] 之间的链接，但没关系，
      *     1 -> 2 -> 5 -> 4 -> 3 -> 6 -> 7     m-1 与 m 之间的链接最后还会被重置）
-     *        conn rTail     prev  curr      - 将5链到2上、将6链到3上。
+     *        pBody pTail     prev  curr      - 将5链到2上、将6链到3上。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode reverseBetween(ListNode head, int m, int n) {
         if (head == null) return null;
         ListNode prev = null, curr = head;
-        ListNode conn = head, rTail = head;  // conn 指向第 m-1 个节点，rTail 指向第 m 个节点（即 reverse 之后的尾节点）
+        ListNode prevBody = head, prevTail = head;  // prevBody 指向第 m-1 个节点，prevTail 指向第 m 个节点（即 reverse 之后的尾节点）
 
         for (int i = 1; i <= n; i++) {  // ∵ m、n 从1开始 ∴ 这里从1开始遍历
-            if (i == m) {               // 遍历到第 m-1、m 号节点时用 conn、rTail 记录索引
-                conn = prev;
-                rTail = curr;
+            if (i == m) {               // 遍历到第 m-1、m 号节点时用 prevBody、prevTail 记录索引
+                prevBody = prev;
+                prevTail = curr;
             }
             if (i < m) {                // 此处也可以是 i <= m，即只反向 [m,n] 内的链接反向
                 prev = curr;
@@ -49,10 +49,10 @@ public class L92_ReverseLinkedListII {
                 prev = curr;
                 curr = next;
             }
-        }                                    // 遍历结束时 prev 停在第 n 号节点上，curr 停在 n+1 号节点上
-        if (conn != null) conn.next = prev;  // 步骤2：将现在第 n 号节点链回原来的第 m-1 号节点上
-        else head = prev;                    // test case 2、3 中 m=1 ∴ conn 是 null，需要特殊处理，此时第 n 号节点就是链表的新 head
-        rTail.next = curr;                   // 将 n-1 处的节点链到 m 处节点上
+        }                               // 遍历结束时 prev 停在第 n 号节点上，curr 停在 n+1 号节点上
+        if (prevBody != null) prevBody.next = prev;  // 步骤2：将现在第 n 号节点链回原来的第 m-1 号节点上
+        else head = prev;               // test case 2、3 中 m=1 ∴ prevBody 是 null，需要特殊处理，此时第 n 号节点就是链表的新 head
+        prevTail.next = curr;           // 将 n-1 处的节点链到 m 处节点上
         return head;
     }
 
@@ -69,11 +69,10 @@ public class L92_ReverseLinkedListII {
         while (m > 1) {        // 先让 prev、curr 分别移动到 m-1、m 位置
             prev = curr;
             curr = curr.next;
-            m--;
-            n--;
+            m--; n--;
         }
 
-        ListNode conn = prev, rTail = curr;
+        ListNode prevBody = prev, prevTail = curr;
         while (n > 0) {        // 开发反向 [m-1,n] 之间的链接
             ListNode next = curr.next;
             curr.next = prev;
@@ -82,9 +81,9 @@ public class L92_ReverseLinkedListII {
             n--;
         }
 
-        if (conn != null) conn.next = prev;  // 与解法1一样
+        if (prevBody != null) prevBody.next = prev;  // 与解法1一样
         else head = prev;
-        rTail.next = curr;
+        prevTail.next = curr;
         return head;
     }
 
@@ -92,8 +91,8 @@ public class L92_ReverseLinkedListII {
      * 解法3：反向节点间的链接（解法1、2的递归版，🥇最优解之一）
      * - 思路：
      *   1. 与解法1、2一致，先让两个指针 prev、curr 分别走到第 m-1、m 号节点上；
-     *   2. 然后递归地对 [m,n] 内的节点进行反向，并返回反向后新头结点 rHead 及不需要反向的第一个节点 rest；
-     *   3. 最终链接相应节点（prev -> rHead、curr -> rest）即可。
+     *   2. 然后递归地对 [m,n] 内的节点进行反向，并返回反向后新头结点 newBody 及不需要反向的第一个节点 tail；
+     *   3. 最终链接相应节点（prev -> newBody、curr -> tail）即可。
      * - 实现：
      *   1. 采用递归反向节点间的链接；
      *   2. 反向的是 [m,n] 之间的链接（这里与解法1、2不同）；
@@ -102,9 +101,9 @@ public class L92_ReverseLinkedListII {
      *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
      *        prev  curr                     - 先让 prev、curr 分别移动到 m-1、m 上
      *     1 -> 2    3 <- 4 <- 5    6 -> 7
-     *        prev  curr     rHead rest      - 递归地将 [m,n] 之间的链接反向
+     *        prev  curr     nBody tail      - 递归地将 [m,n] 之间的链接反向
      *     1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
-     *        prev  curr     rHead rest      - 再将5链到2上、将6链到3上
+     *        prev  curr     nBody tail      - 再将5链到2上、将6链到3上
      *
      * - 👉 对比：相比解法1、2，该解法更加声明式（declarative）∴ 可读性更强。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -124,17 +123,17 @@ public class L92_ReverseLinkedListII {
         ListNode[] reversed = reverseBeforeN(curr, m, n);  // 递归反向 [m,n] 内的链接
 
         // 3. Fix 与原链表的链接点
-        ListNode newHead = reversed[0];  // reverse 后的新头节点
-        ListNode rest = reversed[1];     // 不需要反向的第一个节点（即第 n+1 个节点）
-        prev.next = newHead;             // 第 m-1 个节点 -> reverse 后的新头节点
-        curr.next = rest;                // reverse 后 curr 指向反转后的最后一个节点 ∴ 将 rest 链到其上
+        ListNode newBody = reversed[0];  // reverse 后的新头节点
+        ListNode tail = reversed[1];     // 不需要反向的第一个节点（即第 n+1 个节点）
+        prev.next = newBody;             // 第 m-1 个节点 -> reverse 后的新头节点
+        curr.next = tail;                // reverse 后 curr 指向反转后的最后一个节点 ∴ 将 tail 链到其上
 
         return dummyHead.next;
     }
 
     private static ListNode[] reverseBeforeN(ListNode head, int i, int n) {
         if (i == n) return new ListNode[]{head, head.next};  // 走到第 n 个节点时递归到底，返回第 n、n+1 个节点
-        ListNode[] reversed = reverseBeforeN(head.next, i + 1, n);
+        ListNode[] reversed = reverseBeforeN(head.next, i + 1, n);  // 先递归到底
         head.next.next = head;  // 将 A -> B -> C 改为 A <-> B   C
         head.next = null;       // 将 A <-> B   C 改为 A <- B   C
         return reversed;        // 返回的总是递归到底后返回的节点
@@ -165,15 +164,15 @@ public class L92_ReverseLinkedListII {
         ListNode prevBody = dummyHead, body = head, prevTail, tail;
 
         while (n != 0) {
-            if (m == 1) {  // 当 curr 走到要反向的部分里的第一个节点时，标记 prevBody, body
+            if (m == 1) {  // 当 curr 走到 m 号节点时，标记 prevBody, body
                 prevBody = prev;
                 body = curr;
             }
-            prev = prev.next;
+            prev = curr;
             curr = curr.next;
             m--; n--;
         }
-        prevTail = prev;  // 当 curr 走到要反向的部分之后的第一个节点时，标记 prevTail, tail
+        prevTail = prev;  // 当 curr 走到 n+1 号节点时，标记 prevTail, tail
         tail = curr;
 
         prevBody.next = prevTail.next = null;  // 先将要反向的部分从主链表上分离开，这样 reverseList 的实现会简单一些
@@ -247,7 +246,7 @@ public class L92_ReverseLinkedListII {
      * - 时间复杂度 O(n)，因为只遍历到 n 处的节点；
      * - 空间复杂度 O(n)，同样因为只遍历到 n 处的节点，因此递归深度为 n。
      * */
-    private static ListNode l;   // ∵ 递归过程中不好拿到 l 指针 ∴ 将其设计为外部变量
+    private static ListNode l;   // ∵ 递归过程中不好拿到 l 指针 ∴ 将其作为外部变量
     private static boolean stop;
 
     public static ListNode reverseBetween5(ListNode head, int m, int n) {
