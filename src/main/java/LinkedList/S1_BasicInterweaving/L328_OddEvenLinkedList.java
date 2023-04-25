@@ -31,17 +31,16 @@ public class L328_OddEvenLinkedList {
      * */
     public static ListNode oddEvenList(ListNode head) {
         if (head == null || head.next == null) return head;
-
         ListNode lastOdd = head;                 // 第1个节点的索引为奇数 ∴ lastOdd 初始就是该节点
         ListNode prev = head, curr = head.next;  // ∵ 后面要移动 curr ∴ 需要维护 curr 的前一个节点 prev
 
-        for (int i = 2; curr != null; i++) {     // 第2个节点继续向后遍历
+        for (int i = 2; curr != null; i++) {     // 从第2个节点开始向后遍历
             if (i % 2 == 0) {                    // 偶数索引的节点跳过
                 prev = curr;
                 curr = curr.next;
             } else {                             // 奇数索引的节点插入到 lastOdd 后面，并更新 lastOdd
                 ListNode next = curr.next;
-                lastOdd = insertNode(curr, lastOdd);
+                lastOdd = insertNode(curr, lastOdd);  // 将 curr 插入到 lastOdd 之后，并返回 curr
                 prev.next = next;                // 将 curr 移走之后 prev 要链到一下个节点 next 上去
                 curr = next;
             }
@@ -50,7 +49,7 @@ public class L328_OddEvenLinkedList {
         return head;
     }
 
-    private static ListNode insertNode(ListNode node, ListNode prev) {  // 将 node 插到 prev 之后，并返回 node 节点
+    private static ListNode insertNode(ListNode node, ListNode prev) {
         ListNode third = prev.next;
         prev.next = node;
         node.next = third;
@@ -63,23 +62,23 @@ public class L328_OddEvenLinkedList {
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
     public static ListNode oddEvenList2(ListNode head) {
-        if (head == null) return null;
-        ListNode oddDummyHead = new ListNode(), currOdd = oddDummyHead;
-        ListNode evenDummyHead = new ListNode(), currEven = evenDummyHead;
+        if (head == null || head.next == null) return head;
+        ListNode oddDummyHead = new ListNode(), evenDummyHead = new ListNode();
+        ListNode oddCurr = oddDummyHead, evenCurr = evenDummyHead;
 
-        int i = 1;
-        for (ListNode curr = head; curr != null; curr = curr.next) {
+        for (int i = 1; head != null; i++) {
             if (i % 2 != 0) {
-                currOdd.next = curr;
-                currOdd = currOdd.next;
+                oddCurr.next = head;
+                oddCurr = oddCurr.next;
             } else {
-                currEven.next = curr;
-                currEven = currEven.next;
+                evenCurr.next = head;
+                evenCurr = evenCurr.next;
             }
-            i++;
+            head = head.next;
         }
-        currOdd.next = evenDummyHead.next;
-        currEven.next = null;
+        oddCurr.next = evenDummyHead.next;
+        evenCurr.next = null;
+
         return oddDummyHead.next;
     }
 
