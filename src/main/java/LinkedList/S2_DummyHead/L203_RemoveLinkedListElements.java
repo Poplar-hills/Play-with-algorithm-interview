@@ -51,26 +51,13 @@ public class L203_RemoveLinkedListElements {
     }
 
     /*
-     * 解法3：解法2的递归版
-     * - 实现：在递归去程的路上执行处理逻辑。
+     * 解法3：解法3的简化版
+     * - 实现：在递归回程的路上执行处理逻辑。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static ListNode removeElements3(ListNode head, int val) {
         if (head == null) return null;
-        ListNode returned = removeElements3(head.next, val);
-        if (head.val == val) return returned;  // 若当前节点是待删除节点则跳过，直接返回下层递归的返回值
-        head.next = returned;
-        return head;
-    }
-
-    /*
-     * 解法4：解法3的简化版
-     * - 实现：在递归回程的路上执行处理逻辑。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
-     * */
-    public static ListNode removeElements4(ListNode head, int val) {
-        if (head == null) return null;
-        head.next = removeElements4(head.next, val);
+        head.next = removeElements3(head.next, val);
         return head.val == val ? head.next : head;
     }
 

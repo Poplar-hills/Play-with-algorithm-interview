@@ -55,13 +55,13 @@ public class L82_RemoveDuplicatesFromSortedListII {
      *   连接这两个节点完成对中间节点的删除。
      * - 演示：例如对于 2->3->3->4->5 来说，若想将去除 3->3，则需要链接2和4 ∴ 需要先获取这两个节点：
      *      D -> 2 -> 3 -> 3 -> 4 -> 5
-     *      p    c                      - c != c.next ∴ 让 p, c 后移
+     *      p    c                      - c != c.next ∴ p++, c++
      *      D -> 2 -> 3 -> 3 -> 4 -> 5
-     *           p    c                 - c == c.next ∴ 只让 c 后移
+     *           p    c                 - c == c.next ∴ c++
      *      D -> 2 -> 3 -> 3 -> 4 -> 5
-     *           p         c            - c != c.next，但 ∵ c 也是需要删除的节点 ∴ 要让 p.next = c.next，再让 c 后移
+     *           p         c            - c != c.next，但 ∵ c 也是需要删除的节点 ∴ 要让 p.next = c.next，再让 c++
      *      D -> 2 -> 4 -> 5
-     *           p    c                 - c != c.next ∴ 同时让 p、c 后移
+     *           p    c                 - c != c.next ∴ 同时让 p++, c++
      *      D -> 2 -> 4 -> 5
      *                p    c            - c.next == null，遍历结束
      * - 实现：1. ∵ 可能存在多个连续重复节点 ∴ 可在第2步中使用 while 一直走到最后一个重复节点；
@@ -190,17 +190,43 @@ public class L82_RemoveDuplicatesFromSortedListII {
         return freq.get(head.val) > 1 ? head.next : head;
     }
 
+
+
+
+
+
+
+
+
+    //   1 -> 1 -> 1 -> 2 -> 3
+    //                       h   - h != h.n ∴ return 3
+    //                  h   - h != h.n ∴ return 2->3
+    //             h   - h != h.n ∴ return 1->2->3
+    //        h   - h == h.n ∴ skip h, isSkipping=true, return 1->2->3
+    //   h
+    public static ListNode deleteDuplicates_(ListNode head) {
+        return helper_(head, new HashMap<>());
+    }
+
+    private static ListNode helper_(ListNode head, HashMap<Integer, Integer> map) {
+        if (head == null || head.next == null) return head;
+        map.merge(head.val, 1, Integer::sum);
+        head.next = helper_(head.next, map);
+        return (map.getOrDefault(head.val, 0) > 1) ? head.next : head;
+    }
+
+
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 3, 3, 4, 4, 5});
-        log(deleteDuplicates6(l1));  // expects 1->2->5->NULL
+        log(deleteDuplicates_(l1));  // expects 1->2->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 1, 1, 2, 3});
-        log(deleteDuplicates6(l2));  // expects 2->3->NULL
+        log(deleteDuplicates_(l2));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 1});
-        log(deleteDuplicates6(l3));  // expects NULL
+        log(deleteDuplicates_(l3));  // expects NULL
 
         ListNode l4 = createLinkedList(new int[]{});
-        log(deleteDuplicates6(l4));  // expects NULL
+        log(deleteDuplicates_(l4));  // expects NULL
     }
 }
