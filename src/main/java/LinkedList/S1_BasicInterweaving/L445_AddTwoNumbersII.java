@@ -16,7 +16,7 @@ import static Utils.Helpers.*;
 public class L445_AddTwoNumbersII {
     /*
      * 解法1：先将链表反向，再模拟加法运算，最后再反向。
-     * - 思路：本题与 L2 的不同点在于输入、输出都是顺序链表，因此在模拟加法运算之前需要解决数位对应的问题（个位与个位相加，十位
+     * - 思路：本题与 L2 的不同点在于输入、输出都是顺序链表 ∴ 在模拟加法运算之前需要解决数位对应的问题（个位与个位相加，十位
      *   与十位相加……）∴ 可以先将两个链表反向，再对这两个逆序链表求和，此时求和过程就是从个位开始相加，不存在数位对应问题。
      * - 实现：求和过程采用 L2 解法3的实现；反向过程采用 L206 解法2的实现。
      * - 时间复杂度 O(max(m,n))，空间复杂度 O(max(m,n))。
@@ -58,7 +58,7 @@ public class L445_AddTwoNumbersII {
     }
 
     /*
-     * 解法2：模拟加法运算（运用 Stack）
+     * 解法2：模拟加法运算（运用 Stack，🥇最优解）
      * - 思路：该题的难点在于如何解决数位对齐问题，本解法与解法1一致，也是通过反向链表来对其数位。
      * - 实现：解法1是通过反向节点间的链接来反向链表，从而对齐数位。而本解法使用 Stack（如 L2 解法3）结构来反向链表，从而对齐数位。
      *   使用 Stack 的好处是不会修改原链表 l1、l2。
@@ -68,7 +68,7 @@ public class L445_AddTwoNumbersII {
      * */
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         Stack<Integer> s1 = toStack(l1);  // 注意要生成的是两个独立的 Stack，而不能是一个 stack<Pair<Integer, Integer>>
-        Stack<Integer> s2 = toStack(l2);  // 也可以在一个循环中同时生成两个 Stack
+        Stack<Integer> s2 = toStack(l2);  // 可以再优化为在一个循环中同时生成两个 Stack
 
         int carry = 0;
         ListNode head = null;  // 结果链表（∵ 后面是往链表头部插入节点 ∴ 不需要使用 dummyHead）
