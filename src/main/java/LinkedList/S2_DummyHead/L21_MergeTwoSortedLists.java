@@ -64,7 +64,7 @@ public class L21_MergeTwoSortedLists {
     }
 
     /*
-     * 解法3：解法1的改进版
+     * 解法3：遍历（解法1的改进版，🥇效率最优解）
      * - 时间复杂度 O(m+n)，空间复杂度 O(1)。
      * */
     public static ListNode mergeTwoLists3(ListNode l1, ListNode l2) {
@@ -89,7 +89,7 @@ public class L21_MergeTwoSortedLists {
     }
 
     /*
-     * 解法4：解法3的递归版（即解法2的改进版）
+     * 解法4：递归（解法2的改进版，🥇最优雅解）
      * - 时间复杂度 O(m+n)，空间复杂度 O(m+n)。
      * */
     public static ListNode mergeTwoLists4(ListNode l1, ListNode l2) {
