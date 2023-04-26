@@ -17,10 +17,14 @@ public class L147_InsertionSortList {
      * - 实现：
      *   1. 在标准的排序算法中，遍历是从后往前逐个比较的，但 ∵ 链表中无法从下一节点回到上一节点 ∴ 可采用从前往后遍历；
      *   2. ∵ 插入位置可能是头结点 ∴ 需要创建虚拟头结点；
-     * - 例：D -> 4 -> 2 -> 1 -> 3
-     *      D -> 4
-     *      D -> 2 -> 4
-     *      D -> 1 -> 2 -> 4
+     * - 例：D    4 -> 2 -> 1 -> 3      - 初始化时 D 不与链表连接
+     *      p    c                      - p 从 D 开始遍历，停在 D 上 ∴ D 就是插入点，D.next = 4
+     *      D -> 4 -> N    2 -> 1 -> 3
+     *      p              c            - p 从 D 开始遍历，停在 D 上 ∴ D 就是插入点，D.next = 2
+     *      D -> 2 -> 4 -> N    1 -> 3
+     *      p                   c       - p 从 D 开始遍历，停在 D 上 ∴ D 就是插入点，D.next = 1
+     *      D -> 1 -> 2 -> 4 -> N    3
+     *                p              c  - p 从 D 开始遍历，停在 2 上 ∴ 2 就是插入点，2.next = 3
      *      D -> 1 -> 2 -> 3 -> 4
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      * */
@@ -60,7 +64,6 @@ public class L147_InsertionSortList {
         if (head == null || head.next == null) return head;
         ListNode returned = insertionSortList2(head.next);
 
-        // insert head into the returned list
         if (head.val <= returned.val) {
             head.next = returned;
             return head;
