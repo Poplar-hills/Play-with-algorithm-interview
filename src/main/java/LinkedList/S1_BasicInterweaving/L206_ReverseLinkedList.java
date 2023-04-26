@@ -36,6 +36,15 @@ public class L206_ReverseLinkedList {
     /*
      * 解法2：遍历（🥇效率最优解）
      * - 思路：在遍历过程中不断反向两个节点间的链接。
+     * - 例：     0 -> 1 -> 2 -> 3 -> 4 -> NULL
+     *      p    c    n
+     *   NULL <- 0    1 -> 2 -> 3 -> 4 -> NULL
+     *           p    c    n
+     *   NULL <- 0 <- 1    2 -> 3 -> 4 -> NULL
+     *                p    c    n
+     *                    ...
+     *   NULL <- 0 <- 1 <- 2 <- 3 <- 4
+     *                               p    c
      * - 时间复杂度 O(n)，空间复杂度 O(1)
      * */
     public static ListNode reverseList2(ListNode head) {

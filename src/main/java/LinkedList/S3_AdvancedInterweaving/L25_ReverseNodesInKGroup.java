@@ -19,8 +19,8 @@ import java.util.Stack;
 public class L25_ReverseNodesInKGroup {
     /*
      * 解法1：递归
-     * - 思路：非常 straightforward —— 每层递归处理 k 个节点，在递归去程时先检查一组中的节点是否充足，若充足则进行反向，否则
-     *   直接返回该组头节点。
+     * - 思路：非常 straightforward —— 每层递归处理 k 个节点，在递归去程时先检查一组中的节点是否充足，若充足则进行反向，
+     *   否则直接返回该组头节点。
      * - 实现：节点反向采用迭代写法，直接反向两点间链接。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -152,7 +152,7 @@ public class L25_ReverseNodesInKGroup {
         // 2. 若该组节点充足且下个节点不为空，则继续递归下一组
         ListNode reversedHead = null;
         if (curr != null)
-            reversedHead = reverseKGroup4(curr, k);
+            reversedHead = reverseKGroup5(curr, k);
 
         // 3. 在回程时反向本组节点，并将下一组结果链到本组反向后的尾部
         ListNode dummyHead = new ListNode();
@@ -174,7 +174,7 @@ public class L25_ReverseNodesInKGroup {
      * - 实现：不同于解法5在回程时反向本组节点，该解法在去程时如果数够了 k 个节点就马上反向，而回程时不做任何操作。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static ListNode reverseKGroup0(ListNode head, int k) {
+    public static ListNode reverseKGroup6(ListNode head, int k) {
         if (head == null) return null;
 
         // 1. 数出 k 个节点
@@ -197,7 +197,7 @@ public class L25_ReverseNodesInKGroup {
             prev.next = stack.pop();
             prev = prev.next;
         }
-        prev.next = reverseKGroup0(curr, k);  // 将下一组反向的结果链到本组尾节点上
+        prev.next = reverseKGroup6(curr, k);  // 将下一组反向的结果链到本组尾节点上
 
         // 3. 最后返回本组反向的结果
         return dummyHead.next;
@@ -205,15 +205,15 @@ public class L25_ReverseNodesInKGroup {
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4});
-        log(reverseKGroup0(l1, 2));  // expects 2->1->4->3->NULL
+        log(reverseKGroup6(l1, 2));  // expects 2->1->4->3->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3, 4});
-        log(reverseKGroup0(l2, 3));  // expects 3->2->1->4->NULL
+        log(reverseKGroup6(l2, 3));  // expects 3->2->1->4->NULL
 
         ListNode l3 = createLinkedList(new int[]{1, 2, 3, 4, 5, 6, 7, 8});
-        log(reverseKGroup0(l3, 3));  // expects 3->2->1->6->5->4->7->8->NULL. (最后一组不够3个 ∴ 应该保持不变)
+        log(reverseKGroup6(l3, 3));  // expects 3->2->1->6->5->4->7->8->NULL. (最后一组不够3个 ∴ 应该保持不变)
 
         ListNode l4 = createLinkedList(new int[]{1, 2, 3});
-        log(reverseKGroup0(l4, 1));  // expects 1->2->3->NULL
+        log(reverseKGroup6(l4, 1));  // expects 1->2->3->NULL
     }
 }
