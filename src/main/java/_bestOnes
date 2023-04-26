@@ -19,7 +19,8 @@
   - L24_SwapNodesInPairs ⭐️
   - L25_ReverseNodesInKGroup ⭐️
   - L61_RotateList ⭐️
-  - L147_InsertionSortList
+  - L147_InsertionSortList ⭐️
+  - L148_SortList ⭐️
 
 - HashTable (16/20):
   - L205_IsomorphicStrings

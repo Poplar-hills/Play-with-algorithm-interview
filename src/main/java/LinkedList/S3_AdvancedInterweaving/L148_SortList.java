@@ -13,10 +13,9 @@ import static Utils.Helpers.*;
 public class L148_SortList {
     /*
      * 解法1：Merge Sort (top-down)
-     * - 注意：该解法的空间复杂度未达到题目要求。
-     * - 思路：∵ 要求 O(nlogn)，而 Quick Sort 非常依赖于对元素的随机访问能力 ∴ 不适用于链表，而 Merge Sort 则不存在这个
-     *   问题，对链表更加适用。
-     * - 实现：要使用 Merge Sort 为链表排序，需要能够：
+     * - 注意：该解法的空间复杂度未达标。
+     * - 💎 思路：∵ 要求 O(nlogn)，而 Quick Sort 非常依赖于对元素的随机访问能力 ∴ 不适用于链表，而 Merge Sort 则不存在这个
+     *   问题，对链表更加适用。而要使用 Merge Sort 为链表排序，需要能够：
      *     1. 对链表进行二分（分成前半部分和后半部分）；
      *     2. 对两个有序链表进行合并。
      *   对于这两个需求，解法如下：
@@ -92,10 +91,10 @@ public class L148_SortList {
             for (int i = 0; i + step < len; i += step * 2) {  // 两组两组遍历链表，i + step < len 保证了第二组中至少有元素存在
                 ListNode l1 = prev.next;              // l1、l2 分别指向第1、2组头结点
                 ListNode l2 = split(l1, step);
-                ListNode tail = split(l2, step);
-                ListNode last = merge(l1, l2, prev);
-                last.next = tail;                     // 切剩下的部分链回到 merge 之后的链表上
-                prev = last;                          // 让 prev 指向 merge 之后的链表的最后一个节点以对下一组进行排序
+                ListNode rest = split(l2, step);      // l2 之后的剩余部分
+                ListNode merged = merge(l1, l2, prev);
+                merged.next = rest;                   // 切剩下的部分链回到 merge 之后的链表上
+                prev = merged;                        // 让 prev 指向 merge 之后的链表的最后一个节点以对下一组进行排序
             }
         }
 
@@ -131,35 +130,36 @@ public class L148_SortList {
     }
 
     /*
-     * 解法3：Dual-Pivot Sort (3-way Sort)
-     * - 思路：仿照三路快排的思路，使用 head 作为标定节点，将链表分成小、中、大三个子联表，然后对小、大两个子链表进行递归分组，
-     *   直到只剩一个节点时递归到底，然后在回程时将三个子联表按顺序链接起来。
-     * - 时间复杂度 O(nlogn)，空间复杂度 O(1)。
+     * 解法3：Dual-Pivot Sort (3-way Quick Sort)
+     * - 注意：该解法的空间复杂度未达标。
+     * - 思路：仿照三路快排的思路，使用 head 作为标定节点 pivot，将链表分成小、中、大三个子联表，然后对小、大两个子链表进行递归
+     *   分组，直到只剩一个节点时递归到底，然后在回程时将三个子联表按顺序链接起来。
+     * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static ListNode sortList3(ListNode head) {
         if (head == null || head.next == null) return head;
 
-        ListNode ltDummy = new ListNode(), lt = ltDummy;
-        ListNode eqDummy = new ListNode(), eq = eqDummy;
-        ListNode gtDummy = new ListNode(), gt = gtDummy;
-        ListNode curr = head;
+        ListNode ltDummy = new ListNode(), lt = ltDummy;  // < pivot 节点值的节点链表
+        ListNode eqDummy = new ListNode(), eq = eqDummy;  // == pivot 节点值的节点链表
+        ListNode gtDummy = new ListNode(), gt = gtDummy;  // > pivot 节点值的节点链表
+        ListNode pivot = head;
 
-        while (curr != null) {
-            if (curr.val < head.val) {
-                lt.next = curr;
+        while (pivot != null) {
+            if (pivot.val < head.val) {
+                lt.next = pivot;
                 lt = lt.next;
-            } else if (curr.val == head.val) {
-                eq.next = curr;
+            } else if (pivot.val == head.val) {
+                eq.next = pivot;
                 eq = eq.next;
             } else {
-                gt.next = curr;
+                gt.next = pivot;
                 gt = gt.next;
             }
-            curr = curr.next;
+            pivot = pivot.next;
         }
         lt.next = eq.next = gt.next = null;   // put an end
 
-        ListNode sortedLt = sortList3(ltDummy.next);  // 递归排序 > head、< head 的子链表（== head 的子链表不需要再排）
+        ListNode sortedLt = sortList3(ltDummy.next);  // 递归排序 > pivot、< pivot 的子链表
         ListNode sortedGt = sortList3(gtDummy.next);
 
         return concat(concat(sortedLt, eqDummy.next), sortedGt);  // 最终将三个链表按小、中、大的顺序链接起来
@@ -167,9 +167,9 @@ public class L148_SortList {
 
     private static ListNode concat(ListNode l1, ListNode l2) {  // 将 l2 链到 l1 上，返回 l1 的头结点
         if (l1 == null) return l2;
-        ListNode curr = l1;
-        while (curr.next != null) curr = curr.next;
-        curr.next = l2;
+        ListNode l1Tail = l1;
+        while (l1Tail.next != null) l1Tail = l1Tail.next;
+        l1Tail.next = l2;
         return l1;
     }
 
