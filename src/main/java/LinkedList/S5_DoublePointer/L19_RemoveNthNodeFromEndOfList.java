@@ -73,40 +73,69 @@ public class L19_RemoveNthNodeFromEndOfList {
 
     /*
      * 解法3：递归
-     * - 思路：先递归到底，在递归回程上的第 n 个节点就是链表的倒数第 n 个节点。
-     * - 实现：为了在回程时数出第 n 个节点，每层递归函数一个 Pair<新链表的头结点, 该头结点是倒数第几个节点>。
+     * - 思路：先递归到底，在递归回程上检查当前节点是否是倒数第 n 个节点，若是则删除。根据该思路，关键点转化为如何
+     *   找到链表上的倒数第 n 个节点。
+     * - 例：1 -> 2 -> 3 -> 4 -> 5 -> NULL, n=2
+     *                ...            h     - return N
+     *                          h     - return 5->N
+     *                     h     - is the 2nd to last node ∴ delete, return 5->N
+     *                h     - return 3->5->N
+     *           h     - return 2->3->5->N
+     *      h     - return 1->2->3->5->N
+     * - 实现：要实现以上思路，最简单的方式是在递归去程时记录节点编号 i，并用一个外部变量 count 记录链表节点总数。
+     *   然后在回程时检查每个节点编号 i 是否 == count - n + 1，即可确定该节点是否需要删除。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
+    private static int count = 0;
+
     public static ListNode removeNthFromEnd3(ListNode head, int n) {
-        Pair<ListNode, Integer> p = helper3(head, n);
+        return helper3(head, n, 1);
+    }
+
+    private static ListNode helper3(ListNode head, int n, int i) {
+        if (head == null) return null;  // 注意退出条件不能是 head.next == null ∵ 要删除的可能是最后一个节点
+        count = i;
+        ListNode returned = helper3(head.next, n, i + 1);
+        if (count - n + 1 == i) return returned;  // 判断是否是倒数第 n 个节点
+        head.next = returned;
+        return head;
+    }
+
+    /*
+     * 解法4：递归
+     * - 思路：与解法3一致。
+     * - 实现：不再使用解法3中的外部变量，而是每层递归返回一个 Pair<新链表的头结点, 该头结点是倒数第几个节点>。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * */
+    public static ListNode removeNthFromEnd4(ListNode head, int n) {
+        Pair<ListNode, Integer> p = helper4(head, n);
         return p.getKey();
     }
 
-    private static Pair<ListNode, Integer> helper3(ListNode head, int n) {
-        if (head == null || head.next == null)
-            return new Pair<>(n == 1 ? null : head, 1);  // 若 n=1，则跳过最后一个节点返回 null
+    private static Pair<ListNode, Integer> helper4(ListNode head, int n) {
+        if (head == null) return new Pair<>(null, null);  // 即使是空链表也要返回 Pair 否则👆🏻p.getKey() 会 NPE
+        if (head.next == null) return new Pair<>(head, 1);
 
-        Pair<ListNode, Integer> p = helper3(head.next, n);
-        ListNode tail = p.getKey();
-        int count = p.getValue();
+        Pair<ListNode, Integer> p = helper4(head.next, n);
+        ListNode returned = p.getKey();
+        int currNthToLast = p.getValue() + 1;  // 获得当前节点的倒数编号
 
-        if (count + 1 == n)  // 若当前节点就是倒数第 n 个节点，则跳过当前节点返回 tail
-            return new Pair<>(tail, count + 1);
-        head.next = tail;    // 若不是，则需手动链接上层递归返回的节点（∵ 有可能上层递归中已找到并跳过了头结点）
-        return new Pair<>(head, count + 1);
+        if (currNthToLast == n) return new Pair<>(returned, currNthToLast);
+        head.next = returned;
+        return new Pair<>(head, currNthToLast);
     }
 
     public static void main(String[] args) {
         ListNode l1 = createLinkedList(new int[]{1, 2, 3, 4, 5});
-        log(removeNthFromEnd(l1, 2));  // expects 1->2->3->5->NULL
+        log(removeNthFromEnd4(l1, 2));  // expects 1->2->3->5->NULL
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 3});
-        log(removeNthFromEnd(l2, 3));  // expects 2->3->NULL
+        log(removeNthFromEnd4(l2, 3));  // expects 2->3->NULL
 
         ListNode l3 = createLinkedList(new int[]{1});
-        log(removeNthFromEnd(l3, 2));  // expects 1->NULL (n 越界的 case)
+        log(removeNthFromEnd4(l3, 2));  // expects 1->NULL (n 越界的 case)
 
         ListNode l4 = createLinkedList(new int[]{});
-        log(removeNthFromEnd(l4, 2));  // expects NULL
+        log(removeNthFromEnd4(l4, 2));  // expects NULL
     }
 }
