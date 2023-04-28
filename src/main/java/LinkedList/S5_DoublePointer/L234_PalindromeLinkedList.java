@@ -129,23 +129,61 @@ public class L234_PalindromeLinkedList {
         return newHead;
     }
 
+    /**
+     * 解法5：递归（🥇最优雅解）
+     * - 思路：∵ 判断 palindrome 需要用到前后对应的两个节点 ∴ 可以利用"递归返程时能拿到逆向链表"这一特性，使用递归求解。
+     *   具体来说：
+     *     - 在递归去程时，给递归参数带上 head 节点，这样递归到底时就能判断 head 和 tail 节点是否相等；
+     *     - 在递归回程时，每层递归的返回值设计为 Pair<MirrorNode, isPalindrome>，MirrorNode 即为当前递归节点 curr 在
+     *       正向链表上的对应节点。
+     * - 例：1 -> 2 -> 3 -> 4 -> 3 -> 2 -> 1 -> NULL
+     *                    ...
+     *      h                             c        - c.val == h.val ∴ return <h.next, true> namely <2, true>
+     *           m                   c        -  m=2, c.val == m.val ∴ return <m.next, true> namely <3, true>
+     *                m         c        - m=3, c.val == m.val ∴ return <4, true>
+     *                     mc       - m=4, c.val == m.val ∴ return <3, true>
+     *                c         m        - m=3, c.val == m.val ∴ return <2, true>
+     *           c                   m        - m=2, c.val == m.val ∴ return <1, true>
+     *      c                             m        - m=1, c.val == m.val ∴ return <null, true>
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     */
+    public static boolean isPalindrome5(ListNode head) {
+        if (head == null) return true;  // ∵ 👇🏻递归时只递归到尾节点，而不会到 null ∴ 这里要判断链表为空的情况
+        Pair<ListNode, Boolean> p = helper5(head, head);
+        return p.getValue();
+    }
+
+    private static Pair<ListNode, Boolean> helper5(ListNode head, ListNode curr) {
+        if (curr.next == null)                                   // 到尾节点时递归结束
+            return new Pair<>(head.next, curr.val == head.val);  // 判断尾节点与头结点是否相等，并返回正向链表上的下一个对应节点
+
+        Pair<ListNode, Boolean> p = helper5(head, curr.next);
+        ListNode mirrorNode = p.getKey();
+        boolean isPalindrome = p.getValue();
+
+        if (!isPalindrome || mirrorNode.val != curr.val)  // 若任何一层递归返回 false，则解为 false
+            return new Pair<>(null, false);
+
+        return new Pair<>(mirrorNode.next, true);  // 返回上层时，让 mirrorNode 移后一位，让上层递归拿到对应的正向链表节点
+    }
+
     public static void main(String[] args) {
         ListNode l0 = createLinkedList(new int[]{1, 2});
-        log(isPalindrome4(l0));  // expects false
+        log(isPalindrome5(l0));  // expects false
 
         ListNode l1 = createLinkedList(new int[]{1, 1, 2, 1});
-        log(isPalindrome4(l1));  // expects false
+        log(isPalindrome5(l1));  // expects false
 
         ListNode l2 = createLinkedList(new int[]{1, 2, 2, 1});
-        log(isPalindrome4(l2));  // expects true
+        log(isPalindrome5(l2));  // expects true
 
         ListNode l3 = createLinkedList(new int[]{1, 0, 1});
-        log(isPalindrome4(l3));  // expects true
+        log(isPalindrome5(l3));  // expects true
 
         ListNode l4 = createLinkedList(new int[]{1});
-        log(isPalindrome4(l4));  // expects true
+        log(isPalindrome5(l4));  // expects true
 
         ListNode l5 = createLinkedList(new int[]{});
-        log(isPalindrome4(l5));  // expects true
+        log(isPalindrome5(l5));  // expects true
     }
 }
