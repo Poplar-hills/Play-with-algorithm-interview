@@ -18,8 +18,9 @@ public class L234_PalindromeLinkedList {
     /*
      * 解法1：Stack + 指针对撞
      * - 思路：一个链表/数组是否是 palindrome 要同时从前、后两个方向逐个节点对照，若有节点值不等则说明不是 palindrome
-     *   ∴ 可采用类似 L143_ReorderList 解法1的方式，反向链表的后半段，再与前半段来对照。
+     *   ∴ 可采用类似 L143_ReorderList 解法1的方式，将链表反向后，再用后半段与前半段对照判断。
      * - 实现：类似 L143 中的解法1采用 Stack 进行反向。
+     * - 💎 技巧：在用 Stack 反向链表时，一旦把链表所有节点放入 Stack，就能同时用 stack.size() 获得链表的 length。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isPalindrome1(ListNode head) {
@@ -29,7 +30,7 @@ public class L234_PalindromeLinkedList {
         for (ListNode curr = head; curr != null; curr = curr.next)
             stack.push(curr);
 
-        int len = stack.size();              // 注意该变量不能 inline，∵ 循环中会不断改变 stack.size
+        int len = stack.size();  // 注意该变量不能 inline，∵ 循环中会不断改变 stack.size
         ListNode l = head;
         for (int i = 0; i < len / 2; i++) {  // 遍历一半的节点，O(n/2)
             ListNode r = stack.pop();
@@ -41,7 +42,7 @@ public class L234_PalindromeLinkedList {
     }
 
     /*
-     * 解法2：生成反向链表
+     * 解法2：生成反向链表（🥇最优解）
      * - 思路：与解法1一致。
      * - 实现：类似 L143_ReorderList 解法2，使用 Deque 来获得后半段的反向链表。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -63,17 +64,17 @@ public class L234_PalindromeLinkedList {
     /*
      * 解法3：生成反向链表
      * - 思路：与解法1、2一致。
-     * - 实现：生成反向链表后再与原链表逐一对照。
-     * - 💎 巧：若反向链表的过程需要重新创建节点，则可以采用不断将新建节点并插入到 dummyHead 之后的方式来实现对原链表的反向。
+     * - 实现：先生成反向链表后再与原链表逐一对照。
+     * - 💎 技巧：若反向链表的过程需要重新创建节点，则可以采用不断将新建节点并插入到 dummyHead 之后的方式来实现对原链表的反向。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isPalindrome3(ListNode head) {
-        ListNode curr1 = head, curr2 = createReversedList(head);
+        ListNode fCurr = head, bCurr = createReversedList(head);
 
-        while (curr1 != null && curr2 != null) {
-            if (curr1.val != curr2.val) return false;
-            curr1 = curr1.next;
-            curr2 = curr2.next;
+        while (fCurr != null && bCurr != null) {
+            if (fCurr.val != bCurr.val) return false;
+            fCurr = fCurr.next;
+            bCurr = bCurr.next;
         }
 
         return true;
@@ -82,10 +83,10 @@ public class L234_PalindromeLinkedList {
     private static ListNode createReversedList(ListNode head) {  // 该方法重新创建一个反向链表，而非原地修改
         ListNode dummyNode = new ListNode(), curr = head;
         while (curr != null) {
-            ListNode temp = dummyNode.next;
+            ListNode third = dummyNode.next;
             dummyNode.next = new ListNode(curr.val);  // 不断将新建节点并插入到 dummyHead 之后，从而实现对原链表的反向
             curr = curr.next;
-            dummyNode.next.next = temp;
+            dummyNode.next.next = third;
         }
         return dummyNode.next;
     }
@@ -98,13 +99,13 @@ public class L234_PalindromeLinkedList {
      * */
     public static boolean isPalindrome4(ListNode head) {
         if (head == null || head.next == null) return true;
-        ListNode curr1 = head;
-        ListNode curr2 = reverse(partition(head));  // reverse 和 partition 都是 O(n/2)
+        ListNode fCurr = head;
+        ListNode bCurr = reverse(partition(head));  // reverse 和 partition 都是 O(n/2)
 
-        while (curr1 != null && curr2 != null) {    // 也是 O(n/2)
-            if (curr1.val != curr2.val) return false;
-            curr1 = curr1.next;
-            curr2 = curr2.next;
+        while (fCurr != null && bCurr != null) {    // 也是 O(n/2)
+            if (fCurr.val != bCurr.val) return false;
+            fCurr = fCurr.next;
+            bCurr = bCurr.next;
         }
         return true;
     }
@@ -131,8 +132,7 @@ public class L234_PalindromeLinkedList {
 
     /**
      * 解法5：递归（🥇最优雅解）
-     * - 思路：∵ 判断 palindrome 需要用到前后对应的两个节点 ∴ 可以利用"递归返程时能拿到逆向链表"这一特性，使用递归求解。
-     *   具体来说：
+     * - 💎 思路：∵ 判断 palindrome 需要用到前后对应的两个节点 ∴ 可以利用"递归返程时能拿到逆向链表"这一特性，使用递归求解。
      *     - 在递归去程时，给递归参数带上 head 节点，这样递归到底时就能判断 head 和 tail 节点是否相等；
      *     - 在递归回程时，每层递归的返回值设计为 Pair<MirrorNode, isPalindrome>，MirrorNode 即为当前递归节点 curr 在
      *       正向链表上的对应节点。
