@@ -75,38 +75,14 @@ public class L144_BinaryTreePreorderTraversal {
     }
 
     /*
-     * 解法4：迭代（解法3的变种）
-     * - 思路：与解法3一致。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-     * */
-    public static List<Integer> preorderTraversal4(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        Stack<TreeNode> stack = new Stack<>();
-        TreeNode curr = root;
-
-        while (curr != null || !stack.isEmpty()) {
-            if (curr != null) {  // 同样也是先往左走到底
-                res.add(curr.val);
-                stack.push(curr);
-                curr = curr.left;
-            } else {             // 到底之后开始从 stack 中取出父节点，并转向去遍历父节点的右子树
-                curr = stack.pop();
-                curr = curr.right;
-            }
-        }
-
-        return res;
-    }
-
-    /*
-     * 解法5：迭代（模拟指令）
+     * 解法4：迭代（模拟指令）
      * - 思路：使用栈来模拟树的遍历能写出解法2，但解法2是在栈中存储节点。若在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问），
      *   则可以得到另一种解法：
      *             5       |      |     |      |     |      |     |      |     |      |     |      |
-     *           /   \     |      |     |______|     |      |     |_v__3_|     |______|     |______|
-     *          3     8    |      | --> |_v__5_| --> |______| --> |_i__1_| --> |_i__1_| --> |_v__1_| --> ...
-     *         / \   /     |______|     |_i__3_|     |_i__3_|     |_i__4_|     |_i__4_|     |_i__4_|
-     *        1   4 6      |_i__5_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|     |_i__8_|
+     *           /   \     |      |     |______|     |      |     |_V__3_|     |______|     |______|
+     *          3     8    |      | --> |_V__5_| --> |______| --> |_T__1_| --> |_T__1_| --> |_V__1_| --> ...
+     *         / \   /     |______|     |_T__3_|     |_T__3_|     |_T__4_|     |_T__4_|     |_T__4_|
+     *        1   4 6      |_T__5_|     |_T__8_|     |_T__8_|     |_T__8_|     |_T__8_|     |_T__8_|
      *                        []           []          [5]          [5]         [5,3]        [5,3]
      *    1. 首先入栈1条指令"遍历节点5"，出栈执行这条指令时相应要入顺序栈"遍历节点8"、"遍历节点3"、"访问节点5"这3条指令；
      *    2. 之后出栈执行"访问节点5"，不需要入栈任何命令；
@@ -128,7 +104,7 @@ public class L144_BinaryTreePreorderTraversal {
         }
     }
 
-    public static List<Integer> preorderTraversal5(TreeNode root) {
+    public static List<Integer> preorderTraversal4(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
         Stack<Command> stack = new Stack<>();

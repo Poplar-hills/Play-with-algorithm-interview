@@ -29,17 +29,18 @@ public class L20_ValidParentheses {
         return stack.isEmpty();  // 若最后 stack 不为空则也是无效的
     }
 
-    private static boolean match(char c1, char c2) {
-        return c1 == '(' && c2 == ')' || c1 == '[' && c2 == ']' || c1 == '{' && c2 == '}';
+    private static boolean match(char a, char b) {
+        return a == '(' && b == ')' || a == '[' && b == ']' || a == '{' && b == '}';
     }
 
     public static void main(String[] args) {
-        log(isValid("()"));      // expects true
-        log(isValid("()[]{}"));  // expects true
-        log(isValid("{[]}"));    // expects true
-        log(isValid(""));        // expects true
-        log(isValid("(]"));      // expects false
-        log(isValid("([)]"));    // expects false
-        log(isValid("]"));       // expects false
+        log(isValid("()"));          // expects true
+        log(isValid("()[]{}"));      // expects true
+        log(isValid("{[]}"));        // expects true
+        log(isValid(""));            // expects true
+        log(isValid("(]"));          // expects false
+        log(isValid("([)]"));        // expects false
+        log(isValid("{[]}()[{})"));  // expects false
+        log(isValid("]"));           // expects false
     }
 }

@@ -54,37 +54,13 @@ public class L94_BinaryTreeInorderTraversal {
     }
 
     /*
-     * 解法3：迭代（解法2的另一种写法）
-     * - 思路：与解法2一致。
-     * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
-     * */
-    public static List<Integer> inorderTraversal3(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        Stack<TreeNode> stack = new Stack<>();
-        TreeNode curr = root;
-
-        while (curr != null || !stack.isEmpty()) {
-            if (curr != null) {
-                stack.push(curr);
-                curr = curr.left;
-            } else {
-                curr = stack.pop();
-                res.add(curr.val);
-                curr = curr.right;
-            }
-        }
-
-        return res;
-    }
-
-    /*
-     * 解法4：迭代（模拟指令）
+     * 解法3：迭代（模拟指令）
      * - 思路：在栈中存入节点的同时还存入对该节点的操作指令（遍历或访问）：
-     *             5       |      |     |      |     |_t__1_|     |_v__1_|     |______|     |      |
-     *           /   \     |      |     |______|     |_v__3_|     |_v__3_|     |_v__3_|     |______|
-     *          3     7    |      | --> |_t__3_| --> |_t__4_| --> |_t__4_| --> |_t__4_| --> |_t__4_| ...
-     *         / \   /     |______|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|     |_v__5_|
-     *        1   4 6      |_t__5_|     |_t__7_|     |_t__7_|     |_t__7_|     |_t__7_|     |_t__7_|
+     *             5       |      |     |      |     |_T__1_|     |_V__1_|     |______|     |      |
+     *           /   \     |      |     |______|     |_V__3_|     |_V__3_|     |_V__3_|     |______|
+     *          3     7    |      | --> |_T__3_| --> |_T__4_| --> |_T__4_| --> |_T__4_| --> |_T__4_| ...
+     *         / \   /     |______|     |_V__5_|     |_V__5_|     |_V__5_|     |_V__5_|     |_V__5_|
+     *        1   4 6      |_T__5_|     |_T__7_|     |_T__7_|     |_T__7_|     |_T__7_|     |_T__7_|
      *                        []           []           []           []          [1]         [1,3]
      * - 优势：这种解法虽然繁琐一点，但是更加灵活，只需极少的改动即可变为中序或后续遍历（SEE: L144 的解法5、L145 的解法5）。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
@@ -102,7 +78,7 @@ public class L94_BinaryTreeInorderTraversal {
         }
     }
 
-    public static List<Integer> inorderTraversal4(TreeNode root) {
+    public static List<Integer> inorderTraversal3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
         Stack<Command> stack = new Stack<>();  // 栈中存的是 Command（将节点和指令的 pair）
@@ -127,7 +103,7 @@ public class L94_BinaryTreeInorderTraversal {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(inorderTraversal4(t1));
+        log(inorderTraversal3(t1));
         /*
          * expects [1, 3, 4, 5, 6, 7].（若是 BST，则中序遍历结果一定是有序的）
          *         5
@@ -138,7 +114,7 @@ public class L94_BinaryTreeInorderTraversal {
          * */
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(inorderTraversal4(t2));
+        log(inorderTraversal3(t2));
         /*
          * expects [1, 3, 2]
          *      1
@@ -149,7 +125,7 @@ public class L94_BinaryTreeInorderTraversal {
          * */
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(inorderTraversal4(t3));
+        log(inorderTraversal3(t3));
         /*
          * expects []
          * */
