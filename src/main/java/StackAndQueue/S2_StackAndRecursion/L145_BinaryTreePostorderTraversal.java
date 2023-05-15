@@ -97,11 +97,16 @@ public class L145_BinaryTreePostorderTraversal {
     }
 
     /*
-     * 解法4：迭代
-     * - 思路：前序遍历的方法之一是先往左遍历到底，一路上访问节点，当到底后再转向访问右子树，如此循环。由此可想：若从根节点开始
-     *   先往右遍历，一路上访问节点，当没有右子节点时再转向访问左子树，如此循环会得到什么？结果是访问到的节点顺序刚好与后序遍历
-     *   应有的结果顺序相反 ∴ 可以使用一个 stack 将该结果倒序输出即可。
-     * - 实现：根据该思路可知需要2个 stack —— 一个用于实现往右遍历，另一个用于倒序输出遍历结果。
+     * 解法4：迭代（迭代里的最优解🥇）
+     * - 思路：前序遍历的方法之一（L144_BinaryTreePreorderTraversal 解法3）是先往左遍历到底，一路上访问节点，当到底后再转向访问
+     *   右子树，如此循环。由此可想：若从根节点开始先往右遍历，一路上访问节点，当没有右子节点时再转向访问左子树，如此循环会得到什么？结果
+     *   是访问到的节点顺序刚好与后序遍历应有的结果顺序相反 ∴ 可以使用一个 stack 将该结果倒序输出即可。
+     *           5
+     *         /   \
+     *        3     7     - 前序遍历：[5, 3, 1, 4, 7, 6]
+     *       / \   /      - 镜像前序遍历：[5, 7, 6, 3, 4, 1]
+     *      1   4 6       - 倒序后的镜像前序遍历：[1, 4, 3, 6, 7, 5]（即后续遍历）
+     * - 实现：根据该思路可知需要2个 stack —— 一个用于实现镜像前序遍历，另一个用于倒序输出结果。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 是树高。
      * - 👉 语法：Java 中：
      *   - Stack 接口的实现有：Stack, ArrayDeque, LinkedList 都可以（其中 Stack 已经被 JavaDoc deprecated，推荐用 Deque 代替）；
@@ -162,31 +167,34 @@ public class L145_BinaryTreePostorderTraversal {
 
         while (!stack.isEmpty()) {
             Command cmd = stack.pop();
-            TreeNode curr = cmd.node;
+            TreeNode node = cmd.node;
             if (cmd.type == CmdType.VISIT)
-                res.add(cmd.node.val);
+                res.add(node.val);
             else {
-                stack.push(new Command(CmdType.VISIT, curr));  // VISIT 指令最先入栈、最后执行
-                if (curr.right != null)
-                    stack.push(new Command(CmdType.TRAVERSE, curr.right));
-                if (curr.left != null)
-                    stack.push(new Command(CmdType.TRAVERSE, curr.left));
+                stack.push(new Command(CmdType.VISIT, node));  // VISIT 指令最先入栈、最后执行
+                if (node.right != null)
+                    stack.push(new Command(CmdType.TRAVERSE, node.right));
+                if (node.left != null)
+                    stack.push(new Command(CmdType.TRAVERSE, node.left));
             }
         }
 
         return res;
     }
 
-    public static List<Integer> postorderTraversal0(TreeNode root) {
+    public static List<Integer> postorderTraversal_(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) return res;
         Stack<TreeNode> stack = new Stack<>();
+
+
+
         return res;
     }
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeDepthFirst(new Integer[]{5, 3, 1, null, null, 4, null, null, 7, 6});
-        log(postorderTraversal0(t1));
+        log(postorderTraversal_(t1));
         /*
          * expects [1, 4, 3, 6, 7, 5]
          *         5
@@ -197,7 +205,7 @@ public class L145_BinaryTreePostorderTraversal {
          * */
 
         TreeNode t2 = createBinaryTreeDepthFirst(new Integer[]{1, null, 2, 3});
-        log(postorderTraversal0(t2));
+        log(postorderTraversal_(t2));
         /*
          * expects [3, 2, 1]
          *      1
@@ -208,7 +216,7 @@ public class L145_BinaryTreePostorderTraversal {
          * */
 
         TreeNode t3 = createBinaryTreeDepthFirst(new Integer[]{});
-        log(postorderTraversal0(t3));
+        log(postorderTraversal_(t3));
         /*
          * expects []
          * */
