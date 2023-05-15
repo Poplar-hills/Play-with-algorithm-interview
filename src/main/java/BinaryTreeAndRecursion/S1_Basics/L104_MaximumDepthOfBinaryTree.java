@@ -54,7 +54,7 @@ public class L104_MaximumDepthOfBinaryTree {
 
     /*
      * 解法3：BFS (Level lists in res)
-     * - 思路：与 L102_BinaryTreeLevelOrderTraversal 解法1一致，将所有节点按层分组，每层一个列表，最后返回层的个数。
+     * - 思路：与 L102_BinaryTreeLevelOrderTraversal 解法2一致，将所有节点按层分组，每层一个列表，最后返回层的个数。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int maxDepth3(TreeNode root) {

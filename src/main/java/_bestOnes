@@ -38,6 +38,7 @@
 
 - StackAndQueue (17/17):
   - L341_FlattenNestedListIterator ⭐️
+  - L145_BinaryTreePostorderTraversal
   - L103_BinaryTreeZigzagLevelOrderTraversal
   - L107_BinaryTreeLevelOrderTraversalII
   - L127_WordLadder ⭐️
