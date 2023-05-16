@@ -32,9 +32,9 @@ public class L199_BinaryTreeRightSideView {
         q.offer(root);
 
         while (!q.isEmpty()) {
-            for (int i = 0, s = q.size(); i < s; i++) {
+            for (int i = q.size() - 1; i >= 0; i--) {
                 TreeNode node = q.poll();
-                if (i == s - 1) res.add(node.val);  // 将该层的最后一个节点放入 res 中
+                if (i == 0) res.add(node.val);  // 将该层的最后一个节点放入 res 中
                 if (node.left != null) q.offer(node.left);
                 if (node.right != null) q.offer(node.right);
             }
@@ -58,12 +58,12 @@ public class L199_BinaryTreeRightSideView {
         return res;
     }
 
-    private static void dfs2(TreeNode node, List<Integer> res, int depth) {
+    private static void dfs2(TreeNode node, List<Integer> res, int level) {
         if (node == null) return;
-        if (depth == res.size()) res.add(node.val);
-        else res.set(depth, node.val);
-        dfs2(node.left, res, depth + 1);
-        dfs2(node.right, res, depth + 1);
+        if (level == res.size()) res.add(node.val);
+        res.set(level, node.val);
+        dfs2(node.left, res, level + 1);
+        dfs2(node.right, res, level + 1);
     }
 
     /*
@@ -79,11 +79,11 @@ public class L199_BinaryTreeRightSideView {
         return res;
     }
 
-    private static void dfs3(TreeNode node, List<Integer> res, int depth) {
+    private static void dfs3(TreeNode node, List<Integer> res, int level) {
         if (node == null) return;
-        if (depth == res.size()) res.add(node.val);
-        dfs3(node.right, res, depth + 1);
-        dfs3(node.left, res, depth + 1);
+        if (level == res.size()) res.add(node.val);
+        dfs3(node.right, res, level + 1);  // 先递归右子节点
+        dfs3(node.left, res, level + 1);
     }
 
     public static void main(String[] args) {
@@ -95,6 +95,7 @@ public class L199_BinaryTreeRightSideView {
          *       \     \
          *        5     4
          * */
+        log(rightSideView2(t1));   // expects [1, 3, 4]
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 5});
         /*
@@ -104,8 +105,6 @@ public class L199_BinaryTreeRightSideView {
          *       \
          *        5
          * */
-
-        log(rightSideView2(t1));   // expects [1, 3, 4]
         log(rightSideView2(t2));   // expects [1, 3, 5]
     }
 }
