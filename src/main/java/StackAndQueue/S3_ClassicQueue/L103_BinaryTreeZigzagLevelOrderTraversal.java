@@ -17,7 +17,7 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
     /*
      * 解法1：递归（最后 reverse）
      * - 思路：与 L102 的解法2一致，都是 DFS，只是最后要 reverse res 中的奇数层的列表。
-     * - 时间复杂度 O(n*h)，其中遍历节点是 O(n)，而最后 reverse 是 O(n*h)（res 中有 h 个列表，每个列表最多有 n/2 个元素）；
+     * - 👉🏻 时间复杂度 O(n*h)，其中遍历节点是 O(n)，而最后 reverse 是 O(h*n/2)（res 中有 h 个列表，每个列表最多有 n/2 个元素）；
      * - 空间复杂度 O(h)。
      * */
     public static List<List<Integer>> zigzagLevelOrder(TreeNode root) {
@@ -138,39 +138,6 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
         return res;
     }
 
-    /*
-     * 解法5：迭代（层级列表 + reverse）
-     * - 思路：与解法4类似，区别在于不在队列中保持节点的层级信息，而是在层级列表 levelList 生成完之后判断该层是否需要 reverse，
-     *   判断的依据就是当前迭代到了第几层，这就需要在每次创建 levelList 时进行计数。
-     * - 时间复杂度 O(n*h)，其中遍历节点是 O(n)，h/2 个 levelList 需要 reverse，每个 levelList 最多有 n/2 个元素 ∴ 是 O(n*h)；
-     * - 空间复杂度 O(n)。
-     * */
-    public static List<List<Integer>> zigzagLevelOrder5(TreeNode root) {
-        List<List<Integer>> res = new ArrayList<>();
-        if (root == null) return res;
-        Queue<TreeNode> q = new LinkedList<>();
-        q.offer(root);
-
-        int levelNum = 0;
-        while (!q.isEmpty()) {
-            List<Integer> levelList = new ArrayList<>();
-            for (int i = 0, size = q.size(); i < size; i++) {
-                TreeNode node = q.poll();
-                levelList.add(node.val);
-                if (node.left != null) q.offer(node.left);
-                if (node.right != null) q.offer(node.right);
-            }
-
-            if (levelNum % 2 == 1)  // levelList 创建完后判断当前在第几层，若是奇数层则 reverse
-                Collections.reverse(levelList);
-
-            res.add(levelList);
-            levelNum++;
-        }
-
-        return res;
-    }
-
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{3, 9, 20, null, null, 15, 7});
         /*
@@ -185,6 +152,5 @@ public class L103_BinaryTreeZigzagLevelOrderTraversal {
         log(zigzagLevelOrder2(t));   // expects [[3], [20,9], [15,7]]
         log(zigzagLevelOrder3(t));   // expects [[3], [20,9], [15,7]]
         log(zigzagLevelOrder4(t));   // expects [[3], [20,9], [15,7]]
-        log(zigzagLevelOrder5(t));   // expects [[3], [20,9], [15,7]]
     }
 }
