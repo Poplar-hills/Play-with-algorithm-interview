@@ -26,7 +26,7 @@ import static Utils.Helpers.log;
 public class L127_WordLadder {
     /*
      * 超时解（但结果正确）：BFS
-     * - 思路：该题是个典型求最短路径的题，而求图上两点的最短路径可采用 BFS。
+     * - 💎 思路：该题是个典型求最短路径的题，而求图上两点的最短路径可采用 BFS。
      * - 实现：∵ 题中要求返回最短路径的步数 ∴ 队列中除了存储路径上的每一个顶点之外，还要存储从起点开始到该顶点的步数信息。
      * */
     public static int ladderLength(String beginWord, String endWord, List<String> wordList) {
@@ -41,7 +41,7 @@ public class L127_WordLadder {
 
             for (String w : wordList) {
                 if (isSimilar(w, word)) {
-                    if (w.equals(endWord)) return stepCount + 1;
+                    if (w.equals(endWord)) return stepCount + 1;  // 入队下一个节点时判断是否到终点
                     q.offer(new Pair<>(w, stepCount + 1));
                 }
             }
@@ -67,12 +67,13 @@ public class L127_WordLadder {
      *   ∴ 需要一个 Set 记录哪些顶点还未被访问过，并且在寻找相邻顶点时只在该 Set 中寻找。
      * - 👉 注意：当需要一边遍历 Set，一边增/删其中元素（动态增删）时，不能使用 for、while、forEach，需要使用 iterator。
      * - 优化：更简单的做法是使用 Set 记录已经访问过的顶点，这样即不需要复制 wordList 也不需要在入队之后将访问的顶点从 Set 中移除。
-     * - 时间复杂度 O(n^2 * l)，其中 l 为单词长度；空间复杂度 O(n)。
+     * - 时间复杂度 O(n^2 * l)，其中 l 为单词长度；
+     * - 空间复杂度 O(n)。
      * */
     public static int ladderLength1(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Set<String> unvisited = new HashSet<>(wordList);
-        Queue<Pair<String, Integer>> q = new LinkedList<>();  // Queue<Pair<word, stepCount>>
+        Queue<Pair<String, Integer>> q = new LinkedList<>();  // Queue<word, stepCount>
         q.offer(new Pair<>(beginWord, 1));  // 注意 ∵ 题目要求 A -> B -> C 算3步而非2步 ∴ beginWord 的 stepCount 为1
 
         while (!q.isEmpty()) {              // 最差情况下遍历了所有顶点才到达 endWord ∴ 时间复杂度 O(n)
@@ -80,12 +81,12 @@ public class L127_WordLadder {
             String word = pair.getKey();
             int stepCount = pair.getValue();
 
-            if (word.equals(endWord)) return stepCount;
+            if (word.equals(endWord)) return stepCount;  // 访问节点时判断是否到终点
 
-            Iterator<String> it = unvisited.iterator();  // 遍历 unvisited 而非 wordList，时间复杂度 O(n)
+            Iterator<String> it = unvisited.iterator();  // 遍历 unvisited 寻找可替换单词，O(n * len(word))
             while (it.hasNext()) {
                 String w = it.next();
-                if (isSimilar(w, word)) {                // 寻找可替换单词，时间复杂度 O(len(word))
+                if (isSimilar(w, word)) {
                     q.offer(new Pair<>(w, stepCount + 1));
                     it.remove();                         // 从 unvisited 中删除（动态删除 unvisited 中的元素）
                 }
@@ -98,10 +99,10 @@ public class L127_WordLadder {
     /*
      * 解法2：解法1的性能优化版
      * - 思路：与解法1一致。
-     * - 实现：性能优化点在于寻找相邻顶点的过程：不同于解法1中的 isSimilar，该解法尝试对 word 中的每个字母用 a-z 进行替换，若替换
-     *   后的 tWord 存在于 wordList 中且未被访问过，则说明 tWord 与 word 相邻。∵ 只有26个字母 ∴ 用该方法搜索单个节点的相邻节点的
-     *   复杂度为 len(word) * 26；而解法1中 isSimilar 的复杂度为 n * len(word)。∵ 实际当中字典一般都满足 n >> 26 ∴ 该解法的
-     *   性能会由于解法1。
+     * - 实现：性能优化点在于寻找相邻顶点的过程：不同于解法1中的遍历字典 + isSimilar，该解法不再遍历字典，而是尝试对 word 中的每个字母
+     *   用 a-z 进行替换，若替换后的 tWord 存在于 wordList 中且未被访问过，则说明 tWord 与 word 相邻。∵ 只有26个字母 ∴ 用该方法
+     *   搜索单个节点的相邻节点的复杂度为 len(word) * 26；而解法1中对 n 个单词使用 isSimilar 的复杂度为 n * len(word) ∵ 实际当中
+     *   字典里的单词个数都满足 n >> 26 ∴ 该解法的性能会优于解法1。
      * - 时间复杂度 O(26 * n * l^2)，其中 l 为单词长度；空间复杂度 O(n)。
      * */
     public static int ladderLength2(String beginWord, String endWord, List<String> wordList) {
@@ -117,13 +118,13 @@ public class L127_WordLadder {
 
             if (word.equals(endWord)) return stepCount;
 
-            for (int i = 0; i < word.length(); i++) {  // 为 word 中的每个字母进行替换匹配，O(len(word) * 26)
+            for (int i = 0; i < word.length(); i++) {  // 不再遍历 unvisited，而是为 word 中的每个字母进行替换匹配，O(len(word) * 26)
                 StringBuilder sb = new StringBuilder(word);
                 for (char c = 'a'; c <= 'z'; c++) {    // 👉 for 可以直接遍历 ASCII 字符
                     if (c == word.charAt(i)) continue;
                     sb.setCharAt(i, c);                // 上面创建 StringBuilder 是为了这里能按索引修改字符串中的字符
                     String tWord = sb.toString();
-                    if (unvisited.contains(tWord)) {   // unvisitied 中有 tWord，说明找到了一个相邻顶点（在 Set 中匹配字符串的复杂度为 O(len(word))）
+                    if (unvisited.contains(tWord)) {   // unvisited 中有 tWord，说明找到了一个相邻顶点（在 Set 中匹配字符串的复杂度为 O(len(word))）
                         q.offer(new Pair<>(tWord, stepCount + 1));
                         unvisited.remove(tWord);
                     }
@@ -386,31 +387,31 @@ public class L127_WordLadder {
     }
 
     public static void main(String[] args) {
-        List<String> wordList = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log", "cog"));
+        List<String> wordList = new ArrayList<>(List.of("hot", "dot", "dog", "lot", "log", "cog"));
         log(ladderLength4("hit", "cog", wordList));
         // expects 5. (One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog")
 
-        List<String> wordList2 = new ArrayList<>(Arrays.asList("a", "b", "c"));
+        List<String> wordList2 = new ArrayList<>(List.of("a", "b", "c"));
         log(ladderLength4("a", "c", wordList2));
         // expects 2. ("a" -> "c")
 
-        List<String> wordList3 = new ArrayList<>(Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
+        List<String> wordList3 = new ArrayList<>(List.of("ted", "tex", "red", "tax", "tad", "den", "rex", "pee"));
         log(ladderLength4("red", "tax", wordList3));
         // expects 4. (One shortest transformation is "red" -> "ted" -> "tad" -> "tax")
 
-        List<String> wordList4 = new ArrayList<>(Arrays.asList("hot", "dot", "dog", "lot", "log"));
+        List<String> wordList4 = new ArrayList<>(List.of("hot", "dot", "dog", "lot", "log"));
         log(ladderLength4("hit", "cog", wordList4));
         // expects 0. (The endWord "cog" is not in wordList, therefore no possible transformation)
 
-        List<String> wordList5 = new ArrayList<>(Arrays.asList("hot", "dog"));
+        List<String> wordList5 = new ArrayList<>(List.of("hot", "dog"));
         log(ladderLength4("hot", "dog", wordList5));
         // expects 0. (No solution)
 
-        List<String> wordList6 = new ArrayList<>(Arrays.asList("lest", "leet", "lose", "code", "lode", "robe", "lost"));
+        List<String> wordList6 = new ArrayList<>(List.of("lest", "leet", "lose", "code", "lode", "robe", "lost"));
         log(ladderLength4("leet", "code", wordList6));
         // expects 6. ("leet" -> "lest" -> "lost" -> "lose" -> "lode" -> "code")
 
-        List<String> wordList7 = new ArrayList<>(Arrays.asList("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
+        List<String> wordList7 = new ArrayList<>(List.of("miss", "dusk", "kiss", "musk", "tusk", "diss", "disk", "sang", "ties", "muss"));
         log(ladderLength4("kiss", "tusk", wordList7));
         // expects 5. ("kiss" -> "miss" -> "muss" -> "musk" -> "tusk")
     }
