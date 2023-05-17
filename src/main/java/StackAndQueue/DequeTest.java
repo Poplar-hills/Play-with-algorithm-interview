@@ -1,5 +1,7 @@
 package StackAndQueue;
 
+import Utils.Helpers;
+
 import java.util.*;
 
 import static Utils.Helpers.*;
@@ -25,26 +27,26 @@ class DequeTest {
       public static void main(String[] args) {
         Queue<Integer> q = new LinkedList<>();
         q.offer(1); q.offer(2); q.offer(3);
-        q.forEach(a -> log(a));                  // -> 1, 2, 3
+        q.forEach(Helpers::log);  // -> 1, 2, 3
 
         Stack<Integer> s = new Stack<>();
         s.push(1); s.push(2); s.push(3);
-        s.forEach(a -> log(a));                  // -> 1, 2, 3
+        s.forEach(Helpers::log);  // -> 1, 2, 3
 
         Deque<Integer> d = new ArrayDeque<>();
-        d.push(1); d.push(2); d.push(3);         // Deque 用作 Stack
-        d.forEach(a -> log(a));                  // -> 3, 2, 1 (与 Stack 的遍历顺序相反)
+        d.push(1); d.push(2); d.push(3);  // Deque 用作 Stack
+        d.forEach(Helpers::log);  // -> 3, 2, 1 (与 Stack 的遍历顺序相反)
 
         Deque<Integer> d2 = new ArrayDeque<>();
-        d2.offer(1); d2.offer(2); d2.offer(3);   // Deque 用作 Queue
-        d2.forEach(a -> log(a));                 // -> 1, 2, 3（与 Queue 的遍历顺序一致）
+        d2.offer(1); d2.offer(2); d2.offer(3); // Deque 用作 Queue
+        d2.forEach(Helpers::log);  // -> 1, 2, 3（与 Queue 的遍历顺序一致）
 
         Deque<Integer> d3 = new ArrayDeque<>();
-        d3.offer(1); d3.push(2); d3.offer(3);    // Deque 的 offer 从右边进，push 从左进 ∴ 内部存储形式为 [2|1|3]
-        d3.forEach(a -> log(a));                 // -> 2, 1, 3
+        d3.offer(1); d3.push(2); d3.offer(3);  // Deque 的 offer 从右边进，push 从左进 ∴ 内部存储形式为 [2|1|3]
+        d3.forEach(Helpers::log);  // -> 2, 1, 3
 
         Deque<Integer> d4 = new ArrayDeque<>();
-        d4.offer(1); d4.push(2); d4.offer(3);          // Deque 的 pop、poll 都是从左出
+        d4.offer(1); d4.push(2); d4.offer(3);  // Deque 的 pop、poll 都是从左出
         log(d4.pop()); log(d4.pop()); log(d4.poll());  // -> 2, 1, 3
 
         Deque<Integer> d5 = new ArrayDeque<>();
