@@ -180,8 +180,8 @@ public class L127_WordLadder {
                 }
                 visited.add(word);
             }
-            stepCount++;              // 遍历完 beginSet 即意味着找到了所有可能路径上的下一个顶点 ∴ 让路径步数+1
-                                      // 另外，遍历过程中没有 return，说明正反向查找还未相遇 ∴ 应调换方向，继续对面的 BFS
+            stepCount++;        // 遍历完 beginSet 即意味着找到了所有可能路径上的下一个顶点 ∴ 让路径步数+1
+                                // 另外，遍历过程中没有 return，说明正反向查找还未相遇 ∴ 应调换方向，继续对面的 BFS
             if (endSet.size() < neighbours.size()) {  // 调换方向之前先判断两边 set 中的顶点数，谁少就用谁做 beginSet（以提高效率）
                 beginSet = endSet;
                 endSet = neighbours;
@@ -202,10 +202,10 @@ public class L127_WordLadder {
     public static int ladderLength4(String beginWord, String endWord, List<String> wordList) {
         if (!wordList.contains(endWord)) return 0;
         Set<String> unvisited = new HashSet<>(wordList);
-        return biDirBfs(Collections.singleton(beginWord), Collections.singleton(endWord), unvisited, 2);
+        return biDirBfs4(Collections.singleton(beginWord), Collections.singleton(endWord), unvisited, 2);
     }
 
-    private static int biDirBfs(Set<String> beginSet, Set<String> endSet, Set<String> unvisited, int stepCount) {
+    private static int biDirBfs4(Set<String> beginSet, Set<String> endSet, Set<String> unvisited, int stepCount) {
         if (beginSet.isEmpty()) return 0;  // 递归结束条件是当一边已找不到未访问过的相邻顶点，此时若正反向 BFS 还未相遇，则说明两点间无连通路径
         Set<String> neighbours = new HashSet<>();
 
@@ -226,8 +226,8 @@ public class L127_WordLadder {
         }
 
         return endSet.size() < neighbours.size()  // 选择元素少的一边进行下一轮 BFS
-                ? biDirBfs(endSet, neighbours, unvisited, stepCount + 1)
-                : biDirBfs(neighbours, endSet, unvisited, stepCount + 1);
+                ? biDirBfs4(endSet, neighbours, unvisited, stepCount + 1)
+                : biDirBfs4(neighbours, endSet, unvisited, stepCount + 1);
     }
 
     /*
@@ -245,7 +245,7 @@ public class L127_WordLadder {
         if (!wordList.contains(beginWord)) wordList.add(beginWord);  // 需先把 beginWord 加入 wordList 才能开始建立图
 
         int n = wordList.size();
-        boolean[][] graph = new boolean[n][n];  // 基于 wordList 创建邻接矩阵
+        boolean[][] graph = new boolean[n][n];  // 基于 wordList 创建无向图的邻接矩阵
         for (int i = 0; i < n; i++)
             for (int j = i + 1; j < n; j++)     // j 从 i+1 开始，不重复的遍历 wordList 中所有的两两组合
                 if (isSimilar(wordList.get(i), wordList.get(j)))
@@ -346,32 +346,32 @@ public class L127_WordLadder {
             for (int j = 0; j < i; j++)
                 graph[i][j] = graph[j][i] = isSimilar(wordList.get(i), wordList.get(j));
 
-        return biDirectionalBfs(graph, wordList, beginWord, endWord);  // 借助邻接表进行双向 BFS
+        return biDirBfs7(graph, wordList, beginWord, endWord);  // 借助邻接表进行双向 BFS
     }
 
-    private static int biDirectionalBfs(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
+    private static int biDirBfs7(boolean[][] graph, List<String> wordList, String beginWord, String endWord) {
         Queue<Integer> beginQ = new LinkedList<>();
         Queue<Integer> endQ = new LinkedList<>();
-        int beginIndex = wordList.indexOf(beginWord);
-        int endIndex = wordList.indexOf(endWord);
-        beginQ.offer(beginIndex);
-        endQ.offer(endIndex);
+        int beginIdx = wordList.indexOf(beginWord);
+        int endIdx = wordList.indexOf(endWord);
+        beginQ.offer(beginIdx);
+        endQ.offer(endIdx);
 
         int n = wordList.size();
         int[] beginSteps = new int[n], endSteps = new int[n];  // 为正、反向 BFS 各设置一个 steps 数组，这样会不互相干扰
-        beginSteps[beginIndex] = endSteps[endIndex] = 1;
+        beginSteps[beginIdx] = endSteps[endIdx] = 1;
 
         while (!beginQ.isEmpty() && !endQ.isEmpty()) {  // 若其中一个方向的查找完成时还没有从起点到终点的路径出现则说明无解，程序结束
-            int currBeginIndex = beginQ.poll(), currEndIndex = endQ.poll();  // 正、反向队列分别出队一个顶点的 index
+            int currBeginIdx = beginQ.poll(), currEndIdx = endQ.poll();  // 正、反向队列分别出队一个顶点的 index
 
-            for (int i = 0; i < n; i++) {                              // 从所有顶点的 index 中...
-                if (graph[currBeginIndex][i] && beginSteps[i] == 0) {  // 1. 找到 currBegin 顶点相邻，且未访问过的顶点的 index
-                    beginSteps[i] = beginSteps[currBeginIndex] + 1;    // 2. 计算起点到该相邻顶点的步数
-                    beginQ.offer(i);                                   // 3. 将该相邻顶点的 index 入队
+            for (int i = 0; i < n; i++) {                            // 遍历 wordList 中所有元素的索引
+                if (graph[currBeginIdx][i] && beginSteps[i] == 0) {  // 1. 找到与 currBegin 顶点相邻且未访问过的顶点的索引
+                    beginSteps[i] = beginSteps[currBeginIdx] + 1;    // 2. 计算起点到该相邻顶点的步数
+                    beginQ.offer(i);                                 // 3. 将该相邻顶点的 index 入队
                 }
-                if (graph[currEndIndex][i] && endSteps[i] == 0) {      // 4. 找到 currEnd 顶点的相邻顶点的 index
-                    endSteps[i] = endSteps[currEndIndex] + 1;          // 5. 计算终点到该相邻顶点的步数
-                    endQ.offer(i);                                     // 6. 将该相邻顶点的 index 入队
+                if (graph[currEndIdx][i] && endSteps[i] == 0) {      // 4. 找到与 currEnd 顶点相邻且未访问过的顶点的索引
+                    endSteps[i] = endSteps[currEndIdx] + 1;          // 5. 计算终点到该相邻顶点的步数
+                    endQ.offer(i);                                   // 6. 将该相邻顶点的 index 入队
                 }
             }
             // check intersection
