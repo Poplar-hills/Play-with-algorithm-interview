@@ -85,8 +85,6 @@ public class L126_WordLadderII {
      *      的 steps 数组，也可以是 Map。本解法中使用 Map 以便于随机访问。
      *   3. DFS 过程：从 beginWord 出发，借助 stepMap 查找哪个或哪几个相邻 word 是最短路径上的下一个顶点，如此重复直到
      *      到达 endWord，并记录下沿途的顶点即可获得最短路径。
-     * - 优化：该实现中，当找到一条最短路径时，要通过 getWords 方法找到路径中的 index 所对应的 word。更优的方式是将 index
-     *   和 word 组合成一个个 pair，放入 Queue 中。这样在访问顶点时仍然只使用 index，而又能在最后直接拿到 word。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * - 👉 注意：一般来说 DFS、BFS 的时间复杂度都是 O(V+E)，但具体要看数据结构，对于邻接矩阵是 O(V^2)，对于邻接表是 O(V+E)。
      * */
@@ -100,13 +98,13 @@ public class L126_WordLadderII {
 
         // Step 2: 通过 BFS 生成 stepMap<顶点, 起点到该顶点的最小步数>，O(n)
         int beginIdx = wordList.indexOf(beginWord);
-        Map<Integer, Integer> stepMap = bfs(graph, beginIdx, wordList);
+        Map<Integer, Integer> stepMap = bfs2(graph, beginIdx, wordList);
 
         // Step 3: 通过 DFS 在 stepMap 上找到所有最短路径，转换成 word path 后放入 res
         int endIdx = wordList.indexOf(endWord);
         List<Integer> path = new ArrayList<>();  // 回溯中待填充的路径（存储最短路径上每个顶点的 index）
         path.add(beginIdx);
-        dfs(graph, beginIdx, endIdx, wordList, stepMap, path, res);
+        dfs2(graph, beginIdx, endIdx, wordList, stepMap, path, res);
 
         return res;
     }
@@ -130,7 +128,7 @@ public class L126_WordLadderII {
         return graph;
     }
 
-    private static Map<Integer, Integer> bfs(List<List<Integer>> graph, int beginIdx, List<String> wordList) {
+    private static Map<Integer, Integer> bfs2(List<List<Integer>> graph, int beginIdx, List<String> wordList) {
         Map<Integer, Integer> stepMap = new HashMap<>();  // Map<word index, beginWord 到该 word 的最小步数>
         stepMap.put(beginIdx, 1);
         Queue<Integer> q = new LinkedList<>();    // Queue<word index>
@@ -149,9 +147,9 @@ public class L126_WordLadderII {
         return stepMap;
     }
 
-    private static void dfs(List<List<Integer>> graph, int i, int endIdx,  // i 为回溯过程中当前访问的顶点
-                            List<String> wordList, Map<Integer, Integer> stepMap,
-                            List<Integer> path, List<List<String>> res) {
+    private static void dfs2(List<List<Integer>> graph, int i, int endIdx,  // i 为回溯过程中当前访问的顶点
+                             List<String> wordList, Map<Integer, Integer> stepMap,
+                             List<Integer> path, List<List<String>> res) {
         if (!path.isEmpty() && path.get(path.size() - 1) == endIdx) {      // 到达 endWord 时即得到了一条最短路径
             res.add(getWords(path, wordList));             // 根据 path 中的 indexes 找到对应 words
             return;
@@ -159,7 +157,7 @@ public class L126_WordLadderII {
         for (int adj : graph.get(i)) {                     // 遍历所有相邻顶点，找到最短路径上的下一个顶点的索引，并放入 path 中
             if (stepMap.get(adj) == stepMap.get(i) + 1) {  // 关键点，检查索引为 adj 的顶点是否是最短路径上的下一个顶点
                 path.add(adj);
-                dfs(graph, adj, endIdx, wordList, stepMap, path, res);
+                dfs2(graph, adj, endIdx, wordList, stepMap, path, res);
                 path.remove(path.size() - 1);        // 返回上层前先恢复状态，以继续寻找其他最短路径
             }
         }
@@ -207,7 +205,7 @@ public class L126_WordLadderII {
 
         List<String> path = new ArrayList<>();       // 回溯中待填充的路径
         path.add(beginWord);
-        dfs(beginWord, endWord, adjMap, path, res);  // 基于 adjMap 进行回溯搜索，生成最短路径，并放入 res
+        dfs3(beginWord, endWord, adjMap, path, res);  // 基于 adjMap 进行回溯搜索，生成最短路径，并放入 res
 
         return res;
     }
@@ -253,8 +251,8 @@ public class L126_WordLadderII {
             biDirBfs(neighbours, endSet, unvisited, adjMap, isForward);
     }
 
-    private static void dfs(String currWord, String endWord, HashMap<String, List<String>> pathMap,  // 标准的 DFS（回溯）实现
-                            List<String> path, List<List<String>> res) {
+    private static void dfs3(String currWord, String endWord, HashMap<String, List<String>> pathMap,  // 标准的 DFS（回溯）实现
+                             List<String> path, List<List<String>> res) {
         if (currWord.equals(endWord)) {
             res.add(new ArrayList<>(path));
             return;
@@ -262,7 +260,7 @@ public class L126_WordLadderII {
         if (!pathMap.containsKey(currWord)) return;
         for (String adj : pathMap.get(currWord)) {  // 从 pathMap 中找到 currWord 的所有相邻顶点，为他们递归地进行 DFS
             path.add(adj);
-            dfs(adj, endWord, pathMap, path, res);
+            dfs3(adj, endWord, pathMap, path, res);
             path.remove(path.size() - 1);           // 返回上层递归之前将 adj 移除，恢复原来的状态，从而在有分叉的顶点上可以改变方向继续搜索
         }
     }
