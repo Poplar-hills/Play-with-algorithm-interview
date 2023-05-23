@@ -8,7 +8,7 @@ import static Utils.Helpers.log;
 /*
  * Word Ladder II
  *
- * - 题目与 L127_WordLadder 一致，区别在于要返回所有的最短路径，而不只是最短路径的条数。
+ * - 题目与 L127_WordLadder 一致，区别在于要返回所有的最短路径，而不只是最短路径的步数。
  *
  * - 👉 该题是非常有助于理解 BFS、DFS 的各自优势和局限性，以及在如何各尽所能相互配合。
  * */
@@ -16,8 +16,8 @@ import static Utils.Helpers.log;
 public class L126_WordLadderII {
     /*
      * 解法1：BFS
-     * - 初步分析："求最短路径"可使用 BFS 解决，而"求所有最短路径"则需要在通过 BFS 遍历找到最短路径后，继续遍历完所有路径，
-     *   这样才能找到所有最短路径。
+     * - 初步分析：要求"最短路径的步数"，可在 BFS 找到第一条最短路径后就退出；而要求"所有最短路径"则需让 BFS 遍历完所有路径
+     *   才能找到全部最短路径。
      * - 思路：与“找出图上任意两点之间的所有路径”的思路一致（SEE: Play-with-algorithms/Graph/Path 中的 allPaths 方法），
      *   即通过 BFS 遍历从 beginWord 到 endWord 之间的所有路径 ∵ 第一次找到的路径一定是最短的 ∴ 在找到第一个路径之后再找到
      *   的路径要么不是最短，要么跟第一条一样长 ∴ 只需根据每条路径的长度进行判断，若长度超过最短路径长度，则直接抛弃即可，这样
@@ -85,6 +85,8 @@ public class L126_WordLadderII {
      *      的 steps 数组，也可以是 Map。本解法中使用 Map 以便于随机访问。
      *   3. DFS 过程：从 beginWord 出发，借助 stepMap 查找哪个或哪几个相邻 word 是最短路径上的下一个顶点，如此重复直到
      *      到达 endWord，并记录下沿途的顶点即可获得最短路径。
+     * - 优化：该实现中，当找到一条最短路径时，要通过 getWords 方法找到路径中的 index 所对应的 word。更优的方式是将 index
+     *   和 word 组合成一个个 pair，放入 Queue 中。这样在访问顶点时仍然只使用 index，而又能在最后直接拿到 word。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * - 👉 注意：一般来说 DFS、BFS 的时间复杂度都是 O(V+E)，但具体要看数据结构，对于邻接矩阵是 O(V^2)，对于邻接表是 O(V+E)。
      * */
@@ -98,10 +100,10 @@ public class L126_WordLadderII {
 
         // Step 2: 通过 BFS 生成 stepMap<顶点, 起点到该顶点的最小步数>，O(n)
         int beginIdx = wordList.indexOf(beginWord);
-        int endIdx = wordList.indexOf(endWord);
         Map<Integer, Integer> stepMap = bfs(graph, beginIdx, wordList);
 
         // Step 3: 通过 DFS 在 stepMap 上找到所有最短路径，转换成 word path 后放入 res
+        int endIdx = wordList.indexOf(endWord);
         List<Integer> path = new ArrayList<>();  // 回溯中待填充的路径（存储最短路径上每个顶点的 index）
         path.add(beginIdx);
         dfs(graph, beginIdx, endIdx, wordList, stepMap, path, res);
@@ -147,9 +149,10 @@ public class L126_WordLadderII {
         return stepMap;
     }
 
-    private static void dfs(List<List<Integer>> graph, int i, int endIdx, List<String> wordList,
-                            Map<Integer, Integer> stepMap, List<Integer> path, List<List<String>> res) {
-        if (!path.isEmpty() && path.get(path.size() - 1) == endIdx) {  // 到达 endWord 时最短路径 path 被填充完整
+    private static void dfs(List<List<Integer>> graph, int i, int endIdx,  // i 为回溯过程中当前访问的顶点
+                            List<String> wordList, Map<Integer, Integer> stepMap,
+                            List<Integer> path, List<List<String>> res) {
+        if (!path.isEmpty() && path.get(path.size() - 1) == endIdx) {      // 到达 endWord 时即得到了一条最短路径
             res.add(getWords(path, wordList));             // 根据 path 中的 indexes 找到对应 words
             return;
         }
@@ -157,12 +160,12 @@ public class L126_WordLadderII {
             if (stepMap.get(adj) == stepMap.get(i) + 1) {  // 关键点，检查索引为 adj 的顶点是否是最短路径上的下一个顶点
                 path.add(adj);
                 dfs(graph, adj, endIdx, wordList, stepMap, path, res);
-                path.remove(path.size() - 1);       // 返回上层前先恢复状态，以继续寻找其他最短路径
+                path.remove(path.size() - 1);        // 返回上层前先恢复状态，以继续寻找其他最短路径
             }
         }
     }
 
-    private static List<String> getWords(List<Integer> path, List<String> wordList) {
+    private static List<String> getWords(List<Integer> path, List<String> wordList) {  // SEE 👆🏻的优化方式
         return path.stream().map(wordList::get).collect(Collectors.toList());
     }
 
