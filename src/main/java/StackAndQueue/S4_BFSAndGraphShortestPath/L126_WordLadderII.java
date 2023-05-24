@@ -139,6 +139,8 @@ public class L126_WordLadderII {
             for (int adj : graph.get(i)) {        // 基于 graph 遍历所有相邻顶点的 index
                 if (!stepMap.containsKey(adj)) {  // 若 stepMap 中已有 adj，说明之前已找到了更短的路径 ∴ 不能再覆盖
                     stepMap.put(adj, stepMap.get(i) + 1);
+                    if (stepMap.size() == wordList.size())  // 若 stepMap 已经生成好了（即已访问过了所有顶点）则退出 BFS
+                        return stepMap;
                     q.offer(adj);
                 }
             }
@@ -163,7 +165,7 @@ public class L126_WordLadderII {
         }
     }
 
-    private static List<String> getWords(List<Integer> path, List<String> wordList) {  // SEE 👆🏻的优化方式
+    private static List<String> getWords(List<Integer> path, List<String> wordList) {
         return path.stream().map(wordList::get).collect(Collectors.toList());
     }
 
@@ -179,16 +181,15 @@ public class L126_WordLadderII {
 
     /*
      * 解法3：Bi-directional BFS + DFS
-     * - 思路：与解法2类似，总体思路都是使用发散性的 BFS 生成一个对 DFS 友好的辅助数据结构，再使用纵深性的 DFS 找到所有最短路径。
+     * - 思路：与解法2一致，都是使用发散性的 BFS 生成一个对 DFS 友好的辅助数据结构，再使用纵深性的 DFS 找到所有最短路径。
      * - 实现：与解法2的不同点：
-     *     1. 辅助数据结构是一棵用 Map 表达的树，其 key 记录 BFS 过程中在走过所有最短路径之前访问过的所有顶点，value 记录每个
-     *        顶点的所有相邻顶点（之所以能只记录走过所有最短路径之前的顶点，是因为充分利用了 BFS 的性质，SEE👇的💎）；
-     *     2. BFS 过程采用双向 BFS（类似 L127_WordLadder 解法3），若用单向 BFS 则逻辑简单些，但效率低；
+     *     1. 辅助数据结构不再是解法2中的 stepMap<顶点索引, 起到到该顶点的最小步数>，而改为 Map<顶点, List<该顶点的相邻顶点>>；
+     *     2. BFS 过程为双向 BFS（类似 L127_WordLadder 解法3），以提高搜索效率；
      *     3. 不为 BFS 事先构建 graph，而是在 BFS 过程中现为每个顶点搜索相邻顶点。
      * - 💎 总结：
      *     1. BFS 的最大特点是从起点扩散性的向外逐层访问顶点 ∴ 最先到达终点的一定是最短路径，若存在多条最短路径，则它们都会在
      *        同一轮遍历（对最外圈顶点的遍历）中到达终点。
-     *     3. 该解法中的辅助数据结构使用 Map 表达树 —— 是一个很经典且常用的技巧。
+     *     3. 该解法中的辅助数据结构使用 Map 表达树：<顶点, 该顶点的所有相邻顶点>，这是一个经典且常用的技巧。
      * - 扩展：若该题目只求任意一条最短路径，则可以对 biDirBfs、dfs 方法进行改造，在找到第一条最短路径后就停止即可。
      * */
     public static List<List<String>> findLadders3(String beginWord, String endWord, List<String> wordList) {
@@ -200,7 +201,7 @@ public class L126_WordLadderII {
         Set<String> endSet = new HashSet<>();
         beginSet.add(beginWord);
         endSet.add(endWord);
-        HashMap<String, List<String>> adjMap = new HashMap<>();  // 用 Map 表达的树，记录 Map<顶点, List<所有相邻顶点>>
+        Map<String, List<String>> adjMap = new HashMap<>();  // 用 Map 表达的树，记录 Map<顶点, List<所有相邻顶点>>
         biDirBfs(beginSet, endSet, unvisited, adjMap, true);  // 通过双向 BFS 搜索各个顶点的相邻顶点，并放入 adjMap
 
         List<String> path = new ArrayList<>();       // 回溯中待填充的路径
@@ -211,7 +212,7 @@ public class L126_WordLadderII {
     }
 
     private static void biDirBfs(Set<String> beginSet, Set<String> endSet, Set<String> unvisited,
-                                 HashMap<String, List<String>> adjMap, boolean isForward) {
+                                 Map<String, List<String>> adjMap, boolean isForward) {
         unvisited.removeAll(beginSet);
         unvisited.removeAll(endSet);
         boolean hasMet = false;
@@ -234,7 +235,7 @@ public class L126_WordLadderII {
                         adjWords.add(adj);
                         adjMap.put(key, adjWords);
                     }
-                    if (!hasMet && unvisited.contains(tWord)) {  // TODO: 这里还没有完全明白
+                    if (!hasMet && unvisited.contains(tWord)) {  // TODO: 为完全理解
                         neighbours.add(tWord);
                         adjWords.add(adj);
                         adjMap.put(key, adjWords);
@@ -251,7 +252,7 @@ public class L126_WordLadderII {
             biDirBfs(neighbours, endSet, unvisited, adjMap, isForward);
     }
 
-    private static void dfs3(String currWord, String endWord, HashMap<String, List<String>> pathMap,  // 标准的 DFS（回溯）实现
+    private static void dfs3(String currWord, String endWord, Map<String, List<String>> pathMap,  // 标准的 DFS（回溯）实现
                              List<String> path, List<List<String>> res) {
         if (currWord.equals(endWord)) {
             res.add(new ArrayList<>(path));
