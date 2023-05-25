@@ -19,8 +19,13 @@ import static Utils.Helpers.log;
  *
  * - 💎 与 L126_WordLadderII 比较：
  *   ∵ L126_WordLadderII 中的图是无权图 ∴ 可以采用解法2的"构建邻接表 + BFS + DFS"的方式搜索所有最短路径；而本题中的图是
- *   带权图 ∴ 通过 BFS 生成 int[] minStep 数组对搜索最小权路径没有帮助（∵ 要求的是最小权路径而非最短路径） ∴ 只能采用朴素
+ *   带权图 ∴ 通过 BFS 生成 int[] minStep 数组对搜索最小权路径没有帮助（∵ 要求的是最小权路径而非最短路径）∴ 只能采用朴素
  *   BFS、DFS、Dijkstra、Bellman-Ford。
+ *
+ * - 💎 不同图下最短路径问题的最优解法：
+ *   - 无权图：BFS
+ *   - 有权图（无负权边）：Dijkstra
+ *   - 有权图（有负权边）：BellmanFord
  * */
 
 public class L787_CheapestFlightsWithinKStops {
@@ -178,17 +183,17 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     /*
-     * 解法5：简化版的 Dijkstra（性能优于解法1-3）
+     * 解法5：简化版的 Dijkstra（即 BFS + Priority Queue，性能优于解法1-3）
      * - 👉 前提：先看完 Play-with-algorithms/src/main/java/ShortestPath/Dijkstra.java 中的介绍。
-     * - 思路：本题是个典型的带权图，而 Dijkstra 算法正适用于计算带权图的单元最短路径树（即从一个起点到每个顶点的最小权路径）。
-     *   ∵ 本题中需要的只是从起点到终点的最短路径，无需求出起点到每个顶点的最短路径（最小权路径）∴ 无需对每个顶点进行 relaxation
-     *   操作（∴ 该解法是不标准的 Dijkstra），只要按边的权值（price）从小到大的顺序访问每个顶点的相邻顶点，则第一条到达终点的
-     *   路径即是最短路径。
+     * - 💎 思路：不同于解法1、2中使用 BFS/DFS 搜索两点间的所有路径 + 比较路径权值的思路，该解法采用 Dijkstra 算法，通过对
+     *   顶点进行 relaxation 操作来生成带权图的最短路径树（即从一个起点到每个顶点的最小权路径）。但 ∵ 本题中需要的只是从起点到
+     *   终点的最短路径，无需求出起点到每个顶点的最短路径 ∴ 无需对每个顶点进行 relaxation 来生成完整的最短路径树（∴ 该解法不是
+     *   标准的 Dijkstra），只要按边的权值从小到大的顺序访问每个顶点的相邻顶点，则第一条到达终点的路径即是最短路径。
      * - 💎 实现：
-     *   1. 该解法中的 Dijkstra 实现本质上是用 PriorityQueue 替换了普通 BFS 中的 Queue；
+     *   1. 该解法中的 Dijkstra 本质上是用 PriorityQueue 替换了普通 BFS 中的 Queue；
      *   2. 与 L126_WordLadderII 解法2一样，Dijkstra 算法也依赖于图的一个特性 —— 图上两点之间的最短路径，同时也是从起点
-     *      到该路径上各顶点的最短路径。若反过来利用该特性，从起点开始通过 BFS 一层层的查找每个顶点的最短邻边（最小权边），
-     *      这样找到的第一条到达终点的路径即是两点之间的最短路径。演算过程：
+     *      到该路径上各顶点的最短路径。若反过来利用该特性，从起点开始用 BFS 一层层的查找每个顶点的最短邻边（最小权边），这样
+     *      找到的第一条到达终点的路径即是两点之间的最短路径。演算过程：
      *                    ①
      *                 ↗  ↑  ↘          - 求从 ⓪ 到 ④ 的最短路径，K=2：每次都找最小权边，于是有 ⓪->②->①->④。
      *            50↗   10↑     ↘10     - 求从 ⓪ 到 ④ 的最短路径，K=1：
@@ -201,18 +206,18 @@ public class L787_CheapestFlightsWithinKStops {
      *   3. 从另一个角度看，当图上所有边的权值都相等时，Dijkstra 算法就退化成了 BFS。
      * - 时间复杂度：标准的 Dijkstra 实现是 O(ElogV)，但 ∵ 该解法中没有进行松弛操作，只是沿着最短路径前进直到 dst，因此：
      *   - 从 src 到达 dst 最多经过 V-1 个顶点；
-     *   - 对每个顶点，使用 min heap 从 V-1 条路径中找到最小的一条，O(logV)；
+     *   - 对每个顶点使用 min heap 从 V-1 条路径中找到最小的一条，O(logV)；
      *   ∴ 总体时间复杂度 O(VlogV)，即 O(nlogn)，空间复杂度 O(n+m)。
      * */
     public static int findCheapestPrice5(int n, int[][] flights, int src, int dst, int K) {
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
             .collect(Collectors.groupingBy(f -> f[0]));
 
-        PriorityQueue<int[]> pq = new PriorityQueue<>((p1, p2) -> p1[1] - p2[1]);  // 基于 totalPrice 的最小堆
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);  // 基于 totalPrice 的最小堆
         pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
 
         while (!pq.isEmpty()) {
-            int[] path = pq.poll();  // ∵ 每次 poll 出来的都是 pq 里从 src 出发 totalPrice 最小的路径
+            int[] path = pq.poll();  // 👉🏻 ∵ 每次 poll 出来的都是从上一顶点出发 price 最小的相邻顶点 ∴ 也就是最短路径上的下一顶点
             int city = path[0], totalPrice = path[1], stopCount = path[2];
 
             if (city == dst) return totalPrice;  // 第一个到达终点的路径的 totalPrice 即是 minPrice
@@ -226,23 +231,57 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     /*
-     * 解法6：完整版的 Dijkstra
-     * - 思路：Dijkstra 算法用于为一副带权图生成最短路径树（即从起点到图中所有其他顶点的最短路径数组）。解法5中的 Dijkstra
-     *   是化简后的版本，而本解法中采用的是完整的 Dijkstra 过程，基于 graph 生成 minPrices、minStops 数组：minPrices[i]
-     *   表示从 src 到顶点 i 的最低费用；minStops[i] 表示从 src 到顶点 i 的最少中转站数量），最后返回 minPrices[dst] 即可。
+     * 解法6：简化版的 Dijkstra（解法5的性能优化版）
+     * - 思路：在解法5的基础上通过剪枝进一步优化 —— 维护一个 stopCounts 数组，stopCounts[i] 表示从 src 到顶点 i 的
+     *   中间顶点数量。∵ 在 Dijkstra 的过程中，同一个顶点可能被多次访问 ∴ 若该顶点之前已经被访问过，且 src 到达该顶点的
+     *   路径上中间节点数据更少（即 total price 更小），则无需再次再次访问。
+     * - 时间复杂度：O(VlogV)，即 O(nlogn)，空间复杂度 O(n+m)。
+     * */
+    public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
+        Map<Integer, List<int[]>> graph = Arrays.stream(flights)
+                .collect(Collectors.groupingBy(f -> f[0]));
+
+        int[] stopCounts = new int[n];
+        Arrays.fill(stopCounts, Integer.MAX_VALUE);
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
+
+        while (!pq.isEmpty()) {
+            int[] path = pq.poll();
+            int city = path[0], totalPrice = path[1], stopCount = path[2];
+
+            if (city == dst) return totalPrice;
+
+            if (!graph.containsKey(city) || stopCount == K || stopCount > stopCounts[city])  // 新加了第三个判断条件
+                continue;
+            stopCounts[city] = Math.min(stopCounts[city], stopCount);
+
+            for (int[] flight : graph.get(city))
+                pq.offer(new int[]{flight[1], totalPrice + flight[2], stopCount + 1});
+        }
+
+        return -1;
+    }
+
+    /*
+     * 解法7：完整版的 Dijkstra
+     * - 思路：完整的 Dijkstra 算法会为带权图生成一棵完整的最短路径树，即从起点到所有顶点的最短路径数组 minPrices，
+     *   minPrices[i] 表示从 src 到顶点 i 的最低 price ∴ 最后只需返回 minPrices[dst] 即可。
      * - 实现：
      *   1. ∵ 航线图通常非常密集 ∴ 本解法的 graph 采用邻接矩阵（Adjacency Matrix）；
      *   2. 邻接矩阵是通过索引查询，该解法中假设了城市名就是城市索引（这点题中没有明确说明，但 test case 中就是这样）。
      *   3. Dijkstra 的过程：
-     *      - 与解法5相同点：同样是使用优先队列，每次 poll 出最短路径；
-     *      - 与解法5不同点：增加了松弛操作 —— 为每次 poll 出的路径中的顶点的邻边进行松弛，若松弛过程中找到了 price 更低
-     *        或 stopCount 更少的路径，则将该顶点重新入队，再次进行松弛。
-     * - 时间复杂度：即标准的 Dijkstra 的时间复杂度 O(ElogV)，也就是 O(mlogn)。实际在 Leetcode 上，该解法快于97%的解法
-     *   （也是解法1-7中唯一不超时的解法）。
+     *      - 与解法5相同点：使用优先队列，每次 poll 出最短路径上的下一个顶点；
+     *      - 与解法5不同点：多了松弛操作 —— 为每次 poll 出的路径中的顶点的邻边进行松弛，若松弛过程中找到了 price 更低
+     *        或 stopCount 更少的路径，则将该顶点重新入队，再次进行松弛；
+     *   4. 维护一个 stopCounts 数组用于记录从 src 到各个顶点 i 的中间顶点数。
+     * - 时间复杂度：即标准的 Dijkstra 的时间复杂度 O(ElogV)，也就是 O(mlogn)。实际在 Leetcode 上，该解法快于97%
+     *   的解法（也是解法1-7中唯一不超时的解法）。
      * - 空间复杂度：O(n+m)。
      * */
-    public static int findCheapestPrice6(int n, int[][] flights, int src, int dst, int K) {
-        int[][] graph = new int[n][n];   // adjacency graph
+    public static int findCheapestPrice7(int n, int[][] flights, int src, int dst, int K) {
+        int[][] graph = new int[n][n];   // adjacency matrix
         for (int[] f : flights)
             graph[f[0]][f[1]] = f[2];    // graph[src][dst] = price
 
@@ -253,7 +292,7 @@ public class L787_CheapestFlightsWithinKStops {
         minPrices[src] = 0;
         stopCounts[src] = 0;
 
-        PriorityQueue<int[]> pq = new PriorityQueue<>((p1, p2) -> p1[1] - p2[1]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
         pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
 
         while (!pq.isEmpty()) {
@@ -263,13 +302,13 @@ public class L787_CheapestFlightsWithinKStops {
             if (city == dst) return totalPrice;  // 找到的第一条通路就是最短路径 ∴ 直接 return（∴ 可见该实现也没有对所有边进行松弛）
             if (stopCount == K) continue;        // 剪枝
 
-            for (int adj = 0; adj < n; adj++) {  // 松弛所有邻边（relax all neighboring edges）
-                if (graph[city][adj] > 0) {      // price > 0 表示有从 city -> adj 的航线
+            for (int adj = 0; adj < n; adj++) {  // 遍历所有顶点
+                if (graph[city][adj] > 0) {      // 找到 city 的所有邻边，开始松弛操作（relax all neighboring edges）
                     int newPrice = totalPrice + graph[city][adj];
                     int newStopCount = stopCount + 1;
 
-                    if (newPrice < minPrices[adj] || newStopCount < stopCounts[adj])  // 若松弛后找到了更小的 price/stopCount 则再次入队
-                        pq.offer(new int[]{adj, newPrice, newStopCount});  // adj 顶点，基于新的 price/stopCount 对其所有邻边进行松弛
+                    if (newPrice < minPrices[adj] || newStopCount < stopCounts[adj])  // 若经过 adj 得到了更小的 price/stopCount，则再次入队 adj
+                        pq.offer(new int[]{adj, newPrice, newStopCount});  // 基于新的 price/stopCount 对 adj 的所有邻边进行松弛
 
                     minPrices[adj] = Math.min(minPrices[adj], newPrice);   // 更新记录
                     stopCounts[adj] = newStopCount;                        // 注意这里直接覆盖，而非取最小值
@@ -281,7 +320,7 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     /*
-     * 解法7：Bellman-Ford
+     * 解法8：Bellman-Ford
      * - 前提：先理解 Bellman-Ford 的过程演示：https://www.youtube.com/watch?v=obWXjtg0L64&vl=en（0'35''）。
      * - 思路：虽然题中说了不会有负权边，但可以使用 Dijkstra 的场景就一定可以使用 Bellman-Ford（虽然算法复杂度大很多）。
      * - 原理：假设图中可能存在负权边，则经过更多顶点的路径可能总距离反而更短。这时 Dijkstra 的贪心策略就会失效，不再能保证
@@ -298,7 +337,7 @@ public class L787_CheapestFlightsWithinKStops {
      *      而是在 V-1 次迭代中对所有已达到的顶点的邻边进行松弛。
      * - 时间复杂度为 O(EV)，即 O(mn)，空间复杂度 O(V)，即 O(n)。
      * */
-    public static int findCheapestPrice7(int n, int[][] flights, int src, int dst, int K) {
+    public static int findCheapestPrice8(int n, int[][] flights, int src, int dst, int K) {
         int[] minPrices = new int[n];   // Bellman-Ford 的基本形式是填充最短路径树数组（同标准版的 Dijkstra）
         Arrays.fill(minPrices, Integer.MAX_VALUE);
         minPrices[src] = 0;
@@ -318,7 +357,7 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     /*
-     * 解法8：DP
+     * 解法9：DP
      * - 思路：// TODO 补充状态转移方程
      *   - 子问题定义：f(k, c) 表示“在 k-1 个 stop 之内从起点 src 到达城市 c 的最小 price”；
      *         k\c |  0   1   2   3   4
@@ -333,7 +372,7 @@ public class L787_CheapestFlightsWithinKStops {
      *      ∴ 基于 ∞ 去更新目标顶点的最短路径仍会是 ∞。
      * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n^2)。
      * */
-    public static int findCheapestPrice8(int n, int[][] flights, int src, int dst, int K) {
+    public static int findCheapestPrice9(int n, int[][] flights, int src, int dst, int K) {
         long[][] dp = new long[K + 2][n];  // dp[k][c] 表示在 k-1 个 stop 内从 src 到达城市 c 的最小 price
         for (long[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
