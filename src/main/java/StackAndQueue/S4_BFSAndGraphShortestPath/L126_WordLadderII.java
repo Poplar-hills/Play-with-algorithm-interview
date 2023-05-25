@@ -256,6 +256,7 @@ public class L126_WordLadderII {
                              List<String> path, List<List<String>> res) {
         if (currWord.equals(endWord)) {
             res.add(new ArrayList<>(path));
+            
             return;
         }
         if (!pathMap.containsKey(currWord)) return;

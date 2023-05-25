@@ -19,29 +19,28 @@ import static Utils.Helpers.log;
  *
  * - 💎 与 L126_WordLadderII 比较：
  *   ∵ L126_WordLadderII 中的图是无权图 ∴ 可以采用解法2的"构建邻接表 + BFS + DFS"的方式搜索所有最短路径；而本题中的图是
- *   带权图 ∴ 通过 BFS 生成 int[] minStep 数组对搜索最小权路径没有帮助 ∴ 只能采用朴素 BFS、DFS、Dijkstra、Bellman-Ford。
+ *   带权图 ∴ 通过 BFS 生成 int[] minStep 数组对搜索最小权路径没有帮助（∵ 要求的是最小权路径而非最短路径） ∴ 只能采用朴素
+ *   BFS、DFS、Dijkstra、Bellman-Ford。
  * */
 
 public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法1：BFS
-     * - 思路：与 L126_WordLadderII 解法1类似，非常 straightforward，从起点 src 开始对由城市和航线组成的图进行完整的
-     *    BFS（遍历所有顶点，而不是到达了终点就提前结束），找到所有到达终点 dst 的路径，并返回其中最小的 price。
+     * - 思路：与 L126_WordLadderII 解法1类似，非常 straightforward，从起点开始对由城市和航线组成的图进行完整的 BFS
+     *   （遍历所有顶点，而不是到达了终点就提前结束），找到所有到达终点的路径，并返回其中最小的 price。
      * - 💎 实现：本解法采用先构建 graph，再在 graph 上进行 BFS 的方式实现：
-     *     1. ∵ graph 是用来在 BFS 时能根据任一节点找到所有相邻节点（即需根据任意一个起始城市，找到所有从该城市出发的航线）
+     *     1. ∵ graph 是用来在 BFS 时能根据任一顶点找到所有相邻顶点（即需根据任意一个起始城市，找到所有从该城市出发的航线）
      *        ∴ graph 要能支持对起始城市的随机访问 ∴ graph 的结构要么是：
-     *        a). 邻接表（int[][] 或 List<List<Integer>>）：通常使用索引查询（如 L70_ClimbingStairs 解法3）；
-     *        b). 哈希表（Map<city, List<flight>>）：使用城市名称查询（如本解法中的情况）。
+     *        a). 邻接矩阵/邻接表：int[][] 或 List<List<Integer>>（通常使用顶点的索引进行查询）；
+     *        b). 哈希表：Map<city, List<flight>>。
      *     2. ∵ 最终要求的是 price，且 stop 个数是限制条件 ∴ 在 BFS 过程中要将路径的 price 和 stop 个数带在每个顶点上。
      *        在查找相邻顶点时，若到达某一相邻顶点的 price 已经超过之前找到的 minPrice，则进行剪枝。
      *     3. ∵ 要求的是不同路径的最小 price，而不同路径可能会经过相同的顶点（联想 Dijkstra 的松弛操作）∴ BFS 过程中不能
      *        对顶点使用 visited/unvisited 的重复访问检查。
      * - 💎 总结：本题与 L127_WordLadder 解法1对照可发现：
-     *   - 若是求无权图上的最短路径，则只需用 BFS 找到第一条到达终点的路径即可，分支时要对顶点做 visited/unvisited 判断。
-     *   - 若是求带权图上的最小权路径，若要使用 BFS/DFS，则需遍历所有到达终点的路径，且分支时不能做 visited/unvisited 判断，
-     *     这是 ∵ 即使是访问过的节点，由于要求的是权值最小的路径 ∴ 可能会出现经过节点更多，但整体权值更小的情况（即需要进行松弛
-     *     的情况）∴ 需要允许重复访问节点才能找到权值最小的路径。例如本解法中如果加入 boolean[] visited 数组，则在 test case 2
-     *     中对2节点进行分支时，2->1 的分支会被减掉（∵ 此时1节点已经访问过 visited[1] = true）∴ 最终会得到错误解。
+     *   - 若求无权图上的最短路径，则用 BFS 找到第一条到达终点的路径即可，分支时要对顶点做 visited/unvisited 判断。
+     *   - 若求带权图上的最小权路径，则用 BFS/DFS 遍历所有到达终点的路径，且分支时不能做 visited/unvisited 判断，（∵ 可能
+     *     会出现经过更多顶点，但整体权值更小的情况，即需要进行松弛的情况）∴ 需允许重复访问顶点。
      * - 时间复杂度：O(V+E)，即 O(n+m)，其中 m 为航线条数（flights.length）：
      *     1. 构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)，即 O(m)；
      *     2. ∵ graph 更类似邻接表 ∴ 在 graph 上进行 BFS 是 O(V+E)，即 O(n+m)。
@@ -159,25 +158,23 @@ public class L787_CheapestFlightsWithinKStops {
      * - 思路：与解法3一致。
      * - 时间复杂度 O(n+m)，空间复杂度 O(n+m)，其中 m 为航线条数（flights.length）。
      * */
-    private static int minPrice;
-
     public static int findCheapestPrice4(int n, int[][] flights, int src, int dst, int K) {
-        minPrice = Integer.MAX_VALUE;     // 不在上面赋值是为了不让 test case 之间互相影响
         Map<Integer, List<int[]>> graph = Arrays.stream(flights)
-            .collect(Collectors.groupingBy(f -> f[0]));
-        dfs4(graph, src, dst, 0, K + 1);
+                .collect(Collectors.groupingBy(f -> f[0]));
+        int minPrice = dfs4(graph, src, dst, 0, K + 1);
         return minPrice == Integer.MAX_VALUE ? -1 : minPrice;
     }
 
-    private static void dfs4(Map<Integer, List<int[]>> graph, int city, int dst, int totalPrice, int k) {
-        if (city == dst) {
-            minPrice = totalPrice;  // 每次找到通路后就直接赋值，下面的剪枝保证了这里最后取到的是最小 price
-            return;
-        }
-        if (!graph.containsKey(city) || k == 0) return;
-        for (int[] flight : graph.get(city))
-            if (totalPrice + flight[2] < minPrice)
-                dfs4(graph, flight[1], dst, totalPrice + flight[2], k - 1);
+    private static int dfs4(Map<Integer, List<int[]>> graph, int src, int dst, int totalPrice, int k) {
+        if (src == dst) return totalPrice;
+
+        int minPrice = Integer.MAX_VALUE;
+        if (!graph.containsKey(src) || k == 0) return minPrice;
+
+        for (int[] f : graph.get(src))
+            minPrice = Math.min(minPrice, dfs_(graph, f[1], dst, totalPrice + f[2], k - 1));
+
+        return minPrice;
     }
 
     /*
@@ -249,8 +246,8 @@ public class L787_CheapestFlightsWithinKStops {
         for (int[] f : flights)
             graph[f[0]][f[1]] = f[2];    // graph[src][dst] = price
 
-        int[] minPrices = new int[n];    // 从 src 出发到各节点的 min price
-        int[] stopCounts = new int[n];   // 从 src 出发到各节点的 stop count（注意不一定是最小 stop count）
+        int[] minPrices = new int[n];    // 从 src 出发到各顶点的 min price
+        int[] stopCounts = new int[n];   // 从 src 出发到各顶点的 stop count（注意不一定是最小 stop count）
         Arrays.fill(minPrices, Integer.MAX_VALUE);
         Arrays.fill(stopCounts, Integer.MAX_VALUE);
         minPrices[src] = 0;
