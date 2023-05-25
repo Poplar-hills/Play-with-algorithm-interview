@@ -172,7 +172,7 @@ public class L787_CheapestFlightsWithinKStops {
         if (!graph.containsKey(src) || k == 0) return minPrice;
 
         for (int[] f : graph.get(src))
-            minPrice = Math.min(minPrice, dfs_(graph, f[1], dst, totalPrice + f[2], k - 1));
+            minPrice = Math.min(minPrice, dfs4(graph, f[1], dst, totalPrice + f[2], k - 1));
 
         return minPrice;
     }
