@@ -372,9 +372,9 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法9：DP
-     * - 思路：本质与解法8的 Bellman-Ford 一致。
-     *   - 子问题定义：f(k,c) 表示“在 k-1 个中间 stop 之内从起点到达城市 c 的最小 price”；
-     *   - 状态转移方程：f(k,c) =  // TODO 补充状态转移方程
+     * - 思路：与解法8 Bellman-Ford 算法的原理完全一致（其实还是要基于 Bellman-Ford 的原理去理解，否则不能 make sense）
+     *   - 子问题定义：f(k,c) 表示“在 k-1 个中间 stop 之内从起点到达城市 c 的最小 price”
+     *   - 状态转移方程：f(k,c) = min(f(k-1,c), f(k-1,s) + price)
      *         k\c |  0   1   2   3   4
      *        -----+---------------------
      *          0  |  0   ∞   ∞   ∞   ∞
@@ -385,7 +385,7 @@ public class L787_CheapestFlightsWithinKStops {
      *   1. ∵ 在 Math.min 时可能发生 Integer.MAX_VALUE + price，超过 int 的上限 ∴ dp 需要声明为 long[][]；
      *   2. 在解法6的 Bellman-Ford 中会跳过源顶点还未被访问过的边，而本解法中则仍会访问，而 ∵ 未被访问过的顶点的最短路径是 ∞，
      *      ∴ 基于 ∞ 去更新目标顶点的最短路径仍会是 ∞。
-     * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n^2)。
+     * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n^2)。该解法的统计性能在解法1-9中最高。
      * */
     public static int findCheapestPrice9(int n, int[][] flights, int src, int dst, int K) {
         long[][] dp = new long[K + 2][n];  // dp[k][c] 表示在 k-1 个 stop 内从 src 到达城市 c 的最小 price
@@ -395,7 +395,7 @@ public class L787_CheapestFlightsWithinKStops {
 
         for (int k = 1; k < K + 2; k++) {  // 迭代 K+1 次
             dp[k][src] = 0;
-            for (int[] f : flights) {       // 每次迭代都遍历所有邻边
+            for (int[] f : flights) {       // 每次迭代都遍历所有邻边（相当于 Bellman-Ford 中的松弛操作）
                 int s = f[0], d = f[1], price = f[2];
                 dp[k][d] = Math.min(dp[k][d], dp[k - 1][s] + price);  // f(k,d) 取决于 f(k-1,s) + s→d 的 price
             }
