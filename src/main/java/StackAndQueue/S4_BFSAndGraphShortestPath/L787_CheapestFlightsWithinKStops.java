@@ -235,7 +235,7 @@ public class L787_CheapestFlightsWithinKStops {
      * - 思路：在解法5的基础上通过剪枝进一步优化 —— ∵ 在 Dijkstra 的过程中，同一个顶点可能被多次访问，但若该顶点在之前已经
      *   沿着 PriorityQueue 中的最短路径被访问过（即已找到了 src 到达该顶点的最短路径），则本次访问时的 total price 一定
      *   更大 ∴ 则无需再次再次访问。
-     * - 例：在上例中增加一条 ① -> ②，price=5 的路径：
+     * - 例：在上例中增加一条 ①->②，price=5 的路径：
      *                    ①
      *                 ↗  ↑↓  ↘          - 若求从 ⓪ 到 ④ 的最短路径，K=2：每次都找最小权边，于是会：
      *            50↗   10↑↓5    ↘10       1. 从 ⓪->①、⓪->②、⓪->③ 中选出最短路径 ⓪->②，继续访问 ② 的邻边；
@@ -402,17 +402,17 @@ public class L787_CheapestFlightsWithinKStops {
     }
 
     public static void main(String[] args) {
-//        int[][] flights1 = {{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
-//        /*
-//         *               ⓪
-//         *             ↙   ↘
-//         *       100 ↙       ↘ 500
-//         *         ↙           ↘
-//         *       ①  →  →  →  →  ②
-//         *              100
-//         * */
-//        log(findCheapestPrice6(3, flights1, 0, 2, 1));  // expects 200
-//        log(findCheapestPrice6(3, flights1, 0, 2, 0));  // expects 500
+        int[][] flights1 = {{0, 1, 100}, {1, 2, 100}, {0, 2, 500}};
+        /*
+         *               ⓪
+         *             ↙   ↘
+         *       100 ↙       ↘ 500
+         *         ↙           ↘
+         *       ①  →  →  →  →  ②
+         *              100
+         * */
+        log(findCheapestPrice6(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice6(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = {
                 {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -430,26 +430,26 @@ public class L787_CheapestFlightsWithinKStops {
          *                 ③
          * */
         log(findCheapestPrice6(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-//        log(findCheapestPrice6(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-//        log(findCheapestPrice6(5, flights2, 0, 4, 0));   // expects -1
-//        log(findCheapestPrice6(5, flights2, 2, 0, 4));   // expects -1
-//
-//        int[][] flights3 = {{0, 1, 5}, {1, 2, 5}, {0, 3, 2}, {3, 1, 2}, {1, 4, 1}, {4, 2, 1}};
-//        log(findCheapestPrice6(5, flights3, 0, 2, 2));   // expects 7
-//        log(findCheapestPrice6(5, flights3, 0, 2, 3));   // expects 6
-//        /*
-//         *      ⓪ → → → 5 → → → ① → → → 1 → → → ④
-//         *        ↘            ↗  ↘             ↙
-//         *          ↘ 2    2 ↗      ↘ 5     1 ↙
-//         *            ↘    ↗          ↘     ↙
-//         *              ③               ②
-//         * */
-//
-//        int[][] flights4 = {
-//                {7, 5, 20}, {7, 6, 59}, {3, 1, 95}, {7, 0, 85}, {4, 7, 84}, {0, 7, 90},
-//                {1, 0, 19}, {2, 5, 74}, {2, 3, 81}, {2, 0, 56}, {5, 1, 25}, {4, 0, 89},
-//                {3, 6, 18}, {5, 2, 1},  {7, 1, 43}, {3, 2, 66}, {7, 3, 4}
-//        };
-//        log(findCheapestPrice6(8, flights4, 0, 6, 6));   // expects 112
+        log(findCheapestPrice6(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice6(5, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice6(5, flights2, 2, 0, 4));   // expects -1
+
+        int[][] flights3 = {{0, 1, 5}, {1, 2, 5}, {0, 3, 2}, {3, 1, 2}, {1, 4, 1}, {4, 2, 1}};
+        log(findCheapestPrice6(5, flights3, 0, 2, 2));   // expects 7
+        log(findCheapestPrice6(5, flights3, 0, 2, 3));   // expects 6
+        /*
+         *      ⓪ → → → 5 → → → ① → → → 1 → → → ④
+         *        ↘            ↗  ↘             ↙
+         *          ↘ 2    2 ↗      ↘ 5     1 ↙
+         *            ↘    ↗          ↘     ↙
+         *              ③               ②
+         * */
+
+        int[][] flights4 = {
+                {7, 5, 20}, {7, 6, 59}, {3, 1, 95}, {7, 0, 85}, {4, 7, 84}, {0, 7, 90},
+                {1, 0, 19}, {2, 5, 74}, {2, 3, 81}, {2, 0, 56}, {5, 1, 25}, {4, 0, 89},
+                {3, 6, 18}, {5, 2, 1},  {7, 1, 43}, {3, 2, 66}, {7, 3, 4}
+        };
+        log(findCheapestPrice6(8, flights4, 0, 6, 6));   // expects 112
     }
 }
