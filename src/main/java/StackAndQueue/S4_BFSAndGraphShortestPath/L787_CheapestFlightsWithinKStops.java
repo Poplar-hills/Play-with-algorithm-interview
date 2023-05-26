@@ -372,8 +372,9 @@ public class L787_CheapestFlightsWithinKStops {
 
     /*
      * 解法9：DP
-     * - 思路：// TODO 补充状态转移方程
-     *   - 子问题定义：f(k, c) 表示“在 k-1 个 stop 之内从起点 src 到达城市 c 的最小 price”；
+     * - 思路：本质与解法8的 Bellman-Ford 一致。
+     *   - 子问题定义：f(k,c) 表示“在 k-1 个中间 stop 之内从起点到达城市 c 的最小 price”；
+     *   - 状态转移方程：f(k,c) =  // TODO 补充状态转移方程
      *         k\c |  0   1   2   3   4
      *        -----+---------------------
      *          0  |  0   ∞   ∞   ∞   ∞
@@ -395,12 +396,36 @@ public class L787_CheapestFlightsWithinKStops {
         for (int k = 1; k < K + 2; k++) {  // 迭代 K+1 次
             dp[k][src] = 0;
             for (int[] f : flights) {       // 每次迭代都遍历所有邻边
-                int sCity = f[0], tCity = f[1], price = f[2];
-                dp[k][tCity] = Math.min(dp[k][tCity], dp[k - 1][sCity] + price);  // f(k,tCity) 取决于 f(k-1,sCity) + sCity→tCity 的 price
+                int s = f[0], d = f[1], price = f[2];
+                dp[k][d] = Math.min(dp[k][d], dp[k - 1][s] + price);  // f(k,d) 取决于 f(k-1,s) + s→d 的 price
             }
         }
 
         return dp[K + 1][dst] == Integer.MAX_VALUE ? -1 : (int)dp[K + 1][dst];
+    }
+
+    /**
+     * 解法10：DP（解法9的空间优化版）
+     * - 实现：∵ 解法9的状态转移过程中只用到了 dp 数组中的最后两行 ∴ 可以将 dp 数组初始化为 long[2][n]。
+     * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n)。
+     */
+    public static int findCheapestPrice10(int n, int[][] flights, int src, int dst, int K) {
+        long[][] dp = new long[2][n];
+        for (long[] row : dp)
+            Arrays.fill(row, Integer.MAX_VALUE);
+        dp[0][src] = 0;
+        int row = 0;  // the row in use
+
+        for (int k = 1; k < K + 2; k++) {
+            row = k % 2;
+            dp[row][src] = 0;
+            for (int[] f : flights) {
+                int s = f[0], d = f[1], price = f[2];
+                dp[row][d] = Math.min(dp[row][d], dp[Math.abs(row - 1)][s] + price);  // Math.abs(row-1) 即 the row not in use
+            }
+        }
+
+        return dp[row][dst] == Integer.MAX_VALUE ? -1 : (int)dp[row][dst];
     }
 
     public static void main(String[] args) {
@@ -413,8 +438,8 @@ public class L787_CheapestFlightsWithinKStops {
          *       ①  →  →  →  →  ②
          *              100
          * */
-        log(findCheapestPrice7(3, flights1, 0, 2, 1));  // expects 200
-        log(findCheapestPrice7(3, flights1, 0, 2, 0));  // expects 500
+        log(findCheapestPrice10(3, flights1, 0, 2, 1));  // expects 200
+        log(findCheapestPrice10(3, flights1, 0, 2, 0));  // expects 500
 
         int[][] flights2 = {
                 {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
@@ -431,14 +456,14 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
-        log(findCheapestPrice7(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
-        log(findCheapestPrice7(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
-        log(findCheapestPrice7(5, flights2, 0, 4, 0));   // expects -1
-        log(findCheapestPrice7(5, flights2, 2, 0, 4));   // expects -1
+        log(findCheapestPrice10(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
+        log(findCheapestPrice10(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
+        log(findCheapestPrice10(5, flights2, 0, 4, 0));   // expects -1
+        log(findCheapestPrice10(5, flights2, 2, 0, 4));   // expects -1
 
         int[][] flights3 = {{0, 1, 5}, {1, 2, 5}, {0, 3, 2}, {3, 1, 2}, {1, 4, 1}, {4, 2, 1}};
-        log(findCheapestPrice7(5, flights3, 0, 2, 2));   // expects 7
-        log(findCheapestPrice7(5, flights3, 0, 2, 3));   // expects 6
+        log(findCheapestPrice10(5, flights3, 0, 2, 2));   // expects 7
+        log(findCheapestPrice10(5, flights3, 0, 2, 3));   // expects 6
         /*
          *      ⓪ → → → 5 → → → ① → → → 1 → → → ④
          *        ↘            ↗  ↘             ↙
@@ -452,6 +477,6 @@ public class L787_CheapestFlightsWithinKStops {
                 {1, 0, 19}, {2, 5, 74}, {2, 3, 81}, {2, 0, 56}, {5, 1, 25}, {4, 0, 89},
                 {3, 6, 18}, {5, 2, 1},  {7, 1, 43}, {3, 2, 66}, {7, 3, 4}
         };
-        log(findCheapestPrice7(8, flights4, 0, 6, 6));   // expects 112
+        log(findCheapestPrice10(8, flights4, 0, 6, 6));   // expects 112
     }
 }
