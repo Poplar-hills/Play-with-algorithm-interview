@@ -44,7 +44,7 @@ public class L787_CheapestFlightsWithinKStops {
      *        对顶点使用 visited/unvisited 的重复访问检查。
      * - 💎 总结：本题与 L127_WordLadder 解法1对照可发现：
      *   - 若求无权图上的最短路径，则用 BFS 找到第一条到达终点的路径即可，分支时要对顶点做 visited/unvisited 判断。
-     *   - 若求带权图上的最小权路径，则用 BFS/DFS 遍历所有到达终点的路径，且分支时不能做 visited/unvisited 判断，（∵ 可能
+     *   - 若求带权图上的最小权路径，则用 BFS/DFS 遍历所有到达终点的路径，且分支时不能做 visited/unvisited 判断（∵ 可能
      *     会出现经过更多顶点，但整体权值更小的情况，即需要进行松弛的情况）∴ 需允许重复访问顶点。
      * - 时间复杂度：O(V+E)，即 O(n+m)，其中 m 为航线条数（flights.length）：
      *     1. 构建 graph 需要遍历所有航线，即所有边 ∴ 是 O(E)，即 O(m)；
@@ -233,7 +233,7 @@ public class L787_CheapestFlightsWithinKStops {
     /*
      * 解法6：简化版的 Dijkstra（解法5的性能优化版）
      * - 思路：在解法5的基础上通过剪枝进一步优化 —— ∵ 在 Dijkstra 的过程中，同一个顶点可能被多次访问，但若该顶点在之前已经
-     *   沿着 PriorityQueue 中的最短路径被访问过（即已找到了 src 到达该顶点的最短路径），则本次访问时的 total price 一定
+     *   沿着 PriorityQueue 中的最短路径被访问过（即已找到了 src 到达该顶点的最短路径），则再次访问时的 total price 一定
      *   更大 ∴ 则无需再次再次访问。
      * - 例：在上例中增加一条 ①->②，price=5 的路径：
      *                    ①
@@ -301,11 +301,11 @@ public class L787_CheapestFlightsWithinKStops {
             graph[f[0]][f[1]] = f[2];    // graph[src][dst] = price
 
         int[] minPrices = new int[n];    // 从 src 出发到各顶点的 min price
-        int[] stopCounts = new int[n];   // 从 src 出发到各顶点的 stop count（注意不一定是最小 stop count）
+        int[] minStops = new int[n];   // 从 src 出发到各顶点的 min stop count
         Arrays.fill(minPrices, Integer.MAX_VALUE);
-        Arrays.fill(stopCounts, Integer.MAX_VALUE);
+        Arrays.fill(minStops, Integer.MAX_VALUE);
         minPrices[src] = 0;
-        stopCounts[src] = 0;
+        minStops[src] = 0;
 
         PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
         pq.offer(new int[]{src, 0, -1});  // PriorityQueue<[city, 该路径的 totalPrice, 该路径上的 stopCount]>
@@ -314,18 +314,18 @@ public class L787_CheapestFlightsWithinKStops {
             int[] path = pq.poll();
             int city = path[0], totalPrice = path[1], stopCount = path[2];
 
-            if (stopCount == K) continue;        // 剪枝
+            if (stopCount == K) continue;
 
             for (int adj = 0; adj < n; adj++) {  // 遍历所有顶点
-                if (graph[city][adj] > 0) {      // 找到 city 的所有邻边，开始松弛操作（relax all neighboring edges）
+                if (graph[city][adj] > 0) {      // 找到 city 的所有相邻顶点，开始松弛操作（relax all neighboring edges）
                     int newPrice = totalPrice + graph[city][adj];
                     int newStopCount = stopCount + 1;
 
-                    if (newPrice < minPrices[adj] || newStopCount < stopCounts[adj])  // 若经过 adj 得到了更小的 price/stopCount，则再次入队 adj
+                    if (newPrice < minPrices[adj] || newStopCount < minStops[adj])  // 若经过 adj 得到了更小的 price/stopCount，则再次入队 adj
                         pq.offer(new int[]{adj, newPrice, newStopCount});  // 基于新的 price/stopCount 对 adj 的所有邻边进行松弛
 
                     minPrices[adj] = Math.min(minPrices[adj], newPrice);   // 更新记录
-                    stopCounts[adj] = newStopCount;                        // 这里直接覆盖（也可以像解法6中那样取最小值）
+                    minStops[adj] = Math.min(minStops[adj], newStopCount);  // 也可以直接覆盖而不比较大小
                 }
             }
         }
@@ -338,10 +338,11 @@ public class L787_CheapestFlightsWithinKStops {
      * - 前提：先理解 Bellman-Ford 的过程演示：https://www.youtube.com/watch?v=obWXjtg0L64&vl=en（0'35''）。
      * - 思路：虽然题中说了不会有负权边，但可以使用 Dijkstra 的场景就一定可以使用 Bellman-Ford（虽然算法复杂度大很多）。
      * - 原理：假设图中可能存在负权边，则经过更多顶点的路径可能总距离反而更短。这时 Dijkstra 的贪心策略就会失效，不再能保证
-     *   第一条到达终点的路径就是最短的。解决方案是反复对所有边进行松弛操作，使得起点到每个顶点的距离逐步逼近其最短距离。
+     *   第一条到达终点的路径就是最短的。解决方案是反复对所有边进行松弛操作，使得起点到每个顶点的距离逐步逼近其最短距离（这也
+     *   是 Bellman-Ford 的核心原理）。
      * - 实现：
-     *   1. 标准的 Bellman-Ford 算法最多会迭代 V-1 次，而本题中 ∵ 存在限制条件 K，且 K <= V-2（顶点数 V-2 即是最大的
-     *      中间顶点数）∴ V-1 >= K+1 ∴ 最多迭代 K+1 次；
+     *   1. 标准的 Bellman-Ford 算法最多会迭代 V-1 次，而本题中 ∵ 题意限制了中间顶点个数 <= K，而 K <= V-2（顶点数
+     *      V-2 即是最大的中间顶点数）∴ V-1 >= K+1 ∴ 最多迭代 K+1 次；
      *   2. ∵ 只迭代 K+1 次，而非 V-1 次 ∴ 最终得到的 prices 不会包含起点到所有顶点的最短路径 ∴ 需要做到每次迭代之间
      *      互不影响 ∴ 需要在迭代开始之前先 copy 一份 prices，让迭代中的更新都发生在这份 copy 里，迭代结束之后再将其赋给
      *      prices（若是标准实现，迭代 V-1 次，则不需要这种处理，这一点通过 test case 1、2 可更好的理解）。
@@ -358,10 +359,10 @@ public class L787_CheapestFlightsWithinKStops {
         minPrices[src] = 0;
 
         for (int i = 0; i <= K; i++) {                 // 迭代 K+1 次
-            int[] copy = Arrays.copyOf(minPrices, n);  // 先拷贝一份，保证下面 minPrices[from] 读到的值不是被 copy[to] 覆盖过的
-            for (int[] f : flights) {                   // 无需提前构建 graph，只需在每次迭代中遍历所有邻边，对每条边进行松弛
+            int[] copy = Arrays.copyOf(minPrices, n);  // 先拷贝一份，保证下面 minPrices[s] 读到的值不是被 copy[d] 覆盖过的
+            for (int[] f : flights) {                   // 无需提前构建 graph，只需在每次迭代中遍历所有边，对每条边进行松弛
                 int s = f[0], d = f[1], price = f[2];
-                if (minPrices[s] == Integer.MAX_VALUE) continue;  // 若该边的起点未被访问过，则跳过（∵ 无法进行松弛操作）
+                if (minPrices[s] == Integer.MAX_VALUE) continue;  // 跳过起点未被访问过的边（∵ 无法进行松弛操作）
                 copy[d] = Math.min(copy[d], minPrices[s] + price);  // 松弛
             }
             minPrices = copy;                          // 迭代结束时更新 minPrices
@@ -381,15 +382,11 @@ public class L787_CheapestFlightsWithinKStops {
      *          1  |  0   50  20  60  ∞     - 在0个 stop 之内从 src → c 的最小 price
      *          2  |  0   30  20  50  60    - f(2,1) 会被更新两次：∞→50→30；f(2,3) 也会被更新两次：∞→60→50
      *          3  |  0   30  20  50  40
-     * - 实现：
-     *   1. ∵ 在 Math.min 时可能发生 Integer.MAX_VALUE + price，超过 int 的上限 ∴ dp 需要声明为 long[][]；
-     *   2. 在解法6的 Bellman-Ford 中会跳过源顶点还未被访问过的边，而本解法中则仍会访问，而 ∵ 未被访问过的顶点的最短路径是 ∞，
-     *      ∴ 基于 ∞ 去更新目标顶点的最短路径仍会是 ∞。
      * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n^2)。该解法的统计性能在解法1-9中最高。
      * */
     public static int findCheapestPrice9(int n, int[][] flights, int src, int dst, int K) {
-        long[][] dp = new long[K + 2][n];  // dp[k][c] 表示在 k-1 个 stop 内从 src 到达城市 c 的最小 price
-        for (long[] row : dp)
+        int[][] dp = new int[K + 2][n];  // dp[k][c] 表示在 k-1 个 stop 内从 src 到达城市 c 的最小 price
+        for (int[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
         dp[0][src] = 0;
 
@@ -397,6 +394,7 @@ public class L787_CheapestFlightsWithinKStops {
             dp[k][src] = 0;
             for (int[] f : flights) {       // 每次迭代都遍历所有邻边（相当于 Bellman-Ford 中的松弛操作）
                 int s = f[0], d = f[1], price = f[2];
+                if (dp[k - 1][s] == Integer.MAX_VALUE) continue;  // 跳过起点未被访问过的边（∵ 无法进行松弛操作）
                 dp[k][d] = Math.min(dp[k][d], dp[k - 1][s] + price);  // f(k,d) 取决于 f(k-1,s) + s→d 的 price
             }
         }
@@ -406,12 +404,12 @@ public class L787_CheapestFlightsWithinKStops {
 
     /**
      * 解法10：DP（解法9的空间优化版）
-     * - 实现：∵ 解法9的状态转移过程中只用到了 dp 数组中的最后两行 ∴ 可以将 dp 数组初始化为 long[2][n]。
+     * - 实现：∵ 解法9的状态转移过程中只用到了 dp 数组中的最后两行 ∴ 可以将 dp 数组初始化为 int[2][n]。
      * - 时间复杂度 O(EV)，空间复杂度 O(nm)，空间复杂度 O(n)。
      */
     public static int findCheapestPrice10(int n, int[][] flights, int src, int dst, int K) {
-        long[][] dp = new long[2][n];
-        for (long[] row : dp)
+        int[][] dp = new int[2][n];
+        for (int[] row : dp)
             Arrays.fill(row, Integer.MAX_VALUE);
         dp[0][src] = 0;
         int row = 0;  // the row in use
@@ -421,7 +419,9 @@ public class L787_CheapestFlightsWithinKStops {
             dp[row][src] = 0;
             for (int[] f : flights) {
                 int s = f[0], d = f[1], price = f[2];
-                dp[row][d] = Math.min(dp[row][d], dp[Math.abs(row - 1)][s] + price);  // Math.abs(row-1) 即 the row not in use
+                int prevRow = Math.abs(row - 1);
+                if (dp[prevRow][s] == Integer.MAX_VALUE) continue;
+                dp[row][d] = Math.min(dp[row][d], dp[prevRow][s] + price);  // Math.abs(row-1) 即 the row not in use
             }
         }
 
@@ -443,7 +443,7 @@ public class L787_CheapestFlightsWithinKStops {
 
         int[][] flights2 = {
                 {0, 1, 50}, {0, 2, 20}, {0, 3, 60}, {1, 4, 10},
-                {2, 1, 10}, {2, 4, 50}, {2, 3, 30}, {3, 4, 20}
+                {2, 1, 10}, {1, 2, 5}, {2, 4, 50}, {2, 3, 30}, {3, 4, 20}
         };
         /*
          *                 ①
@@ -456,6 +456,7 @@ public class L787_CheapestFlightsWithinKStops {
          *              ↘  ↓  ↗
          *                 ③
          * */
+        log(findCheapestPrice10(5, flights2, 0, 4, 3));   // expects 40.（→ ↑ ↘）
         log(findCheapestPrice10(5, flights2, 0, 4, 2));   // expects 40.（→ ↑ ↘）
         log(findCheapestPrice10(5, flights2, 0, 4, 1));   // expects 60.（↗ ↘）
         log(findCheapestPrice10(5, flights2, 0, 4, 0));   // expects -1
