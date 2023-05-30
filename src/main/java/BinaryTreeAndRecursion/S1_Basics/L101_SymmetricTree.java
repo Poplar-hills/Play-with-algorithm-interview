@@ -44,10 +44,9 @@ public class L101_SymmetricTree {
 
     private static boolean isPalindrome(List<TreeNode> list) {
         for (int l = 0, r = list.size() - 1; l < r; l++, r--) {
-            TreeNode lNode = list.get(l);
-            TreeNode rNode = list.get(r);
-            if (lNode == null && rNode == null) continue;
-            if (lNode == null || rNode == null || lNode.val != rNode.val) return false;
+            TreeNode head = list.get(l), tail = list.get(r);
+            if (head == null && tail == null) continue;
+            if (head == null || tail == null || head.val != tail.val) return false;
         }
         return true;
     }

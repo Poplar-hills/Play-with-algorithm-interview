@@ -15,7 +15,7 @@ import java.util.Stack;
  * - 💎 在开始做这个章节的题之前先认真看一遍树的基础知识：
  *   1. 二叉树分类、树的平衡性、树的遍历、树与其他数据结构的查找性能对比、BST 的实现：.../Play-with-data-structure/.../BST.java
  *   2. 二三树、红黑树：.../Play-with-data-structure/.../RedBlackTree.java
- *   3. B 树：.../Play-with-data-structure/.../RedBlackTree/_BTree
+ *   3. B 树：.../Play-with-data-structure/.../RedBlackTree/_BTree.md
  * */
 
 public class L100_SameTree {
