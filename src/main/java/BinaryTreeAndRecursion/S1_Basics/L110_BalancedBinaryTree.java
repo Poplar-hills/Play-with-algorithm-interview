@@ -26,20 +26,20 @@ public class L110_BalancedBinaryTree {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isBalanced(TreeNode root) {
-        return getBalanceInfo(root).getKey();
+        return getDepth(root).getKey();
     }
 
-    private static Pair<Boolean, Integer> getBalanceInfo(TreeNode root) {
+    private static Pair<Boolean, Integer> getDepth(TreeNode root) {
         if (root == null) return new Pair<>(true, 0);
 
-        Pair<Boolean, Integer> lInfo = getBalanceInfo(root.left);
-        Pair<Boolean, Integer> rInfo = getBalanceInfo(root.right);
-        if (!lInfo.getKey() || !rInfo.getKey())  // 若左右子树任一不是 height-balanced 的，则整棵树就不是
+        Pair<Boolean, Integer> d1 = getDepth(root.left);
+        Pair<Boolean, Integer> d2 = getDepth(root.right);
+        if (!d1.getKey() || !d2.getKey())  // 若左右子树任一不是 height-balanced 的，则整棵树就不是
             return new Pair<>(false, null);
 
-        int depthDiff = Math.abs(lInfo.getValue() - rInfo.getValue());
-        int maxDepth = Math.max(lInfo.getValue(), rInfo.getValue());
-        return new Pair<>(depthDiff <= 1, maxDepth + 1);
+        int diff = Math.abs(d1.getValue() - d2.getValue());
+        int maxDepth = Math.max(d1.getValue(), d2.getValue());
+        return new Pair<>(diff <= 1, maxDepth + 1);
     }
 
     /*
@@ -54,11 +54,11 @@ public class L110_BalancedBinaryTree {
 
     private static int maxDepth(TreeNode root) {
         if (root == null) return 0;
-        int lDepth = maxDepth(root.left);
-        if (lDepth == -1) return -1;  // 不同于解法1，若一边子树已经不是平衡的，则没有必要再对另一子树执行 getBalanceInfo
-        int rDepth = maxDepth(root.right);
-        if (rDepth == -1) return -1;
-        return Math.abs(lDepth - rDepth) <= 1 ? Math.max(lDepth, rDepth) + 1 : -1;
+        int d1 = maxDepth(root.left);
+        if (d1 == -1) return -1;  // 不同于解法1，若一边子树已经不是平衡的，则没有必要再对另一子树执行 getBalanceInfo
+        int d2 = maxDepth(root.right);
+        if (d2 == -1) return -1;
+        return Math.abs(d1 - d2) > 1 ? -1 : Math.max(d1, d2) + 1;
     }
 
     /*

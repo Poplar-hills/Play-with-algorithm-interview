@@ -51,7 +51,7 @@
 - BinaryTreeAndRecursion (16/20):
   - L101_SymmetricTree
   - L104_MaximumDepthOfBinaryTree
-  - L110_BalancedBinaryTree ⭐️
+  - L110_BalancedBinaryTree
   - L113_PathSumII ⭐️
   - L129_SumRootToLeafNumbers
   - L437_PathSumIII ⭐️
