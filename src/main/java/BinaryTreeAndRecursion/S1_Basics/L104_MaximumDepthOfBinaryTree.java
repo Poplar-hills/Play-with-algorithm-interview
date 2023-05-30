@@ -18,10 +18,10 @@ import Utils.Helpers.TreeNode;
 
 public class L104_MaximumDepthOfBinaryTree {
     /*
-     * 解法1：DFS (Recursion)
+     * 解法1：DFS (Top-down recursion)
      * - 思路：与 L111_MinimumDepthOfBinaryTree 一样，用 DFS 查找树的最大深度有两种思路：
-     *   1. 从上到下遍历所有分支，从根节点开始向下层层传递节点的深度，在每找到一个叶子节点时就检查/更新最大深度；
-     *   2. 从下到上层层递推每个节点的最大深度 —— 每个节点的最大深度 = max(左子树最大深度, 右子树最大深度) + 1。
+     *   1. Top-down: 从上到下遍历所有分支，并层层传递节点的深度，在每找到一个叶子节点时就检查/更新最大深度；
+     *   2. Bottom-up: 从下到上层层递推，每个节点的最大深度 = max(左子树最大深度, 右子树最大深度) + 1。
      * - 实现：本解法采用思路1。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -43,7 +43,7 @@ public class L104_MaximumDepthOfBinaryTree {
 	}
 
 	/*
-     * 解法2：DFS (Recursion)
+     * 解法2：DFS (Bottom-up recursion, 🥇DFS 中的最优解)
      * - 思路：采用解法1中的思路2。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
@@ -60,8 +60,8 @@ public class L104_MaximumDepthOfBinaryTree {
     public static int maxDepth3(TreeNode root) {
         if (root == null) return 0;
         List<List<TreeNode>> res = new ArrayList<>();
-        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();
-        q.offer(new Pair<>(root, 0));  // 在每个节点上带上 depth 信息
+        Queue<Pair<TreeNode, Integer>> q = new LinkedList<>();  // Queue<Pair<node, depth>>
+        q.offer(new Pair<>(root, 0));
 
         while (!q.isEmpty()) {
             Pair<TreeNode, Integer> pair = q.poll();
@@ -96,6 +96,7 @@ public class L104_MaximumDepthOfBinaryTree {
             int depth = pair.getValue();
 
             maxDepth = Math.max(maxDepth, depth);
+
             if (node.left != null) q.offer(new Pair<>(node.left, depth + 1));
             if (node.right != null) q.offer(new Pair<>(node.right, depth + 1));
         }
@@ -104,10 +105,8 @@ public class L104_MaximumDepthOfBinaryTree {
     }
 
     /*
-     * 解法5：BFS（解法4的简化版）
-     * - 思路：与解法4一致。
-     * - 实现：一次性将 q 中同一层的节点都消费完后让 maxDepth++。这样做的好处是无需在 q 中存储层级深度信息，只要一层遍历完成
-     *   就可以 maxDepth++。
+     * 解法5：BFS（解法4的简化版，🥇BFS 中的最优解）
+     * - 思路：层序遍历，在每层的节点都消费完后让 maxDepth++（无需在 q 中存储层级深度信息）。
      * - 💎 技巧：与 L103_BinaryTreeZigzagLevelOrderTraversal 解法4对比，可见这种技巧所带来的的好处。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
