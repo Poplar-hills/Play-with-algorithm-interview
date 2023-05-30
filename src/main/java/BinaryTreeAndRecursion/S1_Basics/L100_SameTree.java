@@ -12,7 +12,7 @@ import java.util.Stack;
  * - Given two binary trees, check if they are the same or not.
  * - Two binary trees are considered the same if they are identical in both structure and nodes.
  *
- * - 注：在开始做这个章节的题之前先认真看一遍树的基础知识：
+ * - 💎 在开始做这个章节的题之前先认真看一遍树的基础知识：
  *   1. 二叉树分类、树的平衡性、树的遍历、树与其他数据结构的查找性能对比、BST 的实现：.../Play-with-data-structure/.../BST.java
  *   2. 二三树、红黑树：.../Play-with-data-structure/.../RedBlackTree.java
  *   3. B 树：.../Play-with-data-structure/.../RedBlackTree/_BTree
@@ -20,7 +20,7 @@ import java.util.Stack;
 
 public class L100_SameTree {
     /*
-     * 解法1：Recursion (DFS)
+     * 解法1：DFS
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static boolean isSameTree(TreeNode p, TreeNode q) {
@@ -30,9 +30,9 @@ public class L100_SameTree {
     }
 
     /*
-     * 解法2：Iteration (BFS)
+     * 解法2：BFS
      * - 时间复杂度 O(n)；
-     * - 空间复杂度 O(n)，∵ q 中同时最多容纳 n/2 个节点（即完美二叉树的最后一行）∴ 是 O(n) 级别。
+     * - 空间复杂度 O(n)，∵ q 中同时最多容纳 n/2 个节点（即完美二叉树的最后一行）∴ 是 O(n) 级别。
      * */
     public static boolean isSameTree2(TreeNode p, TreeNode q) {
         if (p == null && q == null) return true;
@@ -53,10 +53,10 @@ public class L100_SameTree {
     }
 
     /*
-     * 解法3：Iteration (BFS)
+     * 解法3：BFS
      * - 思路：与解法2一致。
      * - 实现：使用双 queue。
-     * - 时间复杂度 O(n)，空间复杂度 O(n)。
+     * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isSameTree3(TreeNode t1, TreeNode t2) {
         Queue<TreeNode> q1 = new LinkedList<>();
@@ -79,7 +79,7 @@ public class L100_SameTree {
     }
 
     /*
-     * 解法4：Iteration (DFS)
+     * 解法4：DFS（解法1的 Stack 版）
      * - 思路：使用 DFS 求解，与 L226_InvertBinaryTree 解法3的思路一致。
      * - 实现：与解法3一致，只不过使用 Stack 实现。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
