@@ -41,7 +41,7 @@ public class L113_PathSumII {
             res.add(path);
             return;
         }
-        dfs(root.left, sum - root.val, new ArrayList<>(path), res);  // 每次在分支的时候要 copy path
+        dfs(root.left, sum - root.val, new ArrayList<>(path), res);  // 每次在分支的时候要复制 path
         dfs(root.right, sum - root.val, new ArrayList<>(path), res);
     }
 
@@ -49,9 +49,14 @@ public class L113_PathSumII {
      * 解法2：DFS + Backtracking (Pre-order traversal) (解法1的性能优化版)
      * - 思路：与解法1一致。
      * - 实现：与解法1不同之处在于该解法：
-     *   1. 使用回溯技巧使得 path 从始至终都是复用的 —— ∵ 递归会先往左下递归到底再返回上层递归右子树 ∴ 若要继续复用 path 对象，
+     *   1. 使用回溯使得 path 从始至终都是复用的 —— ∵ 递归会先往左下递归到底再返回上层递归右子树 ∴ 若要继续复用 path 对象，
      *      则需在递归返回上一层之前将 path 恢复原状（这也是回溯的关键）；
      *   2. 只有在确定该 path 符合条件时才会被复制进 res（这也是该解法比其他解法快的原因）。
+     * - 💎 DFS vs. Backtracking:
+     *   1. DFS 主要用于搜索，但 DFS 的实现都是基于回溯的 ∴ 这两个词是 interchangeable 的；
+     *   2. Backtracking is a technique that tries to find all possible solutions to a problem by incrementally
+     *      building candidates to the solutions and abandoning a candidate as soon as it determines that the
+     *      candidate cannot possibly be completed to a valid solution.
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<List<Integer>> pathSum2(TreeNode root, int sum) {
@@ -99,12 +104,12 @@ public class L113_PathSumII {
             return res;
         }
 
-        List<List<Integer>> leftPaths = pathSum3(root.left, sum - root.val);  // 否则继续递归左右子树
-        List<List<Integer>> rightPaths = pathSum3(root.right, sum - root.val);
+        List<List<Integer>> leftRes = pathSum3(root.left, sum - root.val);  // 否则继续递归左右子树
+        List<List<Integer>> rightRes = pathSum3(root.right, sum - root.val);
 
-        return Stream.of(leftPaths, rightPaths)
-                .flatMap(paths -> paths.stream())  // 合并左右子树返回的结果（或者先 leftPaths.addAll(rightPaths) 再处理 leftPaths）
-                .peek(path -> path.add(0, root.val))  // 向连接后的 res 中的每个 path 头部添加当前节点值
+        return Stream.of(leftRes, rightRes)
+                .flatMap(eachRes -> eachRes.stream())  // 合并左右子树返回的结果（或者先 leftRes.addAll(rightRes) 再处理 leftRes）
+                .peek(unifiedRes -> unifiedRes.add(0, root.val))  // 向连接后的 res 中的每个 path 头部添加当前节点值
                 .collect(Collectors.toList());
     }
 
