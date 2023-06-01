@@ -61,7 +61,7 @@ public class L437_PathSumIII {
 
     /*
      * 解法2：DFS + Prefix sum + Backtracking（🥇最优解）
-     * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二叉树版，即二叉树上的区间求和问题 ∴ 同样可采用 Prefix Sum 技巧来
+     * - 思路：该题可以看做是 L560_SubarraySumEqualsK 的二维版，即在二叉树上进行区间求和 ∴ 同样可采用 Prefix Sum 技巧来
      *   优化性能，例如 test case 1 中 pathSum(3->3) = pathSum(10->5->3->3) - pathSum(10->5)。
      * - 推演：路径 10 -> 5 -> 3 -> -10 的 path 的推演过程如下：
      *            10         - map(0:1), pathSum=10, map.get(10-8)=0 ∴ count=0
@@ -85,7 +85,7 @@ public class L437_PathSumIII {
         if (root == null) return 0;
 
         pathSum += root.val;                        // 累积 pathSum（也就是 prefix sum）
-        int count = map.getOrDefault(pathSum - sum, 0);  // 检查 Map 中 complement 的个数（即查找该路径上有几个子路径和能让 pathSum - 子路径和 == sum）
+        int count = map.getOrDefault(pathSum - sum, 0);  // 检查 Map 中 complement 的个数（即查找该路径上有几个子路径和能使 pathSum - 子路径和 == sum）
         map.merge(pathSum, 1, Integer::sum);  // 在 Map 中插入或更新 prefix sum 的频率
 
         count += backtrack2(root.left, sum, pathSum, map);  // 递归处理左右子树，并将结果累积在 count 上
