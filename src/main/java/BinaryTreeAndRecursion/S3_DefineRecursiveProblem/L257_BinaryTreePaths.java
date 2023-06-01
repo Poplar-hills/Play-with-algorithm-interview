@@ -21,44 +21,40 @@ import Utils.Helpers.TreeNode;
 public class L257_BinaryTreePaths {
     /*
      * 解法1：DFS + Backtracking (Pre-order Traversal)
-     * - 思路：通过 DFS 将每条路径上的节点收集到 path 列表中，当到达叶子节点时，将 path 转为 String 放入结果集。
+     * - 思路：通过 DFS 将每条路径上的节点收集到 path 列表中，当到达叶子节点时，将 path 转为 String 放入结果集。
      * - 实现：∵ 要在不同路径上通过回溯复用 path 对象 ∴ 需要在每次返回上层递归之前将 path 恢复原状。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static List<String> binaryTreePaths(TreeNode root) {
         List<String> res = new ArrayList<>();
-        if (root == null) return res;
-        helper(root, new ArrayList<>(), res);
+        dfs(root, new ArrayList<>(), res);
         return res;
     }
 
-    private static void helper(TreeNode root, List<TreeNode> path, List<String> res) {
+    private static void dfs(TreeNode root, List<TreeNode> path, List<String> res) {
         if (root == null) return;
-        path.add(root);                                 // 访问节点（pre-order traversal）
+        path.add(root);                          // 访问节点（pre-order traversal）
 
         if (root.left == null && root.right == null) {  // 找到一条 root-to-leaf path 后将其转为 String
             res.add(toPathString(path));
-            path.remove(path.size() - 1);               // 注意在 return 前要将 path 恢复原状
+            path.remove(path.size() - 1);  // 注意在 return 前要将 path 恢复原状
             return;
         }
-        helper(root.left, path, res);
-        helper(root.right, path, res);
-        path.remove(path.size() - 1);                   // 返回上层递归之前将将 path 恢复原状
+        dfs(root.left, path, res);
+        dfs(root.right, path, res);
+        path.remove(path.size() - 1);      // 返回上层递归之前将将 path 恢复原状
     }
 
     private static String toPathString(List<TreeNode> path) {
-        StringBuilder sb = new StringBuilder();
-        for (TreeNode node : path) {
-            sb.append(node.val);
-            if (node != path.get(path.size() - 1))
-                sb.append("->");
-        }
-        return sb.toString();
+        return path.stream()           // 或者使用 StringBuilder + for 循环也行
+                .map(node -> node.val)
+                .map(String::valueOf)  // 先要转将 int 换成 String 才能用 Collectors.joining("->")
+                .collect(Collectors.joining("->"));
     }
 
     /*
-     * 解法2：DFS (Pre-order Traversal)
-     * - 思路：与解法1一致。
+     * 解法2：DFS (解法1的简化版，🥇最优解)
+     * - 思路：与解法1一致。
      * - 实现：在解法1的基础上进行化简，直接使用 "" 代替解法1中的 path 列表。∵ String 是 immutable 的 ∴ 直接拼接字符串时
      *   不存在解法1中 path 是否能在不同分支路径上复用的问题 ∴ 也就不需要每次 return 之前的 remove 操作。
      * - 💎 语言特性：Java 中的 String 对象之所以是 immutable 的因为：
@@ -68,12 +64,11 @@ public class L257_BinaryTreePaths {
      * */
     public static List<String> binaryTreePaths2(TreeNode root) {
         List<String> res = new ArrayList<>();
-        if (root != null)
-            helper2(root, "", res);
+        dfs2(root, "", res);
         return res;
     }
 
-    private static void helper2(TreeNode root, String path, List<String> res) {
+    private static void dfs2(TreeNode root, String path, List<String> res) {
         if (root == null) return;
         path += root.val;          // += 操作符对 String 同样有效
 
@@ -81,14 +76,14 @@ public class L257_BinaryTreePaths {
             res.add(path);
             return;
         }
-        helper2(root.left, path + "->", res);
-        helper2(root.right, path + "->", res);
+        dfs2(root.left, path + "->", res);
+        dfs2(root.right, path + "->", res);
 	}
 
     /*
      * 解法3：DFS + Concat path (Post-order traversal)
-     * - 思路：类似 L113_PathSumII 解法3，采用后续遍历 —— 即先递归到底，在回程的路上拼接字符串，并返回上层：
-     *               1          [["1->2->4"], ["1->3"]]
+     * - 思路：类似 L113_PathSumII 解法3，采用后续遍历 —— 即先递归到底，在回程的路上拼接字符串，再返回上层：
+     *               1            ["1->2->4", "1->3"]
      *             /   \               ↗       ↖
      *            2     3   -->   ["2->4"]     ["3"]
      *             \                   ↖
@@ -100,16 +95,16 @@ public class L257_BinaryTreePaths {
     public static List<String> binaryTreePaths3(TreeNode root) {
         if (root == null) return new ArrayList<>();
 
-        List<String> paths = binaryTreePaths(root.left);  // 先递归到底，并将左右子树的递归结果合并到结果集 res 中
-        paths.addAll(binaryTreePaths(root.right));
+        List<String> paths = binaryTreePaths3(root.left);  // 先递归到底，并将左右子树的递归结果合并到结果集 res 中
+        paths.addAll(binaryTreePaths3(root.right));  // or Stream.of(leftPaths, rightPaths).flatMap(paths -> paths.stream())
 
-        if (paths.size() == 0) {                  // 若是叶子节点，则只需往 res 中添加节点值即可
+        if (root.left == null && root.right == null) {  // 若是叶子节点，则只需往 res 中添加节点值即可
             paths.add(root.val + "");
             return paths;
         }
 
         return paths.stream()
-            .map(path -> root.val + "->" + path)  // 若不是叶子节点，则要给 res 中的每个 path 头部都拼接当前节点值
+            .map(path -> root.val + "->" + path)  // 若非叶子节点，则要给 res 中的每个 path 头部都拼接当前节点值
             .collect(Collectors.toList());
     }
 
@@ -161,13 +156,13 @@ public class L257_BinaryTreePaths {
         List<String> res = new ArrayList<>();
         if (root == null) return res;
 
-        Queue<Pair<TreeNode, String>> q = new LinkedList<>();  // 队列中存储 <当前路径的最后一个节点, 当前路径的路径字符串>
+        Queue<Pair<TreeNode, String>> q = new LinkedList<>();  // Queue<当前路径的最后一个节点, 当前路径的路径字符串>
         q.offer(new Pair<>(root, ""));
 
         while (!q.isEmpty()) {
             Pair<TreeNode, String> pair = q.poll();
             TreeNode node = pair.getKey();
-            String pathStr = pair.getValue() + node.val;       // 访问节点，拼接路径字符串
+            String pathStr = pair.getValue() + node.val;  // 访问节点，拼接路径字符串
 
             if (node.left == null && node.right == null) {
                 res.add(pathStr);
@@ -185,7 +180,7 @@ public class L257_BinaryTreePaths {
 
     public static void main(String[] args) {
         TreeNode t1 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 4});
-        log(binaryTreePaths3(t1));
+        log(binaryTreePaths2(t1));
         /*
          * expects ["1->2->4", "1->3"].
          *       1
@@ -196,7 +191,7 @@ public class L257_BinaryTreePaths {
          * */
 
         TreeNode t2 = createBinaryTreeBreadthFirst(new Integer[]{1, 2, 3, null, 4, 5, 6, null, null, 7});
-        log(binaryTreePaths3(t2));
+        log(binaryTreePaths2(t2));
         /*
          * expects ["1->2->4", "1->3->5->7", "1->3->6"].
          *        1
