@@ -16,13 +16,27 @@ import Utils.Helpers.TreeNode;
  * */
 
 public class L108_ConvertSortedArrayToBST {
+    public static TreeNode sortedArrayToBST_(int[] nums) {
+        return helper_(nums, 0, nums.length -1);
+    }
+
+    private static TreeNode helper_(int[] nums, int l, int r) {
+        if (l > r) return null;
+        int mid = (r - l) / 2 + l;
+        TreeNode node = new TreeNode(nums[mid]);
+        node.left = helper_(nums, l, mid);
+        node.right = helper_(nums, mid + 1, r);
+        return node;
+    }
+
+
     /*
      * 解法1：DFS + Binary search（Recursion）
      * - 思路：∵ BST 中的节点天生就是以二分的形式排布的 ∴ 从有序数组建立 BST 的过程实际上就是对数组不断进行二分查找的过程：
      *       [-6, -4, -2, 0, 1, 3, 5]
-     *                    ⌾               - 先找到数组中央元素 mid，作为根节点
-     *             ⌾            ⌾         - 再从分别从 [0..mid)、(mid..n] 中找到根节点的左、右子节点
-     *         ⌾       ⌾     ⌾     ⌾      - 以此类推
+     *                    0               - 先找到数组中央元素 mid，作为根节点
+     *             -4           3         - 再从分别从 [0..mid)、(mid..n] 中找到根节点的左、右子节点
+     *        -6      -2     1     5      - 以此类推
      * - 时间复杂度 O(n)，空间复杂度 O(logn)。
      * */
     public static TreeNode sortedArrayToBST(int[] nums) {

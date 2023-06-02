@@ -65,13 +65,13 @@ public class L230_KthSmallestElementInBST {
     private static Integer dfs2(TreeNode node, int k) {
         if (node == null) return null;
         Integer res = dfs2(node.left, k);
-        if (res != null) return res;         // 若在左子树中找到了结果，则直接返回（不再往下执行）
+        if (res != null) return res;        // 若在左子树中找到了结果，则直接返回（不再往下执行）
         if (++count == k) return node.val;  // 若在该节点就是第 k 大的元素，则返回它
-        return dfs2(node.right, k);      // 若左子树中没有找到，同时也不是该节点，则一定在右子树中
+        return dfs2(node.right, k);         // 若左子树中没有找到，同时也不是当前节点，则一定在右子树中
     }
 
     /*
-     * 解法3：DFS (In-order traversal) (解法2的可读性改进版)
+     * 解法3：DFS (In-order traversal) (解法2的可读性改进版，🥇最优解)
      * - 思路：与解法2类似。
      * - 实现：
      *   - 解法2中用 count 记录遍历过的节点个数，递归函数返回找到的解；
@@ -88,8 +88,8 @@ public class L230_KthSmallestElementInBST {
     private static int dfs3(TreeNode root, int k) {
         if (root == null) return k;
         k = dfs3(root.left, k);
-        if (k == 1) res = root.val;
-        k = dfs3(root.right, k - 1);
+        if (--k == 0) res = root.val;
+        k = dfs3(root.right, k);
         return k;
     }
 
