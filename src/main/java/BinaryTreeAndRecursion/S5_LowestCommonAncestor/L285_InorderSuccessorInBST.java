@@ -52,27 +52,23 @@ public class L285_InorderSuccessorInBST {
     /*
      * 解法2：迭代
      * - 思路：先找到 successor 节点的规律：
-     *   1. 若 p 有右子树，则其右子树上的最左节点就是 successor；
-     *   2. 若 p 没有右子树，则：
-     *      a). 若 p 是父节点的左子节点，则其父节点就是 successor；
-     *      b). 若 p 是父节点的右子节点，则其祖先节点中上一个比 p 大的是其 successor（若没有则为 null）；
+     *   1. 若 p 有右子树，则其 successor 是其右子树上的最左节点；
+     *   2. 若 p 没有右子树，则其 successor 是其上游节点中第一个比 p 大的节点（若没有则为 null）。
+     *   ∴ 若 p 有右子树，则直接搜索右子树上的最左节点；若无右子树，则从 root 开始从上到下搜索最后一个 > p 的节点。
      * - 时间复杂度 O(logn)，在 BST 不平衡的情况下，最坏会退化成 O(n)。
      * - 空间复杂度 O(1)。
      * */
     private static TreeNode inorderSuccessor2(TreeNode root, TreeNode p) {
         if (root == null || p == null) return null;
-        if (p.right != null) return getMin(p.right);  // 若 p 有右子树，则其右子树上的最左节点就是 successor
-        TreeNode successor = null;
 
-        while (root != null) {
-            if (p.val < root.val) {  // 若 p 在父节点的左子树上，则继续往左查找
-                successor = root;    // 若最后 p 是父节点的左子节点，则其父节点就是 successor ∴ 要预先记录父节点
-                root = root.left;
-            } else if (p.val > root.val) {  // 若 p 在父节点的右子树上，则继续往右查找，但 ∵ 其 successor 不是父节点 ∴ 不用记录父节点
-                root = root.right;
-            } else {
-                break;
-            }
+        // 1. 若 p 有右子树，则其右子树上的最左节点就是 successor
+        if (p.right != null) return getMin(p.right);
+
+        // 2. 若 p 无右子树，则从 root 开始从上到下搜索最后一个 > p 的节点
+        TreeNode successor = null;
+        while (root != null && p.val < root.val) {  // 若当前节点 > p，则记录该节点，并继续往左查找
+            successor = root;
+            root = root.left;
         }
 
         return successor;
@@ -83,26 +79,47 @@ public class L285_InorderSuccessorInBST {
     }
 
     /*
-     * 解法2：递归
-     * - 思路：？？
+     * 解法3：解法2的简化版
+     * - 思路：与解法2一致。
      * - 时间复杂度 O(logn)，空间复杂度 O(logn)，在 BST 不平衡的情况下，最坏会退化成 O(n)。
      * */
     private static TreeNode inorderSuccessor3(TreeNode root, TreeNode p) {
+        if (root == null) return null;
+
+        TreeNode successor = null;
+        while (root != null) {
+            if (p.val < root.val) {
+                successor = root;
+                root = root.left;
+            } else {
+                root = root.right;
+            }
+        }
+        return successor;
+    }
+
+    /*
+     * 解法4：解法2、3的递归版
+     * - 思路：与解法2、3一致。
+     * - 时间复杂度 O(logn)，空间复杂度 O(logn)，在 BST 不平衡的情况下，最坏会退化成 O(n)。
+     * */
+    private static TreeNode inorderSuccessor4(TreeNode root, TreeNode p) {
         if (root == null || p == null) return null;
         if (p.val < root.val) {
-            TreeNode successor = inorderSuccessor3(root.left, p);
+            TreeNode successor = inorderSuccessor4(root.left, p);
             return successor == null ? root : successor;
         }
-        return inorderSuccessor3(root.right, p);
+        return inorderSuccessor4(root.right, p);
     }
 
     public static void main(String[] args) {
         TreeNode t = createBinaryTreeBreadthFirst(new Integer[]{6, 3, 7, 2, 4, null, null, 1, null, null, 5});
-        log(inorderSuccessor(t, t.get(2)));  // expects 3
-        log(inorderSuccessor(t, t.get(4)));  // expects 5
-        log(inorderSuccessor(t, t.get(5)));  // expects 6
-        log(inorderSuccessor(t, t.get(6)));  // expects 7
-        log(inorderSuccessor(t, t.get(7)));  // expects null. (无 successor 的情况)
+        log(inorderSuccessor2(t, t.get(2)));  // expects 3
+        log(inorderSuccessor2(t, t.get(3)));  // expects 4
+        log(inorderSuccessor2(t, t.get(4)));  // expects 5
+        log(inorderSuccessor2(t, t.get(5)));  // expects 6
+        log(inorderSuccessor2(t, t.get(6)));  // expects 7
+        log(inorderSuccessor2(t, t.get(7)));  // expects null. (无 successor 的情况)
         /*
          *           6
          *         /   \
