@@ -82,17 +82,17 @@ public class L236_LCAOfBinaryTree {
     }
 
     /*
-     * 解法3：DFS (Post-order traversal，解法2的简化版)
+     * 解法3：DFS (Post-order traversal，解法2的简化版，🥇最优解)
      * - 思路：与解法2一致，也是通过后续遍历，先遍历左右子树，再决定当前的节点是否符合条件。
-     * - 实现：与解法2不同，不再向上层递归返回 int，而是返回 null or TreeNode 来作为判断条件是否达到的依据。
+     * - 实现：与解法2不同，递归返回值不再是 int，而是 null or 找到的 p/q 节点。
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
-        if (root == null || root == p || root == q) return root;   // 只要找到 p、q 中的任一，递归返回值就不是 null
-        TreeNode left = lowestCommonAncestor3(root.left, p, q);    // 检查左子树是否包含 p、q
-        TreeNode right = lowestCommonAncestor3(root.right, p, q);  // 检查右子树是否包含 p、q
+        if (root == null || root == p || root == q) return root;   // 若当前节点是 p or q，则直接返回他们
+        TreeNode left = lowestCommonAncestor3(root.left, p, q);    // 检查左子树上是否有 p、q
+        TreeNode right = lowestCommonAncestor3(root.right, p, q);  // 检查右子树上是否有 p、q
         if (left != null && right != null) return root;  // 若左右同时有返回值，说明 p、q 分别在左右两边 ∴ 当前节点便是 LCA
-        return left != null ? left : right;
+        return left != null ? left : right;              // 若只有一边有返回值，说明 p、q 都在一边子树上
     }
 
     /*
