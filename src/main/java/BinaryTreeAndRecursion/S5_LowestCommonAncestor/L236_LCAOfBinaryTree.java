@@ -88,45 +88,30 @@ public class L236_LCAOfBinaryTree {
      * - 时间复杂度 O(n)，空间复杂度 O(h)，其中 h 为树高（平衡树时 h=logn；退化为链表时 h=n）。
      * */
     public static TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
-        if (root == null || root == p || root == q) return root;
-        TreeNode left = lowestCommonAncestor3(root.left, p, q);
-        TreeNode right = lowestCommonAncestor3(root.right, p, q);
-        if (left != null && right != null) return root;
+        if (root == null || root == p || root == q) return root;   // 只要找到 p、q 中的任一，递归返回值就不是 null
+        TreeNode left = lowestCommonAncestor3(root.left, p, q);    // 检查左子树是否包含 p、q
+        TreeNode right = lowestCommonAncestor3(root.right, p, q);  // 检查右子树是否包含 p、q
+        if (left != null && right != null) return root;  // 若左右同时有返回值，说明 p、q 分别在左右两边 ∴ 当前节点便是 LCA
         return left != null ? left : right;
     }
 
     /*
      * 解法4：DFS (Iteration) + Map + Set (非常有意思的思路！利用多种数据结构)
-     * - 思路：换一个角度思考，两个节点的 LCA 其实就是两节点所在路径的第一个交叉点 ∴ 该题可转化为求两链表的交叉点（即
+     * - 思路：换一个角度思考，两个节点的 LCA 其实就是两节点所在路径的第一个分叉点 ∴ 该题可转化为求两链表的分叉点（即
      *   L160_IntersectionOfTwoLinkedLists）求解。
      * - 实现：∵ 树与链表不同，无法从子节点走到父节点 ∴ 需要使用辅助结构 Map 来记录、查找子节点 -> 父节点的路径 ∴ 总体流程是：
      *     1. 用 DFS 遍历树上节点，同时建立 Map<子节点, 父节点>；
      *     2. 根据 Map 求出 p、q 两条路径的第一个交叉点（采用 L160 解法1）：
      *        1. 将一条路径上的节点都放入 Set；
-     *        2. 遍历另一条路径上的节点，第一个出现于 Set 中的节点即是交叉点，也就是 LCA。
-     * - 注意：∵ Map 无法插入多个相同的 key ∴ 该解法只能用于 BST，而无法用于一般的二叉树。
+     *        2. 从下到上遍历另一条路径上的节点，第一个出现于 Set 中的节点即是交叉点，也就是 LCA。
+     * - 注意：∵ Map 无法插入多个相同的 key ∴ 该解法只能用于无重复节点的二叉树。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static TreeNode lowestCommonAncestor4(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null) return null;
-        Stack<TreeNode> stack = new Stack<>();          // 用于 DFS
-        stack.push(root);
-        Map<TreeNode, TreeNode> map = new HashMap<>();  // 用于存储 <节点, 父节点>（即用 map 表达 BST，类似 TreeMap）
-        map.put(root, null);
 
-        // Step 1: 建立子节点 -> 父节点的 Map（即用 Map 表达该 BST）
-        while (!map.containsKey(p) || !map.containsKey(q)) {  // 若 p、q 存在于 map 中，说明他们的所有祖先节点也都已经在 map 中了
-            TreeNode node = stack.pop();
-
-            if (node.left != null) {
-                stack.push(node.left);
-                map.put(node.left, node);  // 记录子节点 -> 父节点关系
-            }
-            if (node.right != null) {
-                stack.push(node.right);
-                map.put(node.right, node);
-            }
-        }
+        // Step 1: 通过 DFS 建立子节点 -> 父节点的 Map（即用 Map 表达该 BST）
+        Map<TreeNode, TreeNode> map = getNodeMap(root, p, q);
 
         // Step 2.1: 将 p 节点及其所有祖先节点并放入 set
         Set<TreeNode> pFamily = new HashSet<>();
@@ -139,7 +124,27 @@ public class L236_LCAOfBinaryTree {
         while (!pFamily.contains(q))
             q = map.get(q);
 
-        return q;
+        return q;  // 最后存在于 pFamily 的 q 即是 LCA
+    }
+
+    private static Map<TreeNode, TreeNode> getNodeMap(TreeNode root, TreeNode p, TreeNode q) {
+        Stack<TreeNode> stack = new Stack<>();          // 用于 DFS 实现
+        stack.push(root);
+        Map<TreeNode, TreeNode> map = new HashMap<>();  // Map<节点, 父节点>（即用 map 表达 BST，类似 TreeMap）
+        map.put(root, null);
+
+        while (!map.containsKey(p) || !map.containsKey(q)) {  // 若 p、q 存在于 map 中，说明他们的所有祖先节点也都已经在 map 中了
+            TreeNode node = stack.pop();
+            if (node.left != null) {
+                stack.push(node.left);
+                map.put(node.left, node);  // 记录子节点 -> 父节点关系
+            }
+            if (node.right != null) {
+                stack.push(node.right);
+                map.put(node.right, node);
+            }
+        }
+        return map;
     }
 
     public static void main(String[] args) {

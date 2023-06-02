@@ -53,7 +53,6 @@ public class L199_BinaryTreeRightSideView {
      * */
     public static List<Integer> rightSideView2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        if (root == null) return res;
         dfs2(root, res, 0);
         return res;
     }
@@ -74,7 +73,6 @@ public class L199_BinaryTreeRightSideView {
      * */
     public static List<Integer> rightSideView3(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        if (root == null) return res;
         dfs3(root, res, 0);
         return res;
     }
