@@ -11,21 +11,21 @@ import Utils.Helpers.TreeNode;
  * - Given a root node of a BST, delete the node with the given key in the BST. Return the root node
  *   (possibly updated) of the BST.
  *
- * - Basically, the deletion can be divided into two stages:
- *   1. Search for a node to remove.
- *   2. If the node is found, delete the node.
+ * - 思路：Basically, the deletion can be divided into 3 stages:
+ *   1. Search for the node to delete.
+ *   2. Delete the node by replacing it with its successor.
+ *   3. Transplant the left and right children of the deleted node onto the successor.
  * */
 
 public class L450_DeleteNodeInBST {
     /*
      * 解法1：Hibbard Deletion (Recursion)
      * - 💎 思路：与 Play-with-data-structure/BST/BST.java 中的 remove 方法一致，总的来说是：
-     *   1. 先借助 BST 的二分性质找到 val == key 的目标节点 node；
-     *   2. 从以 node 为根的 BST 的右子树中找到最小节点 successor；
-     *      - 若 node 左子树为空，则右子树就是 successor；
-     *      - 若 node 右子树为空，则左子树就是 successor；
+     *   1. 先借助 BST 的二分性质找到待删除节点 node；
+     *   2. 在以 node 为根的 BST 上找到 successor：
+     *      - 若 node 左/右子树为空，则其右/左子树就是 successor；
      *      - 若 node 左右子树都不为空，则右子树中的最小节点就是 successor；
-     *   3. 将 node 的左右子树移植到 successor 上：
+     *   3. 若 node 左右子树都不为空，将 node 的左右子树移植到 successor 上：
      *      - 将 node 右子树去掉 successor 节点后的部分移植到 successor 的右子树上；
      *      - 将 node 左子树移植到 successor 的左子树上；
      *   4. 让 successor 接替 node 并放回到原 BST 的相应位置上。
@@ -46,7 +46,7 @@ public class L450_DeleteNodeInBST {
         if (root.left == null) return root.right;  // 若左子树为空，则右子树就是 successor
         if (root.right == null) return root.left;  // 若右子树为空，则左子树就是 successor
         TreeNode successor = getMin(root.right);   // 若都不为空，则右子树中的最小节点就是 successor
-        successor.right = removeMin(root.right);   // 注意要先给右子树赋值（SEE: https://coding.imooc.com/learn/questiondetail/84029.html）
+        successor.right = removeMin(root.right);   // 移植左右子树（注意要先给右子树赋值，SEE: https://coding.imooc.com/learn/questiondetail/84029.html）
         successor.left = root.left;
         return successor;
     }
@@ -99,7 +99,7 @@ public class L450_DeleteNodeInBST {
         succ.left = root.left;                // 用 successor 接替根节点的第一步是移植根节点的左子树
         if (succ == root.right) return succ;  // 若 successor 就是根节点的右子树（再没有左子树）则直接返回
         prev.left = succ.right;               // 在移动 successor 之前要保留其右子树（移动到父节点上，接替 successor 的位置）
-        succ.right = root.right;              // 再让 successor 接替根节点
+        succ.right = root.right;              // 再让 successor 接替根节点
         return succ;                          // 返回新的根节点
     }
 
@@ -126,8 +126,19 @@ public class L450_DeleteNodeInBST {
          *       4   7                  7
          * */
 
-        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{7, 3, 8, 1, 5, null, 9, 0, 2, null, 6});
-        printBinaryTreeBreadthFirst(deleteNode(t3, 3));
+        TreeNode t3 = createBinaryTreeBreadthFirst(new Integer[]{5, 3, 7, null, null, 6, 8});
+        printBinaryTreeBreadthFirst(deleteNode(t3, 7));
+        /*
+         * expects [5,3,8,null,null,6] or [5,3,6,null,null,null,8]
+         *       5                  5                  5
+         *      / \                / \                / \
+         *     3   7      -->     3   8      or      3   6
+         *        / \                /                    \
+         *       6   8              6                      8
+         * */
+
+        TreeNode t4 = createBinaryTreeBreadthFirst(new Integer[]{7, 3, 8, 1, 5, null, 9, 0, 2, null, 6});
+        printBinaryTreeBreadthFirst(deleteNode(t4, 3));
         /*
          * expects [7,5,8,1,6,null,9,0,2] or [7,2,8,1,5,null,9,0,null,null,6]
          *          7                   7                    7
