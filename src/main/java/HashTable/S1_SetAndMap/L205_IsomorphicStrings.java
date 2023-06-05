@@ -84,9 +84,8 @@ public class L205_IsomorphicStrings {
             if (!sMap.containsKey(sc) && !tMap.containsKey(tc)) {
                 sMap.put(sc, i);
                 tMap.put(tc, i);
-            } else {
-                if (sMap.get(sc) != tMap.get(tc)) return false;
             }
+            if (sMap.get(sc) != tMap.get(tc)) return false;
         }
 
         return true;
@@ -106,7 +105,7 @@ public class L205_IsomorphicStrings {
         for (int i = 0; i < s.length(); i++) {
             char sc = s.charAt(i), tc = t.charAt(i);
             if (sMap[sc] != tMap[tc]) return false;
-            sMap[sc] = i + 1;  // （这里包含一个隐式转换：sc 是 char，sMap[sc] 是在去 sc 的 ASCII 值）
+            sMap[sc] = i + 1;  // 这里包含一个隐式转换：sc 是 char，sMap[sc] 存储的事 sc 的 ASCII 值 + 1
             tMap[tc] = i + 1;
         }
 
@@ -135,9 +134,9 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法6：双查找表 + 匹配上次出现位置（🥇最优解）
-     * - 思路：不对 s、t 中的字符进行互相映射，而是比较 s、t 中每个字符上次出现的位置是否相等。该思路比解法1-5都更简单，实现更简洁。
-     * - 实现：利用 Java 中 map.put(...) 返回值的特性实现。
+     * 解法6：双查找表（解法3的简化版，🥇最优解）
+     * - 思路：与解法3-5一致。
+     * - 实现：利用 map.put(...) 的返回值的特性来查找、对比字符上次出现的位置。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isIsomorphic6(String s, String t) {
@@ -155,7 +154,7 @@ public class L205_IsomorphicStrings {
     }
 
     /*
-     * 解法7：双查找表 + 匹配上次出现位置（解法6的地规范，🥇最优解）
+     * 解法7：双查找表（解法6的递归版，🥇最优解）
      * - 思路：与解法6一致。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
@@ -171,10 +170,10 @@ public class L205_IsomorphicStrings {
     }
 
     public static void main(String[] args) {
-        log(isIsomorphic7("egg", "add"));      // expects true
-        log(isIsomorphic7("paper", "title"));  // expects true
-        log(isIsomorphic7("foo", "bar"));      // expects false（左边1个映射到右边2个的情况，o -> a、r）
-        log(isIsomorphic7("ab", "aa"));        // expects false（左边2个映射到右边1个的情况）
-        log(isIsomorphic7("aba", "baa"));      // expects false（左边1个映射到右边2个的情况）
+        log(isIsomorphic3("egg", "add"));      // expects true
+        log(isIsomorphic3("paper", "title"));  // expects true
+        log(isIsomorphic3("foo", "bar"));      // expects false（左边1个映射到右边2个的情况，o -> a、r）
+        log(isIsomorphic3("ab", "aa"));        // expects false（左边2个映射到右边1个的情况）
+        log(isIsomorphic3("aba", "baa"));      // expects false（左边1个映射到右边2个的情况）
     }
 }

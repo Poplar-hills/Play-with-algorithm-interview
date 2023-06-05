@@ -25,6 +25,7 @@
   - L234_PalindromeLinkedList
 
 - HashTable (20):
+  - L202_HappyNumber
   - L205_IsomorphicStrings
   - L1_TwoSum
   - L15_3Sum ⭐️
