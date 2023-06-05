@@ -32,8 +32,9 @@ public class L202_HappyNumber {
     }
 
     private static boolean helper(int n, Map<Integer, Integer> map) {
-        map.merge(n, 1, Integer::sum);  // 相当于 map.put(n, map.getOrDefault(n, 0) + 1);
-        if (map.get(n) > 1) return false;     // ∵ 上面刚刚给 n 的频率 +1 ∴ 这里检测频率是否 >1
+        if (n == 1) return true;
+        int freq = map.merge(n, 1, Integer::sum);  // 相当于 map.put(n, map.getOrDefault(n, 0) + 1);
+        if (freq > 1) return false;     // ∵ 上面刚刚给 n 的频率 +1 ∴ 这里检测频率是否 >1
 
         int squareSum = 0;
         while (n != 0) {
@@ -42,7 +43,7 @@ public class L202_HappyNumber {
             n /= 10;
         }
 
-        return squareSum == 1 || helper(squareSum, map);
+        return helper(squareSum, map);
     }
 
     /*
@@ -76,7 +77,6 @@ public class L202_HappyNumber {
     /*
      * 解法3：Set + Iteration
      * - 思路：与解法1、2一致。
-     * - 实现：迭代。
      * - 时间复杂度为 O(n)，空间复杂度为 O(n)。
      * */
     public static boolean isHappy3(int n) {
