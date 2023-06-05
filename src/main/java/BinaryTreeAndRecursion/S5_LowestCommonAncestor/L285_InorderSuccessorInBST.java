@@ -44,8 +44,9 @@ public class L285_InorderSuccessorInBST {
     private static TreeNode binarySearchNext(List<TreeNode> list, TreeNode p, int l, int r) {
         if (l > r) return null;
         int mid = (r - l) / 2 + l;
-        if (p.val < list.get(mid).val) return binarySearchNext(list, p, l, mid - 1);
-        if (p.val > list.get(mid).val) return binarySearchNext(list, p,mid + 1, r);
+        int midVal = list.get(mid).val;
+        if (p.val < midVal) return binarySearchNext(list, p, l, mid - 1);
+        if (p.val > midVal) return binarySearchNext(list, p,mid + 1, r);
         return mid == list.size() - 1 ? null : list.get(mid + 1);  // 若 p 是 list 中的最后一个元素，则无 successor
     }
 
@@ -54,7 +55,7 @@ public class L285_InorderSuccessorInBST {
      * - 思路：先找到 successor 节点的规律：
      *   1. 若 p 有右子树，则其 successor 是其右子树上的最左节点；
      *   2. 若 p 没有右子树，则其 successor 是其上游节点中第一个比 p 大的节点（若没有则为 null）。
-     *   ∴ 若 p 有右子树，则直接搜索右子树上的最左节点；若无右子树，则从 root 开始从上到下搜索最后一个 > p 的节点。
+     *   ∴ 若 p 有右子树，则搜索右子树上的最左节点；若无右子树，则从 root 开始从上到下搜索最后一个 > p 的节点。
      * - 时间复杂度 O(logn)，在 BST 不平衡的情况下，最坏会退化成 O(n)。
      * - 空间复杂度 O(1)。
      * */
@@ -81,17 +82,18 @@ public class L285_InorderSuccessorInBST {
     /*
      * 解法3：解法2的简化版
      * - 思路：与解法2一致。
+     * - 实现：解法2中的两个分支逻辑可以合二为一。
      * - 时间复杂度 O(logn)，空间复杂度 O(logn)，在 BST 不平衡的情况下，最坏会退化成 O(n)。
      * */
     private static TreeNode inorderSuccessor3(TreeNode root, TreeNode p) {
-        if (root == null) return null;
+        if (root == null || p == null) return null;
 
         TreeNode successor = null;
         while (root != null) {
-            if (p.val < root.val) {
+            if (p.val < root.val) {  // 若 p < 当前节点，则向左查找，并记录 successor（即解法2中的 p 无右子树的情况）
                 successor = root;
                 root = root.left;
-            } else {
+            } else {                 // 当 p >= 当前节点时，再再右子树上查找最左节点（即解法2中的 p 有右子树的情况）
                 root = root.right;
             }
         }
@@ -99,7 +101,7 @@ public class L285_InorderSuccessorInBST {
     }
 
     /*
-     * 解法4：解法2、3的递归版
+     * 解法4：解法3的递归版
      * - 思路：与解法2、3一致。
      * - 时间复杂度 O(logn)，空间复杂度 O(logn)，在 BST 不平衡的情况下，最坏会退化成 O(n)。
      * */
