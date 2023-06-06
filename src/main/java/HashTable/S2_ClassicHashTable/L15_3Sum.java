@@ -88,7 +88,7 @@ public class L15_3Sum {
             for (int j = i + 1; j < n - 1; j++) {
                 int complement = 0 - nums[i] - nums[j];
                 if (binarySearch(nums, complement, j + 1, n - 1) != -1)
-                    resSet.add(Arrays.asList(nums[i], nums[j], complement));
+                    resSet.add(List.of(nums[i], nums[j], complement));
             }
         }
 
@@ -124,8 +124,8 @@ public class L15_3Sum {
                     if (sum < 0) l++;
                     else if (sum > 0) r--;
                     else {
-                        res.add(Arrays.asList(nums[i], nums[l++], nums[r--]));  // 当 sum == target 时找到一个解
-                        while (l < r && nums[l] == nums[l - 1]) l++;            // 若下一个元素重复，则让 l, r 跳过
+                        res.add(List.of(nums[i], nums[l++], nums[r--]));  // 当 sum == target 时找到一个解
+                        while (l < r && nums[l] == nums[l - 1]) l++;      // 若下一个元素重复，则让 l, r 跳过
                         while (l < r && nums[r] == nums[r + 1]) r--;
                     }
                 }
@@ -135,9 +135,11 @@ public class L15_3Sum {
     }
 
     /*
-     * 解法5：3Sum -> 2Sum（查找表 + 手动去重，🥇最优解）
+     * 错误解：3Sum -> 2Sum（查找表 + 手动去重）
      * - 思路：与解法1一致。
      * - 实现：解法1的手动去重版。
+     * - 问题：由于比解法1多了手动去重的步骤，若 nums=[0,0,0]，在第二层手动去重过程中，i=0, j=2 时，nums[j]==nums[j-1]
+     *   条件成立，continue ∴ 得不到解。而解法4并没有该问题。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> threeSum5(int[] nums) {
@@ -146,27 +148,25 @@ public class L15_3Sum {
         int n = nums.length;
         Arrays.sort(nums);
 
-        Set<Integer> set = new HashSet<>();
-        for (int i = 0; i < n - 1; i++) {            // 固定第1个元素
-            if (i == 0 || nums[i] != nums[i - 1]) {  // 手动去重
-                for (int j = i + 1; j < n; j++) {                // 内部搜索 2Sum（也可以看做固定第2个元素）
-                    if (j == i + 1 || nums[j] != nums[j - 1]) {  // 再次手动去重
-                        int complement = 0 - nums[i] - nums[j];
-                        if (set.contains(complement))
-                            res.add(Arrays.asList(nums[i], nums[j], complement));
-                        set.add(nums[j]);
-                    }
-                }
-                set.clear();
+        for (int i = 0; i < n - 1; i++) {                    // 固定第1个元素
+            if (i != 0 && nums[i] == nums[i - 1]) continue;  // 第一层手动去重
+            Set<Integer> set = new HashSet<>();
+            for (int j = i + 1; j < n; j++) {                // 内部搜索 2Sum（也可以看做固定第2个元素）
+                if (j != i + 1 && nums[j] == nums[j - 1]) continue;  // 第二层手动去重
+                int complement = 0 - nums[i] - nums[j];
+                if (set.contains(complement))
+                    res.add(List.of(nums[i], nums[j], complement));
+                set.add(nums[j]);
             }
         }
         return res;
     }
 
     public static void main(String[] args) {
-        log(threeSum3(new int[]{-1, 0, 1, 2, -1, -4}));  // expects [[-1,0,1], [-1,-1,2]]
-        log(threeSum3(new int[]{1, 0, -2, 1, -2, 4}));   // expects [[1,-2,1], [-2,-2,4]]
-        log(threeSum3(new int[]{-1, 0, 1}));             // expects [-1,0,1]
-        log(threeSum3(new int[]{1, 0, 1, 0}));           // expects []
+        log(threeSum5(new int[]{-1, 0, 1, 2, -1, -4}));  // expects [[-1,0,1], [-1,-1,2]]
+        log(threeSum5(new int[]{1, 0, -2, 1, -2, 4}));   // expects [[1,-2,1], [-2,-2,4]]
+        log(threeSum5(new int[]{-1, 0, 1}));             // expects [-1,0,1]
+        log(threeSum5(new int[]{1, 0, 1, 0}));           // expects []
+        log(threeSum5(new int[]{0, 0, 0}));              // expects [[0,0,0]]
     }
 }
