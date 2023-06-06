@@ -30,11 +30,11 @@ public class L15_3Sum {
         Arrays.sort(nums);                     // 这里要重新排序，从而让 resSet 能对后面找到的三元组去重
 
         Set<Integer> set = new HashSet<>();    // 放在 for 外面是为了复用，效率会高一些（也可以放在第一层 for 内部）
-        for (int i = 0; i < n; i++) {          // 固定元素 nums[i]
+        for (int i = 0; i < n - 1; i++) {      // 固定元素 nums[i]
             for (int j = i + 1; j < n; j++) {  // 内部是标准的 2Sum（与 L1_TwoSum 解法5一致）；注意 j ∈ (i,..]
                 int complement = 0 - nums[i] - nums[j];
                 if (set.contains(complement))  // 内部的 set 是用来查找 complement 的（即 L1 解法5中的 map）
-                    resSet.add(Arrays.asList(nums[i], nums[j], complement));
+                    resSet.add(List.of(nums[i], nums[j], complement));
                 set.add(nums[j]);
             }
             set.clear();                       // ∵ set 放在了 for 外面 ∴ 每轮 2Sum 完成之后要情况 set
@@ -59,13 +59,13 @@ public class L15_3Sum {
         int n = nums.length;
         Arrays.sort(nums);
 
-        for (int i = 0; i < n - 2; i++) {  // 外层固定一个元素，在内部通过指针对撞来搜索 2Sum
+        for (int i = 0; i < n - 2; i++) {  // 外层固定一个元素，在内部通过指针对撞来搜索 2Sum ∵ 内层要给 l,r 留出空间 ∴ 外层要 i < n-2
             int l = i + 1, r = n - 1;      // 在 (i..] 范围内进行指针对撞
             while (l < r) {
                 int sum = nums[i] + nums[l] + nums[r];
                 if (sum > 0) r--;
                 else if (sum < 0) l++;
-                else resSet.add(Arrays.asList(nums[i], nums[l++], nums[r--]));  // 注意不要忘记让 l++，r--
+                else resSet.add(List.of(nums[i], nums[l++], nums[r--]));  // 注意不要忘记让 l++，r--
             }
         }
 
@@ -87,7 +87,7 @@ public class L15_3Sum {
         for (int i = 0; i < n - 2; i++) {
             for (int j = i + 1; j < n - 1; j++) {
                 int complement = 0 - nums[i] - nums[j];
-                if (binarySearch(nums, j + 1, n - 1, complement) != -1)
+                if (binarySearch(nums, complement, j + 1, n - 1) != -1)
                     resSet.add(Arrays.asList(nums[i], nums[j], complement));
             }
         }
@@ -95,11 +95,11 @@ public class L15_3Sum {
         return new ArrayList<>(resSet);
     }
 
-    private static int binarySearch(int[] nums, int l, int r, int target) {
+    private static int binarySearch(int[] nums, int target, int l, int r) {
         if (l > r) return -1;
         int mid = (r - l) / 2 + l;
-        if (target < nums[mid]) return binarySearch(nums, l, mid - 1, target);
-        if (target > nums[mid]) return binarySearch(nums, mid + 1, r, target);
+        if (target < nums[mid]) return binarySearch(nums, target, l, mid - 1);
+        if (target > nums[mid]) return binarySearch(nums, target, mid + 1, r);
         return mid;
     }
 
@@ -135,7 +135,7 @@ public class L15_3Sum {
     }
 
     /*
-     * 解法5：3Sum -> 2Sum（查找表 + 手动去重）
+     * 解法5：3Sum -> 2Sum（查找表 + 手动去重，🥇最优解）
      * - 思路：与解法1一致。
      * - 实现：解法1的手动去重版。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
@@ -166,7 +166,7 @@ public class L15_3Sum {
     public static void main(String[] args) {
         log(threeSum3(new int[]{-1, 0, 1, 2, -1, -4}));  // expects [[-1,0,1], [-1,-1,2]]
         log(threeSum3(new int[]{1, 0, -2, 1, -2, 4}));   // expects [[1,-2,1], [-2,-2,4]]
-        log(threeSum3(new int[]{-1, 0, 1}));             // expects [-1, 0, 1]
+        log(threeSum3(new int[]{-1, 0, 1}));             // expects [-1,0,1]
         log(threeSum3(new int[]{1, 0, 1, 0}));           // expects []
     }
 }
