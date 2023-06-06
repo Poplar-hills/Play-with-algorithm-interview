@@ -1,7 +1,6 @@
 package HashTable.S2_ClassicHashTable;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +41,7 @@ public class L1_TwoSum {
      *                        l  r        - nums[l] + nums[r] == target
      *   但有一个问题：一旦对 nums 排序，其索原有引会丢失 ∴ 需要一个数据结构在排序之前记录元素和索引的对应关系。而又因为 nums
      *   中可能有重复元素 ∴ 无法采用 Map 记录这种对应关系。换一个思路，不使用外部数据结构，而是将索引与元素以 pair 的方式存在
-     *   数组中，这样后面的代码就无需再使用 nums，只用该数组即可。
+     *   数组中，这样后面的代码就无需再使用 nums，只用该数组即可（也可以采用 List<int[]> 结构）。
      * - 时间复杂度 O(nlogn)，空间复杂度 O(n)。
      * */
     public static int[] twoSum2(int[] nums, int target) {
@@ -52,13 +51,12 @@ public class L1_TwoSum {
 
         Arrays.sort(indexedNums, (a, b) -> a.getValue() - b.getValue());  // 根据元素对 pair 进行排序
 
-        int l = 0, r = indexedNums.length - 1;
-        while (l < r) {                         // 开始指针对撞
-            Pair<Integer, Integer> lPair = indexedNums[l], rPair = indexedNums[r];
-            int sum = lPair.getValue() + rPair.getValue();
+        for (int l = 0, r = indexedNums.length - 1; l < r; ) {  // 开始指针对撞
+            Pair<Integer, Integer> lp = indexedNums[l], rp = indexedNums[r];
+            int sum = lp.getValue() + rp.getValue();
             if (sum > target) r--;
             else if (sum < target) l++;
-            else return new int[]{lPair.getKey(), rPair.getKey()};  // 返回两个元素在 nums 中的索引
+            else return new int[] {lp.getKey(), rp.getKey()};   // 返回两个元素在 nums 中的索引
         }
 
         throw new IllegalArgumentException("No solution");
@@ -81,18 +79,18 @@ public class L1_TwoSum {
 
         for (int i = 0; i < indexedNums.length; i++) {
             int complement = target - indexedNums[i][1];
-            int index = binarySearch(indexedNums, i + 1, nums.length - 1, complement);
-            if (index != -1) return new int[]{indexedNums[i][0], indexedNums[index][0]};
+            int idx = binarySearch(indexedNums, complement, i + 1, nums.length - 1);
+            if (idx != -1) return new int[]{indexedNums[i][0], indexedNums[idx][0]};
         }
 
         throw new IllegalArgumentException("No solution");
     }
 
-    private static int binarySearch(int[][] nums, int l, int r, int target) {
+    private static int binarySearch(int[][] nums, int target, int l, int r) {
         if (l > r) return -1;
         int mid = (r - l) / 2 + l;  // 不直接 (r + l) / 2 是为了避免整型溢出
-        if (target < nums[mid][1]) return binarySearch(nums, l, mid - 1, target);
-        if (target > nums[mid][1]) return binarySearch(nums, mid + 1, r, target);
+        if (target < nums[mid][1]) return binarySearch(nums, target, l, mid - 1);
+        if (target > nums[mid][1]) return binarySearch(nums, target, mid + 1, r);
         return mid;                 // 该二分搜索最后返回的是元素索引
     }
 
