@@ -83,6 +83,7 @@ public class L349_IntersectionOfTwoArrays {
         int i = 0;
         int[] res = new int[set.size()];
         for (int n : set) res[i++] = n;
+
         return res;
     }
 
@@ -95,7 +96,7 @@ public class L349_IntersectionOfTwoArrays {
     }
 
     public static void main(String[] args) {
-        log(intersection(new int[]{1, 2, 2, 1}, new int[]{2, 2}));        // expects [2]. 注意返回的数组应该是去重过的
+        log(intersection(new int[]{1, 2, 2, 1}, new int[]{2, 2}));  // expects [2]. 注意返回的数组应该是去重过的
         log(intersection(new int[]{4, 9, 5}, new int[]{9, 4, 9, 8, 4}));  // expects [4, 9]
     }
 }

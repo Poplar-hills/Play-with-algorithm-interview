@@ -27,6 +27,7 @@
 - HashTable (20):
   - L202_HappyNumber
   - L290_WordPattern
+  - L349_IntersectionOfTwoArrays
   - L1_TwoSum
   - L15_3Sum ⭐️
   - L49_GroupAnagrams

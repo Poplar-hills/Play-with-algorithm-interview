@@ -62,9 +62,9 @@ public class L451_SortCharactersByFrequency {
         pq.addAll(freq.keySet());  // 这里只需 add 所有 key 进去就可以排序
 
         StringBuilder sb = new StringBuilder();
-        while (!pq.isEmpty()) {    // 用 while 遍历 pq（用 for 遍历 pq 也是可以的）
+        while (!pq.isEmpty()) {
             char c = pq.poll();
-            for (int i = 1; i <= freq.get(c); i++)
+            for (int i = 0; i < freq.get(c); i++)
                 sb.append(c);
         }
         return sb.toString();
