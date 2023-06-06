@@ -18,7 +18,7 @@ import static Utils.Helpers.log;
 
 public class L290_WordPattern {
     /*
-     * 解法1：双查找表
+     * 解法1：双查找表（双向映射）
      * - 思路：类似 L205_IsomorphicStrings，该问题同样是一个模式匹配问题 ∴ 需要双向匹配，只用1个查找表是不够的 ∴ 可以采用
      *   L205 解法1的思路，使用双查找表分别记录 pattern -> str 的映射、str -> pattern 的映射。
      * - 时间复杂度 O(n)，空间复杂度 O(n)
@@ -82,7 +82,7 @@ public class L290_WordPattern {
     }
 
     /*
-     * 解法3：双查找表（匹配上次出现位置）
+     * 解法3：双查找表（映射到统一编码 - 上次出现位置）
      * - 思路：类似 L205_IsomorphicStrings 解法5，比较 pattern、str 中的字符/单词上次出现的位置是否相等。该思路比解法1、2
      *   更简单，实现也更简洁。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
@@ -94,7 +94,7 @@ public class L290_WordPattern {
         Map<Character, Integer> pMap = new HashMap<>();
         Map<String, Integer> wMap = new HashMap<>();
 
-        for (Integer i = 0; i < words.length; i++) {  // 注意 i 必须使用 boxing type，否则存到2个 Map 里的 i 在经过 Integer 包装后不能用 == 比较
+        for (Integer i = 0; i < words.length; i++) {  // 注意 i 必须使用 boxing type，否则存到2个 Map 里的 i 在经过 Integer 包装后不能用 == 比较（test case 7）
             Integer lastPIdx = pMap.put(pattern.charAt(i), i);  // 这里也必须使用 boxing type ∵ put 可能返回 null
             Integer lastWIdx = wMap.put(words[i], i);
             if (lastPIdx != lastWIdx) return false;   // 若两边都为 null 或相等则说明匹配上了，否则匹配失败
