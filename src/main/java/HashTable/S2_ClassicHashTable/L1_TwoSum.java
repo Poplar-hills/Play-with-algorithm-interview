@@ -126,6 +126,7 @@ public class L1_TwoSum {
      *                      ↑           - complement=7，map 中没有 ∴ 插入 map, map={4:0, -1:1}
      *                          ↑       - complement=9，map 中没有 ∴ 插入 map, map={4:0, -1:1, -3:2}
      *                             ↑    - complement=-1，map 中有 ∴ 返回找到的解
+     * - 👉🏻 对比：区间求和常用的查找表 + prefix sum 与该解法（L560_SubarraySumEqualsK、L437_PathSumIII）类似，可比较记忆。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int[] twoSum5(int[] nums, int target) {
