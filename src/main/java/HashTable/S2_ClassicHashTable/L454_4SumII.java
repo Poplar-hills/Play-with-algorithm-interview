@@ -30,9 +30,9 @@ public class L454_4SumII {
 
     /*
      * 解法2：查找表
-     * - 思路：借鉴 L18_4Sum 的思路，将问题转化为 3Sum，即先用查找表记录一个数组（例如 D）的所有元素，之后通过3层 for 循环
-     *   遍历 A, B, C 的所有组合，在查找表中搜索是否有元素 l 满足 dMap.get(l) == 0 - A[i] - B[j] - C[k]。通过这样查找
-     *   使得无需遍历数组 D ∴ 时间将复杂度从解法1的 O(n^4) 降低为 O(n^3)。
+     * - 思路：💎 借鉴 L18_4Sum 的思路，将问题转化为 3Sum，即先用查找表记录一个数组（例如 D）的所有元素，之后通过3层
+     *   for 循环遍历 A, B, C 的所有组合，在查找表中搜索是否有元素 l 满足 dMap.get(l) == 0 - A[i] - B[j] - C[k]。
+     *   通过这样查找使得无需遍历数组 D ∴ 时间将复杂度从解法1的 O(n^4) 降低为 O(n^3)。
      * - 实现：注意 ∵ 数组中可能存在重复元素（如 [0,0,1]），而本题是可以使用重复元素的 ∴ 查找表需使用 Map 结构记录 {元素: 频次}。
      * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
      * */
@@ -41,7 +41,7 @@ public class L454_4SumII {
         Map<Integer, Integer> map = new HashMap<>();
 
         for (int d : D)
-            map.put(d, map.getOrDefault(d, 0) + 1);  // 考虑可能有重复的元素 ∴ 要记录每个元素的频次
+            map.merge(d, 1, Integer::sum);  // 考虑可能有重复的元素 ∴ 要记录每个元素的频次
 
         for (int a : A)
             for (int b : B)
@@ -52,9 +52,9 @@ public class L454_4SumII {
     }
 
     /*
-     * 解法3：查找表（解法2的进一步优化）
+     * 解法3：查找表（解法2的进一步优化，🥇最优解）
      * - 线索：由于题目中说 n ≤ 500 ∴ 隐含的条件就是 O(n^2) 级别的算法才可以满足性能要求（若 O(n^3) 则会很慢）。
-     * - 思路：解法2中使用查找表记录 D[i] 的所有可能，若再进一步，用查找表记录 C[i] + D[j] 的所有组合，则可以优化到 O(n^2)。
+     * - 思路：💎 解法2中用查找表记录 D[i] 的所有元素。若再进一步，用查找表记录 C[i] + D[j] 的所有组合，则可优化到 O(n^2)。
      * - 实现：∵ n ≤ 500 ∴ 用一个 Map 记录 500^2=250000 个键值对是完全可以接受的。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n^2)。
      * - 思考：查找表的核心问题是：我们到底要查找什么？
@@ -63,11 +63,11 @@ public class L454_4SumII {
         int count = 0;
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (int c : C)        // 用查找表记录 C[i] + D[j] 的所有组合，并记录每种组合的频次
+        for (int c : C)  // 用查找表记录 C[i] + D[j] 的所有组合，并记录每种组合的频次
             for (int d : D)
                 map.merge(c + d, 1, Integer::sum);
 
-        for (int a : A)        // 从 A[k] + B[l] 的所有组合与 C[i] + D[j] 的所有组合中找到满足条件的组合的频次，加到 count 上
+        for (int a : A)  // 从 A[k] + B[l] 的所有组合与 C[i] + D[j] 的所有组合中找到满足条件的组合的频次，加到 count 上
             for (int b : B)
                 count += map.getOrDefault(0 - a - b, 0);
 
@@ -75,16 +75,11 @@ public class L454_4SumII {
     }
 
     public static void main(String[] args) {
-        int[] A = new int[]{1, 2};
-        int[] B = new int[]{-2, -1};
-        int[] C = new int[]{-1, 2};
-        int[] D = new int[]{0, 2};
-        log(fourSumCount3(A, B, C, D));      // expects 2 ([1, -2, -1, 2], [2, -1, -1, 0])
+        int[] A = {1, 2}, B = {-2, -1}, C = {-1, 2}, D = {0, 2};
+        log(fourSumCount3(A, B, C, D));         // expects 2 ([1, -2, -1, 2], [2, -1, -1, 0])
 
-        int[] A2 = new int[]{0, 1, -1};
-        int[] B2 = new int[]{-1, 1, 0};
-        int[] C2 = new int[]{0, 0, 1};       // 数组包含元素重复的情况
-        int[] D2 = new int[]{-1, 1, 1};
-        log(fourSumCount3(A2, B2, C2, D2));  // expects 17
+        int[] A2 = {0, 1, -1}, B2 = {-1, 1, 0};
+        int[] C2 = {0, 0, 1}, D2 = {-1, 1, 1};  // 其中C2 包含元素重复的情况
+        log(fourSumCount3(A2, B2, C2, D2));     // expects 17
     }
 }
