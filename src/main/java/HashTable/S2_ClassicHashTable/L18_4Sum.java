@@ -10,7 +10,7 @@ import static Utils.Helpers.log;
  * - 从 nums 中找到所有和为 target 的四元组（4个不同元素）。
  *
  * - 整体思路是通过在遍历过程中固定一个元素，将 4Sum 问题转化为 3Sum 问题，再转化为 2Sum 问题，而 2Sum 问题就可以使用经典的
- *   1. 查找表；2. Binary Search；3. 指针对撞 这三种方法解决。
+ *   1. 查找表；2. 二分查找；3. 指针对撞 这三种方法解决。
  * */
 
 public class L18_4Sum {
@@ -32,7 +32,7 @@ public class L18_4Sum {
                 for (int k = j + 1; k < n; k++) {
                     int complement = target - nums[i] - nums[j] - nums[k];
                     if (set.contains(complement))
-                        resSet.add(Arrays.asList(nums[i], nums[j], nums[k], complement));
+                        resSet.add(List.of(nums[i], nums[j], nums[k], complement));
                     set.add(nums[k]);
                 }
             }
@@ -60,7 +60,7 @@ public class L18_4Sum {
                     int sum = nums[i] + nums[j] + nums[l] + nums[r];
                     if (sum < target) l++;
                     else if (sum > target) r--;
-                    else resSet.add(Arrays.asList(nums[i], nums[j], nums[l++], nums[r--]));
+                    else resSet.add(List.of(nums[i], nums[j], nums[l++], nums[r--]));
                 }
             }
         }
@@ -90,7 +90,7 @@ public class L18_4Sum {
                             if (sum < target) l++;
                             else if (sum > target) r--;
                             else {                                            // 当 sum == target 时找到一个解
-                                res.add(Arrays.asList(nums[i], nums[j], nums[l++], nums[r--]));
+                                res.add(List.of(nums[i], nums[j], nums[l++], nums[r--]));
                                 while (l < r && nums[l] == nums[l - 1]) l++;  // 若下一个元素重复，则让 l, r 跳过
                                 while (l < r && nums[r] == nums[r + 1]) r--;
                             }
@@ -102,6 +102,10 @@ public class L18_4Sum {
         return res;
     }
 
+    /*
+     * 解法4：4Sum -> 3Sum -> 2Sum（二分查找 + Set 去重）
+     * - 时间复杂度 O(n^3)，空间复杂度 O(n)。
+     * */
     public static List<List<Integer>> fourSum4(int[] nums, int target) {
         if (nums == null || nums.length < 4) return new ArrayList<>();
         int n = nums.length;
@@ -113,9 +117,9 @@ public class L18_4Sum {
             for (int j = i + 1; j < n - 1; j++) {
                 for (int k = j + 1; k < n; k++) {
                     int complement = target - nums[i] - nums[j] - nums[k];
-                    int idx = binarySearch(nums, k + 1, nums.length - 1, complement);
+                    int idx = binarySearch(nums, complement, k + 1, n - 1);
                     if (idx >= 0)
-                        set.add(Arrays.asList(nums[i], nums[j], nums[k], nums[idx]));
+                        set.add(List.of(nums[i], nums[j], nums[k], nums[idx]));
                 }
             }
         }
@@ -123,11 +127,11 @@ public class L18_4Sum {
         return new ArrayList<>(set);
     }
 
-    private static int binarySearch(int[] nums, int l, int r, int target) {
+    private static int binarySearch(int[] nums, int target, int l, int r) {
         if (l > r) return -1;
         int mid = (r - l) / 2 + l;
-        if (target < nums[mid]) return binarySearch(nums, l, mid - 1, target);
-        if (target > nums[mid]) return binarySearch(nums, mid + 1, r, target);
+        if (target < nums[mid]) return binarySearch(nums, target, l, mid - 1);
+        if (target > nums[mid]) return binarySearch(nums, target, mid + 1, r);
         return mid;
     }
 
