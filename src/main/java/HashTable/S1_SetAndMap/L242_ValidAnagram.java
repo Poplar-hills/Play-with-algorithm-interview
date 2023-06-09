@@ -32,7 +32,7 @@ public class L242_ValidAnagram {
     }
 
     /*
-     * 解法2：Map
+     * 解法2：Map（two-pass）
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static boolean isAnagram2(String s, String t) {
@@ -50,7 +50,7 @@ public class L242_ValidAnagram {
     }
 
     /*
-     * 解法3：Map
+     * 解法3：Map（one-pass，🥇最优解）
      * - 思路：与解法2一致。
      * - 实现：在同一次遍历中同时加、同时减。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。

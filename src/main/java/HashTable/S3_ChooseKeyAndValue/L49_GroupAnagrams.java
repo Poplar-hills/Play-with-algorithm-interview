@@ -64,23 +64,52 @@ public class L49_GroupAnagrams {
 
         for (String s : strs) {
             char[] chars = s.toCharArray();
-            Arrays.sort(chars);                         // O(klogk)
-            String sortedStr = String.valueOf(chars);   // 用 char[] 构建 String 的方法
-            map.putIfAbsent(sortedStr, new ArrayList<>());  // putIfAbsent = if (!map.containsKey(..)) map.put(..)
-            map.get(sortedStr).add(s);
+            Arrays.sort(chars);                       // O(klogk)
+            String pattern = String.valueOf(chars);   // 用 char[] 构建 String 的方法
+            map.putIfAbsent(pattern, new ArrayList<>());  // putIfAbsent = if (!map.containsKey(..)) map.put(..)
+            map.get(pattern).add(s);
         }
 
         return new ArrayList<>(map.values());  // 直接从 map.values() 构造 List
     }
 
+    /*
+     * 解法3：查找表（查找排序后相同的 str）
+     * - 思路：与解法2一致。
+     * - 实现：查找表的结构改为：Map<pattern, group index>。
+     * - 时间复杂度 O(nklogk)，n 为 strs 元素个数，k 为 strs 元素的最大字符个数。
+     * - 空间复杂度 O(nk)，即查找表的大小。
+     * */
+    public static List<List<String>> groupAnagrams_(String[] strs) {
+        List<List<String>> res = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();  // Map<pattern, group idx>
+
+        for (String s : strs) {
+            char[] sc = s.toCharArray();
+            Arrays.sort(sc);
+            String pattern = String.valueOf(sc);
+
+            if (!map.containsKey(pattern)) {                // 若是新 pattern
+                List<String> newGroup = new ArrayList<>();  // 创建新分组
+                newGroup.add(s);
+                res.add(newGroup);
+                map.put(pattern, res.size() - 1);  // 在 map 中存入 <新 pattern, 新分组的 idx>
+            } else {
+                res.get(map.get(pattern)).add(s);
+            }
+        }
+
+        return res;
+    }
+
     public static void main(String[] args) {
-        log(groupAnagrams2(new String[]{"eat", "tea", "tan", "ate", "nat", "bat"}));
+        log(groupAnagrams_(new String[]{"eat", "tea", "tan", "ate", "nat", "bat"}));
         // expects [["ate","eat","tea"], ["nat","tan"], ["bat"]]
 
-        log(groupAnagrams2(new String[]{"sstt", "xyz", "tsst", "xYz"}));
+        log(groupAnagrams_(new String[]{"sstt", "xyz", "tsst", "xYz"}));
         // expects [["sstt","tsst"], ["xyz"], ["xYz"]]
 
-        log(groupAnagrams2(new String[]{}));
+        log(groupAnagrams_(new String[]{}));
         // expects []
     }
 }
