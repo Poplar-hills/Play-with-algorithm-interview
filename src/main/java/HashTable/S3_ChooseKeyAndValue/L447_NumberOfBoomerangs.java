@@ -24,7 +24,7 @@ public class L447_NumberOfBoomerangs {
     /*
      * 解法1：查找表
      * - 思路：∵ 在一个满足条件的三元组中，p 是 q, r 之间的枢纽 ∴ 可以将每一个点当做枢纽点，统计它到其他所有点的距离，即为每个
-     *   点建立 { 到该点的距离: 点个数 } 的映射表。之后再对其中点个数大于2的项进行统计，而看 n 个等距点能与1个枢纽点能组成
+     *   点建立 <到该点的距离, 点个数> 的映射表。之后再对其中点个数大于2的项进行统计，而看 n 个等距点能与1个枢纽点能组成
      *   几个三元组，这是个典型的排列问题了。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
@@ -32,7 +32,7 @@ public class L447_NumberOfBoomerangs {
         int count = 0, n = points.length;
 
         for (int i = 0; i < n; i++) {                    // 遍历所有点（即让每个点都做一次枢纽点）
-            Map<Double, Integer> map = new HashMap<>();  // 为每个枢纽点建立 { 到枢纽的距离: 点个数 } 的查找表
+            Map<Double, Integer> map = new HashMap<>();  // 为每个枢纽点建立 Map<到枢纽的距离, 点个数>
             for (int j = 0; j < n; j++) {                // 遍历所有其他点
                 if (i == j) continue;
                 double dis = distance(points[i], points[j]);
@@ -55,31 +55,29 @@ public class L447_NumberOfBoomerangs {
     /*
      * 解法2：查找表（解法1的改进版）
      * - 实现：
-     *   1. 所有枢纽点复用同一个 Map，用完后 clear（或每次使用前 clear）；
-     *   2. 距离计算不开根号（不需要精确值，只要能用于区分等距点组即可）；
-     *   3. 等距点的个数统计不再最后单独进行，而是在遍历过程中完成 —— 每次等距点个数+1，能组成的三元组个数就会规律性增加：
+     *   1. 距离计算不开根号（不需要精确值，只要能用于区分等距点组即可）；
+     *   2. 等距点的个数统计不再放到最后单独进行，而是在遍历过程中完成 —— 每次等距点个数+1，能组成的三元组个数就会规律性增加：
      *        到枢纽的等距点个数  可组成的三元组个数
      *              0                0
      *              1                0
      *              2                2
      *              3                6   - 上次的2个三元组 + 上次的2个等距点*2
-     *              4                12  - 上次的3个三元组 + 上次的3个等距点*2
-     *        其中规律是：每次到枢纽的等距点个数+1，能组成的三元组个数 = 上次的三元组个数 + 上次的等距点个数 * 2
+     *              4                12  - 上次的6个三元组 + 上次的3个等距点*2
+     *      其中规律是：每次到枢纽的等距点个数+1，能组成的三元组个数 = 上次的三元组个数 + 上次的等距点个数*2
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int numberOfBoomerangs2(int[][] points) {
-        int count = 0;
-        Map<Double, Integer> map = new HashMap<>();  // 复用 Map
+        int count = 0, n = points.length;
 
-        for (int i = 0; i < points.length; i++) {
-            for (int j = 0; j < points.length; j++) {
+        for (int i = 0; i < n; i++) {
+            Map<Double, Integer> map = new HashMap<>();
+            for (int j = 0; j < n; j++) {
                 if (i == j) continue;
                 double dis = distance2(points[i], points[j]);
                 int prevCount = map.getOrDefault(dis, 0);
-                count += prevCount * 2;            // 每次等距点个数+1，能组成的三元组个数就会在原有基础上翻倍
+                count += prevCount * 2;  // 每次等距点个数+1，能组成的三元组个数就会在原有基础上翻倍
                 map.put(dis, prevCount + 1);
             }
-            map.clear();
         }
 
         return count;
@@ -100,7 +98,7 @@ public class L447_NumberOfBoomerangs {
          *  0 +------------->
          *    0  1  2  3  4
          * */
-        log(numberOfBoomerangs(new int[][] {{1, 1}, {2, 2}, {3, 1}}));
+        log(numberOfBoomerangs2(new int[][]{{1, 1}, {2, 2}, {3, 1}}));
         // expects 2. ([2,2], [1,1], [3,1]), ([2,2], [3,1], [1,1])
 
         /*
@@ -112,7 +110,7 @@ public class L447_NumberOfBoomerangs {
          *  0 +------------->
          *    0  1  2  3  4
          * */
-        log(numberOfBoomerangs(new int[][] {{1, 1}, {3, 1}, {2, 2}, {2, 4}}));
+        log(numberOfBoomerangs2(new int[][]{{1, 1}, {3, 1}, {2, 2}, {2, 4}}));
         // expects 4. ([1,1], [2,2], [3,1]), ([1,1], [3,1], [2,2])
         //            ([2,4], [1,1], [3,1]), ([2,4], [3,1], [1,1])
 
@@ -124,13 +122,13 @@ public class L447_NumberOfBoomerangs {
          *  0 +------------->
          *    0  1  2  3  4
          * */
-        log(numberOfBoomerangs(new int[][] {{1, 1}, {2, 1}, {2, 2}, {3, 1}}));
+        log(numberOfBoomerangs2(new int[][]{{1, 1}, {2, 1}, {2, 2}, {3, 1}}));
         // expects 8. ([2,1], [1,1], [3,1]), ([2,1], [3,1], [1,1])
         //            ([2,1], [1,1], [2,2]), ([2,1], [2,2], [1,1])
         //            ([2,1], [3,1], [2,2]), ([2,1], [2,2], [3,1])
         //            ([2,2], [1,1], [3,1]), ([2,2], [3,1], [1,1])
 
-        log(numberOfBoomerangs(new int[][] {{0, 0}, {1, 0}}));
+        log(numberOfBoomerangs2(new int[][]{{0, 0}, {1, 0}}));
         // expects 0.
     }
 }
