@@ -38,7 +38,7 @@ import static Utils.Helpers.Pair;
  *     keys 中逐出最久没用到的一个。
  *   - 第3版：在第2版基础上再添加一个 Map<count, LinkedHashSet<key>>，将 count 相同的 keys 维护在一个 LinkedHashSet 中
  *     （之所以要 Linked 是为了维护这些 keys 被访问的先后顺序，从而实现 LRU）。当要逐出时，通过 minCount 找到对应的
- *     LinkedHashSet，并从中找到头部的 LRU key，再将其从3个 Map 中移除。整合一下：
+ *     LinkedHashSet，并从中找到头部的 LRU key，再将其从2个 Map 中移除。整合一下：
  *       1. Map<key, Pair<val, count>>: 用 key 查 value + count；
  *       2. Map<count, LinkedHashSet<key>>: 用 count 反向查具有相同 count 的 keys，且 keys 之间保存访问的先后顺序；
  *       3. int minCount: 用于以 O(1) 速度淘汰 LFU 数据。
@@ -93,7 +93,7 @@ public class LFUCache_1 {
         }
         // 若超过缓存容量则淘汰 count 最小的数据
         if (keyMap.size() == capacity) {
-            int expiredKey = countMap.get(minCount).iterator().next();  // get LRU from the min count bucket
+            int expiredKey = countMap.get(minCount).iterator().next();  // get the LRU key from the min count bucket
             evict(expiredKey);
         }
         // 向缓存中新增数据
