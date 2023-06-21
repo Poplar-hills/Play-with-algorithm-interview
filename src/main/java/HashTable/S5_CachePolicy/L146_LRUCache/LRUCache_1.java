@@ -22,14 +22,14 @@ import static Utils.Helpers.log;
 /*
  * 解法1：Doubly linked list (DLL) + Map
  * - 💎 思路：对于 get() 操作可使用 Map 以 O(1) 速度访问数据（访问数据时也重新插入到头部）；而对于容量已满时的 put() 操作需要能
- *   快速定位到 the least recently used 的数据 ∴ 使用 Queue 结构记录数据的访问时间，在每次访问数据（get/put）时，将被访问的
- *   数据移动到队首，而让 the least recently used 的数据逐渐归到队尾，从而在缓存已满时能以 O(1) 的速度从队尾淘汰。
+ *   快速定位到 the least recently used 的数据 ∴ 使用 Linked List 结构记录数据的访问次序，在每次访问数据（get/put）时，将被
+ *   访问的数据移动到队首，而让 the least recently used 的数据逐渐归到队尾，从而在缓存已满时能以 O(1) 的速度从队尾淘汰。
  * - 💎 实现：
  *   1. ∵ 既要能让数据移动到队首，又要能快速获取队尾数据 ∴ 需要 dummyHead、dummyTail 两个指针；
  *   2. 若是从单向链表尾部删除节点需要先拿到上一个节点 ∴ 要从头遍历过去才能拿到，无法满足 O(1) 的要求 ∴ 不如直接使用双向链表方便。
  *               k1     k2     k3     k4            - Map 的 keys
  *                ↓      ↓      ↓      ↓
- *     dHead <-> n1 <-> n2 <-> n3 <-> n4 <-> dTail  - Map 的 values，同时也是双向链表
+ *     dHead <-> v1 <-> v2 <-> v3 <-> v4 <-> dTail  - Map 的 values，同时也是双向链表
  * - 💎 LinkedHashMap vs. TreeMap
  *   - LinkedHashMap keeps the keys in insertion order
  *   - TreeMap keeps the keys sorted via a Comparator or the natural Comparable ordering of the elements.
@@ -66,12 +66,12 @@ public class LRUCache_1 {
     public int get(int key) {
         if (!map.containsKey(key)) return -1;
         Node node = map.get(key);
-        remove(node);      // 先将该节点从 DLL 上移除
-        moveToHead(node);  // 再将其移动到链表头部
+        detachFromList(node);  // 先将该节点从 DLL 上移除
+        moveToHead(node);      // 再将其移动到链表头部
         return node.val;
     }
 
-    private void remove(Node node) {  // 移除操作就是 join 该节点的上一节点和下一节点
+    private void detachFromList(Node node) {  // 移除操作就是 join 该节点的上一节点和下一节点
         join(node.prev, node.next);
     }
 
@@ -85,7 +85,7 @@ public class LRUCache_1 {
         if (map.containsKey(key)) {  // 若 key 已存在，则只更新 value，并将该节点移动到头部
             Node node = map.get(key);
             node.val = value;
-            remove(node);
+            detachFromList(node);
             moveToHead(node);
         } else {
             if (map.size() == capacity) evict();  // 若缓存已达最大容量则淘汰 LRU entry
@@ -97,9 +97,9 @@ public class LRUCache_1 {
 
     private void evict() {  // 清理掉最长时间没使用到的数据项（即 DLL 上的 dummyTail.prev）
         if (dummyHead.next != dummyTail) {   // 或 if (!map.isEmpty())
-            Node LRUNode = dummyTail.prev;
-            remove(LRUNode);
-            map.remove(LRUNode.key);
+            Node lruNode = dummyTail.prev;
+            detachFromList(lruNode);
+            map.remove(lruNode.key);
         }
     }
 
