@@ -16,7 +16,7 @@ import static Utils.Helpers.log;
 public class L220_ContainsDuplicateIII {
     /*
      * 解法1：查找表 Set + 滑动窗口 + 窗口内范围搜索
-     * - 思路：大体思路仍可采用 L219_ContainsDuplicateII 解法2，即 Set 作查找表 + 滑动窗口：
+     * - 思路：大体思路仍可采用 L219_ContainsDuplicateII 解法3，即 Set 作查找表 + 滑动窗口：
      *   - 对于题目需求1：用 Set 作为窗口，固定大小，只保存 k 个元素，在 nums 上滑动；
      *   - 对于题目需求2：换一种表达方式就是，给定元素 num，判断是否窗口中是否存在另一元素 num2 ∈ [num-t, num+t]。
      *     > 对于该需求，若窗口内的元素有序，则非常容易判断，只需判断 num 在有序窗口中的后一个元素 ceiling(nums) 是否 <= num+t，
