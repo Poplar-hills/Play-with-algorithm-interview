@@ -2,8 +2,10 @@ package HashTable.S5_CachePolicy.L460_LFUCache;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 import static Utils.Helpers.log;
+import static Utils.Helpers.Pair;
 
 /*
  * LFU Cache
@@ -27,20 +29,21 @@ import static Utils.Helpers.log;
 
 /*
  * 解法1：
- * - 思路：
- *   - 第一版：要实现 LFU 只需借助 Map<key, Pair<val, count>>、PriorityQueue<Map.Entry> 即可，让 pq 根据 Map.Entry
+ * - 💎 思路：
+ *   - 第1版：要实现 LFU 只需借助 Map<key, Pair<val, count>> + PriorityQueue<Map.Entry> 即可，让 pq 根据 Map.Entry
  *     中的 count 来排序。当容量满了时只需逐出 pq 顶端的最小 count 所对应的 key 即可。但由于 pq 的增删操作都是 O(logn) 级别，
  *     无法满足题目对 get/set 时间复杂度的要求。
- *   - 第二版：数据结构需要改为 Map<key, val>、Map<key, count>，并手动维护一个 int minCount，每次 get(key)/set(key) 时
+ *   - 第2版：数据结构改为 Map<key, val> + Map<key, count>，并手动维护一个 int minCount。每次 get(key)/set(key) 时
  *     检查该 key 的 count 是否 == minCount，若 ==，则将 minCount++。当容量满了时只需逐出两个 Map 中 minCount 对应的 key
  *     即可。但由于题目还要求在 minCount 有多个对应数据项时要 fall back 为 LRU ∴ 还需要维护这些数据项的插入顺序，当要逐出时，
  *     需从 minCount 对应的 keys 中逐出最久没用到的一个。
- *   - 第三版：在第二版基础上再添加一个 Map<count, LinkedHashSet<key>>，将 count 相同的 keys 维护在一个 LinkedHashSet 中
- *     （之所以要 Linked 是为了维护这些 keys 被访问的先后顺序）。当要逐出时，通过 minCount 找到对应的 LinkedHashSet，并从中
- *     拿到 LRU key，再将其从3个 Map 中移除。整合一下：
- *         1. 用1个 Map 保存缓存数据：用 key 查 value；
- *         2. 用1个 Map 保存缓存数据的访问次数：用 key 查 count；
- *         3. 用1个 Map ：用 count 查 keys。
+ *   - 第3版：在第2版基础上再添加一个 Map<count, LinkedHashSet<key>>，将 count 相同的 keys 维护在一个 LinkedHashSet 中
+ *     （之所以要 Linked 是为了维护这些 keys 被访问的先后顺序，从而实现 LRU）。当要逐出时，通过 minCount 找到对应的
+ *     LinkedHashSet，并从中找到头部的 LRU key，再将其从3个 Map 中移除。整合一下：
+ *       1. Map<key, val>: 存数据，用 key 查 value；
+ *       2. Map<key, count>: 存数据的访问次数，用 key 查 count；
+ *       3. Map<count, LinkedHashSet<key>>: 存相同 count 的 keys 的访问顺序，用 count 反向查 keys。
+ *       4. int minCount:
  * - Java 语法：
  *   - LinkedHashSet.remove(1) will take 1 as an object;
  *   - LinkedList.remove(1) will take 1 as index;
