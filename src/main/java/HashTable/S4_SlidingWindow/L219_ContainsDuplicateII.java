@@ -78,13 +78,13 @@ public class L219_ContainsDuplicateII {
      * - 时间复杂度 O(n)，空间复杂度 O(k)。
      * */
     public static boolean containsNearbyDuplicate3(int[] nums, int k) {
-        Set<Integer> window = new HashSet<>();  // 用查找表作为窗口（最多存 k 个元素）
+        Set<Integer> window = new HashSet<>(k + 1);  // 最多存 k+1 个元素
 
         for (int i = 0; i < nums.length; i++) {
             if (window.contains(nums[i])) return true;
             window.add(nums[i]);
-            if (window.size() == k + 1)         // Set 中元素个数达到 k+1 之前只添加不删除（巧妙之处）
-                window.remove(nums[i - k]);     // 在 [0,1,2,0] 中，若 i=3，则要从 Set 中删除的就是 i=0 的元素
+            if (window.size() == k + 1)      // Set 中元素个数达到 k+1 之前只添加不删除（巧妙之处）
+                window.remove(nums[i - k]);  // 在 [0,1,2,0] 中，若 i=3，则要从 Set 中删除的就是 i=0 的元素
         }
 
         return false;
@@ -99,8 +99,8 @@ public class L219_ContainsDuplicateII {
     public static boolean containsNearbyDuplicate4(int[] nums, int k) {
         Map<Integer, Integer> indexMap = new HashMap<>();
         for (int i = 0; i < nums.length; i++) {
-            Integer index = indexMap.put(nums[i], i);  // 若 nums[i] 在 indexMap 中已存在则返回其之前的 index，否则返回 null
-            if (index != null && i - index <= k)
+            Integer lastIdx = indexMap.put(nums[i], i);  // 若 nums[i] 在 Map 中已存在则返回其之前的 index，否则返回 null
+            if (lastIdx != null && i - lastIdx <= k)
                 return true;
         }
         return false;
