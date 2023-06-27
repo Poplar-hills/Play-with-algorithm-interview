@@ -9,10 +9,10 @@ import java.util.*;
  *
  * - Given a collection of distinct integers, return all possible permutations (求 n 个不重复元素的全排列).
  *
- * - 注：The difference between combinations and permutations is ordering. With permutations we care about
+ * - 💎 注：The difference between combinations and permutations is ordering. With permutations we care about
  *   the order of the elements, whereas with combinations we don’t.
- * - Permutation: 从 n 个元素中任取 m 个按照一定的顺序排成一列，所能得到的排列个数为：A(n,m) = n(n-1)(n-2)...(n-m+1)；
- * - Combination: 从 n 个元素中任取 m 个组成一组，所能得到的组合个数为：C(n,m) = A(n,m) / m!；
+ *   - Permutation: 从 n 个元素中任取 m 个按照一定顺序排成一列，所能得到的排列个数为：A(n,m) = n! / (n-m)! = n(n-1)(n-2)...(n-m+1)；
+ *   - Combination: 从 n 个元素中任取 m 个组成一组，所能得到的组合个数为：C(n,m) = A(n,m) / m!；
  *
  * - 区别：
  *   - L46_Permutations：nums 中的元素无重复，返回所有可能的排列；
@@ -93,7 +93,7 @@ public class L46_Permutations {
                 used[i] = true;
                 backtrack2(nums, list, used, res);
                 list.remove(list.size() - 1);  // ∵ 最后再复制 list ∴ 返回上层递归后要恢复 list 状态
-                used[i] = false;                      // 同时也要恢复去重数组的状态（解法1无法实现 ∵ 使用的是 set）
+                used[i] = false;                    // 同时也要恢复去重数组的状态（解法1无法实现 ∵ 使用的是 set）
             }
         }
     }
@@ -170,7 +170,7 @@ public class L46_Permutations {
 
     /*
      * 解法5：Iteration (解法4的简化版)
-     * - 思路：采用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法4中对 res 中元素加工和添加的过程。
+     * - 实现：用 L17_LetterCombinationsOfPhoneNumber 解法3的思路，用 Queue 简化解法4中对 res 中元素加工和添加的过程。
      * - 时间复杂度 O(n * n!)，空间复杂度 O(n)。
      * */
     public static List<List<Integer>> permute5(int[] nums) {
