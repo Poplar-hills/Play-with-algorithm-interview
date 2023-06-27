@@ -1,9 +1,9 @@
 package RecursionAndBackTracking.S1_Basics;
 
-import static Utils.Helpers.*;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
  * Palindrome Partitioning
@@ -26,10 +26,9 @@ public class L131_PalindromePartitioning {
      *      b|
      *   [a,a,b,b]                                           - 得到解 [a,a,b,b]
      *
-     * - 时间复杂度 O(2^n * n^2)：一个长度为 n 的字符串有 n-1 个间隔，而在每个间隔上都有2种选择：切分或不切分 ∴ 该字符串共有
-     *   2^(n-1) 种切分方式，即需要 2^(n-1) 次递归 ∴ 是 O(2^n) 量级的复杂度。而每次递归需要复制 list + 执行 isPalindrome，
-     *   这两个都是 O(n) 操作 ∴ 总复杂度为 O(n^2 * 2^n)。
-     * - 空间复杂度 O(n)。
+     * - 时间复杂度 O(n * n^2)：长度为 n 的字符串有 n-1 个间隔，每个间隔上都有切或不切2种选择 ∴ 共有 2^(n-1) 种切分方式，
+     *   ∴ 是 O(2^n) 量级的复杂度。而每次递归需执行 O(n) 的 isPalindrome() ∴ 总复杂度为 O(n * 2^n)。
+     * - 空间复杂度 O(n)：从树中最左侧的分支可见，最差情况下每个字符都要单独切分出来，即 n-1 个间隔都做切分 ∴ O(n)。
      * */
     public static List<List<String>> partition(String s) {
         List<List<String>> res = new ArrayList<>();
@@ -40,15 +39,15 @@ public class L131_PalindromePartitioning {
 
     private static void backtrack(String s, int i, List<String> list, List<List<String>> res) {
         if (i == s.length()) {
-            res.add(list);
+            res.add(new ArrayList<>(list));  // ∵ list 在回溯过程中是复用的 ∴ 只需在最后将 list 复制进 res 中即可
             return;
         }
-        for (int j = i; j < s.length(); j++) {
-            String comp = s.substring(i, j + 1);
-            if (isPalindrome(comp)) {
-                List<String> newList = new ArrayList<>(list);  // 复制字符串列表
-                newList.add(comp);
-                backtrack(s, j + 1, newList, res);  // 下一层递归的起点为 j+1
+        for (int j = i; j < s.length(); j++) {  // j 的语义是截取 s 时的右边界 s[i..j]
+            String sub = s.substring(i, j + 1);
+            if (isPalindrome(sub)) {
+                list.add(sub);
+                backtrack(s, j + 1, list, res);  // 下一层的递归起点为 j+1
+                list.remove(list.size() - 1);  // 恢复上一层中 list 的状态，以便继续回溯查找
             }
         }
     }
@@ -60,48 +59,71 @@ public class L131_PalindromePartitioning {
         return true;
     }
 
-    /*
-     * 解法2：Backtracking (解法1的性能优化版)
-     * - 思路：与解法1一致
-     * - 实现：与 L17_LetterCombinationsOfPhoneNumber、L93_RestoreIPAddresses 的解法1相同，不在每次分支时复制 list，
-     *   而只在递归到底找到符合条件的 list 时将其复制进 res 中 ∴ 减少了 list 的复制，从而提升性能。👉 但要注意在返回上一层递归
-     *   时要去掉最后一个加入 list 的元素，以恢复上一层中 list 的状态。
-     * - 时间复杂度 O(n * 2^n)，空间复杂度 O(n)。
-     * */
+    /**
+     * 解法2：Backtracking + Memoization (🥇最优解)
+     * - 思路：观察解法1中的树：
+     *                                     []
+     *                   a/           aa/    aab\   aabb\
+     *                  [a]          [aa]       x       x   - 得到 [aa] 之后，要对剩下的"bb"进行切分
+     *            a/  ab| abb\     b/   bb\
+     *          [a,a]   x    x  [aa,b] [aa,bb]              - 得到 [a,a] 之后，要对剩下的"bb"进行切分
+     *         b/  bb\            b|
+     *    [a,a,b] [a,a,bb]     [aa,b,b]
+     *      b|
+     *   [a,a,b,b]
+     *
+     *   可见，对"bb"的切分出现了2次，且结果都是 ["b","b"]、["bb"]。而且在切分出结果之后又都要执行 isPalindrome()。
+     *   ∴ 可以采用 memoization 的思路进行优化，避免重复计算。
+     * - 实现：
+     *   1. 最简单的方式是只给 isPalindrome() 方法添加 memoization：每次进入方法时检查参数 comp 是否已存在与 Map 当中，
+     *      若存在则直接返回结果（true/false）；
+     *   2. 更彻底的方式是给切分添加 memoization：缓存对子串 s[i..n) 切分的结果，但由于 backtracking 中每层递归并不返回结果，
+     *      而只是往结果集中 add 解 ∴ 无法实现 memoization。
+     *   ∴ 只能采用方式1 —— 给 isPalindrome() 方法添加 memoization。
+     * - 时间复杂度 O(n * 2^n)：分析同上；
+     * - 空间复杂度 O(2^n)：memoization Map 中最多会存储 2^n 个子串（可理解为用2层 for(i: 0->n) + for(j: i+1->n) 获得
+     *   的所有子串）。
+     */
     public static List<List<String>> partition2(String s) {
         List<List<String>> res = new ArrayList<>();
         if (s == null || s.isEmpty()) return res;
-        backtrack2(s, 0, new ArrayList<>(), res);
+        backtrack2(s, 0, new ArrayList<>(), res, new HashMap<>());
         return res;
     }
 
-    private static void backtrack2(String s, int i, List<String> list, List<List<String>> res) {
+    private static void backtrack2(String s, int i, List<String> list, List<List<String>> res,
+                                   Map<String, Boolean> map) {
         if (i == s.length()) {
-            res.add(new ArrayList<>(list));  // ∵ list 在回溯过程中是复用的 ∴ 只需在最后将 list 复制进 res 中即可
+            res.add(new ArrayList<>(list));
             return;
         }
-        for (int j = i; j < s.length(); j++) {  // j 的语义是截取 s 时的右边界 s[i..j]
+        for (int j = i; j < s.length(); j++) {
             String sub = s.substring(i, j + 1);
-            if (isPalindrome2(sub)) {
+            if (isPalindrome2(sub, map)) {
                 list.add(sub);
-                backtrack2(s, j + 1, list, res);  // 下一层的递归起点为 j+1
-                list.remove(list.size() - 1);  // 恢复上一层中 list 的状态，以便继续回溯查找
+                backtrack2(s, j + 1, list, res, map);
+                list.remove(list.size() - 1);
             }
         }
     }
 
-    private static boolean isPalindrome2(String comp) {
-        char[] arr = comp.toCharArray();  // 解法1中的 charAt(i) 内部是要遍历找到第 i 个字符的 ∴ 这里先 toCharArray() 可以提升性能
-        for (int l = 0, r = arr.length - 1; l < r; l++, r--)
-            if (arr[l] != arr[r])
+    private static boolean isPalindrome2(String comp, Map<String, Boolean> map) {
+        if (map.containsKey(comp)) return map.get(comp);
+        char[] arr = comp.toCharArray();  // 解法1中的 charAt(i) 底层要遍历才能找到第 i 个字符 ∴ 这里 toCharArray 能提高统计性能
+        for (int l = 0, r = arr.length - 1; l < r; l++, r--) {
+            if (arr[l] != arr[r]) {
+                map.put(comp, false);
                 return false;
+            }
+        }
+        map.put(comp, true);
         return true;
     }
 
     /*
-     * 解法3：Double DP // TODO: 复习完 dp 之后重做
+     * 解法4：Double DP // TODO: 复习完 dp 之后重做
      * - 思路：观察解法1中的树，可见：
-     *   1. 对于"bb"的切分出现了两次，而且切分结果都是 ["b","b"]、["bb"] ∴ 可以采用 dp 的思路进行优化，避免重复计算；
+     *   1. 对于"bb"的切分出现了两次，结果都是 ["b","b"]、["bb"] ∴ 可以采用 dp 的思路进行优化，避免重复计算；
      *   2. 相同的切分也都要执行 isPalindrome() ∴ 同样可以使用 dp 的思路进行优化，避免重复检查。
      * - 实现：
      *   1. dp[r] 表示 s[0..r) 上的切分结果（即 s 中前 r 个字符上的解），其状态转移方程为：// TODO: ????
@@ -114,7 +136,7 @@ public class L131_PalindromePartitioning {
      *      g(l, r) = (s[l] == s[r]) && (r-l<=1 || g(l+1, r-1))（例："aa" -> "baab"）。
      * - 时间复杂度 O()，空间复杂度 O()。
      * */
-    public static List<List<String>> partition3(String s) {
+    public static List<List<String>> partition4(String s) {
         if (s == null || s.isEmpty()) return new ArrayList<>();
         int len = s.length();
 		List<List<String>>[] dp = new List[len + 1];     // dp[r] 记录 s[0..r) 上的解（注意创建列表数组的语法）
@@ -141,10 +163,10 @@ public class L131_PalindromePartitioning {
     }
 
     public static void main(String[] args) {
-        log(partition2("aab"));   // expects [["aa","b"], ["a","a","b"]]
-        log(partition2("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
-        log(partition2("zz"));    // expects [["z","z"], ["zz"]]
-        log(partition2("zzz"));   // expects [["z","z","z"], ["z","zz"], ["zz","z"], ["zzz"]]
-        log(partition2(""));      // expects []
+        log(partition3("aab"));   // expects [["aa","b"], ["a","a","b"]]
+        log(partition3("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
+        log(partition3("zz"));    // expects [["z","z"], ["zz"]]
+        log(partition3("zzz"));   // expects [["z","z","z"], ["z","zz"], ["zz","z"], ["zzz"]]
+        log(partition3(""));      // expects []
     }
 }
