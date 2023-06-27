@@ -133,7 +133,7 @@ public class L46_Permutations {
     }
 
     /*
-     * 解法4：Iteration
+     * 解法4：Iteration + insertion
      * - 思路：采用类似 L17_LetterCombinationsOfPhoneNumber 解法2的思路，对于 nums 中的每个元素，都放到 res 中的每个列表
      *   里的每个插入点上，生成一个新的排列。例如，对于 [1,2,3] 来说：
      *                           /-3-> [3,2,1]
@@ -143,7 +143,7 @@ public class L46_Permutations {
      *               \           /-3-> [3,1,2]
      *                \-2-> [1,2] -3-> [1,3,2]
      *                           \-3-> [1,2,3]
-     *
+     * - 实现：从👆🏻可见，在遍历 nums 中的每个元素时（例如3），都要遍历 res 中的每个列表的每个位置 ∴ 这是一个三层 for 循环的逻辑。
      * - 时间复杂度 O(n * n!)：n 个元素的全排列有 n! 种结果，而每个结果中又有 n 个元素。另外，注意在 newList.add(i,n) 时，
      *   方法底层实现是要对 List 做 System.arraycopy 的 ∴ 会有实际性能成本（虽然通常不体现在时间复杂度上）。
      * - 空间复杂度 O(1)。

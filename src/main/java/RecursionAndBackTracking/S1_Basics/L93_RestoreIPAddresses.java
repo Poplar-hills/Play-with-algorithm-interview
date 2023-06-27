@@ -4,6 +4,7 @@ import static Utils.Helpers.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*
  * Restore IP Addresses
@@ -15,7 +16,7 @@ public class L93_RestoreIPAddresses {
     /*
      * 解法1：Recursion + Backtracking
      * - 思路：该题是一个组合问题 ∴ 可转化为树形问题，并采用类似 L17 解法1的回溯法进行搜索求解。设置指针 i 在 s 上滑动 ∵ 每次
-     *   滑动可以有3种不同情况（滑动1~3位）∴ 分别对这3种情况进行分支，递归下去检查是否能得到有效 ip：
+     *   滑动可以有3种不同情况（滑动1~3位）∴ 分别对这3种情况进行分支，递归下去检查是否能得到有效 ip：
      *                                  ""
      *                    /             |            \
      *              "1"                "12"            "123"
@@ -26,11 +27,11 @@ public class L93_RestoreIPAddresses {
      * - 实现：
      *   1. 其中通过判断 ip 的有效性来为回溯进行剪枝（Pruning）：
      *     - 若一个 ip 已有4个 component，但 i 还未到达 s 末尾（tooManyDigits 情况），则该 ip 无效；
-     *     - 若一个 ip 中的 component 个数 < 3，但 i 已到达 s 末尾（notEnoughDigits 情况），则该 ip 无效；
+     *     - 若一个 ip 中的 component 个数 + s 上所剩余的位数 < 4（notEnoughDigits 情况），则该 ip 无效；
      *   2. 还要判断 ip component 的有效性：
      *     - 若一个 component 位数 > 1 但以"0"开头，则该 component 无效；
      *     - 若一个 component 大于255，则该 component 无效。
-     * - 时间复杂度 O(2^n)：一个长度为 n 的字符串有 n-1 个间隔，而每个间隔上都有2种选择：切分或不切分 ∴ 该字符串共有 2^(n-1)
+     * - 时间复杂度 O(2^n)：一个长度为 n 的字符串有 n-1 个间隔，而每个间隔上都有2种选择：切分或不切分 ∴ 该字符串共有 2^(n-1)
      *   种切分方式，即需要 2^(n-1) 次递归 ∴ 总体是 O(2^n) 量级的复杂度。
      * - 空间复杂度 O(n)。
      * */
@@ -41,28 +42,28 @@ public class L93_RestoreIPAddresses {
         return res;
     }
 
-    private static void backtrack(String s, int i, List<String> ipList, List<String> res) {
-        if (ipList.size() == 4 && i == s.length()) {  // Found solution
-            res.add(String.join(".", ipList));
+    private static void backtrack(String s, int i, List<String> list, List<String> res) {
+        if (list.size() == 4 && i == s.length()) {  // Found a solution
+            res.add(String.join(".", list));
             return;
         }
-        boolean notEnoughDigits = ipList.size() < 4 && i == s.length();  // 通过验证 ip 有效性进行剪枝
-        boolean tooManyDigits = ipList.size() == 4 && i < s.length();
-        if (notEnoughDigits || tooManyDigits) return;
+        // 通过验证当前 ip 位数进行剪枝
+        boolean tooManyDigits = list.size() == 4 && i < s.length();
+        boolean notEnoughDigits = list.size() + (s.length() - i) < 4 ;
+        if (tooManyDigits || notEnoughDigits) return;
 
-        for (int j = 0; j < 3; j++) {                 // 尝试生成 ip component（最多3位 ∴ j ∈ [0,3)）
-            if (i + j >= s.length()) break;           // 注意不要越界
+        for (int j = 0; j < 3 && i + j < s.length(); j++) {  // 遍历可能的 ip component（最多3位 ∴ j ∈ [0,3)）
             String comp = s.substring(i, i + j + 1);
-            if (isValidIpComp(comp)) {                // 验证 ip component 的有效性
-                ipList.add(comp);
-                backtrack(s, i + j + 1, ipList, res);
-                ipList.remove(ipList.size() - 1);
+            if (isValidIpComp(comp)) {  // 通过验证 ip component 的有效性进行剪枝
+                list.add(comp);
+                backtrack(s, i + j + 1, list, res);
+                list.remove(list.size() - 1);
             }
         }
     }
 
     private static boolean isValidIpComp(String comp) {
-        boolean startWith0 = comp.length() > 1 && comp.startsWith("0");
+        boolean startWith0 = comp.startsWith("0") && comp.length() > 1;
         return !startWith0 && Integer.parseInt(comp) <= 255;
     }
 
