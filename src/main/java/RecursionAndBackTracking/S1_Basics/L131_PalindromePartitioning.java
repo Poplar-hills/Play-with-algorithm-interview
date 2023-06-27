@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static Utils.Helpers.log;
+
 /*
  * Palindrome Partitioning
  *
@@ -163,10 +165,10 @@ public class L131_PalindromePartitioning {
     }
 
     public static void main(String[] args) {
-        log(partition3("aab"));   // expects [["aa","b"], ["a","a","b"]]
-        log(partition3("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
-        log(partition3("zz"));    // expects [["z","z"], ["zz"]]
-        log(partition3("zzz"));   // expects [["z","z","z"], ["z","zz"], ["zz","z"], ["zzz"]]
-        log(partition3(""));      // expects []
+        log(partition2("aab"));   // expects [["aa","b"], ["a","a","b"]]
+        log(partition2("aabb"));  // expects [["a","a","b","b"], ["a","a","bb"], ["aa","b","b"], ["aa","bb"]]
+        log(partition2("zz"));    // expects [["z","z"], ["zz"]]
+        log(partition2("zzz"));   // expects [["z","z","z"], ["z","zz"], ["zz","z"], ["zzz"]]
+        log(partition2(""));      // expects []
     }
 }
