@@ -9,14 +9,13 @@ import java.util.List;
  * Combinations
  *
  * - Given two integers n and k, return all possible combinations of k numbers out of 1...n.
- *   （用 1-n 中的 k 个数字能组成多少种组合）
  *
  * - 注：组合不关注顺序，即 [1,2] 和 [2,1] 是同一个组合。
  * */
 
 public class L77_Combinations {
     /*
-     * 解法1：Recursion + Backtracking
+     * 解法1：Backtracking
      * - 思路：与排列一样，组合的问题同样可以转化为树形问题求解，例如对于 n=4, k=2 来说，若列出所有的排列组合：
      *                                        []
      *              1/                2/              3\              4\
@@ -65,7 +64,7 @@ public class L77_Combinations {
     }
 
     /*
-     * 解法2：Recursion + Backtracking (解法1的优化版)
+     * 解法2：Backtracking (解法1的优化版)
      * - 思路：与解法1一致。
      * - 实现：解法1中，[4] 不会再有分支，是一条死胡同，但我们在上一层递归中仍尝试对 [] 添加分支4，这是不必要的 ∴ 可以通过对
      *   回溯进行进一步剪枝来优化，而剪枝的判断条件是：若分支 j 上有解，则要保证当前解 list 中还需要的元素个数 ≤ [j..n] 中
