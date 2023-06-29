@@ -80,7 +80,7 @@ public class L200_NumberOfIslands {
      * - 实现：与解法1有两处不同：
      *   1. 采用基于 BFS 实现 Flood Fill；
      *   2. 解法1中单独创建了 boolean[][] 用于记录哪些格子已被填充，而该解法中采用 in-place modification，即每到达一个
-     *      格子，就在 grid 中将这个格子标记为'0'，从而也能达到不重复填充的目的。
+     *      '1'，就将其标记为'0'，从而也能达到不重复填充的目的。
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     public static int numIslands2(char[][] grid) {
@@ -130,7 +130,7 @@ public class L200_NumberOfIslands {
      *        则在并查集中共享同一个集合编号；
      *     2. 并查集维护 island 的个数。初始化时 island 个数为 '1' 的个数；之后 Flood Filled 中每次将相邻的 island 在
      *        并查集中连通时都让 island 个数 -1；
-     * - 👉 改进：UnionFind 有很多优化策略：基于树大小、基于树高、基于路径压缩等方式，具体 SEE: Play-with-data-structure/UnionFind
+     * - 👉 改进：UnionFind 有很多优化策略：基于树大小、基于树高、基于路径压缩等方式，具体 SEE: Play-with-data-structure/UnionFind
      * - 时间复杂度 O(m*n)，空间复杂度 O(m*n)。
      * */
     private static class UnionFind {
@@ -188,65 +188,32 @@ public class L200_NumberOfIslands {
         }
     }
 
-
-
-    private static final int[][] directions0 = {{0,-1}, {1,0}, {0,1}, {-1,0}};
-    private static int m0, n0;
-
-    public static int numIslands0(char[][] grid) {
-        m0 = grid.length;
-        n0 = grid[0].length;
-        boolean[][] visited = new boolean[m0][n0];
-        int count = 0;
-
-        for (int r = 0; r < m0; r++) {
-            for (int c = 0; c < n0; c++) {
-                if (grid[r][c] == '1' && !visited[r][c]) {
-                    count++;
-                    floodFill0(grid, r, c, visited);
-                }
-            }
-        }
-
-        return count;
-    }
-
-    private static void floodFill0(char[][] grid, int r, int c, boolean[][] visited) {
-        visited[r][c] = true;
-        for (int[] d : directions) {
-            int newR = r + d[0], newC = c + d[1];
-            if (isValidPos0(newR, newC) && grid[newR][newC] == '1' && !visited[newR][newC]) {
-                floodFill0(grid, newR, newC, visited);
-            }
-        }
-    }
-
     private static boolean isValidPos0(int r, int c) {
-        return r >= 0 && r < m0 && c >=0 && c < n0;
+        return r >= 0 && r < m && c >=0 && c < n;
     }
 
     public static void main(String[] args) {
-        log(numIslands0(new char[][] {  // expects 3
+        log(numIslands2(new char[][] {  // expects 3
             {'1', '1', '0', '0', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '1', '0', '0'},
             {'0', '0', '0', '1', '1'},
         }));
 
-        log(numIslands0(new char[][] {  // expects 1
+        log(numIslands2(new char[][] {  // expects 1
             {'1', '1', '1', '1', '0'},
             {'1', '1', '0', '1', '0'},
             {'1', '1', '0', '0', '0'},
             {'0', '0', '0', '0', '0'},
         }));
 
-        log(numIslands0(new char[][] {  // expects 2
+        log(numIslands2(new char[][] {  // expects 2
             {'0', '0', '0'},
             {'0', '1', '1'},
             {'1', '0', '0'},
         }));
 
-        log(numIslands0(new char[][] {  // expects 1
+        log(numIslands2(new char[][] {  // expects 1
             {'1'},
         }));
     }
