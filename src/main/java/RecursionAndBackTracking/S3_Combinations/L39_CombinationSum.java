@@ -31,10 +31,10 @@ public class L39_CombinationSum {
      *                              8
      *               2/            5|           3\
      *               6              3             5
-     *         2/   3|   5\       2/ 3\      2/  3|  5\
-     *         4     3    1       1   0      3    2    0    - 找到 [5,3]、[3,5]
-     *       2/ 3\ 2/ 3\                   2/ 3\ 2|
-     *       2   1 1   0                   1   0  0         - 找到 [2,3,3]、[3,2,3]、[3,3,2]
+     *         2/   5|   3\       2/ 3\      2/  5|  3\
+     *         4     1    3       1   0      3    0   2     - 找到 [5,3]、[3,5]
+     *       2/ 3\      2/ 3\                3|      2|
+     *       2   1      1   0                 0       0     - 找到 [2,3,3]、[3,2,3]、[3,3,2]
      *      2|
      *       0                                              - 找到 [2,2,2,2]
      *   但 ∵ 组合不关注顺序（如 [3,5] 和 [5,3] 等价）∴ 需对找到的解进行去重，在找到解时先对其中的元素进行排序，再用 Set 去重。
@@ -50,12 +50,12 @@ public class L39_CombinationSum {
     private static void backtrack(int[] nums, int target, List<Integer> list, Set<List<Integer>> set) {
         if (target == 0) {
             List<Integer> newList = new ArrayList<>(list);  // 先复制
-            newList.sort((a, b) -> a - b);  // 再排序
-            set.add(newList);               // 最后 Set 去重
+            newList.sort((a, b) -> a - b);       // 再排序
+            set.add(newList);                    // 最后 Set 去重
             return;
         }
-        for (int i = 0; i < nums.length; i++) {
-            if (nums[i] <= target) {        // Pruning，跳过 target - nums[i] < 0 的分支
+        for (int i = 0; i < nums.length; i++) {  // ∵ 每个元素能用无限次 ∴ 每层递归中从第0个元素开始遍历（但会产生重复解）
+            if (nums[i] <= target) {             // Pruning，跳过 target - nums[i] < 0 的分支
                 list.add(nums[i]);
                 backtrack(nums, target - nums[i], list, set);
                 list.remove(list.size() - 1);
@@ -72,7 +72,7 @@ public class L39_CombinationSum {
      *               2/        5|       3\
      *               6          3         5    - 3节点不再考虑分支2，只考虑5、3分支（而5分支无效，只剩下3）；5节点不再考虑2、5分支
      *         2/   3|   5\    3|        3|
-     *         4     3    1     0         2    - 第一个3节点不再考虑分支2，只考虑5、3分支（而5分支无效，只剩下3）；0节点即找到解 [5,3]；2节点不再考虑分支2、5，而3分支又无效，所以不再有分支
+     *         4     3    1     0         2    - 第一个3节点不再考虑分支2，只考虑5、3分支（而5分支无效，只剩下3）；0节点即为解 [5,3]；2节点不再考虑分支2、5，而3分支又无效，所以不再有分支
      *       2/ 3\  3|
      *       2   1   0                         - 找到解 [2,3,3]
      *      2|

@@ -33,7 +33,7 @@ public class L40_CombinationSumII {
      *   a). 为了不重复使用元素，有2种方法：
      *     1. 使用 boolean[] used 来排除使用过的元素（L46_Permutations 解法2、L47_PermutationsII 解法4、5）；
      *     2. 在每层分支时不回头，让下层递归在遍历 nums 时的起始位置+1（本题本解法）；
-     *   b). 为了不产生重复解（重复的组合），有2种方法：
+     *   b). 为了不产生重复解（注意是重复的组合），有2种方法：
      *     1. 在最后用 Set 对解去重（复杂度高）；
      *     2. 提前对 nums 排序，在遍历元素进行分支时跳过相同的元素（L47_PermutationsII 解法5、本题本解法）。
      * - 例：对于 nums=[2,5,2,1,2], target=5 来说，排序后的 nums=[1,2,2,2,5]，于是有：
@@ -71,7 +71,7 @@ public class L40_CombinationSumII {
             res.add(new ArrayList<>(list));
             return;
         }
-        for (int j = i; j < nums.length && target >= nums[j]; j++) {
+        for (int j = i; j < nums.length && target >= nums[j]; j++) {  // ∵ 上面预先对 nums 做了排序 ∴ 这里可以将 target >= nums[j] 作为 for 的条件用于剪枝
             if (j > i && nums[j] == nums[j - 1]) continue;  // 跳过重复元素（j>i 表示从第二个元素开始判断，而 j=i 是本层第一个遍历到的元素）
             list.add(nums[j]);
             backtrack(nums, target - nums[j], j + 1, list, res);  // j 号元素在本层已使用过 ∴ 下层递归从第 j+1 号元素开始遍历（这是与 L39 不同之处）
