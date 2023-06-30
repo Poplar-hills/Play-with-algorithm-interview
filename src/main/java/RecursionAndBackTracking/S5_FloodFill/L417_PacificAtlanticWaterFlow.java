@@ -43,7 +43,7 @@ public class L417_PacificAtlanticWaterFlow {
      * */
 
     private static int w, l;
-    private static int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    private static int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
     public static List<List<Integer>> pacificAtlantic(int[][] matrix) {
         List<List<Integer>> res = new ArrayList<>();
@@ -54,16 +54,17 @@ public class L417_PacificAtlanticWaterFlow {
         for (int r = 0; r < w; r++) {
             for (int c = 0; c < l; c++) {
                 boolean[] reached = new boolean[2];
-                reachSeas(matrix, r, c, reached, new boolean[w][l]);
-                if (reached[0] && reached[1])
-                    res.add(Arrays.asList(r, c));
+                floodFill(matrix, r, c, reached, new boolean[w][l]);
+                if (reached[0] && reached[1])  // if both seas are reached
+                    res.add(List.of(r, c));
             }
         }
         return res;
     }
 
-    private static void reachSeas(int[][] matrix, int r, int c, boolean[] reached, boolean[][] filled) {
+    private static void floodFill(int[][] matrix, int r, int c, boolean[] reached, boolean[][] filled) {
         filled[r][c] = true;
+
         if (r == 0 || c == 0) reached[0] = true;          // 抵达了左/上界
         if (r == w - 1 || c == l - 1) reached[1] = true;  // 抵达了右/下界
         if (reached[0] && reached[1]) return;             // 当都为 true 时说明已找到解
@@ -71,7 +72,7 @@ public class L417_PacificAtlanticWaterFlow {
         for (int[] d : directions) {
             int newR = r + d[0], newC = c + d[1];
             if (isValidPos(newR, newC) && !filled[newR][newC] && matrix[newR][newC] <= matrix[r][c]) {
-                reachSeas(matrix, newR, newC, reached, filled);
+                floodFill(matrix, newR, newC, reached, filled);
                 if (reached[0] && reached[1]) return;     // 若已经找到解则提前退出遍历
             }
         }
@@ -84,43 +85,44 @@ public class L417_PacificAtlanticWaterFlow {
     /*
      * 解法2：Outside-in Flood Fill (DFS, Recursion)
      * - 思路：类似 L130_SurroundedRegions 解法3的思路，从边界向内陆进行 Flood Fill。具体来说，从 Pacific 的两边进行
-     *   Flood Fill，将与 Pacific 连通的格子进行标记，然后再从 Atlantic 的两边进行 Flood Fill，同样将与 Atlantic 连通
-     *   的格子进行标记，若同一个格子被标记过两次，则说明该格子是一个解。
+     *   Flood Fill，将与其连通的格子进行标记；然后再从 Atlantic 的两边进行 Flood Fill，同样将与其连通的格子进行标记，
+     *   若同一个格子被标记过两次，则说明该格子是一个解。
      * - 时间复杂度 O(l*w)：∵ reachPacific 和 reachAtlantic 充当了 filled 数组 ∴ 相当于遍历 matrix 2遍，比解法1有极大性能提升。
      * - 空间复杂度 O(l*w)。
      * */
     public static List<List<Integer>> pacificAtlantic2(int[][] matrix) {
         List<List<Integer>> res = new ArrayList<>();
         if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return res;
+
         w = matrix.length;
         l = matrix[0].length;
         boolean[][] reachPacific = new boolean[w][l];
         boolean[][] reachAtlantic = new boolean[w][l];
 
         for (int r = 0; r < w; r++) {
-            floodFill(matrix, r, 0, reachPacific);       // 第一列
-            floodFill(matrix, r, l - 1, reachAtlantic);  // 最后一列
+            floodFill2(matrix, r, 0, reachPacific);        // 第一列
+            floodFill2(matrix, r, l - 1, reachAtlantic);  // 最后一列
         }
 
         for (int c = 0; c < l; c++) {
-            floodFill(matrix, 0, c, reachPacific);       // 第一行
-            floodFill(matrix, w - 1, c, reachAtlantic);  // 最后一行
+            floodFill2(matrix, 0, c, reachPacific);        // 第一行
+            floodFill2(matrix, w - 1, c, reachAtlantic);  // 最后一行
         }
 
         for (int r = 0; r < w; r++)
             for (int c = 0; c < l; c++)
-                if (reachPacific[r][c] && reachAtlantic[r][c])
-                    res.add(Arrays.asList(r, c));
+                if (reachPacific[r][c] && reachAtlantic[r][c])  // 若同时能到达两个海则是解
+                    res.add(List.of(r, c));
 
         return res;
     }
 
-    private static void floodFill(int[][] matrix, int r, int c, boolean[][] filled) {
-        filled[r][c] = true;
+    private static void floodFill2(int[][] matrix, int r, int c, boolean[][] reachSea) {
+        reachSea[r][c] = true;
         for (int[] d : directions) {
             int newR = r + d[0], newC = c + d[1];
-            if (isValidPos(newR, newC) && !filled[newR][newC] && matrix[newR][newC] >= matrix[r][c])
-                floodFill(matrix, newR, newC, filled);  // 注意上面判断条件是由低水位流向高水位 ∵ 是从边界向内陆 Flood Fill
+            if (isValidPos(newR, newC) && !reachSea[newR][newC] && matrix[newR][newC] >= matrix[r][c])
+                floodFill2(matrix, newR, newC, reachSea);  // 注意上面判断条件是由低水位流向高水位 ∵ 是从边界向内陆 Flood Fill
         }
     }
 
