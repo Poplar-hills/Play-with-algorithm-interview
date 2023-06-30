@@ -11,7 +11,7 @@ import static Utils.Helpers.*;
 public class L52_NQueensII {
     /*
      * 解法1：Recursion + Backtracking
-     * - 思路：与 L51_NQueens 解法2一致，只是在找到解时计数即可，无需记录皇后的位置。
+     * - 思路：与 L51_NQueens 解法2一致，只是在找到解时计数即可，无需记录皇后的位置。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
     private static int count = 0;

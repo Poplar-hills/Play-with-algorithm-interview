@@ -27,17 +27,17 @@ public class L37_SudokuSolver {
      * */
     public static void solveSudoku(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return;
-        solve(board);
+        backtracking(board);
     }
 
-    private static boolean solve(char[][] board) {
+    private static boolean backtracking(char[][] board) {
         for (int r = 0; r < board.length; r++) {
             for (int c = 0; c < board[0].length; c++) {
-                if (board[r][c] == '.') {
+                if (board[r][c] == '.') {                // 找到一个起始 '.' 后开始 backtracking
                     for (char n = '1'; n <= '9'; n++) {  // 对 board 上的每个空格尝试用 '1'~'9' 填充
                         if (isValid(board, r, c, n)) {   // 前提是 [r,c] 所在的行、列、3*3 block 中 n 还未被使用过
                             board[r][c] = n;
-                            if (solve(board)) return true;
+                            if (backtracking(board)) return true;  // 当所有层递归都返回 true（即找到数独的解）时，中断回溯
                             board[r][c] = '.';
                         }
                     }
@@ -49,8 +49,8 @@ public class L37_SudokuSolver {
     }
 
     private static boolean isValid(char[][] board, int r, int c, char n) {
-        int blkRow = r / 3 * 3, blkCol = c / 3 * 3;    // i/3 ∈ [0,1,2]；i/3*3 ∈ [0,3,6] 即每个 block 的起始列
-        for (int i = 0; i < 9; i++)                    // 检查 [r,c] 所在的行、列、block
+        int blkRow = r / 3 * 3, blkCol = c / 3 * 3;  // ∵ r ∈ [0,9] ∴ r/3 ∈ [0,1,2]；然后再*3就 ∈ [0,3,6]，即每个 block 的起始行（c 同理）
+        for (int i = 0; i < 9; i++)                  // 检查 [r,c] 所在的行、列、block
             if (board[r][i] == n || board[i][c] == n || board[blkRow + i / 3][blkCol + i % 3] == n)
                 return false;
         return true;

@@ -23,7 +23,7 @@ import java.util.List;
 public class L51_NQueens {
     /*
      * 解法1：Backtracking (Recursion, DFS)
-     * - 思路：以4皇后为例，在4*4的棋盘上放置4个皇后，即每行都要放一个皇后才行。而皇后在一行中放置的位置会影响后面所有行中皇后
+     * - 💎 思路：以4皇后为例，在4*4的棋盘上放置4个皇后，即每行都要放一个皇后才行。而皇后在一行中放置的位置会影响后面所有行中皇后
      *   放置的位置 ∴ 程序的主题逻辑应该是：
      *     1. 对一行中的格子进行遍历，尝试放置皇后；
      *     2. 当遍历到可以放皇后的格子时，暂停当前行的遍历，转到下一行进行遍历，并根据上面皇后的位置来判断每个格子是否能放置皇后；
@@ -39,7 +39,7 @@ public class L51_NQueens {
      *   可见总体思路就是回溯搜索，剩下要解决的问题是如何剪枝，即如何判断一个格子是否可以放置皇后，即一个格子的水平、竖直、对角4个
      *   方向中是否还有其他皇后存在。
      *
-     * - 实现：该解法中采用 boolean[][] attackable 来标记哪些格子处在已放置皇后的攻击范围内。每当放置一个皇后之后，都更新
+     * - 💎 实现：该解法中采用 boolean[][] attackable 来标记哪些格子处在已放置皇后的攻击范围内。每当放置一个皇后之后，都更新
      *   attackable，将其可攻击到的格子标记为 true。而每当要返回上层递归时，先要将 attackable 的状态恢复原状。但注意在恢复
      *   原状时不能直接将格子标记为 false，这是 ∵ 该格子在被置为 true 之前可能就是已经是 true 了（即当前皇后与之前皇后的攻击
      *   范围有所重叠）∴ 需要在将格子置为 true 之前先用 tmp 记录 attackable 原来的状态，以便在返回上层前能进行恢复，又不会
@@ -53,18 +53,18 @@ public class L51_NQueens {
         List<List<String>> res = new ArrayList<>();
         if (n <= 0) return res;
         attackable = new boolean[n][n];
-        putQueen(0, n, new ArrayList<>(), res);  // 从第0行开始尝试放置皇后，并将放置的纵坐标记录在 pos 中
+        putQueen(0, n, new ArrayList<>(), res);  // 从第0行开始尝试放置皇后，并将放置的纵坐标记录在 pos 中（索引即是横坐标）
         return res;
     }
 
     private static void putQueen(int r, int n, List<Integer> pos, List<List<String>> res) {
-        if (r == n) {                         // 已经超过了最后一行（说明找到了解）（若某行无法放置皇后则会提前返回 ∴ 不会走到这里）
+        if (r == n) {                  // 已经超过了最后一行（说明找到了解，若某行无法放置皇后则会提前返回，不会走到这）
             res.add(generateSolution(pos));
             return;
         }
-        for (int c = 0; c < n; c++) {         // 遍历该行的每个格子，尝试放置皇后
+        for (int c = 0; c < n; c++) {  // 遍历该行的每个格子，尝试放置皇后
             if (!attackable[r][c]) {
-                pos.add(c);                   // 先记录放置皇后的纵坐标（横坐标就是 c 在 pos 中的索引 ∴ 不用记录）
+                pos.add(c);            // 先记录放置皇后的纵坐标（索引即是横坐标）
                 Boolean[][] tmp = markAttackable(r, c, n);  // 在 boolean[][] 上标记该皇后的攻击范围，并将原状态记录在 tmp 中
                 putQueen(r + 1, n, pos, res);
                 restoreAttackable(r, c, n, tmp);  // 返回上层递归之前从 tmp 中恢复原来的状态
@@ -83,11 +83,11 @@ public class L51_NQueens {
 
             if (c - delta >= 0) {
                 tmp[nr][c - delta] = attackable[nr][c - delta];
-                attackable[nr][c - delta] = true;   // 标记 / 对角线上的格子
+                attackable[nr][c - delta] = true;  // 标记 / 对角线上的格子
             }
             if (c + delta < n) {
                 tmp[nr][c + delta] = attackable[nr][c + delta];
-                attackable[nr][c + delta] = true;   // 标记 \ 对角线上的格子
+                attackable[nr][c + delta] = true;  // 标记 \ 对角线上的格子
             }
         }
         return tmp;
