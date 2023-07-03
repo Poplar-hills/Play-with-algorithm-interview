@@ -2,9 +2,7 @@ package DP.S1_Basics;
 
 import static Utils.Helpers.log;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 /*
  * Minimum Path Sum
@@ -70,11 +68,11 @@ public class L64_MinimumPathSum {
      * - 思路：从左上到右下递归地计算每个节点到达右下角的 min path sum：
      *   - 子问题定义：f(r,c) 表示从节点 [r,c] 到达右下角的 min path sum。
      *   - 递推表达式：f(r,c) = min(f(r+1,c), f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)。
-     *       1 ← 3 ← 1
-     *       ↑   ↑   ↑   - f(0,0) = min(f(1,0), f(0,1))
-     *       1 ← 5 ← 1            = min(min(f(2,0), f(1,1)), min(f(0,2), f(1,1)))
-     *       ↑   ↑   ↑            = ...
-     *       4 ← 2 ← 1
+     *       1 ← 3 ← 1        7 ← 6 ← 3
+     *       ↑   ↑   ↑        ↑   ↑   ↑   - f(0,0) = min(f(1,0), f(0,1))
+     *       1 ← 5 ← 1   ->   8 ← 7 ← 2            = min(min(f(2,0), f(1,1)), min(f(0,2), f(1,1)))
+     *       ↑   ↑   ↑        ↑   ↑   ↑            = ...
+     *       4 ← 2 ← 1        7 ← 3 ← 1
      *   其中：
      *     - ∵ f(2,2) 是右下角终点，再没有路可走 ∴ f(2,2) = 1；
      *     - ∵ 类似 f(2,0)、f(0,2) 的边缘节点只有一个方向可以走 ∴ f(2,0) = f(2,1); f(0,2) = f(1,2)；
@@ -101,11 +99,11 @@ public class L64_MinimumPathSum {
      * 超时解3：DFS + Recursion
      * - 思路：虽然都是 DFS，但不同于超时解2，该解法是从左上角开始一直累加路径和 sum 直到到右下角，而非超时解2中从右下角逐层
      *   返回，一直累加到左上角（即 + grid[r][c] 的操作发生在每层递归内部，而非超时解2中的递归外部）。
-     *        1 → 3 → 1
-     *        ↓   ↓   ↓
-     *        1 → 5 → 1
-     *        ↓   ↓   ↓
-     *        4 → 2 → 1
+     *        1 → 3 → 1        1 → 4 → 5
+     *        ↓   ↓   ↓        ↓   ↓   ↓
+     *        1 → 5 → 1   ->   2 → 7 → 6
+     *        ↓   ↓   ↓        ↓   ↓   ↓
+     *        4 → 2 → 1        6 → 8 → 7
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int minPathSum_3(int[][] grid) {
