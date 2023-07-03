@@ -104,8 +104,8 @@ public class L70_ClimbingStairs {
      * - 时间复杂度 O(2^n)，空间复杂度 O(n)。
      * */
     public static int climbStairs_4(int n) {
-        if (n == 0) return 1;    // 这里与其他解的表现略微不同，n=0 时会返回1，但 ∵ 题中规定 n>0 ∴ 没关系
         if (n < 0) return 0;
+        if (n <= 2) return n;
         return climbStairs_4(n - 1) + climbStairs_4(n - 2);
     }
 
@@ -116,28 +116,28 @@ public class L70_ClimbingStairs {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs(int n) {
-        int[] cache = new int[n + 1];
-        return dfs(n, cache);
+        if (n < 0) return 0;
+        return dfs(n, new int[n + 1]);
     }
 
     private static int dfs(int n, int[] cache) {
-        if (n == 0) return 1;
-        if (n < 0) return 0;
+        if (n <= 2) return n;
         if (cache[n] != 0) return cache[n];
         return cache[n] = dfs(n - 1, cache) + dfs(n - 2, cache);
     }
 
     /*
      * 解法2：DP
-     * - 思路：采用 L509 解法3的 DP 思路（类似 L91_DecodeWays 解法2）
+     * - 思路：将解法1转换为 DP。
      * - 💎 总结：∵ DP 是自下而上的 ∴ 其子问题的定义与自上而下的递归思路（超时解3）不太一样：
      *   - 自上而下分解问题时，子问题 f(i) 表示“从 i 到 n 的路径个数”；
      *   - 自下而上递推问题时，子问题 f(i) 表示“从 0 到 i 的路径条数”。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int climbStairs2(int n) {
+        if (n <= 2) return n;
         int[] dp = new int[n + 1];
-        dp[0] = dp[1] = 1;
+        dp[1] = 1; dp[2] = 2;
 
         for (int i = 2; i <= n; i++)
             dp[i] = dp[i - 1] + dp[i - 2];
