@@ -126,16 +126,7 @@ public class L64_MinimumPathSum {
     }
 
     /*
-     * // TODO: 解法1：Dijkstra
-     * - 思路：带权图的最短路径可使用 Dijkstra 算法，可先解决 https://leetcode.com/problems/network-delay-time/，再解决本问题
-     * - 时间复杂度 O()，空间复杂度 O()。
-     * */
-    public static int minPathSum1(int[][] grid) {
-        return 0;
-    }
-
-    /*
-     * 解法2：DFS + Recursion + Memoization
+     * 解法1：DFS + Recursion + Memoization
      * - 思路：在超时解2的基础上加入 Memoization 进行优化，以避免重复计算重叠子问题。例如：
      *       1 ← 3 ← 1
      *       ↑   ↑   ↑    - 递推表达式：f(r,c) = min(f(r+1,c), f(r,c+1))，其中 r ∈ [0,w)，l ∈ [0,l)
@@ -144,17 +135,17 @@ public class L64_MinimumPathSum {
      *       4 ← 2 ← 1
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int minPathSum2(int[][] grid) {
+    public static int minPathSum1(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int[][] cache = new int[grid.length][grid[0].length];  // cache[r][c] 记录节点 [r,c] 到达右下角的 min path sum
         for (int[] row : cache)
             Arrays.fill(row, -1);
 
-        return dfs2(grid, 0, 0, cache);
+        return dfs1(grid, 0, 0, cache);
     }
 
-    private static int dfs2(int[][] grid, int r, int c, int[][] cache) {
+    private static int dfs1(int[][] grid, int r, int c, int[][] cache) {
         int m = grid.length, n = grid[0].length;
         int val = grid[r][c];
 
@@ -162,15 +153,15 @@ public class L64_MinimumPathSum {
         if (cache[r][c] != -1) return cache[r][c];
 
         if (r == m - 1)
-            return cache[r][c] = val + dfs2(grid, r, c + 1, cache);
+            return cache[r][c] = val + dfs1(grid, r, c + 1, cache);
         if (c == n - 1)
-            return cache[r][c] = val + dfs2(grid, r + 1, c, cache);
+            return cache[r][c] = val + dfs1(grid, r + 1, c, cache);
 
-        return cache[r][c] = val + Math.min(dfs2(grid, r + 1, c, cache), dfs2(grid, r, c + 1, cache));
+        return cache[r][c] = val + Math.min(dfs1(grid, r + 1, c, cache), dfs1(grid, r, c + 1, cache));
     }
 
     /*
-     * 解法3：DP
+     * 解法2：DP
      * - 思路：超时解2中的递推表达式是 f(r, c) = min(f(r+1, c), f(r, c+1))，即每个节点的解 f(r, c) 是建立在其下游的两个
      *   节点的解 f(r+1, c)、f(r, c+1) 之上的 ∴ 可以很自然的使用递归求解 —— 这是自上而下的递推过程。而 DP 的思路与此是一致的，
      *   使用的递推表达式也一样，只是递推过程是自下而上，即从终点 f(w-1, l-1) 开始，递推出 f(w-2, l-1)、f(w-1, l-2)，再递推
@@ -179,7 +170,7 @@ public class L64_MinimumPathSum {
      *   中解法3的滚动数组方案，dp 数组只保留两行并重复利用。但遍历方向需要改为从左上到右下（∵ 需要知道当前是奇/偶数行）。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
-    public static int minPathSum3(int[][] grid) {
+    public static int minPathSum2(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int m = grid.length;
@@ -204,8 +195,8 @@ public class L64_MinimumPathSum {
     }
 
     /*
-     * 解法4：In-place DP
-     * - 思路：与解法3一致。
+     * 解法3：In-place DP
+     * - 思路：与解法2一致。
      * - 实现：
      *   1. 不另外建立 dp 数组，而是就地修改 grid 数组；
      *   2. 遍历方向为从左上到右下，不断对 grid 进行填充/更新：f(r,c) = min(f(r-1, c), f(r, c-1))。
@@ -217,7 +208,7 @@ public class L64_MinimumPathSum {
      *                                                              6 → 8 → 7
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
-    public static int minPathSum4(int[][] grid) {
+    public static int minPathSum3(int[][] grid) {
         if (grid == null || grid[0] == null) return 0;
 
         int m = grid.length;
@@ -239,9 +230,9 @@ public class L64_MinimumPathSum {
     }
 
     /*
-     * 解法5：In-place DP（解法4的另一种写法）
-     * - 思路：与解法4一致。
-     * - 实现：观察解法4可知 ∵ 第一行和第一列是特殊情况，不需要比较，只有一种选择 ∴ 可以先手动处理这些特殊情况，然后再处理其他
+     * 解法4：In-place DP（解法3的另一种写法）
+     * - 思路：与解法3一致。
+     * - 实现：观察解法3可知 ∵ 第一行和第一列是特殊情况，不需要比较，只有一种选择 ∴ 可以先手动处理这些特殊情况，然后再处理其他
      *   位置上的一般情况：
      *       1   3   1               1 → 4 → 5               1 → 4 → 5                1 → 4 → 5
      *                    Add up                  Add up     ↓             Handle     ↓   ↓   ↓
@@ -250,7 +241,7 @@ public class L64_MinimumPathSum {
      *       4   2   1               4   2   1               6   2   1                6 → 8 → 7
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
-    public static int minPathSum5(int[][] grid) {
+    public static int minPathSum4(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
 

@@ -120,7 +120,9 @@ public class L120_Triangle {
      *        4   1   8   3
      *   在计算 f(3)、f(4) 的时候 f(5) 就被重复计算了两次 ∴ 只要在超时解3的基础上加入 Memoization 就可以解决问题。
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
-     * - 注：∵ 开辟的 cache 是以三角最后一行为宽度 ∴ 会浪费一半的空间。改进方式是采用类似 _ZeroOneKnapsack 中解法3的滚动数组方案。
+     * - 优化：∵ 开辟的 cache 是以三角最后一行为宽度 ∴ 会浪费一半的空间。改进方式是采用：
+     *   1. Map<String, Integer>，其中 key 为 l + "-" + i；
+     *   2. 类似 _ZeroOneKnapsack 中解法3的滚动数组方案。
      * */
     public static int minimumTotal1(List<List<Integer>> triangle) {
         int h = triangle.size();
@@ -142,15 +144,7 @@ public class L120_Triangle {
     }
 
     /*
-     * // TODO: 解法2：Dijkstra
-     * - 思路：同 L64_MinimumPathSum 解法1，可将该问题建模成带权图，而带权图的最短路径可使用 Dijkstra 算法。
-     * */
-    public static int minimumTotal2(List<List<Integer>> triangle) {
-        return 0;
-    }
-
-    /*
-     * 解法3：DP
+     * 解法2：DP
      * - 思路：既然可以用 DFS + Recursion 求解，那很可能也能用 DP 求解 —— 自下而上递推出每个节点上的解。其中子问题定义和
      *   递推表达式不变）：
      *   - 子问题定义：f(l,i) 表示"从节点 [l,i] 开始到三角形最底层的 minimum path sum"；
@@ -164,7 +158,7 @@ public class L120_Triangle {
      * - 时间复杂度 O(n) 或 O(h^2)，其中 h 为三角形高度（之所以为 O(h^2) 是 ∵ 代码中的双重循环范围都可以近似为 0~h）。
      * - 空间复杂度 O(1)。
      * */
-    public static int minimumTotal3(List<List<Integer>> triangle) {
+    public static int minimumTotal2(List<List<Integer>> triangle) {
         int h = triangle.size();
         int[][] dp = new int[h][triangle.get(h - 1).size()];
 
@@ -182,13 +176,13 @@ public class L120_Triangle {
     }
 
     /*
-     * 解法4：DP（解法3的优化版，即滚动数组）
+     * 解法3：DP（解法3的优化版，即滚动数组）
      * - 思路：与解法3一致。
-     * - 实现：dp 数组的大小无需解法3中的那么大，只需开辟三角形最底层节点数大小，之后每层都在上面覆盖即可（即滚动数组）。
+     * - 实现：dp 数组的大小无需解法2中的那么大，只需开辟三角形最底层节点数大小，之后每层都在上面覆盖即可（即滚动数组）。
      * - 时间复杂度 O(n) 或 O(h^2)，其中 h 为三角形高度（操作数组比操作 List 更快，∴ 该解法统计性能更优）。
      * - 空间复杂度 O(h)。
      * */
-    public static int minimumTotal4(List<List<Integer>> triangle) {
+    public static int minimumTotal3(List<List<Integer>> triangle) {
         int h = triangle.size();
 
         int[] dp = new int[h];                   // 开辟三角形底层节点数大小的数组（全等三角形高度 = 底层节点数）
@@ -203,12 +197,12 @@ public class L120_Triangle {
     }
 
     /*
-     * 解法5：In-place DP
-     * - 思路：与解法3一致。
+     * 解法4：In-place DP
+     * - 思路：与解法2一致。
      * - 实现：不另开空间，而是直接在 triangle 上覆盖。
      * - 时间复杂度 O(n) 或 O(h^2)，其中 h 为三角形高度，空间复杂度 O(1)。
      * */
-    public static int minimumTotal5(List<List<Integer>> triangle) {
+    public static int minimumTotal4(List<List<Integer>> triangle) {
         for (int l = triangle.size() - 2; l >= 0; l--) {  // 从倒数第2层开始往上遍历
             List<Integer> level = triangle.get(l);
             List<Integer> levelBelow = triangle.get(l + 1);
