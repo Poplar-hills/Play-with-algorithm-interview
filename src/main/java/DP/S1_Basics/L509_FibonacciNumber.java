@@ -123,6 +123,7 @@ public class L509_FibonacciNumber {
      *      但在实际开发中（尤其是通过递归进行任务拆分/合并计算），通常用 ForkJoinTask 的子类 RecursiveTask（有返回结果）、
      *      RecursiveAction（无返回结果）来替代 ForkJoinTask。
      *   2. Cache 基于 ConcurrentHashMap 实现。
+     *   3. 可为 fork/join 任务手动指定线程池，若不指定，则使用默认线程池（如 main 中的调用方式）。
      *   - SEE: https://juejin.cn/post/6992178673730191397
      * - 时间复杂度：使用多线程的本意是为了将大型任务 divide and rule，并行计算多个子任务。但该解法中由于计算量太小、创建的线程
      *   数又多 ∴ 耗时反而更长，且有 OOM 的风险。
@@ -141,9 +142,9 @@ public class L509_FibonacciNumber {
             if (n < 2) return n;
             if (cache.containsKey(n)) return cache.get(n);
             FibTask f1 = new FibTask(n - 1);
-            f1.fork();              // 分支出一个线程计算任务 f1
+            f1.fork();              // fork() 方法向线程池提交任务 f1，并放入任务队列中
             FibTask f2 = new FibTask(n - 2);
-            int res = f2.compute() + f1.join();  // 主线程计算任务 f2，等待 f1 的结果，并加到一起返回
+            int res = f2.compute() + f1.join();  // 在当前线程中计算任务 f2，并等待 f1 的结果，并加到一起返回
             cache.put(n, res);
             return res;
         }
@@ -156,7 +157,13 @@ public class L509_FibonacciNumber {
         log(fib3(40));
         log(fib4(40));
         log(fib5(40));
-        log(new FibTask(40).compute());
+        log(new FibTask(40).compute());  // 使用 fork/join 默认线程池执行
+        /**
+         * 或用 ForkJoinPool 来手动创建运行线程池，并提交任务：
+         *   FibTask f = new FibTask(40);
+         *   ForkJoinPool pool = new ForkJoinPool();
+         *   int result = pool.invoke(f);
+         */
 
         timeIt(40, L509_FibonacciNumber::fib);
         timeIt(40, L509_FibonacciNumber::fib1);
