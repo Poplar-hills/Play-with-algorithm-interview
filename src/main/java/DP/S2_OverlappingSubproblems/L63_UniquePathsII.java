@@ -28,8 +28,8 @@ public class L63_UniquePathsII {
     private static int dfs(int[][] grid, int r, int c, int[][] cache) {
         int m = grid.length, n = grid[0].length;
 
-        if (grid[r][c] == 1) return 0;           // 若是障碍物节点则直接返回0
-        if (r == m - 1 && c == n - 1) return 1;  // 递归到底
+        if (grid[r][c] == 1) return 0;  // 若是障碍物节点则直接返回0
+        if (r == m - 1 && c == n - 1) return 1;
         if (cache[r][c] != 0) return cache[r][c];
 
         int pathCount = 0;
