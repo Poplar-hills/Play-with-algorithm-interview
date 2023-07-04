@@ -1,7 +1,9 @@
 package DP.S1_Basics;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveTask;
 
 import static Utils.Helpers.log;
@@ -12,7 +14,7 @@ import static Utils.Helpers.timeIt;
  *
  * - The Fibonacci numbers, commonly denoted F(n) form a sequence, called the Fibonacci sequence, such that
  *   each number is the sum of the two preceding ones, starting from 0 and 1. That is,
- *       F(0) = 0,  F(1) = 1,  F(N) = F(N - 1) + F(N - 2), for N > 1.
+ *       F(0) = 0,  F(1) = 1,  F(N) = F(N-1) + F(N-2), for N > 1.
  *   Given N, calculate F(N).
  *
  * - DP 定义：Dynamic programming is a method for solving a complex problem by breaking it down into simpler
@@ -85,12 +87,12 @@ public class L509_FibonacciNumber {
      * - 时间复杂度 O(n)，空间复杂度 O(n)。
      * */
     public static int fib4(int n) {
-        Map<Integer, Integer> dpMap = new HashMap<>();
-        dpMap.put(0, 0);
-        dpMap.put(1, 1);
-        for (int i = 2; i <= n; i++)  // dpMap 中放入 fib(0), fib(1) 后再从小到大逐个计算更大的 n 值
-            dpMap.put(i, dpMap.get(i - 1) + dpMap.get(i - 2));
-        return dpMap.get(n);
+        Map<Integer, Integer> dp = new HashMap<>();
+        dp.put(0, 0);
+        dp.put(1, 1);
+        for (int i = 2; i <= n; i++)  // dp 中放入 fib(0), fib(1) 后再从小到大逐个计算更大的 n 值
+            dp.put(i, dp.get(i - 1) + dp.get(i - 2));
+        return dp.get(n);
     }
 
     /*
@@ -114,25 +116,36 @@ public class L509_FibonacciNumber {
     }
 
     /*
-     * 解法6：fork/join 多线程计算
+     * 解法6：fork/join 多线程
      * - 思路：对于每个需要计算的数字都创建一个线程单独执行。
+     * - 💎 实现：
+     *   1. fork/join 框架的核心类是 ForkJoinPool（线程和任务管理）、ForkJoinTask（实现 fork/join 操作）这2个类，
+     *      但在实际开发中（尤其是通过递归进行任务拆分/合并计算），通常用 ForkJoinTask 的子类 RecursiveTask（有返回结果）、
+     *      RecursiveAction（无返回结果）来替代 ForkJoinTask。
+     *   2. Cache 基于 ConcurrentHashMap 实现。
+     *   - SEE: https://juejin.cn/post/6992178673730191397
      * - 时间复杂度：使用多线程的本意是为了将大型任务 divide and rule，并行计算多个子任务。但该解法中由于计算量太小、创建的线程
      *   数又多 ∴ 耗时反而更长，且有 OOM 的风险。
      * */
     private static class FibTask extends RecursiveTask<Integer> {  // 继承 RecursiveTask
         private final int n;
+        private final Map<Integer, Integer> cache;
 
         public FibTask(int n) {
             this.n = n;
+            this.cache = new ConcurrentHashMap<>();
         }
 
         @Override
-        public Integer compute() {            // RecursiveTask 接口方法
-            if (n <= 1) return n;
+        public Integer compute() {  // RecursiveTask 接口方法
+            if (n < 2) return n;
+            if (cache.containsKey(n)) return cache.get(n);
             FibTask f1 = new FibTask(n - 1);
-            f1.fork();                        // 分支出一个线程计算任务 f1
+            f1.fork();              // 分支出一个线程计算任务 f1
             FibTask f2 = new FibTask(n - 2);
-            return f2.compute() + f1.join();  // 主线程计算任务 f2，等待 f1 的结果，并加到一起返回
+            int res = f2.compute() + f1.join();  // 主线程计算任务 f2，等待 f1 的结果，并加到一起返回
+            cache.put(n, res);
+            return res;
         }
     }
 
