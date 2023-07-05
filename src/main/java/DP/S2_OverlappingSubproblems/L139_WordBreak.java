@@ -42,7 +42,7 @@ public class L139_WordBreak {
      *                    x           ""
      *   ∴ 可知：
      *     - 子问题定义：f(i) 表示“从索引 i 开始到末尾的字符串 s[i..n) 能否由 wordDict 中的单词拼接而成”；
-     *     - 递推表达式：f(i) = any(s[i..j] && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
+     *     - 递推表达式：f(i) = any(s[i..j] in wordDict && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
      * - 说明：该解法其实就是回溯搜索。
      * - 时间复杂度 O(n^n)，空间复杂度 O(n)。
      * */
@@ -95,7 +95,7 @@ public class L139_WordBreak {
      * 解法2：DP
      * - 思路：将解法1直接转换为 DP 的写法（其实本质思路与解法1是一样的 —— 都是自上而下分解任务），子问题定义和递推表达式不变：
      *   - f(i) 表示“从索引 i 开始到末尾的字符串 s[i..n) 能否由 wordDict 中的单词拼接而成”；
-     *   - f(i) = any(s[i..j) && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
+     *   - f(i) = any(s[i..j] in wordDict && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static boolean wordBreak2(String s, List<String> wordDict) {
@@ -122,7 +122,7 @@ public class L139_WordBreak {
      * 解法3：DP
      * - 思路：不同于解法2，该解法采用自下而上的正统 DP 思路，先解决基本问题，再递推出高层次问题的解：
      *   - 子问题定义：f(i) 表示“字符串 s[0..i) 是否能由 wordDict 中的单词拼接而成”；
-     *   - 递推表达式：f(i) = any(f(j) && s[j..i])。
+     *   - 递推表达式：f(i) = any(s[i..j] in wordDict && f(j))，其中 i ∈ [0,n)，j ∈ [i+1,n]。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static boolean wordBreak3(String s, List<String> wordDict) {
