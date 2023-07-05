@@ -45,7 +45,6 @@ public class L343_IntegerBreak {
      *     2. 其中 ∵ f(1) 不能再分割 ∴ 作为递归退出条件，让 f(1)=1；
      *     3. 在分割时有个陷阱：当用2分割 f(4) 时，除了 2*f(2) 这个解之外，还要考虑 2*2 这个解，即 f(4) 的完整表达式应该是：
      *        f(4) = max(1*f(3), 1*3, 2*f(2), 2*2, 3*f(1), 3*1)；
-     *     4. 可见该树中存在重叠子问题 f(2) ∴ 可以使用 memoization 或 dp 的方式进行优化。
      *   总结一下：
      *     - 定义子问题：f(n) 表示“由正整数 n 分割得到的多个正整数的最大乘积”；
      *     - 递推表达式：f(n) = max(i*f(n-i), i*(n-i))，其中 i ∈ [1,n)。
@@ -55,11 +54,11 @@ public class L343_IntegerBreak {
     public static int integerBreak_1(int n) {
         if (n == 1) return 1;
 
-        int maxProduct = 0;
-        for (int i = 1; i < n; i++)  // 遍历所有分割方案，并求所有方案中的最大乘积
-            maxProduct = maxOfN(maxProduct, i * (n - i), i * integerBreak(n - i));
+        int maxProd = 0;
+        for (int i = 1; i <= n; i++)  // 遍历所有分割方案，并求所有方案中的最大乘积
+            maxProd = maxOfN(maxProd, i * (n - i), i * integerBreak_1(n - i));
 
-        return maxProduct;
+        return maxProd;
     }
 
     private static int maxOfN(int ...nums) {
@@ -70,7 +69,10 @@ public class L343_IntegerBreak {
 
     /*
      * 解法1：DFS + Recursion + Memoization
-     * - 思路：在超时解的基础上加入 Memoization 优化。
+     * - 思路：
+     *   1. 从👆🏻超时解中可见，该树中存在重叠子问题 f(2) ∴ 可以使用 memoization 或 dp 的方式进行优化；
+     *   2. 对4进行分支时 ∵ 4-1=3，4-3=1 ∴ f(4)=1*f(3) 和 f(4)=3*f(1) 其实是一回事 ∴ 可以提前进行剪枝，每次
+     *      只遍历一遍的分支即可，即每层递归中让 i ∈ [1, n/2]。
      * - 时间复杂度 O(n^2)，空间复杂度 O(n)。
      * */
     public static int integerBreak(int n) {
@@ -82,11 +84,11 @@ public class L343_IntegerBreak {
         if (n == 1) return 1;
         if (cache[n] != 0) return cache[n];
 
-        int maxProduct = 0;
-        for (int i = 1; i < n; i++)
-            maxProduct = maxOf3(maxProduct, i * (n - i), i * dfs(n - i, cache));
+        int maxProd = 0;
+        for (int i = 1; i <= n / 2; i++)  // 每次只遍历一半分支即可
+            maxProd = maxOf3(maxProd, i * (n - i), i * dfs(n - i, cache));
 
-        return cache[n] = maxProduct;
+        return cache[n] = maxProd;
     }
 
     private static int maxOf3(int a, int b, int c) {
@@ -112,8 +114,8 @@ public class L343_IntegerBreak {
      }
 
     public static void main(String[] args) {
-        log(integerBreak(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
-        log(integerBreak(2));   // expects 1.  (2 = 1 + 1, 1 × 1 = 1)
-        log(integerBreak(10));  // expects 36. (10 = 3 + 3 + 4, 3 × 3 × 4 = 36)
+        log(integerBreak_1(4));   // expects 4.  (4 = 2 + 2, 2 × 2 = 4)
+        log(integerBreak_1(2));   // expects 1.  (2 = 1 + 1, 1 × 1 = 1)
+        log(integerBreak_1(10));  // expects 36. (10 = 3 + 3 + 4, 3 × 3 × 4 = 36)
     }
 }
