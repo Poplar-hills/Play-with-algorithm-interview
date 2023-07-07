@@ -36,6 +36,8 @@ public class L53_MaximumSubarray {
 
     /**
      * 解法2：Prefix sum
+     * - 思路：通过建立 prefix sum 数组来消除解法1中的最内层 for 循环（无需每次遍历来求区间和）。其形式化表达为：
+     *   maxSubArraySum = max(prefixSum[r] - prefixSum[l] + nums[l])。
      * - 时间复杂度 O(n^2)，空间复杂度 O(1)。
      */
     public static int maxSubArray2(int[] nums) {
@@ -90,13 +92,24 @@ public class L53_MaximumSubarray {
     }
 
     /**
-     * 解法4：Kadane algorithm（解法3 DP 的的空间优化版）
+     * 解法4：Kadane's algorithm（即 DP 的空间优化版）
      * - 思路：与解法3一致。
-     * - 实现：用一个变量维护 max subarray sum，不再需要解法3中的 dp 数组。
+     * - 💎 实现：Kadane's algorithm is a DP algorithm used to find the max subarray sum of a given array
+     *   of integers. It's a very efficient algorithm with a time complexity of O(n). 其核心思想是在计算过程
+     *   中迭代计算 nums[0..i] 区间上的最大后缀和。其计算过程如下：
+     *     [-4, 4, -2, 3, -1]
+     *      i                 - nums[0..0] 区间上的最大后缀和就是 nums[0] = -4
+     *          i             - nums[0..1] 区间上的最大后缀和是 max(-4 + nums[1], nums[1]) = nums[1] = 4
+     *              i         - nums[0..2] 区间上的最大后缀和是 max(4 + nums[2], nums[2]) = 2，即 nums[1..2]
+     *                 i      - nums[0..3] 区间上的最大后缀和是 max(2 + nums[3], nums[3]) = 5，即 nums[1..3]
+     *                     i  - nums[0..4] 区间上的最大后缀和是 max(5 + nums[4], nums[4]) = 4，即 nums[1..4]
+     *   而该遍历过程中最大的一个就是当 i=3 时的 nums[1..3]=5 ∴ 为了求最大区间和，需要求 max(最大后缀和)。
+     * - 👉🏻 理解该解法后再回头看解法3，可见 Kadane's algorithm 本质上就 DP，且效率更优（one-pass + 用2个变量代替 dp 数组）。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      */
     public static int maxSubArray4(int[] nums) {
-        int maxSubSumEndingHere = 0, maxSubSum = Integer.MIN_VALUE;
+        int maxSubSumEndingHere = 0;  // nums[0..i] 区间上的最大后缀和
+        int maxSubSum = Integer.MIN_VALUE;
 
         for (int n : nums) {
             maxSubSumEndingHere = Math.max(maxSubSumEndingHere + n, n);
@@ -125,12 +138,37 @@ public class L53_MaximumSubarray {
         return maxSubSum;
     }
 
+
+
+
+
+    //      [-4, 4, -2, 3, -1]
+    //      [-4, 0, -2, 1, 0]
+    //       i                 - sum=-4, minSum=-4
+    //           i             - sum=0,
+    //               i         - sum=-2
+    //                  i      - sum=1
+    //                      i  - sum=0
+
+    public static int maxSubArray_(int[] nums) {
+        int sum = 0;
+        int minSum = Integer.MAX_VALUE;
+        int maxSum = Integer.MIN_VALUE;
+
+        for (int n : nums) {
+            sum += n;
+            minSum = Math.min(minSum, sum - n);
+            maxSum = Math.max(maxSum, sum - minSum);
+        }
+
+        return maxSum;
+    }
     public static void main(String[] args) {
-        log(maxSubArray5(new int[]{-4, 4, -2, 3, -1}));  // expects 5. (4-2+3)
-        log(maxSubArray5(new int[]{4, -1, 2, -3, 1}));   // expects 5. (4-1+2)
-        log(maxSubArray5(new int[]{4, -4, 2}));          // expects 4. (4)
-        log(maxSubArray5(new int[]{4, 1, -2, -2, 8}));   // expects 9. (4+1-2-2+8)
-        log(maxSubArray5(new int[]{5, 4, -1, 7, 8}));    // expects 23. (5+4-1+7+8)
-        log(maxSubArray5(new int[]{-1}));                // expects -1. (-1)
+        log(maxSubArray_(new int[]{-4, 4, -2, 3, -1}));  // expects 5. (4-2+3)
+        log(maxSubArray_(new int[]{4, -1, 2, -3, 1}));   // expects 5. (4-1+2)
+        log(maxSubArray_(new int[]{4, -4, 2}));          // expects 4. (4)
+        log(maxSubArray_(new int[]{4, 1, -2, -2, 8}));   // expects 9. (4+1-2-2+8)
+        log(maxSubArray_(new int[]{5, 4, -1, 7, 8}));    // expects 23. (5+4-1+7+8)
+        log(maxSubArray_(new int[]{-1}));                // expects -1. (-1)
     }
 }
