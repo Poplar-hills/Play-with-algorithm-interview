@@ -33,7 +33,7 @@ public class L122_BestTimeToBuyAndSellStockII {
      *   ∵ 可以交易任意多次 ∴ 最大收益 = 所有上升区间的幅度之和，即 maxProfit = sum(peak(i) - valley(i))。注意这里的
      *   关键点在于，每个“上升区间”必须是前后相邻的两个价位之间的，而不能是中间隔着一个 valley —— ∵ 可以交易任意多次
      *   ∴ sum(peak(i) - valley(i)) 一定 > peak(j) - valley(i)。
-     * - 实现：借助 Kadane's Algorithm（即最大子序列之和算法）—— 先求出所有前后两元素的差值，再过滤掉其中的负差值，
+     * - 实现：借助 Kadane's Algorithm（即最大区间和算法）—— 先求出所有前后两元素的差值，再过滤掉其中的负差值，
      *   剩下的正差值之和即是原问题的解。
      * - 时间复杂度 O(n)，空间复杂度 O(1)。
      * */
@@ -68,8 +68,8 @@ public class L122_BestTimeToBuyAndSellStockII {
 
 	/*
      * 解法3：DP
-     * - 思路：The action we can do on ith day is either buy (if last action is sell), or sell (if last action
-     *   is buy), or do nothing ∴ 第i天上不同的 action 会获得不同的最大收益：
+     * - 思路：The action we can do on ith day is either buy (if last action is sell), or sell
+     *   (if last action is buy), or do nothing ∴ 第i天上不同的 action 会获得不同的最大收益：
      *     - 第i天尝试买入的最大收益 = max(第i天不买入的最大收益, 第i天买入的最大收益)；
      *     - 第i天尝试卖出的最大收益 = max(第i天不卖出的最大收益, 第i天卖出的最大收益)；
      *   其中，若要在第i天买入，则需之前先卖出过 ∴ 第i天买入的最大收益 = 第i-1天尝试卖出的最大收益 - 第i天的股价；
